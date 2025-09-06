@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { bookingApi } from '@/lib/bookings'
 import { Booking, BookingStatus } from '@/types'
+import { t } from '@/lib/translations'
 import { Calendar, Clock, User, Edit, X, Loader2 } from 'lucide-react'
 
 export default function BookingsPage() {
@@ -35,7 +36,7 @@ export default function BookingsPage() {
       const userBookings = await bookingApi.getCustomerBookings(user.id)
       setBookings(userBookings)
     } catch (err) {
-      setError('Failed to fetch bookings')
+      setError(t('bookings.error', 'Failed to fetch bookings'))
       console.error('Error fetching bookings:', err)
     } finally {
       setLoading(false)
@@ -65,6 +66,10 @@ export default function BookingsPage() {
     }
   }
 
+  const getStatusText = (status: BookingStatus) => {
+    return t(`bookings.status.${status}`, status.charAt(0).toUpperCase() + status.slice(1))
+  }
+
   const handleEditBooking = (booking: Booking) => {
     setEditingBooking(booking)
     setEditForm({
@@ -87,7 +92,7 @@ export default function BookingsPage() {
       await fetchBookings()
     } catch (err) {
       console.error('Error updating booking:', err)
-      alert('Failed to update booking')
+      alert(t('bookings.updateError', 'Failed to update booking'))
     }
   }
 
@@ -103,7 +108,7 @@ export default function BookingsPage() {
       await fetchBookings()
     } catch (err) {
       console.error('Error cancelling booking:', err)
-      alert('Failed to cancel booking')
+      alert(t('bookings.cancelError', 'Failed to cancel booking'))
     } finally {
       setCancellingBooking(null)
     }
@@ -116,8 +121,8 @@ export default function BookingsPage() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
-              <p className="text-gray-600">View and manage your service bookings</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('bookings.title')}</h1>
+              <p className="text-gray-600">{t('bookings.subtitle')}</p>
             </div>
 
             {/* Bookings List */}
@@ -126,24 +131,24 @@ export default function BookingsPage() {
                 <Card>
                   <CardContent className="text-center py-8">
                     <Loader2 className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
-                    <p className="text-gray-600">Loading your bookings...</p>
+                    <p className="text-gray-600">{t('bookings.loadingBookings')}</p>
                   </CardContent>
                 </Card>
               ) : error ? (
                 <Card>
                   <CardContent className="text-center py-8">
                     <p className="text-red-600 mb-4">{error}</p>
-                    <Button onClick={fetchBookings}>Try Again</Button>
+                    <Button onClick={fetchBookings}>{t('bookings.tryAgain')}</Button>
                   </CardContent>
                 </Card>
               ) : bookings.length === 0 ? (
                 <Card>
                   <CardContent className="text-center py-8">
                     <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings yet</h3>
-                    <p className="text-gray-600 mb-4">Start by booking a service for your pet</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t('bookings.noBookings')}</h3>
+                    <p className="text-gray-600 mb-4">{t('bookings.noBookingsDesc')}</p>
                     <Button onClick={() => window.location.href = '/'}>
-                      Find Services
+                      {t('bookings.findServices')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -158,14 +163,14 @@ export default function BookingsPage() {
                               {booking.service?.name || `Service ${booking.serviceId}`}
                             </h3>
                             <Badge className={getStatusColor(booking.status)}>
-                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              {getStatusText(booking.status)}
                             </Badge>
                           </div>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2 text-gray-600">
                               <User className="h-4 w-4" />
-                              <span>{booking.provider?.businessName || `Provider ${booking.providerId}`}</span>
+                              <span>{booking.provider?.businessName || `${t('bookings.provider')} ${booking.providerId}`}</span>
                             </div>
                             <div className="flex items-center space-x-2 text-gray-600">
                               <Calendar className="h-4 w-4" />
@@ -183,7 +188,7 @@ export default function BookingsPage() {
                           {booking.pet && (
                             <div className="mt-2">
                               <p className="text-sm text-gray-600">
-                                Pet: {booking.pet.name} ({booking.pet.species})
+                                {t('bookings.pet')}: {booking.pet.name} ({booking.pet.species})
                               </p>
                             </div>
                           )}
@@ -191,7 +196,7 @@ export default function BookingsPage() {
                           {booking.notes && (
                             <div className="mt-2">
                               <p className="text-sm text-gray-600">
-                                Notes: {booking.notes}
+                                {t('bookings.notes')}: {booking.notes}
                               </p>
                             </div>
                           )}
@@ -203,8 +208,8 @@ export default function BookingsPage() {
                             size="sm"
                             onClick={() => handleEditBooking(booking)}
                           >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
+                            <Edit className='h-4 w-4 mr-1' />
+                            {t('bookings.edit')}
                           </Button>
                           {(booking.status === 'pending' || booking.status === 'confirmed') && (
                             <Button 
@@ -217,9 +222,9 @@ export default function BookingsPage() {
                               {cancellingBooking === booking.id ? (
                                 <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                               ) : (
-                                <X className="h-4 w-4 mr-1" />
+                                <X className='h-4 w-4 mr-1' />
                               )}
-                              Cancel
+                              {t('bookings.cancel')}
                             </Button>
                           )}
                         </div>
@@ -236,14 +241,14 @@ export default function BookingsPage() {
         <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Booking</DialogTitle>
+              <DialogTitle>{t('bookings.editBooking')}</DialogTitle>
               <DialogDescription>
-                Update your booking details
+                {t('bookings.editBookingDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="editDate">Date</Label>
+                <Label htmlFor="editDate">{t('bookings.editDate')}</Label>
                 <Input
                   id="editDate"
                   type="date"
@@ -252,7 +257,7 @@ export default function BookingsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="editTime">Time</Label>
+                <Label htmlFor="editTime">{t('bookings.editTime')}</Label>
                 <Input
                   id="editTime"
                   type="time"
@@ -261,20 +266,20 @@ export default function BookingsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="editNotes">Notes</Label>
+                <Label htmlFor="editNotes">{t('bookings.editNotes')}</Label>
                 <Textarea
                   id="editNotes"
                   value={editForm.notes}
                   onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="Any special instructions..."
+                  placeholder={t('bookings.editNotesPlaceholder')}
                 />
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setEditingBooking(null)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSaveEdit}>
-                  Save Changes
+                  {t('bookings.saveChanges')}
                 </Button>
               </div>
             </div>

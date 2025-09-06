@@ -6,6 +6,7 @@ import { Layout } from '@/components/layout'
 import { SearchLayout } from '@/components/search-layout'
 import { ServiceCategory, SearchFilters, SearchResult } from '@/types'
 import { providerApi } from '@/lib/providers'
+import { t } from '@/lib/translations'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -48,7 +49,7 @@ function SearchPageContent() {
         setResults(searchResults)
       } catch (err) {
         console.error('Error fetching providers:', err)
-        setError('Failed to load providers. Please try again.')
+        setError(t('search.errorLoadingProviders'))
         setResults([])
       } finally {
         setLoading(false)
@@ -77,7 +78,7 @@ function SearchPageContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>{t('common.loading')}</div>}>
       <SearchPageContent />
     </Suspense>
   )

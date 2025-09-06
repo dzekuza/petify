@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Star, MapPin, Clock, Heart, Users, Award, Phone, MessageCircle } from 'lucide-react'
 import { ServiceProvider, Service } from '@/types'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/translations'
 
 interface ProviderCardProps {
   provider: ServiceProvider
@@ -65,11 +66,11 @@ export const ProviderCard = ({
     )
     
     if (!hasAnyAvailability) {
-      return { status: 'unavailable', text: 'Availability not set' }
+      return { status: 'unavailable', text: t('search.notSet') }
     }
     
     if (todaySlots.length === 0) {
-      return { status: 'closed', text: 'Closed today' }
+      return { status: 'closed', text: t('search.closed') }
     }
     
     const currentTime = now.toTimeString().slice(0, 5)
@@ -78,8 +79,8 @@ export const ProviderCard = ({
     )
     
     return isAvailable 
-      ? { status: 'open', text: 'Open now' }
-      : { status: 'closed', text: 'Closed now' }
+      ? { status: 'open', text: t('search.open') }
+      : { status: 'closed', text: t('search.closed') }
   }
 
   const availability = getAvailabilityStatus()
@@ -110,14 +111,14 @@ export const ProviderCard = ({
               availability.status === 'unavailable' ? 'text-orange-700' : 
               'text-gray-900'
             }`}>
-              {availability.status === 'open' ? 'Open' : 
-               availability.status === 'unavailable' ? 'Not Set' : 
-               'Closed'}
+              {availability.status === 'open' ? t('search.open') : 
+               availability.status === 'unavailable' ? t('search.notSet') : 
+               t('search.closed')}
             </Badge>
             {provider.certifications && provider.certifications.length > 0 && (
               <Badge variant="secondary" className="bg-green-100 text-green-800">
                 <Award className="h-3 w-3 mr-1" />
-                Certified
+                {t('search.certified')}
               </Badge>
             )}
           </div>
@@ -126,7 +127,7 @@ export const ProviderCard = ({
           <button
             onClick={handleToggleFavorite}
             className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
           >
             <Heart 
               className={cn(
@@ -162,7 +163,7 @@ export const ProviderCard = ({
                     </span>
                   </div>
                   <span className="text-sm text-gray-500">
-                    ({provider.reviewCount} reviews)
+                    ({provider.reviewCount} {t('search.reviews')})
                   </span>
                 </div>
               </div>
@@ -183,7 +184,7 @@ export const ProviderCard = ({
             ))}
             {provider.services.length > 3 && (
               <Badge variant="outline" className="text-xs">
-                +{provider.services.length - 3} more
+                +{provider.services.length - 3} {t('search.more')}
               </Badge>
             )}
           </div>
@@ -197,7 +198,7 @@ export const ProviderCard = ({
             {distance && (
               <div className="flex items-center">
                 <Clock className="h-4 w-4 mr-1" />
-                {distance} km away
+                {distance} km {t('search.away')}
               </div>
             )}
           </div>
@@ -206,7 +207,7 @@ export const ProviderCard = ({
           <div className="flex items-center justify-between mb-4 text-sm">
             <div className="flex items-center text-gray-600">
               <Users className="h-4 w-4 mr-1" />
-              {provider.experience} years experience
+              {provider.experience} {t('search.yearsExperience')}
             </div>
             <div className={cn(
               "flex items-center text-sm",
@@ -226,7 +227,7 @@ export const ProviderCard = ({
               <span className="font-medium text-lg text-gray-900">
                 €{provider.priceRange.min}-€{provider.priceRange.max}
               </span>
-              <span className="ml-1">per service</span>
+              <span className="ml-1">{t('search.perService')}</span>
             </div>
           </div>
 
@@ -235,12 +236,12 @@ export const ProviderCard = ({
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" className="flex-1" asChild>
                 <Link href={`/providers/${provider.id}`}>
-                  View Profile
+                  {t('search.viewProfile')}
                 </Link>
               </Button>
               <Button size="sm" className="flex-1" asChild>
                 <Link href={`/providers/${provider.id}/book`}>
-                  Book Now
+                  {t('search.bookNow')}
                 </Link>
               </Button>
             </div>
@@ -251,11 +252,11 @@ export const ProviderCard = ({
             <div className="flex space-x-2">
               <Button variant="ghost" size="sm" className="flex-1">
                 <Phone className="h-4 w-4 mr-2" />
-                Call
+                {t('search.call')}
               </Button>
               <Button variant="ghost" size="sm" className="flex-1">
                 <MessageCircle className="h-4 w-4 mr-2" />
-                Message
+                {t('search.message')}
               </Button>
             </div>
           </div>

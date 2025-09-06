@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
+import { t } from '@/lib/translations'
 import { User, Mail, Calendar, Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -140,8 +141,8 @@ export default function ProfilePage() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-              <p className="text-gray-600">Manage your account settings and preferences</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h1>
+              <p className="text-gray-600">{t('profile.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -149,9 +150,9 @@ export default function ProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
+                    <CardTitle>{t('profile.personalInformation')}</CardTitle>
                     <CardDescription>
-                      Your basic account information
+                      {t('profile.personalInformationDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -177,14 +178,14 @@ export default function ProfilePage() {
                       <div className="flex items-center space-x-3">
                         <Mail className="h-5 w-5 text-gray-400" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Email</p>
+                          <p className="text-sm font-medium text-gray-900">{t('profile.email')}</p>
                           <p className="text-sm text-gray-600">{user.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
                         <Calendar className="h-5 w-5 text-gray-400" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Member Since</p>
+                          <p className="text-sm font-medium text-gray-900">{t('profile.memberSince')}</p>
                           <p className="text-sm text-gray-600">
                             {new Date(user.created_at).toLocaleDateString()}
                           </p>
@@ -193,7 +194,7 @@ export default function ProfilePage() {
                       <div className="flex items-center space-x-3">
                         <Shield className="h-5 w-5 text-gray-400" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Account Type</p>
+                          <p className="text-sm font-medium text-gray-900">{t('profile.accountType')}</p>
                           <p className="text-sm text-gray-600 capitalize">
                             {user.user_metadata?.role || 'customer'}
                           </p>
@@ -202,7 +203,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="pt-4">
-                      <Button onClick={handleEditProfile}>Edit Profile</Button>
+                      <Button onClick={handleEditProfile}>{t('profile.editProfile')}</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -210,32 +211,32 @@ export default function ProfilePage() {
                 {/* Account Settings */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Account Settings</CardTitle>
+                    <CardTitle>{t('profile.accountSettings')}</CardTitle>
                     <CardDescription>
-                      Manage your account preferences
+                      {t('profile.accountSettingsDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Email Notifications</p>
-                        <p className="text-sm text-gray-600">Receive updates about bookings and services</p>
+                        <p className="font-medium text-gray-900">{t('profile.emailNotifications')}</p>
+                        <p className="text-sm text-gray-600">{t('profile.emailNotificationsDesc')}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={handleConfigureNotifications}>Configure</Button>
+                      <Button variant="outline" size="sm" onClick={handleConfigureNotifications}>{t('profile.configure')}</Button>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Privacy Settings</p>
-                        <p className="text-sm text-gray-600">Control who can see your information</p>
+                        <p className="font-medium text-gray-900">{t('profile.privacySettings')}</p>
+                        <p className="text-sm text-gray-600">{t('profile.privacySettingsDesc')}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={handleManagePrivacy}>Manage</Button>
+                      <Button variant="outline" size="sm" onClick={handleManagePrivacy}>{t('profile.manage')}</Button>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">Change Password</p>
-                        <p className="text-sm text-gray-600">Update your account password</p>
+                        <p className="font-medium text-gray-900">{t('profile.changePassword')}</p>
+                        <p className="text-sm text-gray-600">{t('profile.changePasswordDesc')}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={handleChangePassword}>Change</Button>
+                      <Button variant="outline" size="sm" onClick={handleChangePassword}>{t('profile.change')}</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -246,22 +247,22 @@ export default function ProfilePage() {
                 {/* Quick Actions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
+                    <CardTitle>{t('profile.quickActions')}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <Button variant="outline" className="w-full justify-start" onClick={handleMyBookings}>
-                      My Bookings
+                      {t('profile.myBookings')}
                     </Button>
                     <Button variant="outline" className="w-full justify-start" onClick={handleFavorites}>
-                      Favorites
+                      {t('profile.favorites')}
                     </Button>
                     {user.user_metadata?.role === 'provider' && (
                       <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/dashboard')}>
-                        Provider Dashboard
+                        {t('profile.providerDashboard')}
                       </Button>
                     )}
                     <Button variant="outline" className="w-full justify-start" onClick={handleHelpSupport}>
-                      Help & Support
+                      {t('profile.helpSupport')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -269,19 +270,19 @@ export default function ProfilePage() {
                 {/* Account Status */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Account Status</CardTitle>
+                    <CardTitle>{t('profile.accountStatus')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Email Verified</span>
+                        <span className="text-sm text-gray-600">{t('profile.emailVerified')}</span>
                         <Badge variant={user.email_confirmed_at ? "default" : "secondary"}>
-                          {user.email_confirmed_at ? "Verified" : "Pending"}
+                          {user.email_confirmed_at ? t('profile.verified') : t('profile.pending')}
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Account Status</span>
-                        <Badge variant="default">Active</Badge>
+                        <span className="text-sm text-gray-600">{t('profile.accountStatus')}</span>
+                        <Badge variant="default">{t('profile.active')}</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -295,14 +296,14 @@ export default function ProfilePage() {
         <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Profile</DialogTitle>
+              <DialogTitle>{t('profile.editProfileTitle')}</DialogTitle>
               <DialogDescription>
-                Update your personal information
+                {t('profile.editProfileDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName">{t('profile.fullName')}</Label>
                 <Input
                   id="fullName"
                   value={editForm.fullName}
@@ -310,7 +311,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('profile.email')}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -320,10 +321,10 @@ export default function ProfilePage() {
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSaveProfile}>
-                  Save Changes
+                  {t('profile.saveChanges')}
                 </Button>
               </div>
             </div>
@@ -334,16 +335,16 @@ export default function ProfilePage() {
         <Dialog open={notificationsOpen} onOpenChange={setNotificationsOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Email Notifications</DialogTitle>
+              <DialogTitle>{t('profile.emailNotificationsTitle')}</DialogTitle>
               <DialogDescription>
-                Configure your notification preferences
+                {t('profile.emailNotificationsDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Booking Updates</p>
-                  <p className="text-sm text-gray-600">Get notified about booking confirmations and changes</p>
+                  <p className="font-medium">{t('profile.bookingUpdates')}</p>
+                  <p className="text-sm text-gray-600">{t('profile.bookingUpdatesDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -354,8 +355,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Service Updates</p>
-                  <p className="text-sm text-gray-600">Receive updates about new services and providers</p>
+                  <p className="font-medium">{t('profile.serviceUpdates')}</p>
+                  <p className="text-sm text-gray-600">{t('profile.serviceUpdatesDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -366,8 +367,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Marketing</p>
-                  <p className="text-sm text-gray-600">Receive promotional emails and special offers</p>
+                  <p className="font-medium">{t('profile.marketing')}</p>
+                  <p className="text-sm text-gray-600">{t('profile.marketingDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -378,10 +379,10 @@ export default function ProfilePage() {
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setNotificationsOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSaveNotifications}>
-                  Save Settings
+                  {t('profile.saveSettings')}
                 </Button>
               </div>
             </div>
@@ -392,29 +393,29 @@ export default function ProfilePage() {
         <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Privacy Settings</DialogTitle>
+              <DialogTitle>{t('profile.privacySettingsTitle')}</DialogTitle>
               <DialogDescription>
-                Control who can see your information
+                {t('profile.privacySettingsDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="profileVisibility">Profile Visibility</Label>
+                <Label htmlFor="profileVisibility">{t('profile.profileVisibility')}</Label>
                 <select
                   id="profileVisibility"
                   value={privacy.profileVisibility}
                   onChange={(e) => setPrivacy(prev => ({ ...prev, profileVisibility: e.target.value }))}
                   className="w-full p-2 border rounded-md"
                 >
-                  <option value="public">Public</option>
-                  <option value="private">Private</option>
-                  <option value="friends">Friends Only</option>
+                  <option value="public">{t('profile.public')}</option>
+                  <option value="private">{t('profile.private')}</option>
+                  <option value="friends">{t('profile.friendsOnly')}</option>
                 </select>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Show Email</p>
-                  <p className="text-sm text-gray-600">Allow others to see your email address</p>
+                  <p className="font-medium">{t('profile.showEmail')}</p>
+                  <p className="text-sm text-gray-600">{t('profile.showEmailDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -425,8 +426,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Show Phone</p>
-                  <p className="text-sm text-gray-600">Allow others to see your phone number</p>
+                  <p className="font-medium">{t('profile.showPhone')}</p>
+                  <p className="text-sm text-gray-600">{t('profile.showPhoneDesc')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -437,10 +438,10 @@ export default function ProfilePage() {
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setPrivacyOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSavePrivacy}>
-                  Save Settings
+                  {t('profile.saveSettings')}
                 </Button>
               </div>
             </div>
@@ -451,14 +452,14 @@ export default function ProfilePage() {
         <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Change Password</DialogTitle>
+              <DialogTitle>{t('profile.changePasswordTitle')}</DialogTitle>
               <DialogDescription>
-                Update your account password
+                {t('profile.changePasswordDesc')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="newPassword">New Password</Label>
+                <Label htmlFor="newPassword">{t('profile.newPassword')}</Label>
                 <div className="relative">
                   <Input
                     id="newPassword"
@@ -476,7 +477,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Label htmlFor="confirmPassword">{t('profile.confirmNewPassword')}</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -495,10 +496,10 @@ export default function ProfilePage() {
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setChangePasswordOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSavePassword}>
-                  Change Password
+                  {t('profile.changePasswordButton')}
                 </Button>
               </div>
             </div>

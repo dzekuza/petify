@@ -11,65 +11,65 @@ import {
   PawPrint
 } from 'lucide-react'
 import { ServiceCategory } from '@/types'
-
-const categories = [
-  {
-    id: 'grooming' as ServiceCategory,
-    name: 'Gyvūnų šukavimas',
-    description: 'Profesionalūs šukavimo paslaugos jūsų kailuotų draugų',
-    icon: Scissors,
-    color: 'bg-pink-100 text-pink-600',
-    href: '/search?category=grooming',
-    popular: true,
-  },
-  {
-    id: 'veterinary' as ServiceCategory,
-    name: 'Veterinarijos paslaugos',
-    description: 'Ekspertinė medicinos priežiūra ir sveikatos patikrinimai',
-    icon: Stethoscope,
-    color: 'bg-red-100 text-red-600',
-    href: '/search?category=veterinary',
-    popular: true,
-  },
-  {
-    id: 'boarding' as ServiceCategory,
-    name: 'Gyvūnų prieglauda',
-    description: 'Saugūs ir patogūs nakvynės',
-    icon: Home,
-    color: 'bg-green-100 text-green-600',
-    href: '/search?category=boarding',
-    popular: false,
-  },
-  {
-    id: 'training' as ServiceCategory,
-    name: 'Gyvūnų treniruotės',
-    description: 'Profesionalūs treniruotės ir elgesio modifikavimas',
-    icon: GraduationCap,
-    color: 'bg-blue-100 text-blue-600',
-    href: '/search?category=training',
-    popular: true,
-  },
-  {
-    id: 'walking' as ServiceCategory,
-    name: 'Šunų vedimas',
-    description: 'Kasdienės mankštos ir lauko nuotykiai',
-    icon: Footprints,
-    color: 'bg-yellow-100 text-yellow-600',
-    href: '/search?category=walking',
-    popular: false,
-  },
-  {
-    id: 'sitting' as ServiceCategory,
-    name: 'Gyvūnų prižiūrėjimas',
-    description: 'Prižiūrėjimas namuose, kol jūsų nėra',
-    icon: Heart,
-    color: 'bg-purple-100 text-purple-600',
-    href: '/search?category=sitting',
-    popular: false,
-  },
-]
+import { t } from '@/lib/translations'
 
 export const ServiceCategories = () => {
+  const categories = [
+    {
+      id: 'grooming' as ServiceCategory,
+      name: t('landing.serviceCategories.grooming.name'),
+      description: t('landing.serviceCategories.grooming.description'),
+      icon: Scissors,
+      color: 'bg-pink-100 text-pink-600',
+      href: '/search?category=grooming',
+      popular: true,
+    },
+    {
+      id: 'veterinary' as ServiceCategory,
+      name: t('landing.serviceCategories.veterinary.name'),
+      description: t('landing.serviceCategories.veterinary.description'),
+      icon: Stethoscope,
+      color: 'bg-red-100 text-red-600',
+      href: '/search?category=veterinary',
+      popular: true,
+    },
+    {
+      id: 'boarding' as ServiceCategory,
+      name: t('landing.serviceCategories.boarding.name'),
+      description: t('landing.serviceCategories.boarding.description'),
+      icon: Home,
+      color: 'bg-green-100 text-green-600',
+      href: '/search?category=boarding',
+      popular: false,
+    },
+    {
+      id: 'training' as ServiceCategory,
+      name: t('landing.serviceCategories.training.name'),
+      description: t('landing.serviceCategories.training.description'),
+      icon: GraduationCap,
+      color: 'bg-blue-100 text-blue-600',
+      href: '/search?category=training',
+      popular: true,
+    },
+    {
+      id: 'walking' as ServiceCategory,
+      name: t('landing.serviceCategories.walking.name'),
+      description: t('landing.serviceCategories.walking.description'),
+      icon: Footprints,
+      color: 'bg-yellow-100 text-yellow-600',
+      href: '/search?category=walking',
+      popular: false,
+    },
+    {
+      id: 'sitting' as ServiceCategory,
+      name: t('landing.serviceCategories.sitting.name'),
+      description: t('landing.serviceCategories.sitting.description'),
+      icon: Heart,
+      color: 'bg-purple-100 text-purple-600',
+      href: '/search?category=sitting',
+      popular: false,
+    },
+  ]
   return (
     <section className="py-16 bg-white">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">

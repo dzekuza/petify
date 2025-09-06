@@ -27,6 +27,7 @@ import {
 import { ServiceProvider, Service, Review } from '@/types'
 import { providerApi } from '@/lib/providers'
 import { supabase } from '@/lib/supabase'
+import { t } from '@/lib/translations'
 
 
 export default function ProviderDetailPage() {
@@ -198,8 +199,8 @@ export default function ProviderDetailPage() {
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Provider not found</h1>
-              <p className="text-gray-600">The provider you're looking for doesn't exist.</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('provider.notFound')}</h1>
+              <p className="text-gray-600">{t('provider.notFoundDescription')}</p>
             </div>
           </div>
         </div>
@@ -225,7 +226,7 @@ export default function ProviderDetailPage() {
                       {provider.rating}
                     </span>
                     <span className="text-gray-500 ml-1">
-                      ({provider.reviewCount} reviews)
+                      ({provider.reviewCount} {t('search.reviews')})
                     </span>
                   </div>
                   <div className="flex items-center text-gray-500">
@@ -241,11 +242,11 @@ export default function ProviderDetailPage() {
                   onClick={() => setIsFavorite(!isFavorite)}
                 >
                   <Heart className={`h-4 w-4 mr-2 ${isFavorite ? 'text-red-500 fill-current' : ''}`} />
-                  {isFavorite ? 'Saved' : 'Save'}
+                  {isFavorite ? t('provider.saved') : t('provider.save')}
                 </Button>
                 <Button variant="outline" size="sm">
                   <Share2 className="h-4 w-4 mr-2" />
-                  Share
+                  {t('provider.share')}
                 </Button>
               </div>
             </div>
@@ -283,7 +284,7 @@ export default function ProviderDetailPage() {
               {/* About */}
               <Card>
                 <CardHeader>
-                  <CardTitle>About {provider.businessName}</CardTitle>
+                  <CardTitle>{t('provider.about')} {provider.businessName}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">{provider.description}</p>
@@ -292,22 +293,22 @@ export default function ProviderDetailPage() {
                     <div className="flex items-center space-x-3">
                       <Users className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Experience</p>
-                        <p className="text-sm text-gray-600">{provider.experience} years</p>
+                        <p className="text-sm font-medium text-gray-900">{t('provider.experience')}</p>
+                        <p className="text-sm text-gray-600">{provider.experience} {t('provider.years')}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Shield className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Certifications</p>
-                        <p className="text-sm text-gray-600">{provider.certifications?.length || 0} certified</p>
+                        <p className="text-sm font-medium text-gray-900">{t('provider.certifications')}</p>
+                        <p className="text-sm text-gray-600">{provider.certifications?.length || 0} {t('provider.certified')}</p>
                       </div>
                     </div>
                   </div>
 
                   {provider.certifications && provider.certifications.length > 0 && (
                     <div className="mt-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Certifications</h4>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">{t('provider.certifications')}</h4>
                       <div className="flex flex-wrap gap-2">
                         {provider.certifications.map((cert, index) => (
                           <Badge key={index} variant="secondary" className="flex items-center">
@@ -324,7 +325,7 @@ export default function ProviderDetailPage() {
               {/* Services */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Services & Pricing</CardTitle>
+                  <CardTitle>{t('provider.servicesAndPricing')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -337,16 +338,16 @@ export default function ProviderDetailPage() {
                             <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                               <span className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
-                                {service.duration} min
+                                {service.duration} {t('provider.min')}
                               </span>
                               <span className="flex items-center">
                                 <Users className="h-4 w-4 mr-1" />
-                                Up to {service.maxPets} pet{service.maxPets > 1 ? 's' : ''}
+                                {t('provider.upTo')} {service.maxPets} {service.maxPets > 1 ? t('provider.pets') : t('provider.pet')}
                               </span>
                             </div>
                             {service.includes && service.includes.length > 0 && (
                               <div className="mt-2">
-                                <p className="text-xs font-medium text-gray-700 mb-1">Includes:</p>
+                                <p className="text-xs font-medium text-gray-700 mb-1">{t('provider.includes')}</p>
                                 <div className="flex flex-wrap gap-1">
                                   {service.includes.map((item, index) => (
                                     <Badge key={index} variant="outline" className="text-xs">
@@ -363,7 +364,7 @@ export default function ProviderDetailPage() {
                             </div>
                             <Button size="sm" className="mt-2" asChild>
                               <Link href={`/providers/${params.id}/book`}>
-                                Book Now
+                                {t('search.bookNow')}
                               </Link>
                             </Button>
                           </div>
@@ -377,7 +378,7 @@ export default function ProviderDetailPage() {
               {/* Reviews */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Reviews ({provider.reviewCount})</CardTitle>
+                  <CardTitle>{t('provider.reviews')} ({provider.reviewCount})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -411,35 +412,49 @@ export default function ProviderDetailPage() {
               {/* Contact Card */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Contact & Booking</CardTitle>
+                  <CardTitle>{t('provider.contactAndBooking')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">
                       €{provider.priceRange.min}-€{provider.priceRange.max}
                     </div>
-                    <div className="text-sm text-gray-600">per service</div>
+                    <div className="text-sm text-gray-600">{t('search.perService')}</div>
                   </div>
 
                   <div className="space-y-2">
                     <Button className="w-full" asChild>
                       <Link href={`/providers/${params.id}/book`}>
                         <Calendar className="h-4 w-4 mr-2" />
-                        Book Now
+                        {t('search.bookNow')}
                       </Link>
                     </Button>
                     <Button variant="outline" className="w-full">
                       <MessageCircle className="h-4 w-4 mr-2" />
-                      Message
+                      {t('search.message')}
                     </Button>
                     <Button variant="outline" className="w-full">
                       <Phone className="h-4 w-4 mr-2" />
-                      Call
+                      {t('search.call')}
                     </Button>
                   </div>
 
                   <div className="pt-4 border-t border-gray-100">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Working Hours</h4>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-medium text-gray-900">{t('provider.workingHours')}</h4>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          // Navigate to booking page where customers can see full availability
+                          window.location.href = `/providers/${params.id}/book`
+                        }}
+                        className="text-xs"
+                      >
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Book Now
+                      </Button>
+                    </div>
                     <div className="space-y-1 text-sm">
                       {Object.entries(provider.availability)
                         .filter(([day]) => {
@@ -448,38 +463,59 @@ export default function ProviderDetailPage() {
                           return fullDayNames.includes(day.toLowerCase())
                         })
                         .map(([day, slots]) => {
-                        const hasAvailability = Array.isArray(slots) && slots.length > 0
+                        // Handle different availability data structures
+                        let hasAvailability = false
+                        let startTime = ''
+                        let endTime = ''
                         
-                        if (!hasAvailability) {
-                          return (
-                            <div key={day} className="flex justify-between">
-                              <span className="capitalize">{day}</span>
-                              <span className="text-gray-600">Closed</span>
-                            </div>
-                          )
+                        if (Array.isArray(slots) && slots.length > 0) {
+                          // Check if slots have available property (time slot format)
+                          if (slots[0] && typeof slots[0] === 'object' && 'available' in slots[0]) {
+                            const availableSlots = slots.filter((slot: any) => slot.available)
+                            hasAvailability = availableSlots.length > 0
+                            if (hasAvailability) {
+                              startTime = availableSlots[0].start
+                              endTime = availableSlots[availableSlots.length - 1].end
+                            }
+                          } else if (slots[0] && typeof slots[0] === 'object' && 'start' in slots[0]) {
+                            // Direct time slot format without available property
+                            hasAvailability = true
+                            startTime = (slots[0] as any).start
+                            endTime = (slots[slots.length - 1] as any).end
+                          } else if (typeof slots[0] === 'string') {
+                            // Simple string format
+                            hasAvailability = true
+                            startTime = slots[0] as string
+                            endTime = slots[slots.length - 1] as unknown as string
+                          }
+                        } else if (typeof slots === 'object' && slots !== null && 'start' in slots) {
+                          // Single time range object
+                          hasAvailability = true
+                          startTime = (slots as any).start
+                          endTime = (slots as any).end
+                        } else if (typeof slots === 'boolean') {
+                          // Simple boolean availability
+                          hasAvailability = slots
+                          if (hasAvailability) {
+                            startTime = '9:00'
+                            endTime = '17:00'
+                          }
                         }
-                        
-                        // Get working hours from first and last available slots
-                        const availableSlots = slots.filter(slot => slot.available)
-                        if (availableSlots.length === 0) {
-                          return (
-                            <div key={day} className="flex justify-between">
-                              <span className="capitalize">{day}</span>
-                              <span className="text-gray-600">Closed</span>
-                            </div>
-                          )
-                        }
-                        
-                        const startTime = availableSlots[0].start
-                        const endTime = availableSlots[availableSlots.length - 1].end
                         
                         return (
                           <div key={day} className="flex justify-between">
                             <span className="capitalize">{day}</span>
-                            <span className="text-gray-600">{startTime} - {endTime}</span>
+                            <span className="text-gray-600">
+                              {hasAvailability ? `${startTime} - ${endTime}` : t('provider.closed')}
+                            </span>
                           </div>
                         )
                       })}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 text-center">
+                        Click "Book Now" to see detailed availability and make a booking
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -488,7 +524,7 @@ export default function ProviderDetailPage() {
               {/* Location */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Location</CardTitle>
+                  <CardTitle>{t('provider.location')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -502,7 +538,7 @@ export default function ProviderDetailPage() {
                       </div>
                     </div>
                     <Button variant="outline" size="sm" className="w-full mt-3">
-                      Get Directions
+                      {t('provider.getDirections')}
                     </Button>
                   </div>
                 </CardContent>

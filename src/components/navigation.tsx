@@ -16,16 +16,12 @@ import {
 import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
+import { t } from '@/lib/translations'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import AddressAutocomplete from '@/components/address-autocomplete'
-
-const navigation = [
-  { name: 'Rasti paslaugas', href: '/search' },
-  { name: 'Kaip tai veikia', href: '/how-it-works' },
-]
 
 const serviceTypes = [
   { value: 'grooming', label: 'Gyvūnų šukavimo specialistas' },
@@ -37,6 +33,10 @@ const serviceTypes = [
 ]
 
 export const Navigation = () => {
+  const navigation = [
+    { name: t('navigation.findServices'), href: '/search' },
+    { name: t('navigation.howItWorks'), href: '/how-it-works' },
+  ]
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [providerSignupOpen, setProviderSignupOpen] = useState(false)
   const [customerMenuOpen, setCustomerMenuOpen] = useState(false)
@@ -72,13 +72,13 @@ export const Navigation = () => {
 
     // Validation
     if (providerForm.password !== providerForm.confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('auth.signup.passwordsDoNotMatch'))
       setLoading(false)
       return
     }
 
     if (providerForm.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t('auth.signup.passwordTooShort'))
       setLoading(false)
       return
     }
@@ -109,7 +109,7 @@ export const Navigation = () => {
         window.location.href = '/provider/dashboard'
       }
     } catch {
-      setError('Įvyko klaida. Bandykite dar kartą.')
+      setError(t('common.error'))
     } finally {
       setLoading(false)
     }
@@ -153,7 +153,7 @@ export const Navigation = () => {
                   <Button variant="ghost" size="sm" asChild>
                     <Link href="/favorites">
                       <Heart className="h-4 w-4 mr-2" />
-                      Mėgstami
+                      {t('navigation.favorites')}
                     </Link>
                   </Button>
                 )}
@@ -181,7 +181,7 @@ export const Navigation = () => {
                         </p>
                         {user.user_metadata?.role === 'provider' && (
                           <Badge variant="secondary" className="w-fit text-xs">
-                            Paslaugų teikėjas
+                            {t('navigation.serviceProvider')}
                           </Badge>
                         )}
                       </div>
@@ -190,7 +190,7 @@ export const Navigation = () => {
                     <DropdownMenuItem asChild>
                       <Link href="/profile">
                         <User className="mr-2 h-4 w-4" />
-                        <span>Profilis</span>
+                        <span>{t('navigation.profile')}</span>
                       </Link>
                     </DropdownMenuItem>
                     
@@ -200,18 +200,18 @@ export const Navigation = () => {
                         <DropdownMenuItem asChild>
                           <Link href="/pets">
                             <Dog className="mr-2 h-4 w-4" />
-                            <span>Mano gyvūnai</span>
+                            <span>{t('navigation.myPets')}</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/bookings">
-                            <span>Mano užsakymai</span>
+                            <span>{t('navigation.myBookings')}</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/favorites">
                             <Heart className="mr-2 h-4 w-4" />
-                            <span>Mėgstami</span>
+                            <span>{t('navigation.favorites')}</span>
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -223,19 +223,19 @@ export const Navigation = () => {
                         <DropdownMenuItem asChild>
                           <Link href="/provider/dashboard">
                             <Settings className="mr-2 h-4 w-4" />
-                            <span>Paslaugų teikėjo valdymas</span>
+                            <span>{t('navigation.providerManagement')}</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/bookings">
                             <Calendar className="mr-2 h-4 w-4" />
-                            <span>Valdyti užsakymus</span>
+                            <span>{t('navigation.manageBookings')}</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/services">
                             <Star className="mr-2 h-4 w-4" />
-                            <span>Mano paslaugos</span>
+                            <span>{t('navigation.myServices')}</span>
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -244,7 +244,7 @@ export const Navigation = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Atsijungti</span>
+                      <span>{t('navigation.signOut')}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -256,7 +256,7 @@ export const Navigation = () => {
                   variant="outline" 
                   onClick={() => setProviderSignupOpen(true)}
                 >
-                  Prisijungti kaip paslaugų teikėjas
+                  {t('navigation.joinAsProvider')}
                 </Button>
                 
                 {/* Customer Menu */}
@@ -272,24 +272,24 @@ export const Navigation = () => {
                         <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
                           <span className="text-blue-600 text-sm">?</span>
                         </div>
-                        <span>Help Center</span>
+                        <span>{t('navigation.helpCenter')}</span>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/auth/signin">
-                        <span>Log in or sign up</span>
+                        <span>{t('navigation.logInOrSignUp')}</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/how-it-works">
-                        <span>How it works</span>
+                        <span>{t('navigation.howItWorksNav')}</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/help">
-                        <span>Help Center</span>
+                        <span>{t('navigation.helpCenterNav')}</span>
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -305,7 +305,7 @@ export const Navigation = () => {
               size="sm"
               onClick={handleMobileMenuToggle}
               aria-expanded={mobileMenuOpen}
-              aria-label="Toggle mobile menu"
+              aria-label={t('navigation.toggleMobileMenu')}
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -356,7 +356,7 @@ export const Navigation = () => {
                     className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Profile
+                    {t('navigation.profileMobile')}
                   </Link>
                   
                   {/* Customer-specific mobile menu items */}
@@ -367,21 +367,21 @@ export const Navigation = () => {
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        My Pets
+                        {t('navigation.myPetsMobile')}
                       </Link>
                       <Link
                         href="/bookings"
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        My Bookings
+                        {t('navigation.myBookingsMobile')}
                       </Link>
                       <Link
                         href="/favorites"
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Favorites
+                        {t('navigation.favoritesMobile')}
                       </Link>
                     </>
                   )}
@@ -394,21 +394,21 @@ export const Navigation = () => {
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Provider Dashboard
+                        {t('navigation.providerDashboardMobile')}
                       </Link>
                       <Link
                         href="/provider/bookings"
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Manage Bookings
+                        {t('navigation.manageBookingsMobile')}
                       </Link>
                       <Link
                         href="/provider/services"
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        My Services
+                        {t('navigation.myServicesMobile')}
                       </Link>
                     </>
                   )}
@@ -420,7 +420,7 @@ export const Navigation = () => {
                       setMobileMenuOpen(false)
                     }}
                   >
-                    Log out
+                    {t('navigation.logOut')}
                   </button>
                 </div>
               </div>
@@ -432,14 +432,14 @@ export const Navigation = () => {
                     className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Sign In
+                    {t('navigation.signIn')}
                   </Link>
                   <Link
                     href="/auth/signup"
                     className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Sign Up
+                    {t('navigation.signUp')}
                   </Link>
                 </div>
               </div>
@@ -452,7 +452,7 @@ export const Navigation = () => {
       <Dialog open={providerSignupOpen} onOpenChange={setProviderSignupOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Join as a Pet Service Provider</DialogTitle>
+            <DialogTitle>{t('auth.signup.joinAsProvider')}</DialogTitle>
           </DialogHeader>
           
           <form onSubmit={handleProviderSignup} className="space-y-6">
@@ -464,7 +464,7 @@ export const Navigation = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="fullName">Full Name *</Label>
+                <Label htmlFor="fullName">{t('auth.signup.fullName')} *</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -472,12 +472,12 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your full name"
+                  placeholder={t('auth.signup.enterFullName')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="email">{t('auth.signup.emailAddress')} *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -485,19 +485,19 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.signup.enterEmail')}
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="serviceType">Service Type *</Label>
+              <Label htmlFor="serviceType">{t('auth.signup.serviceType')} *</Label>
               <Select 
                 value={providerForm.serviceType} 
                 onValueChange={(value) => handleInputChange('serviceType', value)}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select your service type" />
+                  <SelectValue placeholder={t('auth.signup.selectServiceType')} />
                 </SelectTrigger>
                 <SelectContent>
                   {serviceTypes.map((type) => (
@@ -511,7 +511,7 @@ export const Navigation = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="businessName">Business Name *</Label>
+                <Label htmlFor="businessName">{t('auth.signup.businessName')} *</Label>
                 <Input
                   id="businessName"
                   type="text"
@@ -519,12 +519,12 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('businessName', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your business name"
+                  placeholder={t('auth.signup.enterBusinessName')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">{t('auth.signup.phoneNumber')} *</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -546,15 +546,15 @@ export const Navigation = () => {
                 handleInputChange('state', suggestion.state)
                 handleInputChange('zipCode', suggestion.zipCode)
               }}
-              placeholder="Enter your business address"
-              label="Business Address"
+              placeholder={t('auth.signup.enterBusinessAddress')}
+              label={t('auth.signup.businessAddress')}
               required
               className="mt-1"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="city">City *</Label>
+                <Label htmlFor="city">{t('auth.signup.city')} *</Label>
                 <Input
                   id="city"
                   type="text"
@@ -562,12 +562,12 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('city', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your city"
+                  placeholder={t('auth.signup.enterCity')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="state">State/Region *</Label>
+                <Label htmlFor="state">{t('auth.signup.stateRegion')} *</Label>
                 <Input
                   id="state"
                   type="text"
@@ -575,12 +575,12 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('state', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your state/region"
+                  placeholder={t('auth.signup.enterStateRegion')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="zipCode">Postal Code *</Label>
+                <Label htmlFor="zipCode">{t('auth.signup.postalCode')} *</Label>
                 <Input
                   id="zipCode"
                   type="text"
@@ -588,14 +588,14 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('zipCode', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter postal code"
+                  placeholder={t('auth.signup.enterPostalCode')}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="password">Password *</Label>
+                <Label htmlFor="password">{t('auth.signup.createPassword')} *</Label>
                 <Input
                   id="password"
                   type="password"
@@ -603,15 +603,15 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Create a password"
+                  placeholder={t('auth.signup.createPassword')}
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Must be at least 6 characters
+                  {t('auth.signup.passwordMinLength')}
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <Label htmlFor="confirmPassword">{t('auth.signup.confirmPassword')} *</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -619,16 +619,15 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Confirm your password"
+                  placeholder={t('auth.signup.confirmYourPassword')}
                 />
               </div>
             </div>
 
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">Ready to Start!</h4>
+              <h4 className="font-medium text-blue-900 mb-2">{t('auth.signup.readyToStart')}</h4>
               <p className="text-sm text-blue-800">
-                Once you create your account, you'll have immediate access to your provider dashboard 
-                and can start accepting bookings right away.
+                {t('auth.signup.readyToStartDesc')}
               </p>
             </div>
 
@@ -639,13 +638,13 @@ export const Navigation = () => {
                 onClick={() => setProviderSignupOpen(false)}
                 disabled={loading}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={loading || !providerForm.fullName || !providerForm.email || !providerForm.serviceType || !providerForm.businessName || !providerForm.phone || !providerForm.address || !providerForm.city || !providerForm.state || !providerForm.zipCode || !providerForm.password || !providerForm.confirmPassword}
               >
-                {loading ? 'Creating Account...' : 'Create Provider Account'}
+                {loading ? t('auth.signup.creatingAccount') : t('auth.signup.createProviderAccount')}
               </Button>
             </div>
           </form>

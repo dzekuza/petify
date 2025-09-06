@@ -2112,61 +2112,26 @@ export default function ProviderDashboard() {
               </div>
 
               <div>
-                <Label>Working Hours *</Label>
-                <p className="text-sm text-gray-600 mb-3">Set your working hours for each day</p>
-                <div className="space-y-4">
-                  {Object.entries(editProfileForm.availability).map(([day, available]) => (
-                    <div key={day} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Checkbox
-                          checked={available}
-                          onCheckedChange={(checked) => 
-                            setEditProfileForm(prev => ({
-                              ...prev,
-                              availability: {
-                                ...prev.availability,
-                                [day]: checked
-                              }
-                            }))
-                          }
-                        />
-                        <span className="capitalize font-medium min-w-[80px]">{day}</span>
-                      </div>
-                      
-                      {available && (
-                        <div className="flex items-center space-x-3">
-                          <div>
-                            <Label htmlFor={`edit-${day}-start`} className="text-xs text-gray-500">From</Label>
-                            <Input
-                              id={`edit-${day}-start`}
-                              type="time"
-                              value={editProfileForm.availability[day as keyof typeof editProfileForm.availability] ? '09:00' : ''}
-                              onChange={(e) => {
-                                // For now, we'll store the time in a simple format
-                                // In a real implementation, you'd want to store start/end times
-                                console.log(`${day} start time:`, e.target.value)
-                              }}
-                              className="mt-1 w-24"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`edit-${day}-end`} className="text-xs text-gray-500">To</Label>
-                            <Input
-                              id={`edit-${day}-end`}
-                              type="time"
-                              value={editProfileForm.availability[day as keyof typeof editProfileForm.availability] ? '17:00' : ''}
-                              onChange={(e) => {
-                                // For now, we'll store the time in a simple format
-                                // In a real implementation, you'd want to store start/end times
-                                console.log(`${day} end time:`, e.target.value)
-                              }}
-                              className="mt-1 w-24"
-                            />
-                          </div>
-                        </div>
-                      )}
+                <Label>Availability Management</Label>
+                <p className="text-sm text-gray-600 mb-3">Manage your working hours and availability</p>
+                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900">Working Hours & Availability</p>
+                      <p className="text-sm text-gray-600">Set your detailed availability schedule</p>
                     </div>
-                  ))}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Navigate to availability page
+                        window.location.href = '/provider/availability'
+                      }}
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Manage Availability
+                    </Button>
+                  </div>
                 </div>
               </div>
 

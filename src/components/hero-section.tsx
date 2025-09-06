@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { ServiceCategory } from '@/types'
+import { t } from '@/lib/translations'
 import Image from 'next/image'
 
 // Service category icons
@@ -14,15 +15,14 @@ const imgPetsPairingIcon = '/dad9cde557f42c866425d0fe77924deee8551656.png'
 const imgPetVeterinaryIcon = '/1ad308669bee0a61d08eb85cb050afe5af94b466.png'
 const imgPetAdsIcon = '/e9e2b26d5bf286f094c7cdffe862fc917fbe23f6.png'
 
-const serviceCategories: { value: ServiceCategory; label: string; icon: string }[] = [
-  { value: 'grooming', label: 'Kirpyklos', icon: imgAnimalCareIcon },
-  { value: 'training', label: 'Dresura', icon: imgPetTrainingIcon },
-  { value: 'boarding', label: 'Poravimas', icon: imgPetsPairingIcon },
-  { value: 'veterinary', label: 'Veterinarijos', icon: imgPetVeterinaryIcon },
-  { value: 'walking', label: 'Skelbimai', icon: imgPetAdsIcon },
-]
-
 export const HeroSection = () => {
+  const serviceCategories: { value: ServiceCategory; label: string; icon: string }[] = [
+    { value: 'grooming', label: t('landing.hero.categories.grooming'), icon: imgAnimalCareIcon },
+    { value: 'training', label: t('landing.hero.categories.training'), icon: imgPetTrainingIcon },
+    { value: 'boarding', label: t('landing.hero.categories.boarding'), icon: imgPetsPairingIcon },
+    { value: 'veterinary', label: t('landing.hero.categories.veterinary'), icon: imgPetVeterinaryIcon },
+    { value: 'walking', label: t('landing.hero.categories.walking'), icon: imgPetAdsIcon },
+  ]
   const [location, setLocation] = useState('')
   const [priceFrom, setPriceFrom] = useState('')
   const [priceTo, setPriceTo] = useState('')
@@ -72,7 +72,7 @@ export const HeroSection = () => {
           {/* Main Heading */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-black leading-tight sm:text-5xl lg:text-6xl">
-              Pasirinkite iš 400+ paslaugų teikėjų savo gyvūnui aplink jus
+              {t('landing.hero.title')}
             </h1>
           </div>
 
@@ -109,11 +109,11 @@ export const HeroSection = () => {
               {/* Location */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
-                  Kur ieskote?
+                  {t('landing.hero.search.where')}
                 </label>
                 <Input
-                  variant="hero"
-                  placeholder="Iveskite lokacija"
+                  variant='hero'
+                  placeholder={t('landing.hero.search.wherePlaceholder')}
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -128,18 +128,18 @@ export const HeroSection = () => {
               {/* Price From */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
-                  Kaina nuo
+                  {t('landing.hero.search.priceFrom')}
                 </label>
                 <Input
-                  variant="hero"
-                  type="number"
-                  placeholder="Iveskite kaina"
+                  variant='hero'
+                  type='number'
+                  placeholder={t('landing.hero.search.priceFromPlaceholder')}
                   value={priceFrom}
                   onChange={(e) => setPriceFrom(e.target.value)}
                   onKeyPress={handleKeyPress}
                   min="0"
                   step="1"
-                  aria-label="Kaina nuo"
+                  aria-label={t('landing.hero.search.priceFrom')}
                 />
               </div>
 
@@ -151,18 +151,18 @@ export const HeroSection = () => {
               {/* Price To */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
-                  Kaina iki
+                  {t('landing.hero.search.priceTo')}
                 </label>
                 <Input
-                  variant="hero"
-                  type="number"
-                  placeholder="Iveskite kaina"
+                  variant='hero'
+                  type='number'
+                  placeholder={t('landing.hero.search.priceToPlaceholder')}
                   value={priceTo}
                   onChange={(e) => setPriceTo(e.target.value)}
                   onKeyPress={handleKeyPress}
                   min="0"
                   step="1"
-                  aria-label="Kaina iki"
+                  aria-label={t('landing.hero.search.priceTo')}
                 />
               </div>
 
@@ -174,16 +174,16 @@ export const HeroSection = () => {
               {/* Date */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
-                  Data
+                  {t('landing.hero.search.date')}
                 </label>
                 <Input
-                  variant="hero"
-                  type="date"
-                  placeholder="Pasirinkite data"
+                  variant='hero'
+                  type='date'
+                  placeholder={t('landing.hero.search.datePlaceholder')}
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  aria-label="Data"
+                  aria-label={t('landing.hero.search.date')}
                 />
               </div>
 
@@ -194,7 +194,7 @@ export const HeroSection = () => {
                   className="w-full px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold"
                 >
                   <Search className="h-4 w-4 mr-2" />
-                  Ieškoti
+                  {t('landing.hero.search.searchButton')}
                 </Button>
               </div>
             </div>

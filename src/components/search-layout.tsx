@@ -7,6 +7,7 @@ import { ProviderCard } from '@/components/provider-card'
 import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Map, List, Filter } from 'lucide-react'
+import { t } from '@/lib/translations'
 
 interface SearchLayoutProps {
   results: SearchResult[]
@@ -49,7 +50,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 className="flex items-center space-x-2"
               >
                 <Filter className="h-4 w-4" />
-                <span>Filters</span>
+                <span>{t('search.filters')}</span>
               </Button>
               
               {showFilters && (
@@ -71,7 +72,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 className="flex items-center space-x-2"
               >
                 <List className="h-4 w-4" />
-                <span>List</span>
+                <span>{t('search.list')}</span>
               </Button>
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -82,7 +83,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
-                <span>Grid</span>
+                <span>{t('search.grid')}</span>
               </Button>
               <Button
                 variant={viewMode === 'map' ? 'default' : 'ghost'}
@@ -91,7 +92,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 className="flex items-center space-x-2"
               >
                 <Map className="h-4 w-4" />
-                <span>Map</span>
+                <span>{t('search.map')}</span>
               </Button>
             </div>
           </div>
@@ -102,13 +103,13 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {error ? (
           <div className="text-center py-12">
-            <div className="text-red-500 text-lg mb-4">Error loading providers</div>
+            <div className="text-red-500 text-lg mb-4">{t('search.errorLoadingProviders')}</div>
             <p className="text-gray-600 mb-6">{error}</p>
             <Button 
               onClick={() => window.location.reload()} 
               variant="outline"
             >
-              Try Again
+              {t('search.tryAgain')}
             </Button>
           </div>
         ) : viewMode === 'list' ? (
@@ -117,7 +118,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  {results.length} providers found
+                  {results.length} {t('search.providersFound')}
                 </h2>
               </div>
               
@@ -175,7 +176,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
-                {results.length} providers found
+                {results.length} {t('search.providersFound')}
               </h2>
             </div>
             
