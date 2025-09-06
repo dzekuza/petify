@@ -258,7 +258,22 @@ export default function ProviderDetailPage() {
               <Card>
                 <CardContent className="p-0">
                   <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-64 rounded-lg overflow-hidden">
-                    <div className="w-full h-full flex items-center justify-center">
+                    {provider.images && provider.images.length > 0 ? (
+                      <img
+                        src={provider.images[0]}
+                        alt={provider.businessName}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to emoji if image fails to load
+                          e.currentTarget.style.display = 'none'
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                          if (fallback) {
+                            fallback.style.display = 'flex'
+                          }
+                        }}
+                      />
+                    ) : null}
+                    <div className="w-full h-full flex items-center justify-center" style={{ display: provider.images && provider.images.length > 0 ? 'none' : 'flex' }}>
                       <span className="text-6xl">✂️</span>
                     </div>
                   </div>
