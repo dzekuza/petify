@@ -1,5 +1,4 @@
 import { supabase } from './supabase'
-import { ServiceProvider } from '@/types'
 
 export interface CreateProviderData {
   userId: string
@@ -147,7 +146,7 @@ export const providerApi = {
   async updateProvider(providerId: string, data: UpdateProviderData) {
     try {
       // Transform camelCase to snake_case for database
-      const dbData: any = {}
+      const dbData: Record<string, unknown> = {}
       if (data.businessName) dbData.business_name = data.businessName
       if (data.businessType) dbData.business_type = data.businessType
       if (data.contactInfo) dbData.contact_info = data.contactInfo
@@ -202,7 +201,7 @@ export const providerApi = {
   async updateProviderByUserId(userId: string, data: UpdateProviderData) {
     try {
       // Transform camelCase to snake_case for database
-      const dbData: any = {}
+      const dbData: Record<string, unknown> = {}
       if (data.businessName) dbData.business_name = data.businessName
       if (data.businessType) dbData.business_type = data.businessType
       if (data.contactInfo) dbData.contact_info = data.contactInfo

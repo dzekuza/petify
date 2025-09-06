@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { bookingApi } from '@/lib/bookings'
 import { Booking, BookingStatus } from '@/types'
-import { Calendar, Clock, MapPin, User, Edit, X, Loader2 } from 'lucide-react'
+import { Calendar, Clock, User, Edit, X, Loader2 } from 'lucide-react'
 
 export default function BookingsPage() {
   const { user } = useAuth()
@@ -28,13 +28,8 @@ export default function BookingsPage() {
   })
   const [cancellingBooking, setCancellingBooking] = useState<string | null>(null)
 
-  if (!user) return null
-
-  useEffect(() => {
-    fetchBookings()
-  }, [user])
-
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
+    if (!user) return
     try {
       setLoading(true)
       const userBookings = await bookingApi.getCustomerBookings(user.id)
@@ -45,7 +40,15 @@ export default function BookingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchBookings()
+    }
+  }, [user, fetchBookings])
+
+  if (!user) return null
 
   const getStatusColor = (status: BookingStatus) => {
     switch (status) {

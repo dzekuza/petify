@@ -1,14 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar as CalendarIcon, Clock, Check, X } from 'lucide-react'
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Clock, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ServiceProvider } from '@/types'
 import { useNotifications } from '@/contexts/notifications-context'
@@ -39,7 +37,6 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   onAvailabilityUpdate 
 }) => {
   const { addNotification } = useNotifications()
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [showTimeModal, setShowTimeModal] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string>('')
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
@@ -149,7 +146,6 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   }
 
   const handleDateClick = (date: Date) => {
-    setSelectedDate(date)
     const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase()
     setSelectedDay(dayName)
     

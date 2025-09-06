@@ -16,14 +16,10 @@ import {
   XCircle,
   AlertCircle,
   X,
-  Phone,
-  Mail,
-  MapPin,
-  Filter,
   Search
 } from 'lucide-react'
 import InteractiveCalendar from '@/components/ui/visualize-booking'
-import { ServiceProvider, Service, Booking } from '@/types'
+import { Service, Booking } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
@@ -52,51 +48,11 @@ export default function ProviderBookings() {
 
         // Load real bookings data from API
         const providerBookings = await bookingApi.getProviderBookings(user.id)
-        
-        // Transform the API response to match our Booking type
-        const transformedBookings: Booking[] = providerBookings.map((booking: any) => ({
-          id: booking.id,
-          customerId: booking.customer_id,
-          providerId: booking.provider_id,
-          serviceId: booking.service_id,
-          date: booking.booking_date,
-          timeSlot: {
-            start: booking.start_time,
-            end: booking.end_time,
-            available: false
-          },
-          pets: booking.pet ? [booking.pet] : [],
-          totalPrice: booking.total_price,
-          status: booking.status,
-          notes: booking.special_instructions || '',
-          createdAt: booking.created_at,
-          updatedAt: booking.updated_at
-        }))
-        
-        setBookings(transformedBookings)
+        setBookings(providerBookings)
 
         // Load real services data from API
         const providerServices = await serviceApi.getServicesByProvider(user.id)
-        
-        // Transform the API response to match our Service type
-        const transformedServices: Service[] = providerServices.map((service: any) => ({
-          id: service.id,
-          providerId: service.provider_id,
-          category: service.category,
-          name: service.name,
-          description: service.description,
-          price: service.price,
-          duration: service.duration_minutes,
-          maxPets: service.max_pets,
-          requirements: service.requirements || [],
-          includes: service.includes || [],
-          images: service.images || [],
-          status: service.is_active ? 'active' : 'inactive',
-          createdAt: service.created_at,
-          updatedAt: service.updated_at
-        }))
-        
-        setServices(transformedServices)
+        setServices(providerServices)
         
       } catch (error) {
         console.error('Error loading bookings data:', error)
@@ -237,7 +193,7 @@ export default function ProviderBookings() {
   const filteredBookings = bookings.filter(booking => {
     const matchesStatus = filterStatus === 'all' || booking.status === filterStatus
     const matchesSearch = searchTerm === '' || 
-      booking.pets.some(pet => pet.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (booking.pet && booking.pet.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       services.find(s => s.id === booking.serviceId)?.name.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesStatus && matchesSearch
   })
@@ -417,7 +373,7 @@ export default function ProviderBookings() {
                         <CardContent className="space-y-4">
                           <div>
                             <h3 className="font-semibold text-gray-900 mb-1">
-                              {booking.pets[0]?.name} - {services.find(s => s.id === booking.serviceId)?.name}
+                              {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
                             </h3>
                             <p className="text-sm text-gray-600">
                               {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
@@ -427,7 +383,7 @@ export default function ProviderBookings() {
                           <div className="space-y-2">
                             <div className="flex items-center text-sm text-gray-600">
                               <Users className="h-4 w-4 mr-2" />
-                              <span>{booking.pets.length} pet{booking.pets.length > 1 ? 's' : ''}</span>
+                              <span>{booking.pet ? '1 pet' : 'No pets'}</span>
                             </div>
                             <div className="flex items-center text-sm text-gray-600">
                               <Clock className="h-4 w-4 mr-2" />
@@ -564,34 +520,42 @@ export default function ProviderBookings() {
                 {/* Pet Information */}
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
-                  {selectedBooking.pets.map((pet, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                  {selectedBooking.pet ? (
+                    <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-gray-600">Pet Name</p>
-                          <p className="font-medium">{pet.name}</p>
+                          <p className="font-medium">{selectedBooking.pet.name}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Species</p>
-                          <p className="font-medium">{pet.species}</p>
+                          <p className="font-medium">{selectedBooking.pet.species}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Breed</p>
-                          <p className="font-medium">{pet.breed || 'N/A'}</p>
+                          <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Age</p>
-                          <p className="font-medium">{pet.age} months</p>
+                          <p className="font-medium">{selectedBooking.pet.age} months</p>
                         </div>
                       </div>
-                      {pet.specialNeeds && pet.specialNeeds.length > 0 && (
+                      {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
                         <div className="mt-3">
                           <p className="text-sm text-gray-600">Special Needs</p>
-                          <p className="font-medium">{pet.specialNeeds.join(', ')}</p>
+                          <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
+                        </div>
+                      )}
+                      {selectedBooking.pet.medicalNotes && (
+                        <div className="mt-3">
+                          <p className="text-sm text-gray-600">Medical Notes</p>
+                          <p className="font-medium">{selectedBooking.pet.medicalNotes}</p>
                         </div>
                       )}
                     </div>
-                  ))}
+                  ) : (
+                    <p className="text-gray-500">No pet information available</p>
+                  )}
                 </div>
 
                 {/* Special Instructions */}

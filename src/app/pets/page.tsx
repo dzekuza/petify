@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 import { Pet } from '@/types'
-import { Dog, Plus, Edit, Trash2, Loader2, Upload } from 'lucide-react'
+import { Dog, Plus, Edit, Trash2, Loader2 } from 'lucide-react'
 
 export default function PetsPage() {
   const { user } = useAuth()
@@ -35,13 +35,8 @@ export default function PetsPage() {
     images: [] as string[]
   })
 
-  if (!user) return null
-
-  useEffect(() => {
-    fetchPets()
-  }, [user])
-
-  const fetchPets = async () => {
+  const fetchPets = useCallback(async () => {
+    if (!user) return
     try {
       setLoading(true)
       const userPets = await petsApi.getUserPets(user.id)
@@ -52,7 +47,15 @@ export default function PetsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchPets()
+    }
+  }, [user, fetchPets])
+
+  if (!user) return null
 
   const handleAddPet = () => {
     setPetForm({

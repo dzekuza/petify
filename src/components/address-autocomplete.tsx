@@ -46,7 +46,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
-  const debounceRef = useRef<NodeJS.Timeout>()
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   // Debounced search function
   const searchAddresses = useCallback(async (query: string) => {
@@ -74,9 +74,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
       const data = await response.json()
       
-      const formattedSuggestions: AddressSuggestion[] = data.features.map((feature: any) => {
-        const context = feature.context || []
-        const address = feature.properties?.address || ''
+      const formattedSuggestions: AddressSuggestion[] = data.features.map((feature: Record<string, unknown>) => {
+        const context = (feature.context as Record<string, unknown>[]) || []
+        const address = (feature.properties as Record<string, unknown>)?.address as string || ''
         const placeName = feature.place_name || ''
         
         // Extract city, state, and zip code from context
@@ -84,13 +84,13 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         let state = ''
         let zipCode = ''
         
-        context.forEach((item: any) => {
-          if (item.id.startsWith('place.')) {
-            city = item.text
-          } else if (item.id.startsWith('region.')) {
-            state = item.text
-          } else if (item.id.startsWith('postcode.')) {
-            zipCode = item.text
+        context.forEach((item: Record<string, unknown>) => {
+          if (item.id && typeof item.id === 'string' && item.id.startsWith('place.')) {
+            city = item.text as string
+          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('region.')) {
+            state = item.text as string
+          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('postcode.')) {
+            zipCode = item.text as string
           }
         })
 
@@ -102,8 +102,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           state,
           zipCode,
           coordinates: {
-            lat: feature.center[1],
-            lng: feature.center[0]
+            lat: (feature.center as number[])[1],
+            lng: (feature.center as number[])[0]
           }
         }
       })

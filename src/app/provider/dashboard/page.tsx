@@ -30,7 +30,6 @@ import {
   MapPin,
   PawPrint
 } from 'lucide-react'
-import InteractiveCalendar from '@/components/ui/visualize-booking'
 import AvailabilityCalendar from '@/components/availability-calendar'
 import { ServiceProvider, Service, Booking, CreateServiceForm, ServiceCategory } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
@@ -194,12 +193,6 @@ export default function ProviderDashboard() {
     setShowBookingModal(true)
   }
 
-  const handleCalendarBookingClick = (bookingId: string) => {
-    const booking = bookings.find(b => b.id === bookingId)
-    if (booking) {
-      handleViewBookingDetails(booking)
-    }
-  }
 
   const handleAcceptBooking = async (bookingId: string) => {
     try {
@@ -884,14 +877,16 @@ export default function ProviderDashboard() {
                         onAvailabilityUpdate={async (updatedAvailability) => {
                           try {
                             // Convert DayAvailability to the format expected by the database
-                            const dbAvailability: Record<string, any> = {}
+                            const dbAvailability: Record<string, boolean> = {}
                             Object.entries(updatedAvailability).forEach(([day, value]) => {
-                              if (Array.isArray(value)) {
+                              if (typeof value === 'boolean') {
                                 dbAvailability[day] = value
+                              } else if (Array.isArray(value)) {
+                                dbAvailability[day] = value.length > 0
                               } else if (typeof value === 'object' && value !== null) {
-                                dbAvailability[day] = value
+                                dbAvailability[day] = true
                               } else {
-                                dbAvailability[day] = value
+                                dbAvailability[day] = Boolean(value)
                               }
                             })
 

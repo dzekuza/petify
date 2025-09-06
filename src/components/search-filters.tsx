@@ -27,7 +27,7 @@ interface SearchFiltersProps {
 export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const handleFilterChange = (key: keyof SearchFiltersType, value: any) => {
+  const handleFilterChange = (key: keyof SearchFiltersType, value: string | number | undefined | { min: number; max?: number } | { max: number; min?: number }) => {
     // Convert "all" to undefined for category filter
     const processedValue = key === 'category' && value === 'all' ? undefined : value
     onFiltersChange({

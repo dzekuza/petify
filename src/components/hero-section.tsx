@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, MapPin, Calendar } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { ServiceCategory } from '@/types'
 import Image from 'next/image'
 

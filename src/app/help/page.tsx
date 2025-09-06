@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
-import { HelpCircle, Mail, Phone, MessageCircle, FileText, Search } from 'lucide-react'
+import { Mail, Phone, MessageCircle, Search } from 'lucide-react'
 
 export default function HelpPage() {
   const { user } = useAuth()

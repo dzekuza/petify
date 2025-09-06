@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Map, { 
   Marker, 
   Popup, 
@@ -11,14 +11,33 @@ import Map, {
   MapRef,
   ViewState
 } from 'react-map-gl/mapbox'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Star, Clock, Navigation } from 'lucide-react'
-import { MAPBOX_CONFIG, MAP_MARKERS, MAP_STYLES } from '@/lib/mapbox'
+import { MapPin, Star, Heart, X, ChevronRight } from 'lucide-react'
+import { MAPBOX_CONFIG, MAP_MARKERS } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
 import { MapControls } from '@/components/map-controls'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Custom styles for mapbox popup
+const popupStyles = `
+  .mapbox-popup .mapboxgl-popup-content {
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    background: transparent;
+  }
+  
+  .mapbox-popup .mapboxgl-popup-tip {
+    border-top-color: white;
+    border-width: 8px;
+  }
+  
+  .mapbox-popup .mapboxgl-popup-close-button {
+    display: none;
+  }
+`
 
 interface MapboxMapProps {
   results: SearchResult[]
@@ -49,10 +68,21 @@ export const MapboxMap = ({
   })
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
-  const [hoveredProviderId, setHoveredProviderId] = useState<string | null>(null)
+  const [hoveredProviderId] = useState<string | null>(null)
   const [currentMapStyle, setCurrentMapStyle] = useState(MAPBOX_CONFIG.style)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const mapRef = useRef<MapRef>(null)
+
+  // Inject custom popup styles
+  useEffect(() => {
+    const styleElement = document.createElement('style')
+    styleElement.textContent = popupStyles
+    document.head.appendChild(styleElement)
+    
+    return () => {
+      document.head.removeChild(styleElement)
+    }
+  }, [])
 
   const handleMarkerClick = useCallback((result: SearchResult) => {
     setSelectedResult(result)
@@ -79,38 +109,6 @@ export const MapboxMap = ({
     setIsFullscreen(!isFullscreen)
   }, [isFullscreen])
 
-  const getMarkerStyle = useCallback((result: SearchResult) => {
-    const isSelected = selectedProviderId === result.provider.id
-    const isHovered = hoveredProviderId === result.provider.id
-    
-    if (isSelected) {
-      return {
-        width: MAP_MARKERS.selected.size,
-        height: MAP_MARKERS.selected.size,
-        backgroundColor: MAP_MARKERS.selected.color,
-        borderColor: MAP_MARKERS.selected.borderColor,
-        borderWidth: MAP_MARKERS.selected.borderWidth
-      }
-    }
-    
-    if (isHovered) {
-      return {
-        width: MAP_MARKERS.hover.size,
-        height: MAP_MARKERS.hover.size,
-        backgroundColor: MAP_MARKERS.hover.color,
-        borderColor: MAP_MARKERS.hover.borderColor,
-        borderWidth: MAP_MARKERS.hover.borderWidth
-      }
-    }
-    
-    return {
-      width: MAP_MARKERS.provider.size,
-      height: MAP_MARKERS.provider.size,
-      backgroundColor: MAP_MARKERS.provider.color,
-      borderColor: MAP_MARKERS.provider.borderColor,
-      borderWidth: MAP_MARKERS.provider.borderWidth
-    }
-  }, [selectedProviderId, hoveredProviderId])
 
   const formatPrice = (priceRange: { min: number; max: number }) => {
     if (priceRange.min === priceRange.max) {
@@ -199,75 +197,128 @@ export const MapboxMap = ({
             longitude={selectedResult.provider.location.coordinates.lng}
             latitude={selectedResult.provider.location.coordinates.lat}
             onClose={handleClosePopup}
-            closeButton={true}
+            closeButton={false}
             closeOnClick={false}
             anchor="bottom"
             offset={[0, -10]}
             className="mapbox-popup"
           >
-            <Card className="w-80 border-0 shadow-lg">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl">
+            <div className="w-80 bg-white rounded-xl shadow-xl overflow-hidden">
+              {/* Cover Image Section */}
+              <div className="relative h-48 w-full">
+                {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
+                  <img 
+                    src={selectedResult.provider.images[0]} 
+                    alt={selectedResult.provider.businessName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                    <span className="text-4xl">
                       {selectedResult.provider.services[0] === 'grooming' ? '🐕' : 
                        selectedResult.provider.services[0] === 'veterinary' ? '🏥' :
                        selectedResult.provider.services[0] === 'boarding' ? '🏠' :
                        selectedResult.provider.services[0] === 'training' ? '🎓' : '🐾'}
                     </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                      {selectedResult.provider.businessName}
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                      {selectedResult.provider.description}
-                    </p>
-                    
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="flex items-center">
-                        <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                        <span className="text-xs font-medium text-gray-900 ml-1">
-                          {selectedResult.provider.rating}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        ({selectedResult.provider.reviewCount} reviews)
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center text-xs text-gray-500 mb-2">
-                      <Navigation className="h-3 w-3 mr-1" />
-                      {selectedResult.distance} km away
-                    </div>
-                    
-                    <div className="flex items-center space-x-1 mb-3">
-                      {selectedResult.provider.services.map((service) => (
-                        <Badge key={service} variant="outline" className="text-xs">
-                          {service}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="text-xs px-3 py-1 flex-1"
-                      >
-                        View Details
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="text-xs px-3 py-1 flex-1"
-                      >
-                        Book Now
-                      </Button>
-                    </div>
+                )}
+                
+                {/* Overlay Icons */}
+                <div className="absolute top-3 right-3 flex items-center space-x-2">
+                  {/* Heart Icon */}
+                  <button className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
+                    <Heart className="w-4 h-4 text-gray-700" />
+                  </button>
+                  
+                  {/* Close Icon */}
+                  <button 
+                    onClick={handleClosePopup}
+                    className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  >
+                    <X className="w-4 h-4 text-gray-700" />
+                  </button>
+                </div>
+                
+                {/* Navigation Arrow (if multiple images) */}
+                {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
+                  <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
+                    <ChevronRight className="w-4 h-4 text-gray-700" />
+                  </button>
+                )}
+                
+                {/* Pagination Dots (if multiple images) */}
+                {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    {selectedResult.provider.images.slice(0, 5).map((_, index) => (
+                      <div 
+                        key={index}
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          index === 0 ? 'bg-white' : 'bg-white/60'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Content Section */}
+              <div className="p-4">
+                {/* Title and Rating */}
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-gray-900 text-base leading-tight">
+                    {selectedResult.provider.businessName}
+                  </h4>
+                  <div className="flex items-center ml-2">
+                    <Star className="w-4 h-4 text-black fill-current" />
+                    <span className="text-sm font-medium text-gray-900 ml-1">
+                      {selectedResult.provider.rating}
+                    </span>
+                    <span className="text-sm text-gray-500 ml-1">
+                      ({selectedResult.provider.reviewCount})
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                  {selectedResult.provider.description}
+                </p>
+                
+                {/* Service Tags */}
+                <div className="flex items-center space-x-1 mb-3">
+                  {selectedResult.provider.services.map((service) => (
+                    <Badge key={service} variant="outline" className="text-xs">
+                      {service}
+                    </Badge>
+                  ))}
+                </div>
+                
+                {/* Price */}
+                <div className="flex items-center justify-between">
+                  <div className="text-lg font-semibold text-gray-900">
+                    {formatPrice(selectedResult.provider.priceRange)}
+                    <span className="text-sm font-normal text-gray-600 ml-1">service</span>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-xs px-3 py-1"
+                    >
+                      View Details
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="text-xs px-3 py-1"
+                    >
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </Popup>
         )}
       </Map>

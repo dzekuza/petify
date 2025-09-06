@@ -8,11 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
-import { User, Mail, Calendar, Shield, Bell, Lock, Eye, EyeOff } from 'lucide-react'
+import { User, Mail, Calendar, Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, resetPassword } = useAuth()
@@ -116,7 +116,7 @@ export default function ProfilePage() {
         setChangePasswordOpen(false)
         setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
       }
-    } catch (error) {
+    } catch {
       alert('Error updating password')
     }
   }

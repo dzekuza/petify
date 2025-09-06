@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Star, Clock } from 'lucide-react'
-import { SearchFilters as SearchFiltersType, SearchResult } from '@/types'
+import { SearchFilters as SearchFiltersType, SearchResult, ServiceCategory } from '@/types'
 import { MapboxMap } from '@/components/mapbox-map'
 
 // Mock data - same as search results
@@ -138,7 +138,7 @@ export const MapView = ({ filters }: MapViewProps) => {
       // Apply filters
       if (filters.category) {
         filteredResults = filteredResults.filter(result => 
-          result.provider.services.includes(filters.category as any)
+          result.provider.services.includes(filters.category as ServiceCategory)
         )
       }
 

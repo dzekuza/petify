@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { Service, CreateServiceForm, ServiceCategory } from '@/types'
+import { ServiceCategory } from '@/types'
 
 export interface CreateServiceData {
   providerId: string

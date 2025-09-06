@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
 import { SearchFilters } from '@/components/search-filters'
 import { ProviderCard } from '@/components/provider-card'
-import { SearchResult } from '@/types'
+import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Map, List, Filter } from 'lucide-react'
 
 interface SearchLayoutProps {
   results: SearchResult[]
-  filters: any
-  onFiltersChange: (filters: any) => void
+  filters: SearchFiltersType
+  onFiltersChange: (filters: SearchFiltersType) => void
   loading: boolean
   error?: string | null
 }
@@ -25,9 +25,6 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
     setSelectedProviderId(result.provider.id)
   }
 
-  const handleProviderClick = (result: SearchResult) => {
-    setSelectedProviderId(result.provider.id)
-  }
 
   const handleSearchClick = () => {
     console.log('Search clicked')

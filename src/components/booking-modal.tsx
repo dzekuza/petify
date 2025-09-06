@@ -3,19 +3,17 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar as CalendarIcon, Clock, Users, CreditCard, CheckCircle } from 'lucide-react'
+import { Calendar as CalendarIcon, CreditCard, CheckCircle } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
-import { ServiceProvider, Service, Pet, CreateBookingForm } from '@/types'
-import { useAuth } from '@/contexts/auth-context'
+import { ServiceProvider, Service, Pet, CreateBookingForm, TimeSlot } from '@/types'
 
 interface BookingModalProps {
   isOpen: boolean
@@ -57,7 +55,6 @@ const mockPets: Pet[] = [
 ]
 
 export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModalProps) => {
-  const { user } = useAuth()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<CreateBookingForm>({
     serviceId: service.id,
@@ -70,7 +67,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
   const [loading, setLoading] = useState(false)
   const [selectedPets, setSelectedPets] = useState<string[]>([])
 
-  const handleInputChange = (field: keyof CreateBookingForm, value: any) => {
+  const handleInputChange = (field: keyof CreateBookingForm, value: string | Date | TimeSlot) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -103,7 +100,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
     }, 2000)
   }
 
-  const getAvailableTimeSlots = () => {
+  const getAvailableTimeSlots = (): TimeSlot[] => {
     if (!selectedDate) return []
     
     const dayName = selectedDate.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
@@ -116,8 +113,8 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
       return dayAvailability.filter(slot => slot.available)
     } else if (typeof dayAvailability === 'object' && dayAvailability !== null) {
       // Handle object format like { start: '09:00', end: '17:00', available: true }
-      if ('available' in dayAvailability && (dayAvailability as any).available) {
-        return [dayAvailability as any]
+      if ('available' in dayAvailability && (dayAvailability as Record<string, unknown>).available) {
+        return [dayAvailability as TimeSlot]
       }
     }
     

@@ -13,14 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Globe, Calendar, Star, Dog } from 'lucide-react'
+import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent } from '@/components/ui/card'
 import AddressAutocomplete from '@/components/address-autocomplete'
 
 const navigation = [
@@ -109,7 +108,7 @@ export const Navigation = () => {
         // Redirect to provider dashboard where they can complete their profile
         window.location.href = '/provider/dashboard'
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)

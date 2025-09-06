@@ -155,7 +155,7 @@ const InteractiveCalendar = React.forwardRef<
           month: 'short' 
         }),
         time: `${booking.timeSlot.start} - ${booking.timeSlot.end}`,
-        title: `${booking.pets[0]?.name || 'Pet'} - Service`,
+        title: `Pet Service`,
         participants: ['Customer'], // Will be populated from customer data when available
         location: 'In-person',
         bookingId: booking.id,

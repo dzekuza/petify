@@ -67,15 +67,15 @@ export const geocodeAddress = async (address: string): Promise<GeocodingResult |
     let zipCode = ''
     let country = ''
     
-    context.forEach((item: any) => {
-      if (item.id.startsWith('place.')) {
-        city = item.text
-      } else if (item.id.startsWith('region.')) {
-        state = item.text
-      } else if (item.id.startsWith('postcode.')) {
-        zipCode = item.text
-      } else if (item.id.startsWith('country.')) {
-        country = item.text
+    context.forEach((item: Record<string, unknown>) => {
+      if (item.id && typeof item.id === 'string' && item.id.startsWith('place.')) {
+        city = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('region.')) {
+        state = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('postcode.')) {
+        zipCode = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('country.')) {
+        country = item.text as string
       }
     })
 
@@ -155,15 +155,15 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<Geocodin
     let zipCode = ''
     let country = ''
     
-    context.forEach((item: any) => {
-      if (item.id.startsWith('place.')) {
-        city = item.text
-      } else if (item.id.startsWith('region.')) {
-        state = item.text
-      } else if (item.id.startsWith('postcode.')) {
-        zipCode = item.text
-      } else if (item.id.startsWith('country.')) {
-        country = item.text
+    context.forEach((item: Record<string, unknown>) => {
+      if (item.id && typeof item.id === 'string' && item.id.startsWith('place.')) {
+        city = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('region.')) {
+        state = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('postcode.')) {
+        zipCode = item.text as string
+      } else if (item.id && typeof item.id === 'string' && item.id.startsWith('country.')) {
+        country = item.text as string
       }
     })
 
