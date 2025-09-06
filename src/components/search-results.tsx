@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ProviderCard } from '@/components/provider-card'
 import { Button } from '@/components/ui/button'
 import { SearchFilters as SearchFiltersType, SearchResult } from '@/types'
+import { providerApi } from '@/lib/providers'
 
 // Mock data for demonstration
 const mockProviders: SearchResult[] = [
@@ -175,37 +176,35 @@ interface SearchResultsProps {
 export const SearchResults = ({ filters }: SearchResultsProps) => {
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true)
-    setTimeout(() => {
-      let filteredResults = mockProviders
+    const fetchProviders = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const searchResults = await providerApi.searchProviders({
+          category: filters.category,
+          location: filters.location,
+          priceRange: filters.priceRange,
+          rating: filters.rating,
+          distance: filters.distance,
+          date: filters.date
+        })
 
-      // Apply filters
-      if (filters.category) {
-        filteredResults = filteredResults.filter(result => 
-          result.provider.services.includes(filters.category as any)
-        )
+        setResults(searchResults)
+      } catch (err) {
+        console.error('Error fetching providers:', err)
+        setError('Failed to load providers. Please try again.')
+        setResults([])
+      } finally {
+        setLoading(false)
       }
+    }
 
-      if (filters.rating && filters.rating > 0) {
-        filteredResults = filteredResults.filter(result => 
-          result.provider.rating >= filters.rating!
-        )
-      }
-
-      if (filters.priceRange) {
-        filteredResults = filteredResults.filter(result => 
-          result.provider.priceRange.min >= filters.priceRange!.min &&
-          result.provider.priceRange.max <= filters.priceRange!.max
-        )
-      }
-
-      setResults(filteredResults)
-      setLoading(false)
-    }, 1000)
+    fetchProviders()
   }, [filters])
 
   const toggleFavorite = (providerId: string) => {
@@ -228,6 +227,21 @@ export const SearchResults = ({ filters }: SearchResultsProps) => {
             <div className="bg-gray-200 rounded-lg h-96"></div>
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-500 text-lg mb-4">Error loading providers</div>
+        <p className="text-gray-600 mb-6">{error}</p>
+        <Button 
+          onClick={() => window.location.reload()} 
+          variant="outline"
+        >
+          Try Again
+        </Button>
       </div>
     )
   }

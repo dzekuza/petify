@@ -12,9 +12,10 @@ interface SearchLayoutProps {
   filters: any
   onFiltersChange: (filters: any) => void
   loading: boolean
+  error?: string | null
 }
 
-export const SearchLayout = ({ results, filters, onFiltersChange, loading }: SearchLayoutProps) => {
+export const SearchLayout = ({ results, filters, onFiltersChange, loading, error }: SearchLayoutProps) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
   const [showFilters, setShowFilters] = useState(false)
@@ -101,7 +102,18 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading }: Sea
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {viewMode === 'list' ? (
+        {error ? (
+          <div className="text-center py-12">
+            <div className="text-red-500 text-lg mb-4">Error loading providers</div>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+            >
+              Try Again
+            </Button>
+          </div>
+        ) : viewMode === 'list' ? (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {/* Left: Provider Grid */}
             <div className="space-y-4">

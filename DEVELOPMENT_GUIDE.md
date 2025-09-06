@@ -3,18 +3,20 @@
 ## Project Overview
 
 PetServices is an Airbnb-style marketplace for pet service providers (groomers,
-veterinary, boarding, training, care, ads). Built with Next.js 14, TypeScript,
+veterinary, boarding, training, care, ads). Built with Next.js 15, TypeScript,
 and modern React patterns.
 
 ## Architecture & Tech Stack
 
 ### Core Technologies
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 15 (App Router) with Turbopack
 - **Language**: TypeScript
 - **Styling**: TailwindCSS + shadcn/ui + Radix primitives
 - **State Management**: TanStack Query (React Query)
 - **Database & Auth**: Supabase (PostgreSQL + Auth)
+- **Maps**: Mapbox GL + React Map GL + Leaflet
+- **Animations**: Framer Motion
 - **Testing**: Vitest + React Testing Library + Playwright
 - **Package Manager**: pnpm
 
@@ -23,12 +25,21 @@ and modern React patterns.
 ```
 src/
 ├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   │   └── bookings/      # Booking API endpoints
+│   │       ├── [id]/      # Dynamic booking routes
+│   │       └── route.ts   # Bookings collection
 │   ├── auth/              # Authentication pages
 │   │   ├── signin/        # Sign-in page
 │   │   └── signup/        # Sign-up page
 │   ├── providers/         # Provider-related pages
 │   │   └── [id]/          # Dynamic provider pages
+│   │       ├── book/      # Booking flow
+│   │       └── page.tsx   # Provider profile
 │   ├── provider/          # Provider dashboard
+│   │   ├── bookings/      # Provider bookings management
+│   │   ├── dashboard/     # Main provider dashboard
+│   │   └── signup/        # Provider registration
 │   ├── search/            # Search functionality
 │   ├── profile/           # User profile
 │   ├── how-it-works/      # Information page
@@ -36,6 +47,20 @@ src/
 │   └── page.tsx           # Homepage
 ├── components/            # Reusable components
 │   ├── ui/                # shadcn/ui components
+│   │   ├── avatar.tsx
+│   │   ├── badge.tsx
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── checkbox.tsx
+│   │   ├── dialog.tsx
+│   │   ├── dropdown-menu.tsx
+│   │   ├── input.tsx
+│   │   ├── label.tsx
+│   │   ├── select.tsx
+│   │   ├── sonner.tsx
+│   │   ├── tabs.tsx
+│   │   ├── textarea.tsx
+│   │   └── visualize-booking.tsx
 │   ├── __tests__/         # Component tests
 │   ├── layout.tsx         # Main layout wrapper
 │   ├── navigation.tsx     # Navigation bar
@@ -45,16 +70,26 @@ src/
 │   ├── featured-providers.tsx
 │   ├── search-filters.tsx
 │   ├── search-results.tsx
+│   ├── search-layout.tsx
 │   ├── provider-card.tsx  # Provider listing card
 │   ├── booking-modal.tsx  # Booking flow
 │   ├── protected-route.tsx
-│   └── providers.tsx      # Context providers
+│   ├── providers.tsx      # Context providers
+│   ├── map-view.tsx       # Map integration
+│   ├── mapbox-map.tsx     # Mapbox implementation
+│   ├── map-controls.tsx   # Map controls
+│   └── notifications.tsx  # Notification system
 ├── contexts/              # React contexts
-│   └── auth-context.tsx   # Authentication context
+│   ├── auth-context.tsx   # Authentication context
+│   └── notifications-context.tsx # Notifications context
 ├── lib/                   # Utilities and configurations
 │   ├── utils.ts           # Utility functions
 │   ├── supabase.ts        # Supabase client
 │   ├── query-client.ts    # TanStack Query setup
+│   ├── providers.ts       # Provider API functions
+│   ├── services.ts        # Service API functions
+│   ├── bookings.ts        # Booking API functions
+│   ├── mapbox.ts          # Mapbox configuration
 │   └── __tests__/         # Utility tests
 ├── types/                 # TypeScript type definitions
 │   └── index.ts           # Core types
@@ -95,11 +130,17 @@ interface AuthContextType {
 #### Protected Routes (`src/components/protected-route.tsx`)
 
 ```typescript
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children, requiredRole }: {
+    children: React.ReactNode;
+    requiredRole?: "customer" | "provider";
+}) => {
     const { user, loading } = useAuth();
 
     if (loading) return <LoadingSpinner />;
     if (!user) redirect("/auth/signin");
+    if (requiredRole && user.role !== requiredRole) {
+        redirect("/unauthorized");
+    }
 
     return <>{children}</>;
 };
@@ -140,7 +181,10 @@ interface Service {
     maxPets: number;
     requirements: string[];
     includes: string[];
+    images: string[];
     status: "active" | "inactive";
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface Booking {
@@ -148,17 +192,63 @@ interface Booking {
     customerId: string;
     providerId: string;
     serviceId: string;
-    scheduledDate: string;
-    scheduledTime: string;
-    status: BookingStatus;
+    date: string;
+    timeSlot: TimeSlot;
+    pets: Pet[];
     totalPrice: number;
+    status: BookingStatus;
     notes?: string;
     createdAt: string;
     updatedAt: string;
 }
 ```
 
-### 3. UI Components
+### 3. API Layer
+
+#### Provider API (`src/lib/providers.ts`)
+
+```typescript
+export const providerApi = {
+    createProvider: (data: CreateProviderData) => Promise<Provider>,
+    getProviderByUserId: (userId: string) => Promise<Provider>,
+    updateProvider: (providerId: string, data: UpdateProviderData) =>
+        Promise<Provider>,
+    getProviders: (filters?: ProviderFilters) => Promise<Provider[]>,
+    deleteProvider: (providerId: string) => Promise<boolean>,
+    isProvider: (userId: string) => Promise<boolean>,
+};
+```
+
+#### Service API (`src/lib/services.ts`)
+
+```typescript
+export const serviceApi = {
+    createService: (data: CreateServiceData) => Promise<Service>,
+    getServicesByProvider: (providerId: string) => Promise<Service[]>,
+    getServiceById: (serviceId: string) => Promise<Service>,
+    updateService: (serviceId: string, data: UpdateServiceData) =>
+        Promise<Service>,
+    deleteService: (serviceId: string) => Promise<boolean>,
+    getServices: (filters?: ServiceFilters) => Promise<Service[]>,
+};
+```
+
+#### Booking API (`src/lib/bookings.ts`)
+
+```typescript
+export const bookingApi = {
+    getProviderBookings: (providerId: string) => Promise<Booking[]>,
+    getCustomerBookings: (customerId: string) => Promise<Booking[]>,
+    getBooking: (bookingId: string) => Promise<Booking>,
+    updateBookingStatus: (bookingId: string, data: UpdateBookingRequest) =>
+        Promise<Booking>,
+    acceptBooking: (bookingId: string) => Promise<Booking>,
+    rejectBooking: (bookingId: string, reason?: string) => Promise<Booking>,
+    completeBooking: (bookingId: string) => Promise<Booking>,
+};
+```
+
+### 4. UI Components
 
 #### Provider Card (`src/components/provider-card.tsx`)
 
@@ -173,29 +263,29 @@ interface Booking {
 - Certification badges
 - Experience information
 
-**Props Interface:**
-
-```typescript
-interface ProviderCardProps {
-    provider: ServiceProvider;
-    services: Service[];
-    distance?: number;
-    showActions?: boolean;
-    className?: string;
-}
-```
-
-#### Navigation (`src/components/navigation.tsx`)
+#### Interactive Calendar (`src/components/ui/visualize-booking.tsx`)
 
 **Features:**
 
-- Responsive mobile menu
-- Authentication-aware links
-- User dropdown menu
-- Logo and branding
-- Search integration
+- Framer Motion animations
+- Monthly and weekly views
+- Booking visualization
+- Interactive day selection
+- Responsive design
+- Real-time availability updates
 
-### 4. State Management
+#### Map Integration (`src/components/mapbox-map.tsx`)
+
+**Features:**
+
+- Mapbox GL integration
+- Provider location markers
+- Interactive map controls
+- Search integration
+- Responsive design
+- Custom map styles
+
+### 5. State Management
 
 #### TanStack Query Setup (`src/lib/query-client.ts`)
 
@@ -210,23 +300,18 @@ export const queryClient = new QueryClient({
 });
 ```
 
-#### Providers Wrapper (`src/components/providers.tsx`)
+#### Notifications Context (`src/contexts/notifications-context.tsx`)
 
 ```typescript
-export const Providers = ({ children }: ProvidersProps) => {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-                {children}
-            </AuthProvider>
-            <Toaster />
-            <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-    );
-};
+interface NotificationsContextType {
+    notifications: Notification[];
+    addNotification: (notification: Omit<Notification, "id">) => void;
+    removeNotification: (id: string) => void;
+    clearAllNotifications: () => void;
+}
 ```
 
-### 5. Styling Patterns
+### 6. Styling Patterns
 
 #### TailwindCSS + shadcn/ui
 
@@ -248,7 +333,7 @@ const buttonClasses = cn(
 );
 ```
 
-### 6. Testing Strategy
+### 7. Testing Strategy
 
 #### Test Setup (`src/test/setup.ts`)
 
@@ -264,7 +349,9 @@ const render = (ui: React.ReactElement, options?: RenderOptions) => {
         wrapper: ({ children }) => (
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    {children}
+                    <NotificationsProvider>
+                        {children}
+                    </NotificationsProvider>
                 </AuthProvider>
             </QueryClientProvider>
         ),
@@ -272,13 +359,6 @@ const render = (ui: React.ReactElement, options?: RenderOptions) => {
     });
 };
 ```
-
-#### Component Tests
-
-- **Unit tests** for individual components
-- **Mock data** for consistent testing
-- **Accessibility testing** with jest-dom matchers
-- **User interaction testing** with user-event
 
 ## Development Patterns
 
@@ -348,9 +428,17 @@ const handleSubmit = async (data: FormData) => {
     try {
         setLoading(true);
         await submitData(data);
-        toast.success("Success!");
+        addNotification({
+            type: "success",
+            title: "Success!",
+            message: "Data submitted successfully",
+        });
     } catch (error) {
-        toast.error("Something went wrong");
+        addNotification({
+            type: "error",
+            title: "Error",
+            message: "Something went wrong",
+        });
     } finally {
         setLoading(false);
     }
@@ -377,11 +465,17 @@ const handleSubmit = async (data: FormData) => {
 ### Required Environment Variables (`.env.local`)
 
 ```bash
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-NEXT_PUBLIC_CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Mapbox Configuration
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+
+# Next.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
 ```
 
 ### Package Scripts
@@ -389,12 +483,13 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret
 ```json
 {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
-    "lint": "next lint",
-    "test": "vitest --run",
-    "test:watch": "vitest",
-    "e2e": "playwright test"
+    "lint": "eslint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
 }
 ```
 
@@ -403,45 +498,129 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret
 ### ✅ Completed Features
 
 1. **Authentication System**
-   - Sign-in/Sign-up pages
-   - Protected routes
+   - Sign-in/Sign-up pages with role selection
+   - Protected routes with role-based access
    - User context management
-   - Role-based access
+   - Password reset functionality
 
-2. **Core Pages**
-   - Homepage with hero section
-   - Search functionality
-   - Provider profiles
-   - User profile management
+2. **Provider Management**
+   - Provider registration and onboarding
+   - Provider dashboard with analytics
+   - Service management (CRUD operations)
+   - Profile editing and management
+   - Availability management
 
-3. **UI Components**
+3. **Service Management**
+   - Create, read, update, delete services
+   - Service categories based on provider type
+   - Service requirements and includes
+   - Pricing and duration management
+   - Service status management
+
+4. **Booking System**
+   - Booking creation and management
+   - Booking status updates (pending, confirmed, completed, cancelled)
+   - Provider booking dashboard
+   - Interactive calendar visualization
+   - Booking notifications
+
+5. **Search & Discovery**
+   - Advanced search with filters
+   - Map-based provider discovery
+   - Service category filtering
+   - Location-based search
+   - Provider rating and review display
+
+6. **UI Components**
    - Provider cards with ratings
    - Navigation with mobile menu
    - Search filters and results
+   - Interactive maps with Mapbox
    - Responsive layout
+   - Notification system
+   - Modal dialogs and forms
 
-4. **Testing Infrastructure**
+7. **Database Integration**
+   - Complete Supabase schema
+   - Row Level Security (RLS) policies
+   - Real-time subscriptions
+   - File storage for images
+   - Database functions and triggers
+
+8. **API Layer**
+   - RESTful API endpoints
+   - Booking management API
+   - Provider and service APIs
+   - Error handling and validation
+   - Type-safe API responses
+
+9. **Testing Infrastructure**
    - Unit tests for components
    - Test utilities and setup
    - Mock data for testing
+   - E2E test framework setup
 
 ### 🔄 In Progress / Next Steps
 
-1. **Database Integration**
-   - Supabase schema setup
-   - Data fetching with React Query
-   - Real-time updates
-
-2. **Advanced Features**
-   - Booking flow implementation
-   - Payment integration
+1. **Advanced Features**
+   - Payment integration (Stripe)
+   - Real-time chat between customers and providers
    - Review and rating system
-   - Provider dashboard
+   - Advanced analytics dashboard
+   - Email notifications
 
-3. **Performance Optimization**
-   - Image optimization
-   - Caching strategies
+2. **Performance Optimization**
+   - Image optimization with Next.js Image
+   - Caching strategies with React Query
    - Bundle optimization
+   - Lazy loading for components
+
+3. **Mobile Experience**
+   - Progressive Web App (PWA) features
+   - Mobile-specific optimizations
+   - Touch-friendly interactions
+
+## Database Schema
+
+### Core Tables
+
+- **users** - User accounts and profiles
+- **providers** - Service providers (groomers, vets, etc.)
+- **services** - Individual services offered by providers
+- **pets** - Pet profiles
+- **bookings** - Appointment bookings
+- **reviews** - Customer reviews and ratings
+
+### Communication
+
+- **conversations** - Chat conversations
+- **messages** - Individual messages
+- **notifications** - User notifications
+
+### Additional
+
+- **favorites** - User's favorite providers
+- **service_categories** - Service type categories
+
+### Storage Buckets
+
+- **Public**: avatars, provider-images, pet-images, service-images,
+  review-images
+- **Private**: documents, messages
+
+### Security Features
+
+- Row Level Security (RLS) on all tables
+- User authentication with Supabase Auth
+- File access controls based on ownership
+- Data validation with constraints and triggers
+
+### Database Functions
+
+- `search_providers()` - Geographic search with filters
+- `get_provider_availability()` - Check availability slots
+- `create_booking()` - Booking creation with validation
+- `get_user_dashboard()` - Dashboard data for users/providers
 
 ## Code Quality Standards
 
@@ -487,11 +666,20 @@ pnpm test
 # Run tests in watch mode
 pnpm test:watch
 
+# Run tests with UI
+pnpm test:ui
+
 # Build for production
 pnpm build
 
 # Start production server
 pnpm start
+
+# Run E2E tests
+pnpm e2e
+
+# Run E2E tests with UI
+pnpm e2e:ui
 ```
 
 ### Adding New Components
@@ -543,6 +731,20 @@ supabase gen types typescript --local > src/types/supabase.ts
 - **ARIA attributes** - for complex interactions
 - **Keyboard navigation** - ensure all features are keyboard accessible
 - **Focus management** - proper focus handling in modals/dropdowns
+
+### 5. Error Handling
+
+- **Try-catch blocks** for async operations
+- **User-friendly error messages** via notifications
+- **Graceful degradation** for failed operations
+- **Loading states** for better UX
+
+### 6. Security
+
+- **Input validation** on both client and server
+- **SQL injection prevention** with parameterized queries
+- **XSS prevention** with proper sanitization
+- **Authentication checks** on protected routes
 
 This guide provides the foundation for continuing development in the same style
 and patterns. Follow these conventions for consistency and maintainability.

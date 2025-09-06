@@ -118,6 +118,23 @@ export const providerApi = {
         throw error
       }
 
+      // Transform snake_case to camelCase for frontend compatibility
+      if (provider) {
+        return {
+          ...provider,
+          businessName: provider.business_name,
+          businessType: provider.business_type,
+          contactInfo: provider.contact_info,
+          businessHours: provider.business_hours,
+          priceRange: provider.price_range,
+          experienceYears: provider.experience_years,
+          isVerified: provider.is_verified,
+          verificationDocuments: provider.verification_documents,
+          createdAt: provider.created_at,
+          updatedAt: provider.updated_at
+        }
+      }
+
       return provider
     } catch (error) {
       console.error('Error in getProviderByUserId:', error)
@@ -128,9 +145,24 @@ export const providerApi = {
   // Update provider profile
   async updateProvider(providerId: string, data: UpdateProviderData) {
     try {
+      // Transform camelCase to snake_case for database
+      const dbData: any = {}
+      if (data.businessName) dbData.business_name = data.businessName
+      if (data.businessType) dbData.business_type = data.businessType
+      if (data.contactInfo) dbData.contact_info = data.contactInfo
+      if (data.businessHours) dbData.business_hours = data.businessHours
+      if (data.priceRange) dbData.price_range = data.priceRange
+      if (data.experienceYears) dbData.experience_years = data.experienceYears
+      if (data.certifications) dbData.certifications = data.certifications
+      if (data.images) dbData.images = data.images
+      if (data.description) dbData.description = data.description
+      if (data.services) dbData.services = data.services
+      if (data.location) dbData.location = data.location
+      if (data.availability) dbData.availability = data.availability
+
       const { data: provider, error } = await supabase
         .from('providers')
-        .update(data)
+        .update(dbData)
         .eq('id', providerId)
         .select()
         .single()
@@ -138,6 +170,23 @@ export const providerApi = {
       if (error) {
         console.error('Error updating provider:', error)
         throw error
+      }
+
+      // Transform snake_case to camelCase for frontend compatibility
+      if (provider) {
+        return {
+          ...provider,
+          businessName: provider.business_name,
+          businessType: provider.business_type,
+          contactInfo: provider.contact_info,
+          businessHours: provider.business_hours,
+          priceRange: provider.price_range,
+          experienceYears: provider.experience_years,
+          isVerified: provider.is_verified,
+          verificationDocuments: provider.verification_documents,
+          createdAt: provider.created_at,
+          updatedAt: provider.updated_at
+        }
       }
 
       return provider
@@ -150,9 +199,24 @@ export const providerApi = {
   // Update provider by user ID
   async updateProviderByUserId(userId: string, data: UpdateProviderData) {
     try {
+      // Transform camelCase to snake_case for database
+      const dbData: any = {}
+      if (data.businessName) dbData.business_name = data.businessName
+      if (data.businessType) dbData.business_type = data.businessType
+      if (data.contactInfo) dbData.contact_info = data.contactInfo
+      if (data.businessHours) dbData.business_hours = data.businessHours
+      if (data.priceRange) dbData.price_range = data.priceRange
+      if (data.experienceYears) dbData.experience_years = data.experienceYears
+      if (data.certifications) dbData.certifications = data.certifications
+      if (data.images) dbData.images = data.images
+      if (data.description) dbData.description = data.description
+      if (data.services) dbData.services = data.services
+      if (data.location) dbData.location = data.location
+      if (data.availability) dbData.availability = data.availability
+
       const { data: provider, error } = await supabase
         .from('providers')
-        .update(data)
+        .update(dbData)
         .eq('user_id', userId)
         .select()
         .single()
@@ -160,6 +224,23 @@ export const providerApi = {
       if (error) {
         console.error('Error updating provider by user ID:', error)
         throw error
+      }
+
+      // Transform snake_case to camelCase for frontend compatibility
+      if (provider) {
+        return {
+          ...provider,
+          businessName: provider.business_name,
+          businessType: provider.business_type,
+          contactInfo: provider.contact_info,
+          businessHours: provider.business_hours,
+          priceRange: provider.price_range,
+          experienceYears: provider.experience_years,
+          isVerified: provider.is_verified,
+          verificationDocuments: provider.verification_documents,
+          createdAt: provider.created_at,
+          updatedAt: provider.updated_at
+        }
       }
 
       return provider
@@ -200,7 +281,20 @@ export const providerApi = {
         throw error
       }
 
-      return providers
+      // Transform snake_case to camelCase for frontend compatibility
+      return providers?.map(provider => ({
+        ...provider,
+        businessName: provider.business_name,
+        businessType: provider.business_type,
+        contactInfo: provider.contact_info,
+        businessHours: provider.business_hours,
+        priceRange: provider.price_range,
+        experienceYears: provider.experience_years,
+        isVerified: provider.is_verified,
+        verificationDocuments: provider.verification_documents,
+        createdAt: provider.created_at,
+        updatedAt: provider.updated_at
+      })) || []
     } catch (error) {
       console.error('Error in getProviders:', error)
       throw error
@@ -244,6 +338,98 @@ export const providerApi = {
       return !!provider
     } catch (error) {
       console.error('Error in isProvider:', error)
+      throw error
+    }
+  },
+
+  // Search providers with filters and services
+  async searchProviders(filters?: {
+    category?: string
+    location?: string
+    priceRange?: { min: number; max: number }
+    rating?: number
+    distance?: number
+    date?: string
+  }) {
+    try {
+      let query = supabase
+        .from('providers')
+        .select(`
+          *,
+          users!inner(id, full_name, email, avatar_url)
+        `)
+        .eq('status', 'active')
+
+      // Apply category filter
+      if (filters?.category) {
+        query = query.contains('services', [filters.category])
+      }
+
+      // Apply rating filter
+      if (filters?.rating && filters.rating > 0) {
+        query = query.gte('rating', filters.rating)
+      }
+
+      // Apply price range filter
+      if (filters?.priceRange) {
+        query = query.gte('price_range->min', filters.priceRange.min)
+        query = query.lte('price_range->max', filters.priceRange.max)
+      }
+
+      const { data: providers, error } = await query
+
+      if (error) {
+        console.error('Error searching providers:', error)
+        throw error
+      }
+
+      // Transform snake_case to camelCase and add services
+      const transformedProviders = await Promise.all(
+        (providers || []).map(async (provider) => {
+          // Fetch services for this provider
+          const { data: services } = await supabase
+            .from('services')
+            .select('*')
+            .eq('provider_id', provider.id)
+            .eq('is_active', true)
+
+          // Transform provider data
+          const transformedProvider = {
+            ...provider,
+            businessName: provider.business_name,
+            businessType: provider.business_type,
+            contactInfo: provider.contact_info,
+            businessHours: provider.business_hours,
+            priceRange: provider.price_range,
+            experienceYears: provider.experience_years,
+            isVerified: provider.is_verified,
+            verificationDocuments: provider.verification_documents,
+            createdAt: provider.created_at,
+            updatedAt: provider.updated_at
+          }
+
+          // Transform services data
+          const transformedServices = (services || []).map(service => ({
+            ...service,
+            providerId: service.provider_id,
+            duration: service.duration_minutes,
+            maxPets: service.max_pets,
+            status: service.is_active ? 'active' : 'inactive',
+            createdAt: service.created_at,
+            updatedAt: service.updated_at
+          }))
+
+          return {
+            provider: transformedProvider,
+            services: transformedServices,
+            distance: Math.random() * 10 + 1 // Mock distance for now
+          }
+        })
+      )
+
+      return transformedProviders
+    } catch (error) {
+      console.error('Error in searchProviders:', error)
       throw error
     }
   }
