@@ -203,7 +203,7 @@ BEGIN
             ID = P_PROVIDER_ID;
     RETURN BOOKING_ID;
 END;
-LANGUAGE         PLPGSQL SECURITY DEFINER;
+PLPGSQL          SECURITY DEFINER;
  
 -- Create function to get user dashboard data
 CREATE           OR REPLACE
@@ -435,4 +435,4 @@ FROM
     LEFT JOIN PUBLIC.SERVICES S
     ON S.ID = B.SERVICE_ID
     LEFT JOIN PUBLIC.PETS PET
-    ON PET.ID = B.PET_ID          ;
+    ON PET.ID = B.PET_ID;
