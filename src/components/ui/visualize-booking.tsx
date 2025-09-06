@@ -149,7 +149,7 @@ const InteractiveCalendar = React.forwardRef<
       })
 
       const meetingInfo = dayBookings.map(booking => ({
-        date: dayDate.toLocaleDateString('en-US', { 
+        date: dayDate.toLocaleDateString('en-GB', { 
           weekday: 'short', 
           day: 'numeric', 
           month: 'short' 

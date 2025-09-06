@@ -145,13 +145,13 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   }
 
   const getDateAvailability = (date: Date) => {
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+    const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase()
     return getDayAvailability(dayName)
   }
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date)
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+    const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase()
     setSelectedDay(dayName)
     
     const dayAvailability = getDayAvailability(dayName)
@@ -318,8 +318,11 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           }
 
           const dayAvailability = getDateAvailability(date)
+          const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase()
           const isToday = date.toDateString() === new Date().toDateString()
-          const isPast = date < new Date().setHours(0, 0, 0, 0)
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          const isPast = date < today
 
           return (
             <motion.div
@@ -338,14 +341,22 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                 <span className={`text-sm font-medium ${isPast ? 'text-gray-400' : 'text-gray-900'}`}>
                   {day}
                 </span>
-                {dayAvailability.available && (
-                  <div className="flex items-center space-x-1 mt-1">
-                    <Check className="h-3 w-3 text-green-500" />
-                    <span className="text-xs text-green-600">
-                      {getTimeSlotsForDay(dayName).length} slot{getTimeSlotsForDay(dayName).length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                )}
+                {dayAvailability.available && dayName && (() => {
+                  try {
+                    const slots = getTimeSlotsForDay(dayName)
+                    return (
+                      <div className="flex items-center space-x-1 mt-1">
+                        <Check className="h-3 w-3 text-green-500" />
+                        <span className="text-xs text-green-600">
+                          {slots.length} slot{slots.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    )
+                  } catch (error) {
+                    console.error('Error getting time slots for day:', dayName, error)
+                    return null
+                  }
+                })()}
               </div>
             </motion.div>
           )

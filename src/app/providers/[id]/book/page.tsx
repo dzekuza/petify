@@ -301,7 +301,7 @@ export default function BookingPage() {
                             
                             <div className="text-right ml-6">
                               <div className="text-2xl font-bold text-gray-900 mb-2">
-                                ${service.price}
+                                €{service.price}
                               </div>
                               <Button onClick={() => handleServiceSelect(service)}>
                                 Book This Service

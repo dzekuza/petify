@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
 const supabaseUrl = 'https://bjmmipjnmtymaawryaid.supabase.co';

@@ -30,6 +30,14 @@ export const uploadFile = async (
     // Create the full path
     const filePath = folder ? `${folder}/${finalFileName}` : finalFileName
     
+    console.log('Uploading file:', {
+      bucket,
+      filePath,
+      fileName: finalFileName,
+      fileSize: file.size,
+      fileType: file.type
+    })
+    
     // Upload the file
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -39,10 +47,15 @@ export const uploadFile = async (
       })
     
     if (error) {
-      console.error('Upload error:', error)
-      return { data: null, error: new Error(error.message) }
+      console.error('Upload error:', {
+        message: error.message,
+        bucket,
+        filePath
+      })
+      return { data: null, error: new Error(`Upload failed: ${error.message}`) }
     }
     
+    console.log('Upload successful:', data)
     return { data, error: null }
   } catch (error) {
     console.error('Upload error:', error)
@@ -99,7 +112,7 @@ export const uploadProfileImage = async (
 ): Promise<UploadResult> => {
   return uploadFile(file, {
     bucket: 'profile-images',
-    folder: userId,
+    folder: `users/${userId}`,
     fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`
   })
 }
@@ -113,7 +126,7 @@ export const uploadServiceImage = async (
 ): Promise<UploadResult> => {
   return uploadFile(file, {
     bucket: 'service-images',
-    folder: serviceId,
+    folder: `services/${serviceId}`,
     fileName: `service-${Date.now()}.${file.name.split('.').pop()}`
   })
 }
@@ -127,7 +140,7 @@ export const uploadCoverImage = async (
 ): Promise<UploadResult> => {
   return uploadFile(file, {
     bucket: 'profile-images',
-    folder: providerId,
+    folder: `providers/${providerId}`,
     fileName: `cover-${Date.now()}.${file.name.split('.').pop()}`
   })
 }

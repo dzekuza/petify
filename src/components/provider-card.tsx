@@ -57,7 +57,7 @@ export const ProviderCard = ({
 
   const getAvailabilityStatus = () => {
     const now = new Date()
-    const currentDay = now.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase() as keyof typeof provider.availability
+    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'short' }).toLowerCase() as keyof typeof provider.availability
     const todaySlots = provider.availability[currentDay] || []
     
     if (todaySlots.length === 0) return { status: 'closed', text: 'Closed today' }
@@ -209,7 +209,7 @@ export const ProviderCard = ({
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-gray-600">
               <span className="font-medium text-lg text-gray-900">
-                ${provider.priceRange.min}-${provider.priceRange.max}
+                €{provider.priceRange.min}-€{provider.priceRange.max}
               </span>
               <span className="ml-1">per service</span>
             </div>

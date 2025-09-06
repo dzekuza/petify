@@ -106,7 +106,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
   const getAvailableTimeSlots = () => {
     if (!selectedDate) return []
     
-    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
+    const dayName = selectedDate.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     const dayAvailability = provider.availability[dayName]
     
     if (!dayAvailability) return []
@@ -116,8 +116,8 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
       return dayAvailability.filter(slot => slot.available)
     } else if (typeof dayAvailability === 'object' && dayAvailability !== null) {
       // Handle object format like { start: '09:00', end: '17:00', available: true }
-      if ('available' in dayAvailability && dayAvailability.available) {
-        return [dayAvailability]
+      if ('available' in dayAvailability && (dayAvailability as any).available) {
+        return [dayAvailability as any]
       }
     }
     
@@ -292,12 +292,12 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Service Price</span>
-                    <span className="font-medium">${service.price} × {selectedPets.length}</span>
+                    <span className="font-medium">€{service.price} × {selectedPets.length}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-2">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-900">Total</span>
-                      <span className="text-lg font-bold text-gray-900">${calculateTotal()}</span>
+                      <span className="text-lg font-bold text-gray-900">€{calculateTotal()}</span>
                     </div>
                   </div>
                 </CardContent>

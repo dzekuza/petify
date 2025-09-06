@@ -15,7 +15,6 @@ const imgPetTrainingIcon = '/abf5832628a6acaf2c4259ad14de133d3866577f.png'
 const imgPetsPairingIcon = '/dad9cde557f42c866425d0fe77924deee8551656.png'
 const imgPetVeterinaryIcon = '/1ad308669bee0a61d08eb85cb050afe5af94b466.png'
 const imgPetAdsIcon = '/e9e2b26d5bf286f094c7cdffe862fc917fbe23f6.png'
-const imgLine3 = '/141f5c9733757f90f60bd082ddd02094f142af43.svg'
 
 const serviceCategories: { value: ServiceCategory; label: string; icon: string }[] = [
   { value: 'grooming', label: 'Kirpyklos', icon: imgAnimalCareIcon },
@@ -108,9 +107,9 @@ export const HeroSection = () => {
 
           {/* Search Form */}
           <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
-            <div className="flex flex-col lg:flex-row gap-6 items-center justify-start">
+            <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 items-end">
               {/* Location */}
-              <div className="flex flex-col gap-1 w-full lg:w-28">
+              <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
                   Kur ieskote?
                 </label>
@@ -124,18 +123,12 @@ export const HeroSection = () => {
               </div>
 
               {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14">
-                <Image
-                  src={imgLine3}
-                  alt=""
-                  width={1}
-                  height={57}
-                  className="rotate-90"
-                />
+              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
+                <div className="w-px h-12 bg-gray-300"></div>
               </div>
 
               {/* Price From */}
-              <div className="flex flex-col gap-1 w-full lg:w-28">
+              <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
                   Kaina nuo
                 </label>
@@ -153,18 +146,12 @@ export const HeroSection = () => {
               </div>
 
               {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14">
-                <Image
-                  src={imgLine3}
-                  alt=""
-                  width={1}
-                  height={57}
-                  className="rotate-90"
-                />
+              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
+                <div className="w-px h-12 bg-gray-300"></div>
               </div>
 
               {/* Price To */}
-              <div className="flex flex-col gap-1 w-full lg:w-28">
+              <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
                   Kaina iki
                 </label>
@@ -182,18 +169,12 @@ export const HeroSection = () => {
               </div>
 
               {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14">
-                <Image
-                  src={imgLine3}
-                  alt=""
-                  width={1}
-                  height={57}
-                  className="rotate-90"
-                />
+              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
+                <div className="w-px h-12 bg-gray-300"></div>
               </div>
 
               {/* Date */}
-              <div className="flex flex-col gap-1 w-full lg:w-28">
+              <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="font-bold text-sm text-black">
                   Data
                 </label>
@@ -209,10 +190,10 @@ export const HeroSection = () => {
               </div>
 
               {/* Search Button */}
-              <div className="w-full lg:w-auto">
+              <div className="lg:col-span-2">
                 <Button 
                   onClick={handleSearch}
-                  className="w-full lg:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold"
+                  className="w-full px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold"
                 >
                   <Search className="h-4 w-4 mr-2" />
                   Search

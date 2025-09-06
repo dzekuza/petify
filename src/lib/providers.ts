@@ -427,7 +427,7 @@ export const providerApi = {
             images: provider.images || [],
             certifications: provider.certifications || [],
             experience: provider.experience_years || 0,
-            status: provider.status || 'active',
+            status: (provider.status || 'active') as 'active' | 'inactive' | 'pending',
             createdAt: provider.created_at,
             updatedAt: provider.updated_at
           }
@@ -445,7 +445,7 @@ export const providerApi = {
             requirements: service.requirements || [],
             includes: service.includes || [],
             images: service.images || [],
-            status: service.is_active ? 'active' : 'inactive',
+            status: service.is_active ? 'active' as const : 'inactive' as const,
             createdAt: service.created_at,
             updatedAt: service.updated_at
           }))

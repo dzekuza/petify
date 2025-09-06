@@ -344,7 +344,7 @@ export default function ProviderDetailPage() {
                           </div>
                           <div className="text-right ml-4">
                             <div className="text-lg font-semibold text-gray-900">
-                              ${service.price}
+                              €{service.price}
                             </div>
                             <Button size="sm" className="mt-2" asChild>
                               <Link href={`/providers/${params.id}/book`}>
@@ -401,7 +401,7 @@ export default function ProviderDetailPage() {
                 <CardContent className="space-y-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">
-                      ${provider.priceRange.min}-${provider.priceRange.max}
+                      €{provider.priceRange.min}-€{provider.priceRange.max}
                     </div>
                     <div className="text-sm text-gray-600">per service</div>
                   </div>

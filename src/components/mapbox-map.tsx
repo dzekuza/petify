@@ -114,9 +114,9 @@ export const MapboxMap = ({
 
   const formatPrice = (priceRange: { min: number; max: number }) => {
     if (priceRange.min === priceRange.max) {
-      return `$${priceRange.min}`
+      return `€${priceRange.min}`
     }
-    return `$${priceRange.min}-${priceRange.max}`
+    return `€${priceRange.min}-€${priceRange.max}`
   }
 
   if (!MAPBOX_CONFIG.accessToken) {

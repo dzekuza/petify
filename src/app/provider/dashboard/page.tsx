@@ -585,7 +585,7 @@ export default function ProviderDashboard() {
         priceRange: {
           min: parseFloat(editProfileForm.priceRange.min),
           max: parseFloat(editProfileForm.priceRange.max),
-          currency: 'USD'
+          currency: 'EUR'
         },
         availability: editProfileForm.availability,
         certifications: editProfileForm.certifications,
@@ -1021,7 +1021,7 @@ export default function ProviderDashboard() {
                               <h4 className="font-medium text-gray-900 mb-2">{service.name}</h4>
                               <p className="text-sm text-gray-600 mb-3">{service.description}</p>
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span>${service.price}</span>
+                                <span>€{service.price}</span>
                                 <span>{service.duration} min</span>
                                 <span>Max {service.maxPets} pet{service.maxPets > 1 ? 's' : ''}</span>
                               </div>
@@ -1148,7 +1148,7 @@ export default function ProviderDashboard() {
                             <div>
                               <p className="text-sm font-medium text-gray-900">Price Range</p>
                               <p className="text-sm text-gray-600">
-                                ${provider?.priceRange.min || 0} - ${provider?.priceRange.max || 0}
+                                €{provider?.priceRange.min || 0} - €{provider?.priceRange.max || 0}
                               </p>
                             </div>
                           </div>
@@ -1557,7 +1557,7 @@ export default function ProviderDashboard() {
                         priceRange: {
                           min: parseFloat(profileForm.priceRange.min),
                           max: parseFloat(profileForm.priceRange.max),
-                          currency: 'USD'
+                          currency: 'EUR'
                         },
                         availability: profileForm.availability,
                         certifications: profileForm.certifications,

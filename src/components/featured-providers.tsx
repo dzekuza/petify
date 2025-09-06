@@ -111,7 +111,7 @@ export const FeaturedProviders = () => {
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />
-                    ${provider.priceRange.min}-${provider.priceRange.max}
+                    €{provider.priceRange.min}-€{provider.priceRange.max}
                   </div>
                 </div>
 
