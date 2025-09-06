@@ -42,7 +42,10 @@ export const MapboxMap = ({
   const [viewState, setViewState] = useState<ViewState>({
     longitude: MAPBOX_CONFIG.defaultCenter[0],
     latitude: MAPBOX_CONFIG.defaultCenter[1],
-    zoom: MAPBOX_CONFIG.defaultZoom
+    zoom: MAPBOX_CONFIG.defaultZoom,
+    bearing: 0,
+    pitch: 0,
+    padding: { top: 0, bottom: 0, left: 0, right: 0 }
   })
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
@@ -171,8 +174,6 @@ export const MapboxMap = ({
             longitude={result.provider.location.coordinates.lng}
             latitude={result.provider.location.coordinates.lat}
             onClick={() => handleMarkerClick(result)}
-            onMouseEnter={() => setHoveredProviderId(result.provider.id)}
-            onMouseLeave={() => setHoveredProviderId(null)}
           >
             <div
               className="cursor-pointer flex items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-110 border-2 border-white"

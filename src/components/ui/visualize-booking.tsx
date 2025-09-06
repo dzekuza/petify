@@ -205,7 +205,6 @@ const InteractiveCalendar = React.forwardRef<
       <motion.div
         ref={ref}
         className="relative mx-auto my-10 flex w-full flex-col items-center justify-center gap-8 lg:flex-row"
-        {...props}
       >
         <motion.div layout className="w-full max-w-lg">
           <motion.div

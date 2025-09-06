@@ -156,17 +156,18 @@ function SearchPageContent() {
 
       // Apply location filter
       if (filters.location) {
+        const locationFilter = filters.location.toLowerCase()
         filteredResults = filteredResults.filter(result => 
-          result.provider.location.city.toLowerCase().includes(filters.location.toLowerCase()) ||
-          result.provider.location.address.toLowerCase().includes(filters.location.toLowerCase())
+          result.provider.location.city.toLowerCase().includes(locationFilter) ||
+          result.provider.location.address.toLowerCase().includes(locationFilter)
         )
       }
 
       // Apply price range filter
-      if (filters.priceRange.min > 0 || filters.priceRange.max < 1000) {
+      if (filters.priceRange && (filters.priceRange.min > 0 || filters.priceRange.max < 1000)) {
         filteredResults = filteredResults.filter(result => 
-          result.provider.priceRange.min >= filters.priceRange.min &&
-          result.provider.priceRange.max <= filters.priceRange.max
+          result.provider.priceRange.min >= filters.priceRange!.min &&
+          result.provider.priceRange.max <= filters.priceRange!.max
         )
       }
 
@@ -180,7 +181,7 @@ function SearchPageContent() {
       // Apply date filter (check if provider is available on selected date)
       if (filters.date) {
         const selectedDate = new Date(filters.date)
-        const dayOfWeek = selectedDate.toLocaleLowerCase().slice(0, 3) // 'mon', 'tue', etc.
+        const dayOfWeek = selectedDate.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase() // 'mon', 'tue', etc.
         const dayKey = dayOfWeek === 'sun' ? 'sunday' : 
                       dayOfWeek === 'mon' ? 'monday' :
                       dayOfWeek === 'tue' ? 'tuesday' :

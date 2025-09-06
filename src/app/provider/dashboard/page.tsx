@@ -27,8 +27,8 @@ import {
   AlertCircle,
   X,
   Phone,
-  Mail,
-  MapPin
+  MapPin,
+  PawPrint
 } from 'lucide-react'
 import InteractiveCalendar from '@/components/ui/visualize-booking'
 import { ServiceProvider, Service, Booking, CreateServiceForm, ServiceCategory } from '@/types'
@@ -36,6 +36,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
 import { providerApi } from '@/lib/providers'
+import { serviceApi } from '@/lib/services'
 
 
 export default function ProviderDashboard() {
@@ -50,6 +51,7 @@ export default function ProviderDashboard() {
   const [showCompleteProfile, setShowCompleteProfile] = useState(false)
   const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false)
   const [showAddServiceModal, setShowAddServiceModal] = useState(false)
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false)
   const [profileForm, setProfileForm] = useState({
     businessDescription: '',
     priceRange: { min: '', max: '' },
@@ -78,6 +80,32 @@ export default function ProviderDashboard() {
     images: []
   })
   const [serviceFormLoading, setServiceFormLoading] = useState(false)
+  const [editProfileForm, setEditProfileForm] = useState({
+    businessName: '',
+    description: '',
+    phone: '',
+    email: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    experience: '',
+    priceRange: { min: '', max: '' },
+    availability: {
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+      saturday: false,
+      sunday: false
+    },
+    certifications: [] as string[],
+    coverImage: null as File | null
+  })
+  const [editProfileLoading, setEditProfileLoading] = useState(false)
+  const [editingService, setEditingService] = useState<Service | null>(null)
+  const [showEditServiceModal, setShowEditServiceModal] = useState(false)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -129,10 +157,14 @@ export default function ProviderDashboard() {
             setShowCompleteProfile(true)
           }
           
-          // TODO: Load services and bookings from API
-          // const providerServices = await serviceApi.getProviderServices(user.id)
+          // Load services from database
+          if (providerData) {
+            const providerServices = await serviceApi.getServicesByProvider(providerData.id)
+            setServices(providerServices)
+          }
+          
+          // TODO: Load bookings from API
           // const providerBookings = await bookingApi.getProviderBookings(user.id)
-          setServices([])
           setBookings([])
         }
         
@@ -246,14 +278,22 @@ export default function ProviderDashboard() {
     setServiceFormLoading(true)
 
     try {
-      // TODO: Replace with actual API call
-      // const newService = await serviceApi.createService(serviceForm)
+      if (!provider?.id) {
+        addNotification({
+          type: 'error',
+          title: 'Error',
+          message: 'Provider profile not found'
+        })
+        return
+      }
+
+      // Get the provider's service category from their profile
+      const providerCategory = provider.services?.[0] || 'grooming'
       
-      // For now, create a mock service
-      const newService: Service = {
-        id: `service-${Date.now()}`,
-        providerId: user?.id || '',
-        category: serviceForm.category,
+      // Create service in database
+      const newService = await serviceApi.createService({
+        providerId: provider.id,
+        category: providerCategory as ServiceCategory,
         name: serviceForm.name,
         description: serviceForm.description,
         price: serviceForm.price,
@@ -261,14 +301,29 @@ export default function ProviderDashboard() {
         maxPets: serviceForm.maxPets,
         requirements: serviceForm.requirements,
         includes: serviceForm.includes,
-        images: [],
-        status: 'active',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        images: []
+      })
+
+      // Convert database format to our Service type
+      const service: Service = {
+        id: newService.id,
+        providerId: newService.provider_id,
+        category: newService.category,
+        name: newService.name,
+        description: newService.description,
+        price: newService.price,
+        duration: newService.duration_minutes,
+        maxPets: newService.max_pets,
+        requirements: newService.requirements,
+        includes: newService.includes,
+        images: newService.images,
+        status: newService.is_active ? 'active' : 'inactive',
+        createdAt: newService.created_at,
+        updatedAt: newService.updated_at
       }
 
       // Update local state
-      setServices(prev => [...prev, newService])
+      setServices(prev => [...prev, service])
       
       // Reset form
       setServiceForm({
@@ -304,8 +359,260 @@ export default function ProviderDashboard() {
     }
   }
 
-  const handleServiceFormChange = (field: keyof CreateServiceForm, value: any) => {
+  const handleServiceFormChange = (field: keyof CreateServiceForm, value: string | number | string[]) => {
     setServiceForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleEditService = (service: Service) => {
+    setEditingService(service)
+    setServiceForm({
+      category: service.category,
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      duration: service.duration,
+      maxPets: service.maxPets,
+      requirements: service.requirements || [],
+      includes: service.includes || [],
+      images: []
+    })
+    setShowEditServiceModal(true)
+  }
+
+  const handleUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setServiceFormLoading(true)
+
+    try {
+      if (!editingService) {
+        addNotification({
+          type: 'error',
+          title: 'Error',
+          message: 'No service selected for editing'
+        })
+        return
+      }
+
+      // Update service in database
+      const updatedService = await serviceApi.updateService(editingService.id, {
+        name: serviceForm.name,
+        description: serviceForm.description,
+        price: serviceForm.price,
+        duration: serviceForm.duration,
+        maxPets: serviceForm.maxPets,
+        requirements: serviceForm.requirements,
+        includes: serviceForm.includes,
+        images: [] // TODO: Handle file uploads
+      })
+
+      // Convert database format to our Service type
+      const service: Service = {
+        id: updatedService.id,
+        providerId: updatedService.provider_id,
+        category: updatedService.category,
+        name: updatedService.name,
+        description: updatedService.description,
+        price: updatedService.price,
+        duration: updatedService.duration_minutes,
+        maxPets: updatedService.max_pets,
+        requirements: updatedService.requirements,
+        includes: updatedService.includes,
+        images: updatedService.images,
+        status: updatedService.is_active ? 'active' : 'inactive',
+        createdAt: updatedService.created_at,
+        updatedAt: updatedService.updated_at
+      }
+
+      // Update local state
+      setServices(prev => prev.map(s => s.id === editingService.id ? service : s))
+      
+      // Reset form and close modal
+      setEditingService(null)
+      setShowEditServiceModal(false)
+      setServiceForm({
+        category: 'grooming',
+        name: '',
+        description: '',
+        price: 0,
+        duration: 60,
+        maxPets: 1,
+        requirements: [],
+        includes: [],
+        images: []
+      })
+      
+      // Show success notification
+      addNotification({
+        type: 'success',
+        title: 'Service Updated',
+        message: 'Your service has been updated successfully!'
+      })
+    } catch (error) {
+      console.error('Error updating service:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to update service. Please try again.'
+      })
+    } finally {
+      setServiceFormLoading(false)
+    }
+  }
+
+  const handleDeleteService = async (serviceId: string) => {
+    if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      await serviceApi.deleteService(serviceId)
+      
+      // Update local state
+      setServices(prev => prev.filter(s => s.id !== serviceId))
+      
+      // Show success notification
+      addNotification({
+        type: 'success',
+        title: 'Service Deleted',
+        message: 'Your service has been deleted successfully.'
+      })
+    } catch (error) {
+      console.error('Error deleting service:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to delete service. Please try again.'
+      })
+    }
+  }
+
+  const handleOpenEditProfile = () => {
+    if (provider) {
+      setEditProfileForm({
+        businessName: provider.businessName || '',
+        description: provider.description || '',
+        phone: provider.location?.address || '', // This should be contact info
+        email: user?.email || '',
+        address: provider.location?.address || '',
+        city: provider.location?.city || '',
+        state: provider.location?.state || '',
+        zipCode: provider.location?.zipCode || '',
+        experience: provider.experience?.toString() || '',
+        priceRange: {
+          min: provider.priceRange?.min?.toString() || '',
+          max: provider.priceRange?.max?.toString() || ''
+        },
+        availability: {
+          monday: Array.isArray(provider.availability?.monday) ? provider.availability.monday.length > 0 : provider.availability?.monday || true,
+          tuesday: Array.isArray(provider.availability?.tuesday) ? provider.availability.tuesday.length > 0 : provider.availability?.tuesday || true,
+          wednesday: Array.isArray(provider.availability?.wednesday) ? provider.availability.wednesday.length > 0 : provider.availability?.wednesday || true,
+          thursday: Array.isArray(provider.availability?.thursday) ? provider.availability.thursday.length > 0 : provider.availability?.thursday || true,
+          friday: Array.isArray(provider.availability?.friday) ? provider.availability.friday.length > 0 : provider.availability?.friday || true,
+          saturday: Array.isArray(provider.availability?.saturday) ? provider.availability.saturday.length > 0 : provider.availability?.saturday || false,
+          sunday: Array.isArray(provider.availability?.sunday) ? provider.availability.sunday.length > 0 : provider.availability?.sunday || false
+        },
+        certifications: provider.certifications || [],
+        coverImage: null
+      })
+    }
+    setShowEditProfileModal(true)
+  }
+
+  const handleEditProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEditProfileLoading(true)
+
+    try {
+      if (!user?.id || !provider?.id) {
+        addNotification({
+          type: 'error',
+          title: 'Error',
+          message: 'User or provider not found'
+        })
+        return
+      }
+
+      // Prepare update data
+      const updateData = {
+        businessName: editProfileForm.businessName,
+        description: editProfileForm.description,
+        location: {
+          address: editProfileForm.address,
+          city: editProfileForm.city,
+          state: editProfileForm.state,
+          zip: editProfileForm.zipCode,
+          coordinates: {
+            lat: provider.location?.coordinates?.lat || 0,
+            lng: provider.location?.coordinates?.lng || 0
+          }
+        },
+        contactInfo: {
+          phone: editProfileForm.phone,
+          email: editProfileForm.email
+        },
+        priceRange: {
+          min: parseFloat(editProfileForm.priceRange.min),
+          max: parseFloat(editProfileForm.priceRange.max),
+          currency: 'USD'
+        },
+        availability: editProfileForm.availability,
+        certifications: editProfileForm.certifications,
+        experienceYears: parseInt(editProfileForm.experience) || 0
+      }
+
+      // Update provider in database
+      const updatedProvider = await providerApi.updateProvider(provider.id, updateData)
+      
+      // Update local state
+      const serviceProvider: ServiceProvider = {
+        id: updatedProvider.id,
+        userId: updatedProvider.user_id,
+        businessName: updatedProvider.business_name,
+        description: updatedProvider.description || '',
+        services: updatedProvider.services || [],
+        location: {
+          address: updatedProvider.location?.address || '',
+          city: updatedProvider.location?.city || '',
+          state: updatedProvider.location?.state || '',
+          zipCode: updatedProvider.location?.zip || '',
+          coordinates: {
+            lat: updatedProvider.location?.coordinates?.lat || 0,
+            lng: updatedProvider.location?.coordinates?.lng || 0
+          }
+        },
+        rating: updatedProvider.rating || 0,
+        reviewCount: updatedProvider.review_count || 0,
+        priceRange: {
+          min: updatedProvider.price_range?.min || 0,
+          max: updatedProvider.price_range?.max || 0
+        },
+        availability: updatedProvider.availability || {},
+        images: updatedProvider.images || [],
+        certifications: updatedProvider.certifications || [],
+        experience: updatedProvider.experience_years || 0,
+        status: updatedProvider.status || 'active',
+        createdAt: updatedProvider.created_at,
+        updatedAt: updatedProvider.updated_at
+      }
+      
+      setProvider(serviceProvider)
+      setShowEditProfileModal(false)
+      
+      addNotification({
+        type: 'success',
+        title: 'Profile Updated',
+        message: 'Your business profile has been updated successfully!'
+      })
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to update profile. Please try again.'
+      })
+    } finally {
+      setEditProfileLoading(false)
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -639,11 +946,20 @@ export default function ProviderDashboard() {
                               </div>
                             </div>
                             <div className="flex space-x-2">
-                              <Button variant="outline" size="sm">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleEditService(service)}
+                              >
                                 <Edit className="h-4 w-4 mr-1" />
                                 Edit
                               </Button>
-                              <Button variant="outline" size="sm">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleDeleteService(service.id)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
                                 <Trash2 className="h-4 w-4 mr-1" />
                                 Delete
                               </Button>
@@ -658,47 +974,150 @@ export default function ProviderDashboard() {
               </TabsContent>
 
               <TabsContent value="profile" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Business Profile</CardTitle>
-                    <CardDescription>
-                      Manage your business information and settings
-                    </CardDescription>
+                <Card className="overflow-hidden">
+                  {/* Cover Image Section */}
+                  <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
+                    {provider?.images && provider.images.length > 0 ? (
+                      <img 
+                        src={provider.images[0]} 
+                        alt="Business cover" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <PawPrint className="h-16 w-16 mx-auto mb-2 opacity-50" />
+                          <p className="text-lg font-medium">No cover image</p>
+                          <p className="text-sm opacity-75">Add a cover image to make your profile stand out</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute top-4 right-4">
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={handleOpenEditProfile}
+                        className="bg-white/90 hover:bg-white"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Cover
+                      </Button>
+                    </div>
+                  </div>
+
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-2xl">{provider?.businessName || 'My Business'}</CardTitle>
+                        <CardDescription className="mt-2">
+                          {provider?.description || 'No description provided'}
+                        </CardDescription>
+                      </div>
+                      <Button onClick={handleOpenEditProfile} variant="outline">
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </div>
                   </CardHeader>
+
                   <CardContent>
                     <div className="space-y-6">
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Business Information</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Business Name
-                            </label>
-                            <p className="text-sm text-gray-600">{provider?.businessName}</p>
+                        <h4 className="font-medium text-gray-900 mb-4">Business Information</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                              <MapPin className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Location</p>
+                              <p className="text-sm text-gray-600">
+                                {provider?.location.city && provider?.location.state 
+                                  ? `${provider.location.city}, ${provider.location.state}`
+                                  : 'Not specified'
+                                }
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Experience
-                            </label>
-                            <p className="text-sm text-gray-600">{provider?.experience} years</p>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                              <Clock className="h-5 w-5 text-green-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Experience</p>
+                              <p className="text-sm text-gray-600">{provider?.experience || 0} years</p>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Location
-                            </label>
-                            <p className="text-sm text-gray-600">
-                              {provider?.location.city}, {provider?.location.state}
-                            </p>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-yellow-100 rounded-lg">
+                              <Star className="h-5 w-5 text-yellow-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Rating</p>
+                              <p className="text-sm text-gray-600">{provider?.rating || 0} stars</p>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Rating
-                            </label>
-                            <p className="text-sm text-gray-600">{provider?.rating} stars</p>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-purple-100 rounded-lg">
+                              <DollarSign className="h-5 w-5 text-purple-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Price Range</p>
+                              <p className="text-sm text-gray-600">
+                                ${provider?.priceRange.min || 0} - ${provider?.priceRange.max || 0}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-red-100 rounded-lg">
+                              <Phone className="h-5 w-5 text-red-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Contact</p>
+                              <p className="text-sm text-gray-600">{user?.email || 'Not provided'}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-indigo-100 rounded-lg">
+                              <Users className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">Reviews</p>
+                              <p className="text-sm text-gray-600">{provider?.reviewCount || 0} reviews</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <Button>Edit Profile</Button>
+
+                      {provider?.certifications && provider.certifications.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-3">Certifications</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {provider.certifications.map((cert, index) => (
+                              <Badge key={index} variant="secondary">
+                                {cert}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-3">Availability</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {Object.entries(provider?.availability || {}).map(([day, available]) => (
+                            <div key={day} className="flex items-center space-x-2">
+                              <div className={`w-3 h-3 rounded-full ${available ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                              <span className="text-sm capitalize">{day}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1023,7 +1442,6 @@ export default function ProviderDashboard() {
 
                       // Get user data from auth context
                       const userEmail = user.email || ''
-                      const userName = user.user_metadata?.full_name || ''
 
                       // Create provider data
                       const providerData = {
@@ -1150,24 +1568,15 @@ export default function ProviderDashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="serviceCategory">Service Category *</Label>
-                  <Select 
-                    value={serviceForm.category} 
-                    onValueChange={(value: ServiceCategory) => handleServiceFormChange('category', value)}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="grooming">Pet Grooming</SelectItem>
-                      <SelectItem value="veterinary">Veterinary</SelectItem>
-                      <SelectItem value="boarding">Pet Boarding</SelectItem>
-                      <SelectItem value="training">Pet Training</SelectItem>
-                      <SelectItem value="walking">Dog Walking</SelectItem>
-                      <SelectItem value="sitting">Pet Sitting</SelectItem>
-                      <SelectItem value="adoption">Adoption Services</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="serviceCategory">Service Category</Label>
+                  <Input
+                    id="serviceCategory"
+                    type="text"
+                    value={provider?.services?.[0] ? provider.services[0].charAt(0).toUpperCase() + provider.services[0].slice(1) : 'Grooming'}
+                    disabled
+                    className="mt-1 bg-gray-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Category is set based on your provider profile</p>
                 </div>
               </div>
 
@@ -1329,6 +1738,475 @@ export default function ProviderDashboard() {
                   disabled={serviceFormLoading || !serviceForm.name || !serviceForm.description || serviceForm.price <= 0}
                 >
                   {serviceFormLoading ? 'Creating Service...' : 'Create Service'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Profile Modal */}
+        <Dialog open={showEditProfileModal} onOpenChange={setShowEditProfileModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Business Profile</DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleEditProfile} className="space-y-6">
+              {/* Cover Image Upload */}
+              <div>
+                <Label>Cover Image</Label>
+                <p className="text-sm text-gray-600 mb-3">Upload a cover image for your business profile</p>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setEditProfileForm(prev => ({ ...prev, coverImage: file }))
+                      }
+                    }}
+                    className="hidden"
+                    id="cover-image-upload"
+                  />
+                  <label htmlFor="cover-image-upload" className="cursor-pointer">
+                    <div className="space-y-2">
+                      <div className="mx-auto h-12 w-12 text-gray-400">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {editProfileForm.coverImage ? editProfileForm.coverImage.name : 'Click to upload cover image'}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="editBusinessName">Business Name *</Label>
+                  <Input
+                    id="editBusinessName"
+                    type="text"
+                    value={editProfileForm.businessName}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, businessName: e.target.value }))}
+                    placeholder="Enter your business name"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editExperience">Years of Experience *</Label>
+                  <Input
+                    id="editExperience"
+                    type="number"
+                    min="0"
+                    value={editProfileForm.experience}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, experience: e.target.value }))}
+                    placeholder="0"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="editDescription">Business Description *</Label>
+                <Textarea
+                  id="editDescription"
+                  value={editProfileForm.description}
+                  onChange={(e) => setEditProfileForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your business and services..."
+                  className="mt-1"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="editPhone">Phone Number</Label>
+                  <Input
+                    id="editPhone"
+                    type="tel"
+                    value={editProfileForm.phone}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="(555) 123-4567"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editEmail">Email Address</Label>
+                  <Input
+                    id="editEmail"
+                    type="email"
+                    value={editProfileForm.email}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="your@email.com"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="editAddress">Address</Label>
+                <Input
+                  id="editAddress"
+                  type="text"
+                  value={editProfileForm.address}
+                  onChange={(e) => setEditProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="123 Main Street"
+                  className="mt-1"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="editCity">City</Label>
+                  <Input
+                    id="editCity"
+                    type="text"
+                    value={editProfileForm.city}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="City"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editState">State</Label>
+                  <Input
+                    id="editState"
+                    type="text"
+                    value={editProfileForm.state}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, state: e.target.value }))}
+                    placeholder="State"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editZipCode">ZIP Code</Label>
+                  <Input
+                    id="editZipCode"
+                    type="text"
+                    value={editProfileForm.zipCode}
+                    onChange={(e) => setEditProfileForm(prev => ({ ...prev, zipCode: e.target.value }))}
+                    placeholder="12345"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Price Range (per service) *</Label>
+                <div className="grid grid-cols-2 gap-4 mt-1">
+                  <div>
+                    <Input
+                      type="number"
+                      placeholder="Min price ($)"
+                      value={editProfileForm.priceRange.min}
+                      onChange={(e) => setEditProfileForm(prev => ({ 
+                        ...prev, 
+                        priceRange: { ...prev.priceRange, min: e.target.value } 
+                      }))}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="number"
+                      placeholder="Max price ($)"
+                      value={editProfileForm.priceRange.max}
+                      onChange={(e) => setEditProfileForm(prev => ({ 
+                        ...prev, 
+                        priceRange: { ...prev.priceRange, max: e.target.value } 
+                      }))}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label>Availability *</Label>
+                <p className="text-sm text-gray-600 mb-3">Select the days you're available</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(editProfileForm.availability).map(([day, available]) => (
+                    <div key={day} className="flex items-center space-x-3">
+                      <Checkbox
+                        checked={available}
+                        onCheckedChange={(checked) => 
+                          setEditProfileForm(prev => ({
+                            ...prev,
+                            availability: {
+                              ...prev.availability,
+                              [day]: checked
+                            }
+                          }))
+                        }
+                      />
+                      <span className="capitalize font-medium">{day}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label>Certifications (Optional)</Label>
+                <p className="text-sm text-gray-600 mb-3">Add any relevant certifications</p>
+                <div className="space-y-2">
+                  <Input 
+                    placeholder="Certification name" 
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        const value = e.currentTarget.value.trim()
+                        if (value && !editProfileForm.certifications.includes(value)) {
+                          setEditProfileForm(prev => ({
+                            ...prev,
+                            certifications: [...prev.certifications, value]
+                          }))
+                          e.currentTarget.value = ''
+                        }
+                      }
+                    }}
+                  />
+                  {editProfileForm.certifications.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {editProfileForm.certifications.map((cert, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {cert}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditProfileForm(prev => ({
+                                ...prev,
+                                certifications: prev.certifications.filter((_, i) => i !== index)
+                              }))
+                            }}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowEditProfileModal(false)}
+                  disabled={editProfileLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={editProfileLoading || !editProfileForm.businessName || !editProfileForm.description || !editProfileForm.experience}
+                >
+                  {editProfileLoading ? 'Updating Profile...' : 'Update Profile'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Service Modal */}
+        <Dialog open={showEditServiceModal} onOpenChange={setShowEditServiceModal}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Service</DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleUpdateService} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="editServiceName">Service Name *</Label>
+                  <Input
+                    id="editServiceName"
+                    type="text"
+                    value={serviceForm.name}
+                    onChange={(e) => handleServiceFormChange('name', e.target.value)}
+                    placeholder="e.g., Dog Grooming, Pet Sitting"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editServiceCategory">Service Category</Label>
+                  <Input
+                    id="editServiceCategory"
+                    type="text"
+                    value={provider?.services?.[0] ? provider.services[0].charAt(0).toUpperCase() + provider.services[0].slice(1) : 'Grooming'}
+                    disabled
+                    className="mt-1 bg-gray-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Category is set based on your provider profile</p>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="editServiceDescription">Service Description *</Label>
+                <Textarea
+                  id="editServiceDescription"
+                  value={serviceForm.description}
+                  onChange={(e) => handleServiceFormChange('description', e.target.value)}
+                  placeholder="Describe what your service includes and what makes it special..."
+                  className="mt-1"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="editServicePrice">Price ($) *</Label>
+                  <Input
+                    id="editServicePrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={serviceForm.price}
+                    onChange={(e) => handleServiceFormChange('price', parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editServiceDuration">Duration (minutes) *</Label>
+                  <Input
+                    id="editServiceDuration"
+                    type="number"
+                    min="15"
+                    step="15"
+                    value={serviceForm.duration}
+                    onChange={(e) => handleServiceFormChange('duration', parseInt(e.target.value) || 60)}
+                    placeholder="60"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="editMaxPets">Max Pets *</Label>
+                  <Input
+                    id="editMaxPets"
+                    type="number"
+                    min="1"
+                    value={serviceForm.maxPets}
+                    onChange={(e) => handleServiceFormChange('maxPets', parseInt(e.target.value) || 1)}
+                    placeholder="1"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Service Includes (Optional)</Label>
+                <p className="text-sm text-gray-600 mb-3">What's included in this service?</p>
+                <div className="space-y-2">
+                  <Input 
+                    placeholder="e.g., Bath, Nail trimming, Ear cleaning"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        const value = e.currentTarget.value.trim()
+                        if (value && !serviceForm.includes?.includes(value)) {
+                          handleServiceFormChange('includes', [...(serviceForm.includes || []), value])
+                          e.currentTarget.value = ''
+                        }
+                      }
+                    }}
+                  />
+                  {serviceForm.includes && serviceForm.includes.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {serviceForm.includes.map((item, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {item}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newIncludes = serviceForm.includes?.filter((_, i) => i !== index) || []
+                              handleServiceFormChange('includes', newIncludes)
+                            }}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <Label>Requirements (Optional)</Label>
+                <p className="text-sm text-gray-600 mb-3">Any special requirements for this service?</p>
+                <div className="space-y-2">
+                  <Input 
+                    placeholder="e.g., Up-to-date vaccinations, Pet must be friendly"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        const value = e.currentTarget.value.trim()
+                        if (value && !serviceForm.requirements?.includes(value)) {
+                          handleServiceFormChange('requirements', [...(serviceForm.requirements || []), value])
+                          e.currentTarget.value = ''
+                        }
+                      }
+                    }}
+                  />
+                  {serviceForm.requirements && serviceForm.requirements.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {serviceForm.requirements.map((item, index) => (
+                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                          {item}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newRequirements = serviceForm.requirements?.filter((_, i) => i !== index) || []
+                              handleServiceFormChange('requirements', newRequirements)
+                            }}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditServiceModal(false)
+                    setEditingService(null)
+                  }}
+                  disabled={serviceFormLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={serviceFormLoading || !serviceForm.name || !serviceForm.description || serviceForm.price <= 0}
+                >
+                  {serviceFormLoading ? 'Updating Service...' : 'Update Service'}
                 </Button>
               </div>
             </form>
