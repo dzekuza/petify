@@ -1,7 +1,10 @@
 -- Insert sample users (these would normally be created through Supabase Auth)
 -- Note: In production, users are created through the auth system
+-- Skipping seed data for now to focus on search functionality
 
 -- Insert sample providers
+-- Skipping for now
+/*
 INSERT INTO PUBLIC.PROVIDERS (
     USER_ID,
     BUSINESS_NAME,
@@ -193,3 +196,4 @@ INSERT INTO PUBLIC.REVIEWS (
     'My cat was well taken care of during our vacation. The facility is clean and the staff is friendly.',
     TRUE
 );
+*/

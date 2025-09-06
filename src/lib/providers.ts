@@ -390,29 +390,59 @@ export const providerApi = {
             .eq('provider_id', provider.id)
             .eq('is_active', true)
 
-          // Transform provider data
+          // Transform provider data to match ServiceProvider interface
           const transformedProvider = {
-            ...provider,
+            id: provider.id,
+            userId: provider.user_id,
             businessName: provider.business_name,
-            businessType: provider.business_type,
-            contactInfo: provider.contact_info,
-            businessHours: provider.business_hours,
-            priceRange: provider.price_range,
-            experienceYears: provider.experience_years,
-            isVerified: provider.is_verified,
-            verificationDocuments: provider.verification_documents,
+            description: provider.description,
+            services: provider.services || [],
+            location: {
+              address: provider.location?.address || '',
+              city: provider.location?.city || '',
+              state: provider.location?.state || '',
+              zipCode: provider.location?.zip || '',
+              coordinates: {
+                lat: provider.location?.coordinates?.lat || 0,
+                lng: provider.location?.coordinates?.lng || 0
+              }
+            },
+            rating: provider.rating || 0,
+            reviewCount: provider.review_count || 0,
+            priceRange: {
+              min: provider.price_range?.min || 0,
+              max: provider.price_range?.max || 100
+            },
+            availability: provider.availability || {
+              monday: [],
+              tuesday: [],
+              wednesday: [],
+              thursday: [],
+              friday: [],
+              saturday: [],
+              sunday: []
+            },
+            images: provider.images || [],
+            certifications: provider.certifications || [],
+            experience: provider.experience_years || 0,
+            status: provider.status || 'active',
             createdAt: provider.created_at,
-            updatedAt: provider.updated_at,
-            // Add user data if available
-            user: provider.users || null
+            updatedAt: provider.updated_at
           }
 
-          // Transform services data
+          // Transform services data to match Service interface
           const transformedServices = (services || []).map(service => ({
-            ...service,
+            id: service.id,
             providerId: service.provider_id,
+            category: service.category,
+            name: service.name,
+            description: service.description,
+            price: service.price,
             duration: service.duration_minutes,
             maxPets: service.max_pets,
+            requirements: service.requirements || [],
+            includes: service.includes || [],
+            images: service.images || [],
             status: service.is_active ? 'active' : 'inactive',
             createdAt: service.created_at,
             updatedAt: service.updated_at

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
 import { SearchFilters } from '@/components/search-filters'
+import { ProviderCard } from '@/components/provider-card'
 import { SearchResult } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Map, List, Filter } from 'lucide-react'
@@ -134,9 +135,10 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                   results.map((result) => (
                     <ProviderCard
                       key={result.provider.id}
-                      result={result}
-                      isSelected={selectedProviderId === result.provider.id}
-                      onClick={() => handleProviderClick(result)}
+                      provider={result.provider}
+                      services={result.services}
+                      distance={result.distance}
+                      className={selectedProviderId === result.provider.id ? 'ring-2 ring-blue-500' : ''}
                     />
                   ))
                 )}
@@ -191,9 +193,10 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 results.map((result) => (
                   <ProviderCard
                     key={result.provider.id}
-                    result={result}
-                    isSelected={selectedProviderId === result.provider.id}
-                    onClick={() => handleProviderClick(result)}
+                    provider={result.provider}
+                    services={result.services}
+                    distance={result.distance}
+                    className={selectedProviderId === result.provider.id ? 'ring-2 ring-blue-500' : ''}
                   />
                 ))
               )}
@@ -218,105 +221,3 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
   )
 }
 
-// Provider Card Component (Airbnb style)
-interface ProviderCardProps {
-  result: SearchResult
-  isSelected: boolean
-  onClick: () => void
-}
-
-const ProviderCard = ({ result, isSelected, onClick }: ProviderCardProps) => {
-  const formatPrice = (priceRange: { min: number; max: number }) => {
-    if (priceRange.min === priceRange.max) {
-      return `$${priceRange.min}`
-    }
-    return `$${priceRange.min}-${priceRange.max}`
-  }
-
-  const getServiceIcon = (service: string) => {
-    switch (service) {
-      case 'grooming':
-        return '🐕'
-      case 'veterinary':
-        return '🏥'
-      case 'boarding':
-        return '🏠'
-      case 'training':
-        return '🎓'
-      default:
-        return '🐾'
-    }
-  }
-
-  return (
-    <div
-      className={`cursor-pointer rounded-lg overflow-hidden border transition-all duration-200 ${
-        isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-md'
-      }`}
-      onClick={onClick}
-    >
-      {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-100 to-green-100">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl">
-            {getServiceIcon(result.provider.services[0])}
-          </span>
-        </div>
-        
-        {/* Heart Icon */}
-        <button className="absolute top-3 right-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
-          <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 text-sm mb-1">
-              {result.provider.businessName}
-            </h3>
-            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-              {result.provider.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Rating */}
-        <div className="flex items-center space-x-1 mb-2">
-          <svg className="h-3 w-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span className="text-xs font-medium text-gray-900">
-            {result.provider.rating}
-          </span>
-          <span className="text-xs text-gray-500">
-            ({result.provider.reviewCount})
-          </span>
-        </div>
-
-        {/* Service Badge */}
-        <div className="mb-2">
-          <span className="inline-block px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full">
-            {result.provider.services[0]}
-          </span>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-sm font-semibold text-gray-900">
-              {formatPrice(result.provider.priceRange)}
-            </span>
-            <span className="text-xs text-gray-500 ml-1">per service</span>
-          </div>
-          <div className="text-xs text-gray-500">
-            {result.distance} km away
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}

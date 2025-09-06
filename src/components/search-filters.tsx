@@ -184,7 +184,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                 {/* Sort By */}
                 <div>
                   <Label>Sort By</Label>
-                  <Select defaultValue="relevance">
+                  <Select value="relevance" onValueChange={() => {}}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
