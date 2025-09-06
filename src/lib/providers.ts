@@ -356,6 +356,8 @@ export const providerApi = {
       let query = supabase
         .from('providers')
         .select('*')
+        .eq('status', 'active')
+        .eq('is_verified', true)
 
       // Apply category filter
       if (filters?.category && filters.category !== 'all') {

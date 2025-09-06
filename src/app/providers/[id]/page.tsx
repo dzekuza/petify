@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 import { Layout } from '@/components/layout'
 import { ProviderCard } from '@/components/provider-card'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,100 +25,9 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { ServiceProvider, Service, Review } from '@/types'
+import { providerApi } from '@/lib/providers'
+import { supabase } from '@/lib/supabase'
 
-// Mock data for demonstration
-const mockProvider: ServiceProvider = {
-  id: '1',
-  userId: 'user1',
-  businessName: 'Happy Paws Grooming',
-  description: 'Professional pet grooming with 10+ years of experience. We specialize in all breeds and offer premium grooming services including full-service grooming, nail trimming, teeth cleaning, and specialized treatments for sensitive pets.',
-  services: ['grooming'],
-  location: {
-    address: '123 Main St',
-    city: 'San Francisco',
-    state: 'CA',
-    zipCode: '94102',
-    coordinates: { lat: 37.7749, lng: -122.4194 }
-  },
-  rating: 4.9,
-  reviewCount: 127,
-  priceRange: { min: 45, max: 85 },
-  availability: {
-    monday: [{ start: '09:00', end: '17:00', available: true }],
-    tuesday: [{ start: '09:00', end: '17:00', available: true }],
-    wednesday: [{ start: '09:00', end: '17:00', available: true }],
-    thursday: [{ start: '09:00', end: '17:00', available: true }],
-    friday: [{ start: '09:00', end: '17:00', available: true }],
-    saturday: [{ start: '10:00', end: '16:00', available: true }],
-    sunday: []
-  },
-  images: ['/placeholder-grooming.jpg'],
-  certifications: ['Certified Pet Groomer', 'CPR Certified', 'Animal Behavior Specialist'],
-  experience: 10,
-  status: 'active',
-  createdAt: '2024-01-01',
-  updatedAt: '2024-01-01'
-}
-
-const mockServices: Service[] = [
-  {
-    id: '1',
-    providerId: '1',
-    category: 'grooming',
-    name: 'Full Grooming Package',
-    description: 'Complete grooming service including bath, brush, nail trim, and styling',
-    price: 65,
-    duration: 120,
-    maxPets: 1,
-    requirements: ['Vaccination records'],
-    includes: ['Bath', 'Brush', 'Nail trim', 'Ear cleaning', 'Styling'],
-    images: ['/placeholder-grooming.jpg'],
-    status: 'active',
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-01'
-  },
-  {
-    id: '2',
-    providerId: '1',
-    category: 'grooming',
-    name: 'Basic Bath & Brush',
-    description: 'Essential cleaning and brushing service',
-    price: 45,
-    duration: 60,
-    maxPets: 1,
-    requirements: ['Vaccination records'],
-    includes: ['Bath', 'Brush', 'Ear cleaning'],
-    images: ['/placeholder-grooming.jpg'],
-    status: 'active',
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-01'
-  }
-]
-
-const mockReviews: Review[] = [
-  {
-    id: '1',
-    bookingId: '1',
-    customerId: 'customer1',
-    providerId: '1',
-    rating: 5,
-    comment: 'Excellent service! My dog came out looking amazing and was so happy. The staff was professional and caring.',
-    images: [],
-    createdAt: '2024-01-15',
-    updatedAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    bookingId: '2',
-    customerId: 'customer2',
-    providerId: '1',
-    rating: 5,
-    comment: 'Highly recommend! They took great care of my anxious cat and made the whole experience stress-free.',
-    images: [],
-    createdAt: '2024-01-10',
-    updatedAt: '2024-01-10'
-  }
-]
 
 export default function ProviderDetailPage() {
   const params = useParams()
@@ -128,13 +38,136 @@ export default function ProviderDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setProvider(mockProvider)
-      setServices(mockServices)
-      setReviews(mockReviews)
-      setLoading(false)
-    }, 1000)
+    const fetchProviderData = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch provider data
+        const { data: providerData, error: providerError } = await supabase
+          .from('providers')
+          .select('*')
+          .eq('id', params.id)
+          .eq('status', 'active')
+          .single()
+
+        if (providerError) {
+          console.error('Error fetching provider:', providerError)
+          setLoading(false)
+          return
+        }
+
+        if (!providerData) {
+          setLoading(false)
+          return
+        }
+
+        // Transform provider data to match ServiceProvider interface
+        const transformedProvider: ServiceProvider = {
+          id: providerData.id,
+          userId: providerData.user_id,
+          businessName: providerData.business_name,
+          description: providerData.description,
+          services: providerData.services || [],
+          location: {
+            address: providerData.location?.address || '',
+            city: providerData.location?.city || '',
+            state: providerData.location?.state || '',
+            zipCode: providerData.location?.zip || '',
+            coordinates: {
+              lat: providerData.location?.coordinates?.lat || 0,
+              lng: providerData.location?.coordinates?.lng || 0
+            }
+          },
+          rating: providerData.rating || 0,
+          reviewCount: providerData.review_count || 0,
+          priceRange: {
+            min: providerData.price_range?.min || 0,
+            max: providerData.price_range?.max || 100
+          },
+          availability: providerData.availability || {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: [],
+            friday: [],
+            saturday: [],
+            sunday: []
+          },
+          images: providerData.images || [],
+          certifications: providerData.certifications || [],
+          experience: providerData.experience_years || 0,
+          status: providerData.status || 'active',
+          createdAt: providerData.created_at,
+          updatedAt: providerData.updated_at
+        }
+
+        setProvider(transformedProvider)
+
+        // Fetch services for this provider
+        const { data: servicesData, error: servicesError } = await supabase
+          .from('services')
+          .select('*')
+          .eq('provider_id', params.id)
+          .eq('is_active', true)
+
+        if (servicesError) {
+          console.error('Error fetching services:', servicesError)
+        } else {
+          // Transform services data
+          const transformedServices: Service[] = (servicesData || []).map(service => ({
+            id: service.id,
+            providerId: service.provider_id,
+            category: service.category,
+            name: service.name,
+            description: service.description,
+            price: service.price,
+            duration: service.duration_minutes,
+            maxPets: service.max_pets,
+            requirements: service.requirements || [],
+            includes: service.includes || [],
+            images: service.images || [],
+            status: service.is_active ? 'active' : 'inactive',
+            createdAt: service.created_at,
+            updatedAt: service.updated_at
+          }))
+          setServices(transformedServices)
+        }
+
+        // Fetch reviews for this provider
+        const { data: reviewsData, error: reviewsError } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('provider_id', params.id)
+          .order('created_at', { ascending: false })
+
+        if (reviewsError) {
+          console.error('Error fetching reviews:', reviewsError)
+        } else {
+          // Transform reviews data
+          const transformedReviews: Review[] = (reviewsData || []).map(review => ({
+            id: review.id,
+            bookingId: review.booking_id,
+            customerId: review.customer_id,
+            providerId: review.provider_id,
+            rating: review.rating,
+            comment: review.comment,
+            images: review.images || [],
+            createdAt: review.created_at,
+            updatedAt: review.updated_at
+          }))
+          setReviews(transformedReviews)
+        }
+
+      } catch (error) {
+        console.error('Error fetching provider data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (params.id) {
+      fetchProviderData()
+    }
   }, [params.id])
 
   if (loading) {
@@ -313,8 +346,10 @@ export default function ProviderDetailPage() {
                             <div className="text-lg font-semibold text-gray-900">
                               ${service.price}
                             </div>
-                            <Button size="sm" className="mt-2">
-                              Book Now
+                            <Button size="sm" className="mt-2" asChild>
+                              <Link href={`/providers/${params.id}/book`}>
+                                Book Now
+                              </Link>
                             </Button>
                           </div>
                         </div>
@@ -372,9 +407,11 @@ export default function ProviderDetailPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Button className="w-full">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Book Now
+                    <Button className="w-full" asChild>
+                      <Link href={`/providers/${params.id}/book`}>
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Book Now
+                      </Link>
                     </Button>
                     <Button variant="outline" className="w-full">
                       <MessageCircle className="h-4 w-4 mr-2" />
@@ -393,7 +430,12 @@ export default function ProviderDetailPage() {
                         <div key={day} className="flex justify-between">
                           <span className="capitalize">{day}</span>
                           <span className="text-gray-600">
-                            {slots.length > 0 ? `${slots[0].start}-${slots[0].end}` : 'Closed'}
+                            {Array.isArray(slots) && slots.length > 0 
+                              ? `${slots[0].start}-${slots[0].end}` 
+                              : typeof slots === 'object' && slots !== null && 'start' in slots && 'end' in slots
+                                ? `${slots.start}-${slots.end}`
+                                : 'Closed'
+                            }
                           </span>
                         </div>
                       ))}

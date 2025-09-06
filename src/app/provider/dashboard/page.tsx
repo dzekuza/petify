@@ -31,12 +31,14 @@ import {
   PawPrint
 } from 'lucide-react'
 import InteractiveCalendar from '@/components/ui/visualize-booking'
+import AvailabilityCalendar from '@/components/availability-calendar'
 import { ServiceProvider, Service, Booking, CreateServiceForm, ServiceCategory } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
 import { providerApi } from '@/lib/providers'
 import { serviceApi } from '@/lib/services'
+import { uploadCoverImage, getPublicUrl, validateFile } from '@/lib/storage'
 
 
 export default function ProviderDashboard() {
@@ -532,6 +534,36 @@ export default function ProviderDashboard() {
         return
       }
 
+      let coverImageUrl = provider.images?.[0] || ''
+
+      // Handle cover image upload if a new file is selected
+      if (editProfileForm.coverImage) {
+        // Validate the file
+        const validation = validateFile(editProfileForm.coverImage, 5)
+        if (!validation.valid) {
+          addNotification({
+            type: 'error',
+            title: 'Invalid File',
+            message: validation.error || 'Please select a valid image file'
+          })
+          return
+        }
+
+        // Upload the image
+        const uploadResult = await uploadCoverImage(editProfileForm.coverImage, provider.id)
+        if (uploadResult.error) {
+          addNotification({
+            type: 'error',
+            title: 'Upload Failed',
+            message: 'Failed to upload cover image. Please try again.'
+          })
+          return
+        }
+
+        // Get the public URL
+        coverImageUrl = getPublicUrl('profile-images', uploadResult.data!.path)
+      }
+
       // Prepare update data
       const updateData = {
         businessName: editProfileForm.businessName,
@@ -557,7 +589,8 @@ export default function ProviderDashboard() {
         },
         availability: editProfileForm.availability,
         certifications: editProfileForm.certifications,
-        experienceYears: parseInt(editProfileForm.experience) || 0
+        experienceYears: parseInt(editProfileForm.experience) || 0,
+        images: coverImageUrl ? [coverImageUrl] : []
       }
 
       // Update provider in database
@@ -800,18 +833,66 @@ export default function ProviderDashboard() {
               <TabsContent value="calendar" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Booking Calendar</CardTitle>
+                    <CardTitle>Availability</CardTitle>
                     <CardDescription>
-                      Visualize and manage your bookings in calendar view
+                      Manage your availability and time slots for bookings
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-card rounded-lg p-4 border">
-                      <InteractiveCalendar 
-                        bookings={bookings}
-                        onBookingClick={handleCalendarBookingClick}
+                    {provider ? (
+                      <AvailabilityCalendar 
+                        provider={provider}
+                        onAvailabilityUpdate={async (updatedAvailability) => {
+                          try {
+                            // Convert DayAvailability to the format expected by the database
+                            const dbAvailability: Record<string, any> = {}
+                            Object.entries(updatedAvailability).forEach(([day, value]) => {
+                              if (Array.isArray(value)) {
+                                dbAvailability[day] = value
+                              } else if (typeof value === 'object' && value !== null) {
+                                dbAvailability[day] = value
+                              } else {
+                                dbAvailability[day] = value
+                              }
+                            })
+
+                            // Update provider availability in database
+                            await providerApi.updateProvider(provider.id, {
+                              availability: dbAvailability
+                            })
+                            
+                            // Update local state - convert back to ServiceProvider format
+                            const convertedAvailability = {
+                              monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday : [],
+                              tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday : [],
+                              wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday : [],
+                              thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday : [],
+                              friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday : [],
+                              saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday : [],
+                              sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday : []
+                            }
+                            
+                            setProvider(prev => prev ? {
+                              ...prev,
+                              availability: convertedAvailability
+                            } : null)
+                          } catch (error) {
+                            console.error('Error updating availability:', error)
+                            addNotification({
+                              type: 'error',
+                              title: 'Error',
+                              message: 'Failed to update availability. Please try again.'
+                            })
+                          }
+                        }}
                       />
-                    </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Complete your profile first</h3>
+                        <p className="text-gray-600">You need to complete your provider profile before managing availability.</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -1931,24 +2012,59 @@ export default function ProviderDashboard() {
               </div>
 
               <div>
-                <Label>Availability *</Label>
-                <p className="text-sm text-gray-600 mb-3">Select the days you're available</p>
-                <div className="grid grid-cols-2 gap-3">
+                <Label>Working Hours *</Label>
+                <p className="text-sm text-gray-600 mb-3">Set your working hours for each day</p>
+                <div className="space-y-4">
                   {Object.entries(editProfileForm.availability).map(([day, available]) => (
-                    <div key={day} className="flex items-center space-x-3">
-                      <Checkbox
-                        checked={available}
-                        onCheckedChange={(checked) => 
-                          setEditProfileForm(prev => ({
-                            ...prev,
-                            availability: {
-                              ...prev.availability,
-                              [day]: checked
-                            }
-                          }))
-                        }
-                      />
-                      <span className="capitalize font-medium">{day}</span>
+                    <div key={day} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          checked={available}
+                          onCheckedChange={(checked) => 
+                            setEditProfileForm(prev => ({
+                              ...prev,
+                              availability: {
+                                ...prev.availability,
+                                [day]: checked
+                              }
+                            }))
+                          }
+                        />
+                        <span className="capitalize font-medium min-w-[80px]">{day}</span>
+                      </div>
+                      
+                      {available && (
+                        <div className="flex items-center space-x-3">
+                          <div>
+                            <Label htmlFor={`edit-${day}-start`} className="text-xs text-gray-500">From</Label>
+                            <Input
+                              id={`edit-${day}-start`}
+                              type="time"
+                              value={editProfileForm.availability[day as keyof typeof editProfileForm.availability] ? '09:00' : ''}
+                              onChange={(e) => {
+                                // For now, we'll store the time in a simple format
+                                // In a real implementation, you'd want to store start/end times
+                                console.log(`${day} start time:`, e.target.value)
+                              }}
+                              className="mt-1 w-24"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`edit-${day}-end`} className="text-xs text-gray-500">To</Label>
+                            <Input
+                              id={`edit-${day}-end`}
+                              type="time"
+                              value={editProfileForm.availability[day as keyof typeof editProfileForm.availability] ? '17:00' : ''}
+                              onChange={(e) => {
+                                // For now, we'll store the time in a simple format
+                                // In a real implementation, you'd want to store start/end times
+                                console.log(`${day} end time:`, e.target.value)
+                              }}
+                              className="mt-1 w-24"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

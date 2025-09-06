@@ -20,7 +20,7 @@ function SearchPageContent() {
     location: searchParams.get('location') || '',
     priceRange: { 
       min: priceFrom ? parseInt(priceFrom) : 0, 
-      max: priceTo ? parseInt(priceTo) : 1000 
+      max: priceTo ? parseInt(priceTo) : 5000 
     },
     rating: 0,
     distance: 25,

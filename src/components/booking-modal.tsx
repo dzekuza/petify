@@ -9,7 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, Clock, Users, CreditCard, CheckCircle } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, Users, CreditCard, CheckCircle } from 'lucide-react'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 import { ServiceProvider, Service, Pet, CreateBookingForm } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 
@@ -62,6 +66,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
     pets: [],
     notes: ''
   })
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [selectedPets, setSelectedPets] = useState<string[]>([])
 
@@ -99,9 +104,24 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
   }
 
   const getAvailableTimeSlots = () => {
-    const today = new Date()
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase() as keyof typeof provider.availability
-    return provider.availability[dayName] || []
+    if (!selectedDate) return []
+    
+    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
+    const dayAvailability = provider.availability[dayName]
+    
+    if (!dayAvailability) return []
+    
+    // Handle different availability data structures
+    if (Array.isArray(dayAvailability)) {
+      return dayAvailability.filter(slot => slot.available)
+    } else if (typeof dayAvailability === 'object' && dayAvailability !== null) {
+      // Handle object format like { start: '09:00', end: '17:00', available: true }
+      if ('available' in dayAvailability && dayAvailability.available) {
+        return [dayAvailability]
+      }
+    }
+    
+    return []
   }
 
   const calculateTotal = () => {
@@ -114,15 +134,35 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
         return (
           <div className="space-y-6">
             <div>
-              <Label htmlFor="date">Select Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleInputChange('date', e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="mt-1"
-              />
+              <Label>Select Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal mt-1",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                      setSelectedDate(date)
+                      if (date) {
+                        handleInputChange('date', date.toISOString().split('T')[0])
+                      }
+                    }}
+                    disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div>
@@ -135,16 +175,23 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                     handleInputChange('timeSlot', slot)
                   }
                 }}
+                disabled={!selectedDate}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Choose a time slot" />
+                  <SelectValue placeholder={selectedDate ? "Choose a time slot" : "Select a date first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {getAvailableTimeSlots().map((slot, index) => (
-                    <SelectItem key={index} value={slot.start}>
-                      {slot.start} - {slot.end}
+                  {getAvailableTimeSlots().length > 0 ? (
+                    getAvailableTimeSlots().map((slot, index) => (
+                      <SelectItem key={index} value={slot.start}>
+                        {slot.start} - {slot.end}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-slots" disabled>
+                      {selectedDate ? "No available time slots" : "Select a date first"}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -310,9 +357,9 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
 
         {step < 4 && (
           <div className="mb-6">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center w-full">
               {[1, 2, 3].map((stepNumber) => (
-                <div key={stepNumber} className="flex items-center">
+                <div key={stepNumber} className="flex items-center flex-1">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     step >= stepNumber 
                       ? 'bg-blue-600 text-white' 
@@ -321,7 +368,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                     {stepNumber}
                   </div>
                   {stepNumber < 3 && (
-                    <div className={`w-12 h-1 mx-2 ${
+                    <div className={`flex-1 h-1 mx-2 ${
                       step > stepNumber ? 'bg-blue-600' : 'bg-gray-200'
                     }`} />
                   )}

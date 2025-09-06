@@ -40,7 +40,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
     onFiltersChange({
       category: undefined,
       location: '',
-      priceRange: { min: 0, max: 1000 },
+      priceRange: { min: 0, max: 5000 },
       rating: 0,
       distance: 25,
     })
@@ -156,7 +156,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                       value={filters.priceRange?.max || ''}
                       onChange={(e) => handleFilterChange('priceRange', {
                         ...filters.priceRange,
-                        max: parseInt(e.target.value) || 1000
+                        max: parseInt(e.target.value) || 5000
                       })}
                     />
                   </div>
