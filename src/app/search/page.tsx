@@ -45,7 +45,6 @@ function SearchPageContent() {
           distance: filters.distance,
           date: filters.date
         })
-
         setResults(searchResults)
       } catch (err) {
         console.error('Error fetching providers:', err)

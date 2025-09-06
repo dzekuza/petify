@@ -262,7 +262,7 @@ export const providerApi = {
         .from('providers')
         .select(`
           *,
-          users!inner(id, full_name, email, avatar_url)
+          users(id, full_name, email, avatar_url)
         `)
         .eq('status', 'active')
 
@@ -352,16 +352,13 @@ export const providerApi = {
     date?: string
   }) {
     try {
+      // Start with a simple query to get all providers
       let query = supabase
         .from('providers')
-        .select(`
-          *,
-          users!inner(id, full_name, email, avatar_url)
-        `)
-        .eq('status', 'active')
+        .select('*')
 
       // Apply category filter
-      if (filters?.category) {
+      if (filters?.category && filters.category !== 'all') {
         query = query.contains('services', [filters.category])
       }
 
@@ -405,7 +402,9 @@ export const providerApi = {
             isVerified: provider.is_verified,
             verificationDocuments: provider.verification_documents,
             createdAt: provider.created_at,
-            updatedAt: provider.updated_at
+            updatedAt: provider.updated_at,
+            // Add user data if available
+            user: provider.users || null
           }
 
           // Transform services data
