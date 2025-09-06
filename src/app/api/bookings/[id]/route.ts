@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function PATCH(
   request: NextRequest,
@@ -17,8 +17,6 @@ export async function PATCH(
         { status: 400 }
       )
     }
-
-    const supabase = createClient()
 
     // Update booking status
     const { data: booking, error } = await supabase
@@ -82,7 +80,6 @@ export async function GET(
 ) {
   try {
     const { id } = params
-    const supabase = createClient()
 
     const { data: booking, error } = await supabase
       .from('bookings')

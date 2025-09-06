@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,8 +7,6 @@ export async function GET(request: NextRequest) {
     const providerId = searchParams.get('provider_id')
     const customerId = searchParams.get('customer_id')
     const status = searchParams.get('status')
-
-    const supabase = createClient()
 
     let query = supabase
       .from('bookings')
