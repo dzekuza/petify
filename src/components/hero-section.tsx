@@ -72,7 +72,7 @@ export const HeroSection = () => {
           {/* Main Heading */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-black leading-tight sm:text-5xl lg:text-6xl">
-              Choose from 400+ service providers for your pet around your
+              Pasirinkite iš 400+ paslaugų teikėjų savo gyvūnui aplink jus
             </h1>
           </div>
 
@@ -194,7 +194,7 @@ export const HeroSection = () => {
                   className="w-full px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold"
                 >
                   <Search className="h-4 w-4 mr-2" />
-                  Search
+                  Ieškoti
                 </Button>
               </div>
             </div>

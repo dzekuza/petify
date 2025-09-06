@@ -30,11 +30,11 @@ const mockPets: Pet[] = [
     name: 'Buddy',
     species: 'dog',
     breed: 'Golden Retriever',
-    age: 24,
+    age: 2,
     weight: 30,
     specialNeeds: ['Anxiety medication'],
     medicalNotes: 'Allergic to certain shampoos',
-    images: [],
+    galleryImages: [],
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01'
   },
@@ -44,11 +44,11 @@ const mockPets: Pet[] = [
     name: 'Whiskers',
     species: 'cat',
     breed: 'Persian',
-    age: 36,
+    age: 3,
     weight: 4,
     specialNeeds: [],
     medicalNotes: 'Very calm and friendly',
-    images: [],
+    galleryImages: [],
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01'
   }
@@ -142,7 +142,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                    {selectedDate ? format(selectedDate, "PPP") : "Pasirinkite datą"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -163,7 +163,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
             </div>
 
             <div>
-              <Label>Select Time</Label>
+              <Label>Pasirinkite laiką</Label>
               <Select 
                 value={formData.timeSlot.start} 
                 onValueChange={(value) => {
@@ -175,7 +175,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                 disabled={!selectedDate}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder={selectedDate ? "Choose a time slot" : "Select a date first"} />
+                  <SelectValue placeholder={selectedDate ? "Pasirinkite laiko intervalą" : "Pirmiausia pasirinkite datą"} />
                 </SelectTrigger>
                 <SelectContent>
                   {getAvailableTimeSlots().length > 0 ? (
@@ -186,7 +186,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                     ))
                   ) : (
                     <SelectItem value="no-slots" disabled>
-                      {selectedDate ? "No available time slots" : "Select a date first"}
+                      {selectedDate ? "Nėra prieinamų laiko intervalų" : "Pirmiausia pasirinkite datą"}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -199,9 +199,9 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
         return (
           <div className="space-y-6">
             <div>
-              <Label>Select Pets</Label>
+              <Label>Pasirinkite gyvūnus</Label>
               <p className="text-sm text-gray-600 mb-4">
-                Choose which pets will receive this service (max {service.maxPets})
+                Pasirinkite, kurie gyvūnai gaus šią paslaugą (maks. {service.maxPets})
               </p>
               <div className="space-y-3">
                 {mockPets.map((pet) => (
@@ -228,7 +228,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{pet.name}</h4>
                           <p className="text-sm text-gray-600">
-                            {pet.breed} • {pet.age} months • {pet.weight}kg
+                            {pet.breed} • {pet.age} years • {pet.weight}kg
                           </p>
                           {pet.specialNeeds && pet.specialNeeds.length > 0 && (
                             <div className="mt-1">
@@ -246,12 +246,12 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
             </div>
 
             <div>
-              <Label htmlFor="notes">Additional Notes (Optional)</Label>
+              <Label htmlFor="notes">Papildomi komentarai (neprivaloma)</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
-                placeholder="Any special instructions or requests..."
+                placeholder="Bet kokie specialūs nurodymai ar prašymai..."
                 className="mt-1"
                 rows={3}
               />
@@ -263,7 +263,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Užsakymo suvestinė</h3>
               
               <Card>
                 <CardHeader>
@@ -272,28 +272,28 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Provider</span>
+                    <span className="text-gray-600">Paslaugų teikėjas</span>
                     <span className="font-medium">{provider.businessName}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Date & Time</span>
+                    <span className="text-gray-600">Data ir laikas</span>
                     <span className="font-medium">
-                      {new Date(formData.date).toLocaleDateString()} at {formData.timeSlot.start}
+                      {new Date(formData.date).toLocaleDateString()} {formData.timeSlot.start}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Pets</span>
+                    <span className="text-gray-600">Gyvūnai</span>
                     <span className="font-medium">
-                      {selectedPets.length} pet{selectedPets.length !== 1 ? 's' : ''}
+                      {selectedPets.length} gyvūnas{selectedPets.length !== 1 ? 'ai' : ''}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Service Price</span>
+                    <span className="text-gray-600">Paslaugos kaina</span>
                     <span className="font-medium">€{service.price} × {selectedPets.length}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="font-semibold text-gray-900">Iš viso</span>
                       <span className="text-lg font-bold text-gray-900">€{calculateTotal()}</span>
                     </div>
                   </div>
@@ -302,12 +302,12 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
             </div>
 
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">Payment Method</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">Mokėjimo būdas</h4>
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <CreditCard className="h-5 w-5 text-gray-400" />
-                    <span className="text-sm text-gray-600">Payment will be processed after service completion</span>
+                    <span className="text-sm text-gray-600">Mokėjimas bus apdorotas po paslaugos užbaigimo</span>
                   </div>
                 </CardContent>
               </Card>
@@ -324,14 +324,14 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Booking Confirmed!</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Užsakymas patvirtintas!</h3>
               <p className="text-gray-600">
-                Your booking has been confirmed. You'll receive a confirmation email shortly.
+                Jūsų užsakymas patvirtintas. Netrukus gausite patvirtinimo el. laišką.
               </p>
             </div>
             <div className="space-y-2">
               <Button onClick={onClose} className="w-full">
-                Close
+                Uždaryti
               </Button>
             </div>
           </div>
@@ -346,9 +346,9 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Book {service.name}</DialogTitle>
+          <DialogTitle>Užsakyti {service.name}</DialogTitle>
           <DialogDescription>
-            Complete your booking for {provider.businessName}
+            Užbaikite savo užsakymą pas {provider.businessName}
           </DialogDescription>
         </DialogHeader>
 
@@ -391,7 +391,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
               onClick={step === 1 ? onClose : handleBack}
               disabled={loading}
             >
-              {step === 1 ? 'Cancel' : 'Back'}
+              {step === 1 ? 'Atšaukti' : 'Atgal'}
             </Button>
             <Button
               onClick={step === 3 ? handleSubmit : handleNext}
@@ -401,7 +401,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                 (step === 2 && selectedPets.length === 0)
               }
             >
-              {loading ? 'Processing...' : step === 3 ? 'Confirm Booking' : 'Next'}
+              {loading ? 'Apdorojama...' : step === 3 ? 'Patvirtinti užsakymą' : 'Toliau'}
             </Button>
           </div>
         )}

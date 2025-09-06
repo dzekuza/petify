@@ -11,12 +11,12 @@ import { SearchFilters as SearchFiltersType, ServiceCategory } from '@/types'
 import { MapPin, Filter, X } from 'lucide-react'
 
 const serviceCategories: { value: ServiceCategory; label: string }[] = [
-  { value: 'grooming', label: 'Pet Grooming' },
-  { value: 'veterinary', label: 'Veterinary Care' },
-  { value: 'boarding', label: 'Pet Boarding' },
-  { value: 'training', label: 'Pet Training' },
-  { value: 'walking', label: 'Dog Walking' },
-  { value: 'sitting', label: 'Pet Sitting' },
+  { value: 'grooming', label: 'Gyvūnų šukavimas' },
+  { value: 'veterinary', label: 'Veterinarijos paslaugos' },
+  { value: 'boarding', label: 'Gyvūnų prieglauda' },
+  { value: 'training', label: 'Gyvūnų treniruotės' },
+  { value: 'walking', label: 'Šunų vedimas' },
+  { value: 'sitting', label: 'Gyvūnų prižiūrėjimas' },
 ]
 
 interface SearchFiltersProps {
@@ -56,16 +56,16 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Service Category */}
             <div>
-              <Label htmlFor="category">Service Type</Label>
+              <Label htmlFor="category">Paslaugos tipas</Label>
               <Select 
                 value={filters.category || 'all'} 
                 onValueChange={(value) => handleFilterChange('category', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All services" />
+                  <SelectValue placeholder="Visos paslaugos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All services</SelectItem>
+                  <SelectItem value="all">Visos paslaugos</SelectItem>
                   {serviceCategories.map((category) => (
                     <SelectItem key={category.value} value={category.value}>
                       {category.label}
@@ -77,12 +77,12 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
 
             {/* Location */}
             <div>
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">Vieta</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   id="location"
-                  placeholder="Enter location"
+                  placeholder="Įveskite vietą"
                   value={filters.location || ''}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
                   className="pl-10"
@@ -92,7 +92,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
 
             {/* Distance */}
             <div>
-              <Label htmlFor="distance">Distance</Label>
+              <Label htmlFor="distance">Atstumas</Label>
               <Select 
                 value={filters.distance?.toString() || '25'} 
                 onValueChange={(value) => handleFilterChange('distance', parseInt(value))}
@@ -101,11 +101,11 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="5">Within 5 km</SelectItem>
-                  <SelectItem value="10">Within 10 km</SelectItem>
-                  <SelectItem value="25">Within 25 km</SelectItem>
-                  <SelectItem value="50">Within 50 km</SelectItem>
-                  <SelectItem value="100">Within 100 km</SelectItem>
+                  <SelectItem value="5">Per 5 km</SelectItem>
+                  <SelectItem value="10">Per 10 km</SelectItem>
+                  <SelectItem value="25">Per 25 km</SelectItem>
+                  <SelectItem value="50">Per 50 km</SelectItem>
+                  <SelectItem value="100">Per 100 km</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -118,7 +118,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                 className="flex items-center space-x-2"
               >
                 <Filter className="h-4 w-4" />
-                <span>More Filters</span>
+                <span>Daugiau filtrų</span>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-1">
                     {Object.values(filters).filter(Boolean).length}
@@ -139,7 +139,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Price Range */}
                 <div>
-                  <Label>Price Range</Label>
+                  <Label>Kainų intervalas</Label>
                   <div className="flex space-x-2 mt-1">
                     <Input
                       type="number"
@@ -152,7 +152,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                     />
                     <Input
                       type="number"
-                      placeholder="Max"
+                      placeholder="Maks"
                       value={filters.priceRange?.max || ''}
                       onChange={(e) => handleFilterChange('priceRange', {
                         ...filters.priceRange,
@@ -164,7 +164,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
 
                 {/* Rating */}
                 <div>
-                  <Label>Minimum Rating</Label>
+                  <Label>Minimalus įvertinimas</Label>
                   <Select 
                     value={filters.rating?.toString() || '0'} 
                     onValueChange={(value) => handleFilterChange('rating', parseFloat(value))}
@@ -173,27 +173,27 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">Any rating</SelectItem>
-                      <SelectItem value="3">3+ stars</SelectItem>
-                      <SelectItem value="4">4+ stars</SelectItem>
-                      <SelectItem value="4.5">4.5+ stars</SelectItem>
+                      <SelectItem value="0">Bet koks įvertinimas</SelectItem>
+                      <SelectItem value="3">3+ žvaigždutės</SelectItem>
+                      <SelectItem value="4">4+ žvaigždutės</SelectItem>
+                      <SelectItem value="4.5">4.5+ žvaigždutės</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Sort By */}
                 <div>
-                  <Label>Sort By</Label>
+                  <Label>Rūšiuoti pagal</Label>
                   <Select value="relevance" onValueChange={() => {}}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="relevance">Relevance</SelectItem>
-                      <SelectItem value="rating">Rating</SelectItem>
-                      <SelectItem value="price-low">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="distance">Distance</SelectItem>
+                      <SelectItem value="relevance">Reikšmingumą</SelectItem>
+                      <SelectItem value="rating">Įvertinimą</SelectItem>
+                      <SelectItem value="price-low">Kainą: nuo žemiausios</SelectItem>
+                      <SelectItem value="price-high">Kainą: nuo aukščiausios</SelectItem>
+                      <SelectItem value="distance">Atstumą</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -206,7 +206,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
             <div className="flex flex-wrap gap-2">
               {filters.category && (
                 <Badge variant="secondary" className="flex items-center space-x-1">
-                  <span>Service: {serviceCategories.find(c => c.value === filters.category)?.label}</span>
+                  <span>Paslauga: {serviceCategories.find(c => c.value === filters.category)?.label}</span>
                   <X 
                     className="h-3 w-3 cursor-pointer" 
                     onClick={() => handleFilterChange('category', 'all')}
@@ -215,7 +215,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
               )}
               {filters.location && (
                 <Badge variant="secondary" className="flex items-center space-x-1">
-                  <span>Location: {filters.location}</span>
+                  <span>Vieta: {filters.location}</span>
                   <X 
                     className="h-3 w-3 cursor-pointer" 
                     onClick={() => handleFilterChange('location', '')}
@@ -224,7 +224,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
               )}
               {filters.rating && filters.rating > 0 && (
                 <Badge variant="secondary" className="flex items-center space-x-1">
-                  <span>Rating: {filters.rating}+ stars</span>
+                  <span>Įvertinimas: {filters.rating}+ žvaigždutės</span>
                   <X 
                     className="h-3 w-3 cursor-pointer" 
                     onClick={() => handleFilterChange('rating', 0)}

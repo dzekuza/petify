@@ -5,11 +5,12 @@ export interface CreatePetRequest {
   name: string
   species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
   breed?: string
-  age: number // months
+  age: number // years
   weight?: number // kg
   specialNeeds?: string[]
   medicalNotes?: string
-  images?: string[]
+  profilePicture?: string
+  galleryImages?: string[]
 }
 
 export interface UpdatePetRequest extends Partial<CreatePetRequest> {
@@ -39,7 +40,8 @@ export const petsApi = {
       weight: pet.weight,
       specialNeeds: pet.special_needs || [],
       medicalNotes: pet.medical_notes,
-      images: pet.images || [],
+      profilePicture: pet.profile_picture,
+      galleryImages: pet.gallery_images || [],
       createdAt: pet.created_at,
       updatedAt: pet.updated_at
     }))
@@ -67,7 +69,8 @@ export const petsApi = {
       weight: data.weight,
       specialNeeds: data.special_needs || [],
       medicalNotes: data.medical_notes,
-      images: data.images || [],
+      profilePicture: data.profile_picture,
+      galleryImages: data.gallery_images || [],
       createdAt: data.created_at,
       updatedAt: data.updated_at
     }
@@ -86,7 +89,8 @@ export const petsApi = {
         weight: petData.weight,
         special_needs: petData.specialNeeds,
         medical_notes: petData.medicalNotes,
-        images: petData.images || []
+        profile_picture: petData.profilePicture,
+        gallery_images: petData.galleryImages || []
       })
       .select()
       .single()
@@ -105,7 +109,8 @@ export const petsApi = {
       weight: data.weight,
       specialNeeds: data.special_needs || [],
       medicalNotes: data.medical_notes,
-      images: data.images || [],
+      profilePicture: data.profile_picture,
+      galleryImages: data.gallery_images || [],
       createdAt: data.created_at,
       updatedAt: data.updated_at
     }
@@ -123,7 +128,8 @@ export const petsApi = {
         weight: petData.weight,
         special_needs: petData.specialNeeds,
         medical_notes: petData.medicalNotes,
-        images: petData.images,
+        profile_picture: petData.profilePicture,
+        gallery_images: petData.galleryImages,
         updated_at: new Date().toISOString()
       })
       .eq('id', petData.id)
@@ -144,7 +150,8 @@ export const petsApi = {
       weight: data.weight,
       specialNeeds: data.special_needs || [],
       medicalNotes: data.medical_notes,
-      images: data.images || [],
+      profilePicture: data.profile_picture,
+      galleryImages: data.gallery_images || [],
       createdAt: data.created_at,
       updatedAt: data.updated_at
     }

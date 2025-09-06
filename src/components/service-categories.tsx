@@ -15,8 +15,8 @@ import { ServiceCategory } from '@/types'
 const categories = [
   {
     id: 'grooming' as ServiceCategory,
-    name: 'Pet Grooming',
-    description: 'Professional grooming services for your furry friends',
+    name: 'Gyvūnų šukavimas',
+    description: 'Profesionalūs šukavimo paslaugos jūsų kailuotų draugų',
     icon: Scissors,
     color: 'bg-pink-100 text-pink-600',
     href: '/search?category=grooming',
@@ -24,8 +24,8 @@ const categories = [
   },
   {
     id: 'veterinary' as ServiceCategory,
-    name: 'Veterinary Care',
-    description: 'Expert medical care and health checkups',
+    name: 'Veterinarijos paslaugos',
+    description: 'Ekspertinė medicinos priežiūra ir sveikatos patikrinimai',
     icon: Stethoscope,
     color: 'bg-red-100 text-red-600',
     href: '/search?category=veterinary',
@@ -33,8 +33,8 @@ const categories = [
   },
   {
     id: 'boarding' as ServiceCategory,
-    name: 'Pet Boarding',
-    description: 'Safe and comfortable overnight stays',
+    name: 'Gyvūnų prieglauda',
+    description: 'Saugūs ir patogūs nakvynės',
     icon: Home,
     color: 'bg-green-100 text-green-600',
     href: '/search?category=boarding',
@@ -42,8 +42,8 @@ const categories = [
   },
   {
     id: 'training' as ServiceCategory,
-    name: 'Pet Training',
-    description: 'Professional training and behavior modification',
+    name: 'Gyvūnų treniruotės',
+    description: 'Profesionalūs treniruotės ir elgesio modifikavimas',
     icon: GraduationCap,
     color: 'bg-blue-100 text-blue-600',
     href: '/search?category=training',
@@ -51,8 +51,8 @@ const categories = [
   },
   {
     id: 'walking' as ServiceCategory,
-    name: 'Dog Walking',
-    description: 'Daily exercise and outdoor adventures',
+    name: 'Šunų vedimas',
+    description: 'Kasdienės mankštos ir lauko nuotykiai',
     icon: Footprints,
     color: 'bg-yellow-100 text-yellow-600',
     href: '/search?category=walking',
@@ -60,8 +60,8 @@ const categories = [
   },
   {
     id: 'sitting' as ServiceCategory,
-    name: 'Pet Sitting',
-    description: 'In-home care while you\'re away',
+    name: 'Gyvūnų prižiūrėjimas',
+    description: 'Prižiūrėjimas namuose, kol jūsų nėra',
     icon: Heart,
     color: 'bg-purple-100 text-purple-600',
     href: '/search?category=sitting',
@@ -75,10 +75,10 @@ export const ServiceCategories = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Pet Services We Offer
+            Gyvūnų paslaugos, kurias siūlome
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Find the perfect care for your pet with our comprehensive range of services
+            Raskite tobulą priežiūrą savo gyvūnui su mūsų išsamiais paslaugų spektru
           </p>
         </div>
 

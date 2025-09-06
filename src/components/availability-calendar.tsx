@@ -45,11 +45,11 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const [availability, setAvailability] = useState<DayAvailability>(provider.availability || {})
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'Sausis', 'Vasaris', 'Kovas', 'Balandis', 'Gegužė', 'Birželis',
+    'Liepa', 'Rugpjūtis', 'Rugsėjis', 'Spalis', 'Lapkritis', 'Gruodis'
   ]
 
-  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+  const daysOfWeek = ['SK', 'PR', 'AN', 'TR', 'KT', 'PN', 'ŠT']
 
   // Generate calendar days
   const generateCalendarDays = () => {
@@ -182,8 +182,8 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     
     addNotification({
       type: 'success',
-      title: 'Availability Updated',
-      message: `Availability for ${selectedDay} has been updated successfully.`
+      title: 'Prieinamumas atnaujintas',
+      message: `${selectedDay} prieinamumas sėkmingai atnaujintas.`
     })
   }
 
@@ -213,8 +213,8 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     
     addNotification({
       type: 'success',
-      title: 'Availability Updated',
-      message: `${dayName} availability has been ${!currentAvailability.available ? 'enabled' : 'disabled'}.`
+      title: 'Prieinamumas atnaujintas',
+      message: `${dayName} prieinamumas ${!currentAvailability.available ? 'įjungtas' : 'išjungtas'}.`
     })
   }
 
@@ -347,9 +347,9 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       {/* Working Hours Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Working Hours</CardTitle>
+          <CardTitle>Darbo valandos</CardTitle>
           <CardDescription>
-            Set your working hours for each day of the week
+            Nustatykite savo darbo valandas kiekvienai savaitės dienai
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -372,12 +372,12 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                         {dayAvailability.available ? (
                           <>
                             <Check className="h-4 w-4 mr-1" />
-                            Available
+                            Prieinama
                           </>
                         ) : (
                           <>
                             <X className="h-4 w-4 mr-1" />
-                            Unavailable
+                            Neprieinama
                           </>
                         )}
                       </Button>
@@ -387,7 +387,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3">
                           <div className="flex-1">
-                            <Label htmlFor={`${dayName}-start`} className="text-xs text-gray-500">From</Label>
+                            <Label htmlFor={`${dayName}-start`} className="text-xs text-gray-500">Nuo</Label>
                             <Input
                               id={`${dayName}-start`}
                               type="time"
@@ -397,7 +397,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                             />
                           </div>
                           <div className="flex-1">
-                            <Label htmlFor={`${dayName}-end`} className="text-xs text-gray-500">To</Label>
+                            <Label htmlFor={`${dayName}-end`} className="text-xs text-gray-500">Iki</Label>
                             <Input
                               id={`${dayName}-end`}
                               type="time"
@@ -408,7 +408,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                           </div>
                         </div>
                         <div className="text-xs text-gray-500 text-center">
-                          {generateTimeSlots(workingHours.start, workingHours.end).length} slots (15 min each)
+                          {generateTimeSlots(workingHours.start, workingHours.end).length} intervalai (po 15 min)
                         </div>
                       </div>
                     )}
@@ -424,9 +424,9 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       <Dialog open={showTimeModal} onOpenChange={setShowTimeModal}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Manage Availability - {selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1)}</DialogTitle>
+            <DialogTitle>Valdyti prieinamumą - {selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1)}</DialogTitle>
             <DialogDescription>
-              Time slots are automatically generated in 15-minute intervals based on your working hours. Click on blocks to toggle availability.
+              Laiko intervalai automatiškai generuojami 15 minučių intervalais pagal jūsų darbo valandas. Spustelėkite blokus, kad perjungtumėte prieinamumą.
             </DialogDescription>
           </DialogHeader>
 
@@ -434,7 +434,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
             {/* Current Time Slots */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">Current Time Slots ({timeSlots.length} slots)</Label>
+                <Label className="text-base font-medium">Dabartiniai laiko intervalai ({timeSlots.length} intervalai)</Label>
                 <Button
                   variant="outline"
                   size="sm"
@@ -444,20 +444,20 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     setTimeSlots(regeneratedSlots)
                     addNotification({
                       type: 'success',
-                      title: 'Time Slots Regenerated',
-                      message: `Generated ${regeneratedSlots.length} slots based on working hours (${workingHours.start} - ${workingHours.end})`
+                      title: 'Laiko intervalai atnaujinti',
+                      message: `Sugeneruota ${regeneratedSlots.length} intervalų pagal darbo valandas (${workingHours.start} - ${workingHours.end})`
                     })
                   }}
                 >
                   <Clock className="h-4 w-4 mr-1" />
-                  Regenerate from Working Hours
+                  Atnaujinti pagal darbo valandas
                 </Button>
               </div>
               {timeSlots.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No time slots set for this day</p>
-                  <p className="text-sm mt-1">Click "Regenerate from Working Hours" to create slots</p>
+                  <p>Šiai dienai laiko intervalų nenustatyta</p>
+                  <p className="text-sm mt-1">Spustelėkite "Atnaujinti pagal darbo valandas", kad sukurtumėte intervalus</p>
                 </div>
               ) : (
                 <div className="mt-3">
@@ -480,14 +480,14 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                           <div className="font-semibold">{slot.start}</div>
                           <div className="text-xs opacity-75">- {slot.end}</div>
                           <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-gray-500'}`}>
-                            {slot.available ? 'Available' : 'Unavailable'}
+                            {slot.available ? 'Prieinama' : 'Neprieinama'}
                           </div>
                         </div>
                       </motion.button>
                     ))}
                   </div>
                   <div className="mt-3 text-sm text-gray-600 text-center">
-                    Click on time blocks to toggle availability. Each block represents a 15-minute slot.
+                    Spustelėkite laiko blokus, kad perjungtumėte prieinamumą. Kiekvienas blokas reiškia 15 minučių intervalą.
                   </div>
                 </div>
               )}
@@ -497,10 +497,10 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-4 border-t">
               <Button variant="outline" onClick={() => setShowTimeModal(false)}>
-                Cancel
+                Atšaukti
               </Button>
               <Button onClick={handleSaveAvailability}>
-                Save Availability
+                Išsaugoti prieinamumą
               </Button>
             </div>
           </div>

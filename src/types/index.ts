@@ -1,216 +1,217 @@
-// Core types for PetServices marketplace
+// Pagrindiniai tipai gyvūnų paslaugų rinkai
 
 export type ServiceCategory = 
-  | 'grooming'
-  | 'veterinary'
-  | 'boarding'
-  | 'training'
-  | 'walking'
-  | 'sitting'
-  | 'adoption'
+  | 'grooming' // šukavimas
+  | 'veterinary' // veterinarija
+  | 'boarding' // prieglauda
+  | 'training' // treniruotės
+  | 'walking' // pasivaikščiojimas
+  | 'sitting' // prižiūrėjimas
+  | 'adoption' // įvaikinimas
 
-export type ServiceStatus = 'active' | 'inactive' | 'pending'
+export type ServiceStatus = 'active' | 'inactive' | 'pending' // aktyvus | neaktyvus | laukiama
 
-export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled'
+export type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' // laukiama | patvirtinta | užbaigta | atšaukta
 
-export type UserRole = 'customer' | 'provider' | 'admin'
+export type UserRole = 'customer' | 'provider' | 'admin' // klientas | paslaugų teikėjas | administratorius
 
 export interface User {
   id: string
   email: string
-  fullName: string
-  avatar?: string
-  role: UserRole
-  phone?: string
-  address?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  createdAt: string
-  updatedAt: string
+  fullName: string // pilnas vardas
+  avatar?: string // avataras
+  role: UserRole // rolė
+  phone?: string // telefonas
+  address?: string // adresas
+  city?: string // miestas
+  state?: string // valstija
+  zipCode?: string // pašto kodas
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
 }
 
 export interface ServiceProvider {
   id: string
   userId: string
-  businessName: string
-  description: string
-  services: ServiceCategory[]
+  businessName: string // verslo pavadinimas
+  description: string // aprašymas
+  services: ServiceCategory[] // paslaugos
   location: {
-    address: string
-    city: string
-    state: string
-    zipCode: string
+    address: string // adresas
+    city: string // miestas
+    state: string // valstija
+    zipCode: string // pašto kodas
     coordinates: {
-      lat: number
-      lng: number
+      lat: number // platuma
+      lng: number // ilguma
     }
   }
-  rating: number
-  reviewCount: number
+  rating: number // įvertinimas
+  reviewCount: number // atsiliepimų skaičius
   priceRange: {
-    min: number
-    max: number
+    min: number // minimumas
+    max: number // maksimumas
   }
   availability: {
-    monday: TimeSlot[]
-    tuesday: TimeSlot[]
-    wednesday: TimeSlot[]
-    thursday: TimeSlot[]
-    friday: TimeSlot[]
-    saturday: TimeSlot[]
-    sunday: TimeSlot[]
+    monday: TimeSlot[] // pirmadienis
+    tuesday: TimeSlot[] // antradienis
+    wednesday: TimeSlot[] // trečiadienis
+    thursday: TimeSlot[] // ketvirtadienis
+    friday: TimeSlot[] // penktadienis
+    saturday: TimeSlot[] // šeštadienis
+    sunday: TimeSlot[] // sekmadienis
   }
-  images: string[]
-  avatarUrl?: string
-  certifications?: string[]
-  experience: number // years
-  status: ServiceStatus
-  createdAt: string
-  updatedAt: string
+  images: string[] // paveikslėliai
+  avatarUrl?: string // avataro nuoroda
+  certifications?: string[] // sertifikatai
+  experience: number // patirtis (metai)
+  status: ServiceStatus // būsena
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
 }
 
 export interface TimeSlot {
-  start: string // HH:MM format
-  end: string // HH:MM format
-  available: boolean
+  start: string // pradžia (HH:MM formatas)
+  end: string // pabaiga (HH:MM formatas)
+  available: boolean // prieinama
 }
 
 export interface Service {
   id: string
   providerId: string
-  category: ServiceCategory
-  name: string
-  description: string
-  price: number
-  duration: number // minutes
-  maxPets: number
-  requirements?: string[]
-  includes?: string[]
-  images: string[]
-  status: ServiceStatus
-  createdAt: string
-  updatedAt: string
+  category: ServiceCategory // kategorija
+  name: string // pavadinimas
+  description: string // aprašymas
+  price: number // kaina
+  duration: number // trukmė (minutės)
+  maxPets: number // maksimalus gyvūnų skaičius
+  requirements?: string[] // reikalavimai
+  includes?: string[] // įskaičiuota
+  images: string[] // paveikslėliai
+  status: ServiceStatus // būsena
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
 }
 
 export interface Booking {
   id: string
-  customerId: string
-  providerId: string
-  serviceId: string
-  petId?: string // Single pet per booking
-  date: string // YYYY-MM-DD
-  timeSlot: TimeSlot
-  totalPrice: number
-  status: BookingStatus
-  notes?: string
-  createdAt: string
-  updatedAt: string
-  // Populated fields (not in database)
-  pet?: Pet
-  service?: Service
-  provider?: ServiceProvider
+  customerId: string // kliento ID
+  providerId: string // paslaugų teikėjo ID
+  serviceId: string // paslaugos ID
+  petId?: string // gyvūno ID (vienas gyvūnas užsakymui)
+  date: string // data (YYYY-MM-DD)
+  timeSlot: TimeSlot // laiko intervalas
+  totalPrice: number // bendra kaina
+  status: BookingStatus // būsena
+  notes?: string // pastabos
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
+  // Užpildyti laukai (ne duomenų bazėje)
+  pet?: Pet // gyvūnas
+  service?: Service // paslauga
+  provider?: ServiceProvider // paslaugų teikėjas
 }
 
 export interface Pet {
   id: string
-  ownerId: string
-  name: string
-  species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
-  breed?: string
-  age: number // months
-  weight?: number // kg
-  specialNeeds?: string[]
-  medicalNotes?: string
-  images: string[]
-  createdAt: string
-  updatedAt: string
+  ownerId: string // savininko ID
+  name: string // vardas
+  species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other' // rūšis: šuo | katė | paukštis | triušis | kita
+  breed?: string // veislė
+  age: number // amžius (metai)
+  weight?: number // svoris (kg)
+  specialNeeds?: string[] // specialūs poreikiai
+  medicalNotes?: string // medicinos pastabos
+  profilePicture?: string // profilio nuotrauka
+  galleryImages: string[] // galerijos paveikslėliai
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
 }
 
 export interface Review {
   id: string
-  bookingId: string
-  customerId: string
-  providerId: string
-  rating: number // 1-5
-  comment: string
-  images?: string[]
-  createdAt: string
-  updatedAt: string
+  bookingId: string // užsakymo ID
+  customerId: string // kliento ID
+  providerId: string // paslaugų teikėjo ID
+  rating: number // įvertinimas (1-5)
+  comment: string // komentaras
+  images?: string[] // paveikslėliai
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
 }
 
 export interface SearchFilters {
-  category?: ServiceCategory
-  location?: string
+  category?: ServiceCategory // kategorija
+  location?: string // vieta
   priceRange?: {
-    min: number
-    max: number
+    min: number // minimumas
+    max: number // maksimumas
   }
-  rating?: number
-  date?: string // YYYY-MM-DD format
+  rating?: number // įvertinimas
+  date?: string // data (YYYY-MM-DD formatas)
   availability?: {
-    date: string
-    timeSlot?: TimeSlot
+    date: string // data
+    timeSlot?: TimeSlot // laiko intervalas
   }
-  distance?: number // km
+  distance?: number // atstumas (km)
 }
 
 export interface SearchResult {
-  provider: ServiceProvider
-  services: Service[]
-  distance?: number
+  provider: ServiceProvider // paslaugų teikėjas
+  services: Service[] // paslaugos
+  distance?: number // atstumas
 }
 
-// API Response types
+// API atsakymų tipai
 export interface ApiResponse<T> {
-  data: T
-  message?: string
-  error?: string
+  data: T // duomenys
+  message?: string // žinutė
+  error?: string // klaida
 }
 
 export interface PaginatedResponse<T> {
-  data: T[]
+  data: T[] // duomenys
   pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
+    page: number // puslapis
+    limit: number // limitas
+    total: number // iš viso
+    totalPages: number // bendras puslapių skaičius
   }
 }
 
-// Form types
+// Formų tipai
 export interface CreateBookingForm {
-  serviceId: string
-  date: string
-  timeSlot: TimeSlot
-  pets: string[] // pet IDs
-  notes?: string
+  serviceId: string // paslaugos ID
+  date: string // data
+  timeSlot: TimeSlot // laiko intervalas
+  pets: string[] // gyvūnų ID
+  notes?: string // pastabos
 }
 
 export interface CreateReviewForm {
-  bookingId: string
-  rating: number
-  comment: string
-  images?: File[]
+  bookingId: string // užsakymo ID
+  rating: number // įvertinimas
+  comment: string // komentaras
+  images?: File[] // paveikslėliai
 }
 
 export interface UpdateProfileForm {
-  fullName: string
-  phone?: string
-  address?: string
-  city?: string
-  state?: string
-  zipCode?: string
+  fullName: string // pilnas vardas
+  phone?: string // telefonas
+  address?: string // adresas
+  city?: string // miestas
+  state?: string // valstija
+  zipCode?: string // pašto kodas
 }
 
 export interface CreateServiceForm {
-  category: ServiceCategory
-  name: string
-  description: string
-  price: number
-  duration: number
-  maxPets: number
-  requirements?: string[]
-  includes?: string[]
-  images?: File[]
+  category: ServiceCategory // kategorija
+  name: string // pavadinimas
+  description: string // aprašymas
+  price: number // kaina
+  duration: number // trukmė
+  maxPets: number // maksimalus gyvūnų skaičius
+  requirements?: string[] // reikalavimai
+  includes?: string[] // įskaičiuota
+  images?: File[] // paveikslėliai
 }

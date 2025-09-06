@@ -23,17 +23,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AddressAutocomplete from '@/components/address-autocomplete'
 
 const navigation = [
-  { name: 'Find Services', href: '/search' },
-  { name: 'How it Works', href: '/how-it-works' },
+  { name: 'Rasti paslaugas', href: '/search' },
+  { name: 'Kaip tai veikia', href: '/how-it-works' },
 ]
 
 const serviceTypes = [
-  { value: 'grooming', label: 'Pet Groomer' },
-  { value: 'veterinary', label: 'Veterinarian' },
-  { value: 'boarding', label: 'Pet Boarding' },
-  { value: 'training', label: 'Pet Trainer' },
-  { value: 'walking', label: 'Dog Walker' },
-  { value: 'sitting', label: 'Pet Sitter' },
+  { value: 'grooming', label: 'Gyvūnų šukavimo specialistas' },
+  { value: 'veterinary', label: 'Veterinarijos gydytojas' },
+  { value: 'boarding', label: 'Gyvūnų prieglauda' },
+  { value: 'training', label: 'Gyvūnų treneris' },
+  { value: 'walking', label: 'Šunų vedėjas' },
+  { value: 'sitting', label: 'Gyvūnų prižiūrėtojas' },
 ]
 
 export const Navigation = () => {
@@ -109,7 +109,7 @@ export const Navigation = () => {
         window.location.href = '/provider/dashboard'
       }
     } catch {
-      setError('An error occurred. Please try again.')
+      setError('Įvyko klaida. Bandykite dar kartą.')
     } finally {
       setLoading(false)
     }
@@ -153,7 +153,7 @@ export const Navigation = () => {
                   <Button variant="ghost" size="sm" asChild>
                     <Link href="/favorites">
                       <Heart className="h-4 w-4 mr-2" />
-                      Favorites
+                      Mėgstami
                     </Link>
                   </Button>
                 )}
@@ -181,7 +181,7 @@ export const Navigation = () => {
                         </p>
                         {user.user_metadata?.role === 'provider' && (
                           <Badge variant="secondary" className="w-fit text-xs">
-                            Provider
+                            Paslaugų teikėjas
                           </Badge>
                         )}
                       </div>
@@ -190,7 +190,7 @@ export const Navigation = () => {
                     <DropdownMenuItem asChild>
                       <Link href="/profile">
                         <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        <span>Profilis</span>
                       </Link>
                     </DropdownMenuItem>
                     
@@ -200,18 +200,18 @@ export const Navigation = () => {
                         <DropdownMenuItem asChild>
                           <Link href="/pets">
                             <Dog className="mr-2 h-4 w-4" />
-                            <span>My Pets</span>
+                            <span>Mano gyvūnai</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/bookings">
-                            <span>My Bookings</span>
+                            <span>Mano užsakymai</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/favorites">
                             <Heart className="mr-2 h-4 w-4" />
-                            <span>Favorites</span>
+                            <span>Mėgstami</span>
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -223,19 +223,19 @@ export const Navigation = () => {
                         <DropdownMenuItem asChild>
                           <Link href="/provider/dashboard">
                             <Settings className="mr-2 h-4 w-4" />
-                            <span>Provider Dashboard</span>
+                            <span>Paslaugų teikėjo valdymas</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/bookings">
                             <Calendar className="mr-2 h-4 w-4" />
-                            <span>Manage Bookings</span>
+                            <span>Valdyti užsakymus</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/services">
                             <Star className="mr-2 h-4 w-4" />
-                            <span>My Services</span>
+                            <span>Mano paslaugos</span>
                           </Link>
                         </DropdownMenuItem>
                       </>
@@ -244,7 +244,7 @@ export const Navigation = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                      <span>Atsijungti</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -256,7 +256,7 @@ export const Navigation = () => {
                   variant="outline" 
                   onClick={() => setProviderSignupOpen(true)}
                 >
-                  Join as Provider
+                  Prisijungti kaip paslaugų teikėjas
                 </Button>
                 
                 {/* Customer Menu */}

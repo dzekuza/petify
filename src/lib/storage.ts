@@ -6,7 +6,7 @@ export interface UploadResult {
 }
 
 export interface UploadOptions {
-  bucket: 'profile-images' | 'service-images' | 'assets'
+  bucket: 'profile-images' | 'service-images' | 'assets' | 'pet-images'
   folder?: string
   fileName?: string
 }
@@ -20,6 +20,13 @@ export const uploadFile = async (
 ): Promise<UploadResult> => {
   try {
     const { bucket, folder = '', fileName } = options
+    
+    // Ensure we have a valid session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    if (sessionError || !session) {
+      console.error('No valid session found:', sessionError)
+      return { data: null, error: new Error('Authentication required for upload') }
+    }
     
     // Generate unique filename if not provided
     const timestamp = Date.now()
@@ -35,7 +42,8 @@ export const uploadFile = async (
       filePath,
       fileName: finalFileName,
       fileSize: file.size,
-      fileType: file.type
+      fileType: file.type,
+      userId: session.user.id
     })
     
     // Upload the file
@@ -50,7 +58,8 @@ export const uploadFile = async (
       console.error('Upload error:', {
         message: error.message,
         bucket,
-        filePath
+        filePath,
+        userId: session.user.id
       })
       return { data: null, error: new Error(`Upload failed: ${error.message}`) }
     }
@@ -156,6 +165,34 @@ export const uploadProfilePicture = async (
     bucket: 'profile-images',
     folder: `providers/${providerId}`,
     fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`
+  })
+}
+
+/**
+ * Upload a pet profile picture
+ */
+export const uploadPetProfilePicture = async (
+  file: File,
+  petId: string
+): Promise<UploadResult> => {
+  return uploadFile(file, {
+    bucket: 'pet-images',
+    folder: `pets/${petId}`,
+    fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`
+  })
+}
+
+/**
+ * Upload a pet gallery image
+ */
+export const uploadPetGalleryImage = async (
+  file: File,
+  petId: string
+): Promise<UploadResult> => {
+  return uploadFile(file, {
+    bucket: 'pet-images',
+    folder: `pets/${petId}/gallery`,
+    fileName: `gallery-${Date.now()}.${file.name.split('.').pop()}`
   })
 }
 
