@@ -12,10 +12,10 @@ export async function GET(request: NextRequest) {
       .from('bookings')
       .select(`
         *,
-        customer:customers(id, full_name, email, phone, address),
+        customer:users!bookings_customer_id_fkey(id, full_name, email, phone),
         provider:providers(id, business_name, user_id),
         service:services(id, name, price, description),
-        pets:pets(id, name, species, breed, age, special_needs)
+        pet:pets(id, name, species, breed, age, special_needs)
       `)
       .order('created_at', { ascending: false })
 

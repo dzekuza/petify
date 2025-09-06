@@ -27,6 +27,7 @@ import { ServiceProvider, Service, Booking } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
+import { serviceApi } from '@/lib/services'
 
 export default function ProviderBookings() {
   const { user } = useAuth()
@@ -44,109 +45,58 @@ export default function ProviderBookings() {
       try {
         setLoading(true)
         
-        // TODO: Replace with actual API calls
-        // const providerBookings = await bookingApi.getProviderBookings(user?.id)
-        // const providerServices = await serviceApi.getProviderServices(user?.id)
-        
-        // Mock data for demonstration
-        const mockBookings: Booking[] = [
-          {
-            id: 'booking-1',
-            customerId: 'customer-1',
-            providerId: user?.id || '',
-            serviceId: 'service-1',
-            date: '2024-01-15',
-            timeSlot: { start: '10:00', end: '11:00', available: false },
-            pets: [
-              {
-                id: 'pet-1',
-                ownerId: 'customer-1',
-                name: 'Buddy',
-                species: 'dog',
-                breed: 'Golden Retriever',
-                age: 24,
-                weight: 30,
-                specialNeeds: ['Anxiety'],
-                medicalNotes: 'Friendly but nervous around new people',
-                images: [],
-                createdAt: '2024-01-01',
-                updatedAt: '2024-01-01'
-              }
-            ],
-            totalPrice: 75,
-            status: 'pending',
-            notes: 'Please be gentle with Buddy, he gets anxious during grooming',
-            createdAt: '2024-01-10',
-            updatedAt: '2024-01-10'
-          },
-          {
-            id: 'booking-2',
-            customerId: 'customer-2',
-            providerId: user?.id || '',
-            serviceId: 'service-2',
-            date: '2024-01-16',
-            timeSlot: { start: '14:00', end: '15:30', available: false },
-            pets: [
-              {
-                id: 'pet-2',
-                ownerId: 'customer-2',
-                name: 'Whiskers',
-                species: 'cat',
-                breed: 'Persian',
-                age: 36,
-                weight: 4,
-                specialNeeds: [],
-                medicalNotes: 'Healthy cat, regular checkups',
-                images: [],
-                createdAt: '2024-01-01',
-                updatedAt: '2024-01-01'
-              }
-            ],
-            totalPrice: 120,
-            status: 'confirmed',
-            notes: 'Regular grooming appointment',
-            createdAt: '2024-01-11',
-            updatedAt: '2024-01-12'
-          }
-        ]
+        if (!user?.id) {
+          setLoading(false)
+          return
+        }
 
-        const mockServices: Service[] = [
-          {
-            id: 'service-1',
-            providerId: user?.id || '',
-            category: 'grooming',
-            name: 'Full Grooming Service',
-            description: 'Complete grooming including bath, trim, and nail clipping',
-            price: 75,
-            duration: 60,
-            maxPets: 1,
-            requirements: ['Up-to-date vaccinations'],
-            includes: ['Bath', 'Haircut', 'Nail trimming', 'Ear cleaning'],
-            images: [],
-            status: 'active',
-            createdAt: '2024-01-01',
-            updatedAt: '2024-01-01'
-          },
-          {
-            id: 'service-2',
-            providerId: user?.id || '',
-            category: 'grooming',
-            name: 'Premium Grooming Package',
-            description: 'Luxury grooming with spa treatments',
-            price: 120,
-            duration: 90,
-            maxPets: 1,
-            requirements: ['Up-to-date vaccinations', 'Health certificate'],
-            includes: ['Bath', 'Haircut', 'Nail trimming', 'Ear cleaning', 'Spa treatment', 'Teeth brushing'],
-            images: [],
-            status: 'active',
-            createdAt: '2024-01-01',
-            updatedAt: '2024-01-01'
-          }
-        ]
+        // Load real bookings data from API
+        const providerBookings = await bookingApi.getProviderBookings(user.id)
         
-        setBookings(mockBookings)
-        setServices(mockServices)
+        // Transform the API response to match our Booking type
+        const transformedBookings: Booking[] = providerBookings.map((booking: any) => ({
+          id: booking.id,
+          customerId: booking.customer_id,
+          providerId: booking.provider_id,
+          serviceId: booking.service_id,
+          date: booking.booking_date,
+          timeSlot: {
+            start: booking.start_time,
+            end: booking.end_time,
+            available: false
+          },
+          pets: booking.pet ? [booking.pet] : [],
+          totalPrice: booking.total_price,
+          status: booking.status,
+          notes: booking.special_instructions || '',
+          createdAt: booking.created_at,
+          updatedAt: booking.updated_at
+        }))
+        
+        setBookings(transformedBookings)
+
+        // Load real services data from API
+        const providerServices = await serviceApi.getServicesByProvider(user.id)
+        
+        // Transform the API response to match our Service type
+        const transformedServices: Service[] = providerServices.map((service: any) => ({
+          id: service.id,
+          providerId: service.provider_id,
+          category: service.category,
+          name: service.name,
+          description: service.description,
+          price: service.price,
+          duration: service.duration_minutes,
+          maxPets: service.max_pets,
+          requirements: service.requirements || [],
+          includes: service.includes || [],
+          images: service.images || [],
+          status: service.is_active ? 'active' : 'inactive',
+          createdAt: service.created_at,
+          updatedAt: service.updated_at
+        }))
+        
+        setServices(transformedServices)
         
       } catch (error) {
         console.error('Error loading bookings data:', error)

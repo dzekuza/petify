@@ -38,7 +38,7 @@ import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
 import { providerApi } from '@/lib/providers'
 import { serviceApi } from '@/lib/services'
-import { uploadCoverImage, getPublicUrl, validateFile } from '@/lib/storage'
+import { uploadCoverImage, uploadProfilePicture, getPublicUrl, validateFile } from '@/lib/storage'
 
 
 export default function ProviderDashboard() {
@@ -103,7 +103,8 @@ export default function ProviderDashboard() {
       sunday: false
     },
     certifications: [] as string[],
-    coverImage: null as File | null
+    coverImage: null as File | null,
+    profilePicture: null as File | null
   })
   const [editProfileLoading, setEditProfileLoading] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
@@ -514,7 +515,8 @@ export default function ProviderDashboard() {
           sunday: Array.isArray(provider.availability?.sunday) ? provider.availability.sunday.length > 0 : provider.availability?.sunday || false
         },
         certifications: provider.certifications || [],
-        coverImage: null
+        coverImage: null,
+        profilePicture: null
       })
     }
     setShowEditProfileModal(true)
@@ -535,6 +537,7 @@ export default function ProviderDashboard() {
       }
 
       let coverImageUrl = provider.images?.[0] || ''
+      let profilePictureUrl = provider.avatarUrl || ''
 
       // Handle cover image upload if a new file is selected
       if (editProfileForm.coverImage) {
@@ -564,6 +567,34 @@ export default function ProviderDashboard() {
         coverImageUrl = getPublicUrl('profile-images', uploadResult.data!.path)
       }
 
+      // Handle profile picture upload if a new file is selected
+      if (editProfileForm.profilePicture) {
+        // Validate the file
+        const validation = validateFile(editProfileForm.profilePicture, 5)
+        if (!validation.valid) {
+          addNotification({
+            type: 'error',
+            title: 'Invalid File',
+            message: validation.error || 'Please select a valid image file'
+          })
+          return
+        }
+
+        // Upload the image
+        const uploadResult = await uploadProfilePicture(editProfileForm.profilePicture, provider.id)
+        if (uploadResult.error) {
+          addNotification({
+            type: 'error',
+            title: 'Upload Failed',
+            message: 'Failed to upload profile picture. Please try again.'
+          })
+          return
+        }
+
+        // Get the public URL
+        profilePictureUrl = getPublicUrl('profile-images', uploadResult.data!.path)
+      }
+
       // Prepare update data
       const updateData = {
         businessName: editProfileForm.businessName,
@@ -590,7 +621,8 @@ export default function ProviderDashboard() {
         availability: editProfileForm.availability,
         certifications: editProfileForm.certifications,
         experienceYears: parseInt(editProfileForm.experience) || 0,
-        images: coverImageUrl ? [coverImageUrl] : []
+        images: coverImageUrl ? [coverImageUrl] : [],
+        avatarUrl: profilePictureUrl
       }
 
       // Update provider in database
@@ -1055,7 +1087,7 @@ export default function ProviderDashboard() {
               </TabsContent>
 
               <TabsContent value="profile" className="space-y-6">
-                <Card className="overflow-hidden">
+                <Card className="overflow-hidden py-0">
                   {/* Cover Image Section */}
                   <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
                     {provider?.images && provider.images.length > 0 ? (
@@ -1859,6 +1891,38 @@ export default function ProviderDashboard() {
                       </div>
                       <p className="text-sm text-gray-600">
                         {editProfileForm.coverImage ? editProfileForm.coverImage.name : 'Click to upload cover image'}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Profile Picture Upload */}
+              <div>
+                <Label>Profile Picture</Label>
+                <p className="text-sm text-gray-600 mb-3">Upload a profile picture for your business</p>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setEditProfileForm(prev => ({ ...prev, profilePicture: file }))
+                      }
+                    }}
+                    className="hidden"
+                    id="profile-picture-upload"
+                  />
+                  <label htmlFor="profile-picture-upload" className="cursor-pointer">
+                    <div className="space-y-2">
+                      <div className="mx-auto h-12 w-12 text-gray-400">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {editProfileForm.profilePicture ? editProfileForm.profilePicture.name : 'Click to upload profile picture'}
                       </p>
                     </div>
                   </label>

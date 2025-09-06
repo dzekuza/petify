@@ -146,6 +146,20 @@ export const uploadCoverImage = async (
 }
 
 /**
+ * Upload a profile picture for business profile
+ */
+export const uploadProfilePicture = async (
+  file: File,
+  providerId: string
+): Promise<UploadResult> => {
+  return uploadFile(file, {
+    bucket: 'profile-images',
+    folder: `providers/${providerId}`,
+    fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`
+  })
+}
+
+/**
  * Validate file before upload
  */
 export const validateFile = (file: File, maxSizeMB: number = 5): { valid: boolean; error?: string } => {

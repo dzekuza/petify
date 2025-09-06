@@ -255,7 +255,7 @@ export default function ProviderDetailPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Image Gallery */}
-              <Card>
+              <Card className="py-0">
                 <CardContent className="p-0">
                   <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-64 rounded-lg overflow-hidden">
                     {provider.images && provider.images.length > 0 ? (
@@ -441,19 +441,24 @@ export default function ProviderDetailPage() {
                   <div className="pt-4 border-t border-gray-100">
                     <h4 className="text-sm font-medium text-gray-900 mb-2">Availability</h4>
                     <div className="space-y-1 text-sm">
-                      {Object.entries(provider.availability).map(([day, slots]) => (
-                        <div key={day} className="flex justify-between">
-                          <span className="capitalize">{day}</span>
-                          <span className="text-gray-600">
-                            {Array.isArray(slots) && slots.length > 0 
-                              ? `${slots[0].start}-${slots[0].end}` 
-                              : typeof slots === 'object' && slots !== null && 'start' in slots && 'end' in slots
-                                ? `${slots.start}-${slots.end}`
-                                : 'Closed'
-                            }
-                          </span>
-                        </div>
-                      ))}
+                      {Object.entries(provider.availability).map(([day, slots]) => {
+                        const availableSlots = Array.isArray(slots) ? slots.filter(slot => slot.available) : []
+                        const hasAvailability = Array.isArray(slots) && slots.length > 0
+                        
+                        return (
+                          <div key={day} className="flex justify-between">
+                            <span className="capitalize">{day}</span>
+                            <span className="text-gray-600">
+                              {!hasAvailability 
+                                ? 'Not set' 
+                                : availableSlots.length === 0 
+                                  ? 'Closed' 
+                                  : `${availableSlots.length} slot${availableSlots.length !== 1 ? 's' : ''} available`
+                              }
+                            </span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </CardContent>

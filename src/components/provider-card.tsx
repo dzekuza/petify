@@ -56,10 +56,21 @@ export const ProviderCard = ({
 
   const getAvailabilityStatus = () => {
     const now = new Date()
-    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'short' }).toLowerCase() as keyof typeof provider.availability
+    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     const todaySlots = provider.availability[currentDay] || []
     
-    if (todaySlots.length === 0) return { status: 'closed', text: 'Closed today' }
+    // Check if provider has any availability set up
+    const hasAnyAvailability = Object.values(provider.availability).some(daySlots => 
+      Array.isArray(daySlots) && daySlots.length > 0
+    )
+    
+    if (!hasAnyAvailability) {
+      return { status: 'unavailable', text: 'Availability not set' }
+    }
+    
+    if (todaySlots.length === 0) {
+      return { status: 'closed', text: 'Closed today' }
+    }
     
     const currentTime = now.toTimeString().slice(0, 5)
     const isAvailable = todaySlots.some(slot => 
@@ -74,7 +85,7 @@ export const ProviderCard = ({
   const availability = getAvailabilityStatus()
 
   return (
-    <div className={cn("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm group hover:shadow-lg transition-all duration-200 hover:-translate-y-1", className)}>
+    <div className={cn("bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm group hover:shadow-lg transition-all duration-200 hover:-translate-y-1", className)}>
         {/* Image Section */}
         <div className="relative">
           <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 overflow-hidden rounded-t-lg">
@@ -94,8 +105,14 @@ export const ProviderCard = ({
           
           {/* Overlay Badges */}
           <div className="absolute top-3 left-3 flex flex-col space-y-2">
-            <Badge variant="secondary" className="bg-white/90 text-gray-900">
-              {availability.status === 'open' ? 'Open' : 'Closed'}
+            <Badge variant="secondary" className={`bg-white/90 ${
+              availability.status === 'open' ? 'text-green-700' : 
+              availability.status === 'unavailable' ? 'text-orange-700' : 
+              'text-gray-900'
+            }`}>
+              {availability.status === 'open' ? 'Open' : 
+               availability.status === 'unavailable' ? 'Not Set' : 
+               'Closed'}
             </Badge>
             {provider.certifications && provider.certifications.length > 0 && (
               <Badge variant="secondary" className="bg-green-100 text-green-800">
@@ -121,7 +138,7 @@ export const ProviderCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="p-6">
+        <div className="p-6 pt-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-start space-x-3">

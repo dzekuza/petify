@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar as CalendarIcon, Clock, Check, X, Plus, Minus } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -43,7 +43,6 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const [showTimeModal, setShowTimeModal] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string>('')
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
-  const [newTimeSlot, setNewTimeSlot] = useState({ start: '09:00', end: '17:00' })
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [availability, setAvailability] = useState<DayAvailability>(provider.availability || {})
@@ -168,24 +167,10 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     setShowTimeModal(true)
   }
 
-  const handleAddTimeSlot = () => {
-    const newSlot: TimeSlot = {
-      start: newTimeSlot.start,
-      end: newTimeSlot.end,
-      available: true
-    }
-    
-    setTimeSlots(prev => [...prev, newSlot])
-    setNewTimeSlot({ start: '09:00', end: '17:00' })
-  }
 
-  const handleRemoveTimeSlot = (index: number) => {
-    setTimeSlots(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const handleUpdateTimeSlot = (index: number, field: keyof TimeSlot, value: string | boolean) => {
+  const handleToggleTimeSlot = (index: number) => {
     setTimeSlots(prev => prev.map((slot, i) => 
-      i === index ? { ...slot, [field]: value } : slot
+      i === index ? { ...slot, available: !slot.available } : slot
     ))
   }
 
@@ -445,7 +430,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           <DialogHeader>
             <DialogTitle>Manage Availability - {selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1)}</DialogTitle>
             <DialogDescription>
-              Time slots are automatically generated in 15-minute intervals based on your working hours. You can modify individual slots or add custom ones.
+              Time slots are automatically generated in 15-minute intervals based on your working hours. Click on blocks to toggle availability.
             </DialogDescription>
           </DialogHeader>
 
@@ -479,82 +464,39 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                   <p className="text-sm mt-1">Click "Regenerate from Working Hours" to create slots</p>
                 </div>
               ) : (
-                <div className="space-y-3 mt-3 max-h-60 overflow-y-auto">
-                  {timeSlots.map((slot, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg">
-                      <div className="flex-1 grid grid-cols-2 gap-3">
-                        <div>
-                          <Label htmlFor={`start-${index}`}>Start Time</Label>
-                          <Input
-                            id={`start-${index}`}
-                            type="time"
-                            value={slot.start}
-                            onChange={(e) => handleUpdateTimeSlot(index, 'start', e.target.value)}
-                          />
+                <div className="mt-3">
+                  <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                    {timeSlots.map((slot, index) => (
+                      <motion.button
+                        key={index}
+                        className={`
+                          p-3 border rounded-lg text-sm font-medium transition-all duration-200
+                          ${slot.available 
+                            ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200' 
+                            : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
+                          }
+                        `}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleToggleTimeSlot(index)}
+                      >
+                        <div className="text-center">
+                          <div className="font-semibold">{slot.start}</div>
+                          <div className="text-xs opacity-75">- {slot.end}</div>
+                          <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-gray-500'}`}>
+                            {slot.available ? 'Available' : 'Unavailable'}
+                          </div>
                         </div>
-                        <div>
-                          <Label htmlFor={`end-${index}`}>End Time</Label>
-                          <Input
-                            id={`end-${index}`}
-                            type="time"
-                            value={slot.end}
-                            onChange={(e) => handleUpdateTimeSlot(index, 'end', e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${slot.available ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleUpdateTimeSlot(index, 'available', !slot.available)}
-                          className={slot.available ? 'text-green-600' : 'text-gray-600'}
-                        >
-                          {slot.available ? 'Available' : 'Unavailable'}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveTimeSlot(index)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                      </motion.button>
+                    ))}
+                  </div>
+                  <div className="mt-3 text-sm text-gray-600 text-center">
+                    Click on time blocks to toggle availability. Each block represents a 15-minute slot.
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Add New Time Slot */}
-            <div>
-              <Label className="text-base font-medium">Add New Time Slot</Label>
-              <div className="flex items-end space-x-3 mt-3">
-                <div className="flex-1">
-                  <Label htmlFor="new-start">Start Time</Label>
-                  <Input
-                    id="new-start"
-                    type="time"
-                    value={newTimeSlot.start}
-                    onChange={(e) => setNewTimeSlot(prev => ({ ...prev, start: e.target.value }))}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Label htmlFor="new-end">End Time</Label>
-                  <Input
-                    id="new-end"
-                    type="time"
-                    value={newTimeSlot.end}
-                    onChange={(e) => setNewTimeSlot(prev => ({ ...prev, end: e.target.value }))}
-                  />
-                </div>
-                <Button onClick={handleAddTimeSlot} size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add
-                </Button>
-              </div>
-            </div>
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-4 border-t">

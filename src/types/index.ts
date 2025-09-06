@@ -62,6 +62,7 @@ export interface ServiceProvider {
     sunday: TimeSlot[]
   }
   images: string[]
+  avatarUrl?: string
   certifications?: string[]
   experience: number // years
   status: ServiceStatus

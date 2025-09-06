@@ -63,6 +63,7 @@ export interface UpdateProviderData {
   certifications?: string[]
   experienceYears?: number
   images?: string[]
+  avatarUrl?: string
 }
 
 export const providerApi = {
@@ -159,6 +160,7 @@ export const providerApi = {
       if (data.services) dbData.services = data.services
       if (data.location) dbData.location = data.location
       if (data.availability) dbData.availability = data.availability
+      if (data.avatarUrl) dbData.avatar_url = data.avatarUrl
 
       const { data: provider, error } = await supabase
         .from('providers')
@@ -213,6 +215,7 @@ export const providerApi = {
       if (data.services) dbData.services = data.services
       if (data.location) dbData.location = data.location
       if (data.availability) dbData.availability = data.availability
+      if (data.avatarUrl) dbData.avatar_url = data.avatarUrl
 
       const { data: provider, error } = await supabase
         .from('providers')

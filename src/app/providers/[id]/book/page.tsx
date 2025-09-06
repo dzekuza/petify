@@ -376,19 +376,24 @@ export default function BookingPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2 text-sm">
-                      {Object.entries(provider.availability).map(([day, slots]) => (
-                        <div key={day} className="flex justify-between">
-                          <span className="capitalize font-medium">{day}</span>
-                          <span className="text-gray-600">
-                            {Array.isArray(slots) && slots.length > 0 
-                              ? `${slots[0].start}-${slots[0].end}` 
-                              : typeof slots === 'object' && slots !== null && 'start' in slots && 'end' in slots
-                                ? `${slots.start}-${slots.end}`
-                                : 'Closed'
-                            }
-                          </span>
-                        </div>
-                      ))}
+                      {Object.entries(provider.availability).map(([day, slots]) => {
+                        const availableSlots = Array.isArray(slots) ? slots.filter(slot => slot.available) : []
+                        const hasAvailability = Array.isArray(slots) && slots.length > 0
+                        
+                        return (
+                          <div key={day} className="flex justify-between">
+                            <span className="capitalize font-medium">{day}</span>
+                            <span className="text-gray-600">
+                              {!hasAvailability 
+                                ? 'Not set' 
+                                : availableSlots.length === 0 
+                                  ? 'Closed' 
+                                  : `${availableSlots.length} slot${availableSlots.length !== 1 ? 's' : ''} available`
+                              }
+                            </span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </CardContent>
                 </Card>
