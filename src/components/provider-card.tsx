@@ -1,0 +1,251 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Star, MapPin, Clock, Heart, Users, Award, Phone, MessageCircle } from 'lucide-react'
+import { ServiceProvider, Service } from '@/types'
+import { cn } from '@/lib/utils'
+
+interface ProviderCardProps {
+  provider: ServiceProvider
+  services: Service[]
+  distance?: number
+  showActions?: boolean
+  className?: string
+}
+
+export const ProviderCard = ({ 
+  provider, 
+  services, 
+  distance, 
+  showActions = true,
+  className 
+}: ProviderCardProps) => {
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [imageError, setImageError] = useState(false)
+
+  const handleToggleFavorite = () => {
+    setIsFavorite(!isFavorite)
+  }
+
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
+  const getServiceCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'grooming':
+        return '✂️'
+      case 'veterinary':
+        return '🏥'
+      case 'boarding':
+        return '🏠'
+      case 'training':
+        return '🎓'
+      case 'walking':
+        return '🚶'
+      case 'sitting':
+        return '💝'
+      default:
+        return '🐾'
+    }
+  }
+
+  const getAvailabilityStatus = () => {
+    const now = new Date()
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase() as keyof typeof provider.availability
+    const todaySlots = provider.availability[currentDay] || []
+    
+    if (todaySlots.length === 0) return { status: 'closed', text: 'Closed today' }
+    
+    const currentTime = now.toTimeString().slice(0, 5)
+    const isAvailable = todaySlots.some(slot => 
+      slot.available && currentTime >= slot.start && currentTime <= slot.end
+    )
+    
+    return isAvailable 
+      ? { status: 'open', text: 'Open now' }
+      : { status: 'closed', text: 'Closed now' }
+  }
+
+  const availability = getAvailabilityStatus()
+
+  return (
+    <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1", className)}>
+      <CardContent className="p-0">
+        {/* Image Section */}
+        <div className="relative">
+          <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 overflow-hidden rounded-t-lg">
+            {!imageError && provider.images[0] ? (
+              <img
+                src={provider.images[0]}
+                alt={provider.businessName}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-4xl">{getServiceCategoryIcon(provider.services[0])}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Overlay Badges */}
+          <div className="absolute top-3 left-3 flex flex-col space-y-2">
+            <Badge variant="secondary" className="bg-white/90 text-gray-900">
+              {availability.status === 'open' ? 'Open' : 'Closed'}
+            </Badge>
+            {provider.certifications && provider.certifications.length > 0 && (
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Award className="h-3 w-3 mr-1" />
+                Certified
+              </Badge>
+            )}
+          </div>
+
+          {/* Favorite Button */}
+          <button
+            onClick={handleToggleFavorite}
+            className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart 
+              className={cn(
+                "h-4 w-4",
+                isFavorite ? "text-red-500 fill-current" : "text-gray-400"
+              )} 
+            />
+          </button>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start space-x-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src="/placeholder-avatar.jpg" alt={provider.businessName} />
+                <AvatarFallback>
+                  {provider.businessName.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <Link href={`/providers/${provider.id}`}>
+                    {provider.businessName}
+                  </Link>
+                </h3>
+                <div className="flex items-center space-x-2 mt-1">
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    <span className="text-sm font-medium text-gray-900 ml-1">
+                      {provider.rating}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    ({provider.reviewCount} reviews)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+            {provider.description}
+          </p>
+
+          {/* Services */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {provider.services.slice(0, 3).map((service) => (
+              <Badge key={service} variant="outline" className="text-xs">
+                {getServiceCategoryIcon(service)} {service}
+              </Badge>
+            ))}
+            {provider.services.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{provider.services.length - 3} more
+              </Badge>
+            )}
+          </div>
+
+          {/* Location and Distance */}
+          <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-1" />
+              {provider.location.city}, {provider.location.state}
+            </div>
+            {distance && (
+              <div className="flex items-center">
+                <Clock className="h-4 w-4 mr-1" />
+                {distance} km away
+              </div>
+            )}
+          </div>
+
+          {/* Experience and Availability */}
+          <div className="flex items-center justify-between mb-4 text-sm">
+            <div className="flex items-center text-gray-600">
+              <Users className="h-4 w-4 mr-1" />
+              {provider.experience} years experience
+            </div>
+            <div className={cn(
+              "flex items-center text-sm",
+              availability.status === 'open' ? "text-green-600" : "text-gray-500"
+            )}>
+              <div className={cn(
+                "w-2 h-2 rounded-full mr-2",
+                availability.status === 'open' ? "bg-green-500" : "bg-gray-400"
+              )} />
+              {availability.text}
+            </div>
+          </div>
+
+          {/* Price Range */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium text-lg text-gray-900">
+                ${provider.priceRange.min}-${provider.priceRange.max}
+              </span>
+              <span className="ml-1">per service</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          {showActions && (
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" className="flex-1" asChild>
+                <Link href={`/providers/${provider.id}`}>
+                  View Profile
+                </Link>
+              </Button>
+              <Button size="sm" className="flex-1" asChild>
+                <Link href={`/providers/${provider.id}/book`}>
+                  Book Now
+                </Link>
+              </Button>
+            </div>
+          )}
+
+          {/* Quick Contact */}
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="flex space-x-2">
+              <Button variant="ghost" size="sm" className="flex-1">
+                <Phone className="h-4 w-4 mr-2" />
+                Call
+              </Button>
+              <Button variant="ghost" size="sm" className="flex-1">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Message
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

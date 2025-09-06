@@ -1,0 +1,284 @@
+-- Enable Row Level Security on all tables
+ALTER TABLE PUBLIC.USERS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.USER_PROFILES ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.PROVIDERS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.SERVICES ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.PETS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.BOOKINGS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.REVIEWS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.CONVERSATIONS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.MESSAGES ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.FAVORITES ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.NOTIFICATIONS ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE PUBLIC.SERVICE_CATEGORIES ENABLE ROW LEVEL SECURITY;
+
+-- Users table policies
+CREATE POLICY "Users can view their own profile" ON PUBLIC.USERS
+    FOR SELECT USING (AUTH.UID() = ID);
+
+CREATE POLICY "Users can update their own profile" ON PUBLIC.USERS
+    FOR UPDATE USING (AUTH.UID() = ID);
+
+CREATE POLICY "Users can insert their own profile" ON PUBLIC.USERS
+    FOR INSERT WITH CHECK (AUTH.UID() = ID);
+
+-- User profiles policies
+CREATE POLICY "Users can view their own profile" ON PUBLIC.USER_PROFILES
+    FOR SELECT USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Users can update their own profile" ON PUBLIC.USER_PROFILES
+    FOR UPDATE USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Users can insert their own profile" ON PUBLIC.USER_PROFILES
+    FOR INSERT WITH CHECK (AUTH.UID() = USER_ID);
+
+-- Providers table policies
+CREATE POLICY "Anyone can view active providers" ON PUBLIC.PROVIDERS
+    FOR SELECT USING (STATUS = 'active' OR AUTH.UID() = USER_ID);
+
+CREATE POLICY "Providers can update their own profile" ON PUBLIC.PROVIDERS
+    FOR UPDATE USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Users can create provider profile" ON PUBLIC.PROVIDERS
+    FOR INSERT WITH CHECK (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Providers can delete their own profile" ON PUBLIC.PROVIDERS
+    FOR DELETE USING (AUTH.UID() = USER_ID);
+
+-- Services table policies
+CREATE POLICY "Anyone can view active services" ON PUBLIC.SERVICES
+    FOR SELECT USING (IS_ACTIVE = TRUE OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+CREATE POLICY "Providers can manage their services" ON PUBLIC.SERVICES
+    FOR ALL USING (AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+-- Pets table policies
+CREATE POLICY "Users can view their own pets" ON PUBLIC.PETS
+    FOR SELECT USING (AUTH.UID() = OWNER_ID);
+
+CREATE POLICY "Users can manage their own pets" ON PUBLIC.PETS
+    FOR ALL USING (AUTH.UID() = OWNER_ID);
+
+-- Bookings table policies
+CREATE POLICY "Users can view their own bookings" ON PUBLIC.BOOKINGS
+    FOR SELECT USING (AUTH.UID() = CUSTOMER_ID OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+CREATE POLICY "Customers can create bookings" ON PUBLIC.BOOKINGS
+    FOR INSERT WITH CHECK (AUTH.UID() = CUSTOMER_ID);
+
+CREATE POLICY "Booking participants can update bookings" ON PUBLIC.BOOKINGS
+    FOR UPDATE USING (AUTH.UID() = CUSTOMER_ID OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+-- Reviews table policies
+CREATE POLICY "Anyone can view public reviews" ON PUBLIC.REVIEWS
+    FOR SELECT USING (IS_PUBLIC = TRUE OR AUTH.UID() = CUSTOMER_ID OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+CREATE POLICY "Customers can create reviews" ON PUBLIC.REVIEWS
+    FOR INSERT WITH CHECK (AUTH.UID() = CUSTOMER_ID);
+
+CREATE POLICY "Review authors can update their reviews" ON PUBLIC.REVIEWS
+    FOR UPDATE USING (AUTH.UID() = CUSTOMER_ID);
+
+CREATE POLICY "Review authors can delete their reviews" ON PUBLIC.REVIEWS
+    FOR DELETE USING (AUTH.UID() = CUSTOMER_ID);
+
+-- Conversations table policies
+CREATE POLICY "Users can view their conversations" ON PUBLIC.CONVERSATIONS
+    FOR SELECT USING (AUTH.UID() = CUSTOMER_ID OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+CREATE POLICY "Users can create conversations" ON PUBLIC.CONVERSATIONS
+    FOR INSERT WITH CHECK (AUTH.UID() = CUSTOMER_ID OR AUTH.UID() IN (
+    SELECT
+         USER_ID
+    FROM
+         PUBLIC.PROVIDERS
+    WHERE
+         ID = PROVIDER_ID
+));
+
+-- Messages table policies
+CREATE POLICY "Users can view messages in their conversations" ON PUBLIC.MESSAGES
+    FOR SELECT USING (AUTH.UID() IN (
+    SELECT
+         CUSTOMER_ID
+    FROM
+         PUBLIC.CONVERSATIONS
+    WHERE
+         ID = CONVERSATION_ID
+    UNION
+    SELECT
+         P.USER_ID
+    FROM
+         PUBLIC.CONVERSATIONS C
+        JOIN PUBLIC.PROVIDERS P
+        ON P.ID = C.PROVIDER_ID
+    WHERE
+         C.ID = CONVERSATION_ID
+));
+
+CREATE POLICY "Users can send messages in their conversations" ON PUBLIC.MESSAGES
+    FOR INSERT WITH CHECK (AUTH.UID() = SENDER_ID AND AUTH.UID() IN (
+    SELECT
+         CUSTOMER_ID
+    FROM
+         PUBLIC.CONVERSATIONS
+    WHERE
+         ID = CONVERSATION_ID
+    UNION
+    SELECT
+         P.USER_ID
+    FROM
+         PUBLIC.CONVERSATIONS C
+        JOIN PUBLIC.PROVIDERS P
+        ON P.ID = C.PROVIDER_ID
+    WHERE
+         C.ID = CONVERSATION_ID
+));
+
+CREATE POLICY "Users can update their own messages" ON PUBLIC.MESSAGES
+    FOR UPDATE USING (AUTH.UID() = SENDER_ID);
+
+-- Favorites table policies
+CREATE POLICY "Users can view their own favorites" ON PUBLIC.FAVORITES
+    FOR SELECT USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Users can manage their own favorites" ON PUBLIC.FAVORITES
+    FOR ALL USING (AUTH.UID() = USER_ID);
+
+-- Notifications table policies
+CREATE POLICY "Users can view their own notifications" ON PUBLIC.NOTIFICATIONS
+    FOR SELECT USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "Users can update their own notifications" ON PUBLIC.NOTIFICATIONS
+    FOR UPDATE USING (AUTH.UID() = USER_ID);
+
+CREATE POLICY "System can create notifications" ON PUBLIC.NOTIFICATIONS
+    FOR INSERT WITH CHECK (TRUE);
+
+-- Service categories policies (public read-only)
+CREATE POLICY "Anyone can view service categories" ON PUBLIC.SERVICE_CATEGORIES
+    FOR SELECT USING (IS_ACTIVE = TRUE);
+
+CREATE POLICY "Admins can manage service categories" ON PUBLIC.SERVICE_CATEGORIES
+    FOR ALL USING (AUTH.UID() IN (
+    SELECT
+         ID
+    FROM
+         PUBLIC.USERS
+    WHERE
+         ROLE = 'admin'
+));
+
+-- Create function to handle new user signup
+CREATE OR REPLACE FUNCTION PUBLIC.HANDLE_NEW_USER(
+) RETURNS TRIGGER AS
+    $$     BEGIN INSERT INTO PUBLIC.USERS (
+        ID,
+        EMAIL,
+        FULL_NAME,
+        ROLE
+    ) VALUES (
+        NEW.ID,
+        NEW.EMAIL,
+        COALESCE(NEW.RAW_USER_META_DATA->>'full_name', NEW.EMAIL),
+        COALESCE(NEW.RAW_USER_META_DATA->>'role', 'customer')::USER_ROLE
+    );
+    RETURN NEW;
+END;
+$$     LANGUAGE PLPGSQL SECURITY DEFINER;
+ 
+-- Create trigger for new user signup
+CREATE TRIGGER ON_AUTH_USER_CREATED AFTER INSERT ON AUTH.USERS FOR EACH ROW EXECUTE FUNCTION PUBLIC.HANDLE_NEW_USER(
+);
+ 
+-- Create function to update provider ratings
+CREATE OR REPLACE
+
+FUNCTION PUBLIC.UPDATE_PROVIDER_RATING(
+) RETURNS TRIGGER AS
+    $$     BEGIN UPDATE PUBLIC.PROVIDERS SET RATING = (
+        SELECT
+            AVG(RATING)::DECIMAL(3,
+            2)
+        FROM
+            PUBLIC.REVIEWS
+        WHERE
+            PROVIDER_ID = NEW.PROVIDER_ID
+            AND IS_PUBLIC = TRUE
+    ), REVIEW_COUNT = (
+        SELECT
+            COUNT(*)
+        FROM
+            PUBLIC.REVIEWS
+        WHERE
+            PROVIDER_ID = NEW.PROVIDER_ID
+            AND IS_PUBLIC = TRUE
+    ) WHERE ID = NEW.PROVIDER_ID;
+    RETURN NEW;
+END;
+$$     LANGUAGE PLPGSQL SECURITY DEFINER;
+ 
+-- Create trigger to update provider ratings when reviews are inserted/updated/deleted
+CREATE TRIGGER UPDATE_PROVIDER_RATING_ON_REVIEW_INSERT AFTER INSERT ON PUBLIC.REVIEWS FOR EACH ROW EXECUTE FUNCTION PUBLIC.UPDATE_PROVIDER_RATING(
+);
+CREATE TRIGGER UPDATE_PROVIDER_RATING_ON_REVIEW_UPDATE AFTER UPDATE ON PUBLIC.REVIEWS FOR EACH ROW EXECUTE
+
+FUNCTION PUBLIC.UPDATE_PROVIDER_RATING(
+);
+CREATE TRIGGER UPDATE_PROVIDER_RATING_ON_REVIEW_DELETE AFTER DELETE ON PUBLIC.REVIEWS FOR EACH ROW EXECUTE
+
+FUNCTION PUBLIC.UPDATE_PROVIDER_RATING(
+);
