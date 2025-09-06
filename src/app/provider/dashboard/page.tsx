@@ -39,6 +39,8 @@ import { bookingApi } from '@/lib/bookings'
 import { providerApi } from '@/lib/providers'
 import { serviceApi } from '@/lib/services'
 import { uploadCoverImage, uploadProfilePicture, getPublicUrl, validateFile } from '@/lib/storage'
+import { geocodeAddress } from '@/lib/geocoding'
+import AddressAutocomplete from '@/components/address-autocomplete'
 
 
 export default function ProviderDashboard() {
@@ -91,6 +93,7 @@ export default function ProviderDashboard() {
     city: '',
     state: '',
     zipCode: '',
+    coordinates: { lat: 0, lng: 0 },
     experience: '',
     priceRange: { min: '', max: '' },
     availability: {
@@ -500,6 +503,10 @@ export default function ProviderDashboard() {
         city: provider.location?.city || '',
         state: provider.location?.state || '',
         zipCode: provider.location?.zipCode || '',
+        coordinates: {
+          lat: provider.location?.coordinates?.lat || 0,
+          lng: provider.location?.coordinates?.lng || 0
+        },
         experience: provider.experience?.toString() || '',
         priceRange: {
           min: provider.priceRange?.min?.toString() || '',
@@ -605,8 +612,8 @@ export default function ProviderDashboard() {
           state: editProfileForm.state,
           zip: editProfileForm.zipCode,
           coordinates: {
-            lat: provider.location?.coordinates?.lat || 0,
-            lng: provider.location?.coordinates?.lng || 0
+            lat: editProfileForm.coordinates.lat,
+            lng: editProfileForm.coordinates.lng
           }
         },
         contactInfo: {
@@ -715,7 +722,7 @@ export default function ProviderDashboard() {
       <Layout>
         <ProtectedRoute requiredRole="provider">
           <div className="min-h-screen bg-gray-50 py-8">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
                 <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -736,7 +743,7 @@ export default function ProviderDashboard() {
     <Layout>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -952,7 +959,7 @@ export default function ProviderDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-2">
                                 <h4 className="font-medium text-gray-900">
-                                  {booking.pets[0]?.name} - {services.find(s => s.id === booking.serviceId)?.name}
+                                  {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
                                 </h4>
                                 <Badge className={getStatusColor(booking.status)}>
                                   <div className="flex items-center space-x-1">
@@ -1309,34 +1316,36 @@ export default function ProviderDashboard() {
                 {/* Pet Information */}
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
-                  {selectedBooking.pets.map((pet, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                  {selectedBooking.pet ? (
+                    <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-gray-600">Pet Name</p>
-                          <p className="font-medium">{pet.name}</p>
+                          <p className="font-medium">{selectedBooking.pet.name}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Species</p>
-                          <p className="font-medium">{pet.species}</p>
+                          <p className="font-medium">{selectedBooking.pet.species}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Breed</p>
-                          <p className="font-medium">{pet.breed || 'N/A'}</p>
+                          <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Age</p>
-                          <p className="font-medium">{pet.age} months</p>
+                          <p className="font-medium">{selectedBooking.pet.age} months</p>
                         </div>
                       </div>
-                      {pet.specialNeeds && pet.specialNeeds.length > 0 && (
+                      {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
                         <div className="mt-3">
                           <p className="text-sm text-gray-600">Special Needs</p>
-                          <p className="font-medium">{pet.specialNeeds.join(', ')}</p>
+                          <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
                         </div>
                       )}
                     </div>
-                  ))}
+                  ) : (
+                    <p className="text-gray-500">No pet information available</p>
+                  )}
                 </div>
 
                 {/* Customer Information */}
@@ -1569,7 +1578,7 @@ export default function ProviderDashboard() {
                           state: user.user_metadata?.state || '',
                           zip: user.user_metadata?.zip_code || '',
                           coordinates: {
-                            lat: 0, // TODO: Get from geocoding
+                            lat: 0, // Will be updated with geocoding
                             lng: 0
                           }
                         },
@@ -1594,6 +1603,29 @@ export default function ProviderDashboard() {
                         availability: profileForm.availability,
                         certifications: profileForm.certifications,
                         experienceYears: parseInt(profileForm.experience.split('-')[0]) || 0
+                      }
+
+                      // Geocode the address to get proper coordinates
+                      const fullAddress = `${providerData.location.address}, ${providerData.location.city}, ${providerData.location.state}, ${providerData.location.zip}`
+                      const geocodingResult = await geocodeAddress(fullAddress)
+                      
+                      if ('lat' in geocodingResult && 'lng' in geocodingResult) {
+                        // Update coordinates with geocoded values
+                        providerData.location.coordinates.lat = geocodingResult.lat
+                        providerData.location.coordinates.lng = geocodingResult.lng
+                        
+                        // Update address components with geocoded values if they're more accurate
+                        if (geocodingResult.city) providerData.location.city = geocodingResult.city
+                        if (geocodingResult.state) providerData.location.state = geocodingResult.state
+                        if (geocodingResult.zipCode) providerData.location.zip = geocodingResult.zipCode
+                        if (geocodingResult.address) providerData.location.address = geocodingResult.address
+                      } else {
+                        console.warn('Geocoding failed:', geocodingResult.message)
+                        addNotification({
+                          type: 'warning',
+                          title: 'Geocoding Warning',
+                          message: 'Address geocoding failed. Location may not be accurate on the map.'
+                        })
                       }
 
                       // Save to database
@@ -1997,17 +2029,26 @@ export default function ProviderDashboard() {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="editAddress">Address</Label>
-                <Input
-                  id="editAddress"
-                  type="text"
-                  value={editProfileForm.address}
-                  onChange={(e) => setEditProfileForm(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="123 Main Street"
-                  className="mt-1"
-                />
-              </div>
+              <AddressAutocomplete
+                value={editProfileForm.address}
+                onChange={(address) => setEditProfileForm(prev => ({ ...prev, address }))}
+                onAddressSelect={(suggestion) => {
+                  setEditProfileForm(prev => ({
+                    ...prev,
+                    address: suggestion.address,
+                    city: suggestion.city,
+                    state: suggestion.state,
+                    zipCode: suggestion.zipCode,
+                    coordinates: {
+                      lat: suggestion.coordinates.lat,
+                      lng: suggestion.coordinates.lng
+                    }
+                  }))
+                }}
+                placeholder="Enter your business address"
+                label="Business Address"
+                className="mt-1"
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -2023,25 +2064,25 @@ export default function ProviderDashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="editState">State</Label>
+                  <Label htmlFor="editState">State/Region</Label>
                   <Input
                     id="editState"
                     type="text"
                     value={editProfileForm.state}
                     onChange={(e) => setEditProfileForm(prev => ({ ...prev, state: e.target.value }))}
-                    placeholder="State"
+                    placeholder="State/Region"
                     className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="editZipCode">ZIP Code</Label>
+                  <Label htmlFor="editZipCode">Postal Code</Label>
                   <Input
                     id="editZipCode"
                     type="text"
                     value={editProfileForm.zipCode}
                     onChange={(e) => setEditProfileForm(prev => ({ ...prev, zipCode: e.target.value }))}
-                    placeholder="12345"
+                    placeholder="Postal Code"
                     className="mt-1"
                   />
                 </div>

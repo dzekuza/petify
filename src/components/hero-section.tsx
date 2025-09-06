@@ -69,7 +69,7 @@ export const HeroSection = () => {
 
   return (
     <section className="bg-neutral-50 py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 items-center justify-center">
           {/* Main Heading */}
           <div className="text-center">

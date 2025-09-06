@@ -98,14 +98,18 @@ export interface Booking {
   customerId: string
   providerId: string
   serviceId: string
+  petId?: string // Single pet per booking
   date: string // YYYY-MM-DD
   timeSlot: TimeSlot
-  pets: Pet[]
   totalPrice: number
   status: BookingStatus
   notes?: string
   createdAt: string
   updatedAt: string
+  // Populated fields (not in database)
+  pet?: Pet
+  service?: Service
+  provider?: ServiceProvider
 }
 
 export interface Pet {

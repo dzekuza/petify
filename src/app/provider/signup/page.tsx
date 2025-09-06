@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAuth } from '@/contexts/auth-context'
+import AddressAutocomplete from '@/components/address-autocomplete'
 import { 
   Award,
   CheckCircle,
@@ -115,7 +116,7 @@ export default function ProviderSignupPage() {
       await new Promise(resolve => setTimeout(resolve, 1500))
       
       // In a real app, you would:
-      // 1. Create the provider profile in your database
+      // 1. Create the provider profile in your database with proper geocoding
       // 2. Update the user's role to 'provider'
       // 3. Set up their initial services and availability
       
@@ -190,18 +191,22 @@ export default function ProviderSignupPage() {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="address">Address *</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Street address"
-                  className="mt-1"
-                  required
-                />
-              </div>
+            <AddressAutocomplete
+              value={formData.address}
+              onChange={(address) => handleInputChange('address', address)}
+              onAddressSelect={(suggestion) => {
+                handleInputChange('address', suggestion.address)
+                handleInputChange('city', suggestion.city)
+                handleInputChange('state', suggestion.state)
+                handleInputChange('zipCode', suggestion.zipCode)
+              }}
+              placeholder="Enter your business address"
+              label="Business Address"
+              required
+              className="mt-1"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="city">City *</Label>
                 <Input
@@ -214,23 +219,23 @@ export default function ProviderSignupPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="state">State *</Label>
+                <Label htmlFor="state">State/Region *</Label>
                 <Input
                   id="state"
                   value={formData.state}
                   onChange={(e) => handleInputChange('state', e.target.value)}
-                  placeholder="State"
+                  placeholder="State/Region"
                   className="mt-1"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="zipCode">ZIP Code *</Label>
+                <Label htmlFor="zipCode">Postal Code *</Label>
                 <Input
                   id="zipCode"
                   value={formData.zipCode}
                   onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                  placeholder="ZIP code"
+                  placeholder="Postal Code"
                   className="mt-1"
                   required
                 />
@@ -344,7 +349,7 @@ export default function ProviderSignupPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Become a PetServices Provider

@@ -41,7 +41,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
     <div className="min-h-screen bg-white">
       {/* Header with filters and view toggle */}
       <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Filters */}
             <div className="flex items-center space-x-4">
@@ -102,7 +102,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {error ? (
           <div className="text-center py-12">
             <div className="text-red-500 text-lg mb-4">Error loading providers</div>

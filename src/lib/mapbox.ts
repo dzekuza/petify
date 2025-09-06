@@ -1,10 +1,11 @@
 export const MAPBOX_CONFIG = {
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '',
   style: 'mapbox://styles/dzekuza/cm4ujxdlt000301safql0df3b',
-  defaultCenter: [-122.4194, 37.7749], // San Francisco
+  defaultCenter: [23.8813, 54.6872], // Vilnius, Lithuania
   defaultZoom: 12,
   maxZoom: 18,
-  minZoom: 10
+  minZoom: 10,
+  defaultCountry: 'LT' // Lithuania country code
 }
 
 export const MAP_STYLES = {

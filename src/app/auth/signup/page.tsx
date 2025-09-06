@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
 import { PawPrint, Eye, EyeOff } from 'lucide-react'
 
@@ -17,7 +16,6 @@ export default function SignUpPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'customer' as 'customer' | 'provider',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -50,19 +48,15 @@ export default function SignUpPage() {
       return
     }
 
-    const { error } = await signUp(formData.email, formData.password, formData.fullName, formData.role)
+    const { error } = await signUp(formData.email, formData.password, formData.fullName, 'customer')
     
     if (error) {
       setError(error.message)
     } else {
       setSuccess(true)
-      // Redirect to appropriate page based on role
+      // Redirect to home page for customers
       setTimeout(() => {
-        if (formData.role === 'provider') {
-          router.push('/provider/signup')
-        } else {
-          router.push('/')
-        }
+        router.push('/')
       }, 2000)
     }
     
@@ -103,15 +97,15 @@ export default function SignUpPage() {
             Create your account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join PetServices and start your journey
+            Join PetServices as a pet owner and find trusted care for your pets
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Sign Up</CardTitle>
+            <CardTitle>Sign Up as Pet Owner</CardTitle>
             <CardDescription>
-              Create your account to get started
+              Create your account to find trusted pet care services
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -148,21 +142,6 @@ export default function SignUpPage() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="role">Account Type</Label>
-                <Select 
-                  value={formData.role} 
-                  onValueChange={(value) => handleInputChange('role', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="customer">Pet Owner</SelectItem>
-                    <SelectItem value="provider">Service Provider</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div>
                 <Label htmlFor="password">Password</Label>
@@ -277,6 +256,15 @@ export default function SignUpPage() {
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   Sign in
+                </Link>
+              </p>
+              <p className="mt-4 text-xs text-gray-500">
+                Are you a service provider?{' '}
+                <Link
+                  href="/provider/signup"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  Join as a provider
                 </Link>
               </p>
             </div>

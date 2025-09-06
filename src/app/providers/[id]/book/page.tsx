@@ -369,28 +369,49 @@ export default function BookingPage() {
                   </CardContent>
                 </Card>
 
-                {/* Availability */}
+                {/* Working Hours */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Availability</CardTitle>
+                    <CardTitle>Working Hours</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2 text-sm">
-                      {Object.entries(provider.availability).map(([day, slots]) => {
-                        const availableSlots = Array.isArray(slots) ? slots.filter(slot => slot.available) : []
+                      {Object.entries(provider.availability)
+                        .filter(([day]) => {
+                          // Only show full day names, filter out abbreviated ones
+                          const fullDayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                          return fullDayNames.includes(day.toLowerCase())
+                        })
+                        .map(([day, slots]) => {
                         const hasAvailability = Array.isArray(slots) && slots.length > 0
+                        
+                        if (!hasAvailability) {
+                          return (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize font-medium">{day}</span>
+                              <span className="text-gray-600">Closed</span>
+                            </div>
+                          )
+                        }
+                        
+                        // Get working hours from first and last available slots
+                        const availableSlots = slots.filter(slot => slot.available)
+                        if (availableSlots.length === 0) {
+                          return (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize font-medium">{day}</span>
+                              <span className="text-gray-600">Closed</span>
+                            </div>
+                          )
+                        }
+                        
+                        const startTime = availableSlots[0].start
+                        const endTime = availableSlots[availableSlots.length - 1].end
                         
                         return (
                           <div key={day} className="flex justify-between">
                             <span className="capitalize font-medium">{day}</span>
-                            <span className="text-gray-600">
-                              {!hasAvailability 
-                                ? 'Not set' 
-                                : availableSlots.length === 0 
-                                  ? 'Closed' 
-                                  : `${availableSlots.length} slot${availableSlots.length !== 1 ? 's' : ''} available`
-                              }
-                            </span>
+                            <span className="text-gray-600">{startTime} - {endTime}</span>
                           </div>
                         )
                       })}

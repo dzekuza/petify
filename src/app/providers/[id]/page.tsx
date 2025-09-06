@@ -174,7 +174,7 @@ export default function ProviderDetailPage() {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
@@ -196,7 +196,7 @@ export default function ProviderDetailPage() {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Provider not found</h1>
               <p className="text-gray-600">The provider you're looking for doesn't exist.</p>
@@ -210,7 +210,7 @@ export default function ProviderDetailPage() {
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50 py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-start justify-between">
@@ -439,23 +439,44 @@ export default function ProviderDetailPage() {
                   </div>
 
                   <div className="pt-4 border-t border-gray-100">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Availability</h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Working Hours</h4>
                     <div className="space-y-1 text-sm">
-                      {Object.entries(provider.availability).map(([day, slots]) => {
-                        const availableSlots = Array.isArray(slots) ? slots.filter(slot => slot.available) : []
+                      {Object.entries(provider.availability)
+                        .filter(([day]) => {
+                          // Only show full day names, filter out abbreviated ones
+                          const fullDayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                          return fullDayNames.includes(day.toLowerCase())
+                        })
+                        .map(([day, slots]) => {
                         const hasAvailability = Array.isArray(slots) && slots.length > 0
+                        
+                        if (!hasAvailability) {
+                          return (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize">{day}</span>
+                              <span className="text-gray-600">Closed</span>
+                            </div>
+                          )
+                        }
+                        
+                        // Get working hours from first and last available slots
+                        const availableSlots = slots.filter(slot => slot.available)
+                        if (availableSlots.length === 0) {
+                          return (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize">{day}</span>
+                              <span className="text-gray-600">Closed</span>
+                            </div>
+                          )
+                        }
+                        
+                        const startTime = availableSlots[0].start
+                        const endTime = availableSlots[availableSlots.length - 1].end
                         
                         return (
                           <div key={day} className="flex justify-between">
                             <span className="capitalize">{day}</span>
-                            <span className="text-gray-600">
-                              {!hasAvailability 
-                                ? 'Not set' 
-                                : availableSlots.length === 0 
-                                  ? 'Closed' 
-                                  : `${availableSlots.length} slot${availableSlots.length !== 1 ? 's' : ''} available`
-                              }
-                            </span>
+                            <span className="text-gray-600">{startTime} - {endTime}</span>
                           </div>
                         )
                       })}

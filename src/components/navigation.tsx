@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Globe, Calendar, Star } from 'lucide-react'
+import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Globe, Calendar, Star, Dog } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '@/components/ui/card'
+import AddressAutocomplete from '@/components/address-autocomplete'
 
 const navigation = [
   { name: 'Find Services', href: '/search' },
@@ -48,8 +49,10 @@ export const Navigation = () => {
     serviceType: '',
     businessName: '',
     phone: '',
+    address: '',
     city: '',
-    state: ''
+    state: '',
+    zipCode: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -91,8 +94,10 @@ export const Navigation = () => {
           business_name: providerForm.businessName,
           service_type: providerForm.serviceType,
           phone: providerForm.phone,
+          address: providerForm.address,
           city: providerForm.city,
-          state: providerForm.state
+          state: providerForm.state,
+          zip_code: providerForm.zipCode
         }
       )
       
@@ -117,7 +122,7 @@ export const Navigation = () => {
 
   return (
     <header className="bg-white shadow-sm border-b">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
+      <nav className="mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
@@ -193,6 +198,12 @@ export const Navigation = () => {
                     {/* Customer-specific menu items */}
                     {user.user_metadata?.role !== 'provider' && (
                       <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/pets">
+                            <Dog className="mr-2 h-4 w-4" />
+                            <span>My Pets</span>
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/bookings">
                             <span>My Bookings</span>
@@ -352,6 +363,13 @@ export const Navigation = () => {
                   {/* Customer-specific mobile menu items */}
                   {user.user_metadata?.role !== 'provider' && (
                     <>
+                      <Link
+                        href="/pets"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        My Pets
+                      </Link>
                       <Link
                         href="/bookings"
                         className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
@@ -520,7 +538,22 @@ export const Navigation = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <AddressAutocomplete
+              value={providerForm.address}
+              onChange={(address) => handleInputChange('address', address)}
+              onAddressSelect={(suggestion) => {
+                handleInputChange('address', suggestion.address)
+                handleInputChange('city', suggestion.city)
+                handleInputChange('state', suggestion.state)
+                handleInputChange('zipCode', suggestion.zipCode)
+              }}
+              placeholder="Enter your business address"
+              label="Business Address"
+              required
+              className="mt-1"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="city">City *</Label>
                 <Input
@@ -535,7 +568,7 @@ export const Navigation = () => {
               </div>
 
               <div>
-                <Label htmlFor="state">State *</Label>
+                <Label htmlFor="state">State/Region *</Label>
                 <Input
                   id="state"
                   type="text"
@@ -543,7 +576,20 @@ export const Navigation = () => {
                   onChange={(e) => handleInputChange('state', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your state"
+                  placeholder="Enter your state/region"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="zipCode">Postal Code *</Label>
+                <Input
+                  id="zipCode"
+                  type="text"
+                  value={providerForm.zipCode}
+                  onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="Enter postal code"
                 />
               </div>
             </div>
@@ -598,7 +644,7 @@ export const Navigation = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={loading || !providerForm.fullName || !providerForm.email || !providerForm.serviceType || !providerForm.businessName || !providerForm.phone || !providerForm.city || !providerForm.state || !providerForm.password || !providerForm.confirmPassword}
+                disabled={loading || !providerForm.fullName || !providerForm.email || !providerForm.serviceType || !providerForm.businessName || !providerForm.phone || !providerForm.address || !providerForm.city || !providerForm.state || !providerForm.zipCode || !providerForm.password || !providerForm.confirmPassword}
               >
                 {loading ? 'Creating Account...' : 'Create Provider Account'}
               </Button>
