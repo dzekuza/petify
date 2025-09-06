@@ -35,6 +35,7 @@ import { ServiceProvider, Service, Booking, CreateServiceForm, ServiceCategory }
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
+import { providerApi } from '@/lib/providers'
 
 
 export default function ProviderDashboard() {
@@ -83,21 +84,56 @@ export default function ProviderDashboard() {
       try {
         setLoading(true)
         
-        // Load provider data from API
         if (user?.id) {
-          // TODO: Replace with actual API calls
-          // const providerData = await providerApi.getProvider(user.id)
+          // Load provider data from database
+          const providerData = await providerApi.getProviderByUserId(user.id)
+          
+          if (providerData) {
+            // Convert database format to our ServiceProvider type
+            const serviceProvider: ServiceProvider = {
+              id: providerData.id,
+              userId: providerData.user_id,
+              businessName: providerData.business_name,
+              description: providerData.description || '',
+              services: providerData.services || [],
+              location: {
+                address: providerData.location?.address || '',
+                city: providerData.location?.city || '',
+                state: providerData.location?.state || '',
+                zipCode: providerData.location?.zip || '',
+                coordinates: {
+                  lat: providerData.location?.coordinates?.lat || 0,
+                  lng: providerData.location?.coordinates?.lng || 0
+                }
+              },
+              rating: providerData.rating || 0,
+              reviewCount: providerData.review_count || 0,
+              priceRange: {
+                min: providerData.price_range?.min || 0,
+                max: providerData.price_range?.max || 0
+              },
+              availability: providerData.availability || {},
+              images: providerData.images || [],
+              certifications: providerData.certifications || [],
+              experience: providerData.experience_years || 0,
+              status: providerData.status || 'active',
+              createdAt: providerData.created_at,
+              updatedAt: providerData.updated_at
+            }
+            
+            setProvider(serviceProvider)
+            setShowCompleteProfile(false)
+          } else {
+            // No provider profile found, show complete profile section
+            setProvider(null)
+            setShowCompleteProfile(true)
+          }
+          
+          // TODO: Load services and bookings from API
           // const providerServices = await serviceApi.getProviderServices(user.id)
           // const providerBookings = await bookingApi.getProviderBookings(user.id)
-          
-          // For now, initialize with empty data
-          // In a real app, you'd check if the provider profile is complete
-          setProvider(null)
           setServices([])
           setBookings([])
-          
-          // Show complete profile section if provider data is missing
-          setShowCompleteProfile(true)
         }
         
       } catch (error) {
@@ -974,15 +1010,113 @@ export default function ProviderDashboard() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={() => {
-                    // In a real app, you'd save this data to the database
-                    setShowCompleteProfileModal(false)
-                    setShowCompleteProfile(false)
-                    addNotification({
-                      type: 'success',
-                      title: 'Profile Updated',
-                      message: 'Your provider profile has been completed successfully!'
-                    })
+                  onClick={async () => {
+                    try {
+                      if (!user?.id) {
+                        addNotification({
+                          type: 'error',
+                          title: 'Error',
+                          message: 'User not authenticated'
+                        })
+                        return
+                      }
+
+                      // Get user data from auth context
+                      const userEmail = user.email || ''
+                      const userName = user.user_metadata?.full_name || ''
+
+                      // Create provider data
+                      const providerData = {
+                        userId: user.id,
+                        businessName: user.user_metadata?.business_name || 'My Business',
+                        businessType: 'individual',
+                        description: profileForm.businessDescription,
+                        services: [user.user_metadata?.service_type || 'grooming'],
+                        location: {
+                          address: user.user_metadata?.address || '',
+                          city: user.user_metadata?.city || '',
+                          state: user.user_metadata?.state || '',
+                          zip: user.user_metadata?.zip_code || '',
+                          coordinates: {
+                            lat: 0, // TODO: Get from geocoding
+                            lng: 0
+                          }
+                        },
+                        contactInfo: {
+                          phone: user.user_metadata?.phone || '',
+                          email: userEmail
+                        },
+                        businessHours: {
+                          monday: { start: '09:00', end: '17:00', available: profileForm.availability.monday },
+                          tuesday: { start: '09:00', end: '17:00', available: profileForm.availability.tuesday },
+                          wednesday: { start: '09:00', end: '17:00', available: profileForm.availability.wednesday },
+                          thursday: { start: '09:00', end: '17:00', available: profileForm.availability.thursday },
+                          friday: { start: '09:00', end: '17:00', available: profileForm.availability.friday },
+                          saturday: { start: '09:00', end: '17:00', available: profileForm.availability.saturday },
+                          sunday: { start: '09:00', end: '17:00', available: profileForm.availability.sunday }
+                        },
+                        priceRange: {
+                          min: parseFloat(profileForm.priceRange.min),
+                          max: parseFloat(profileForm.priceRange.max),
+                          currency: 'USD'
+                        },
+                        availability: profileForm.availability,
+                        certifications: profileForm.certifications,
+                        experienceYears: parseInt(profileForm.experience.split('-')[0]) || 0
+                      }
+
+                      // Save to database
+                      const newProvider = await providerApi.createProvider(providerData)
+                      
+                      // Update local state
+                      const serviceProvider: ServiceProvider = {
+                        id: newProvider.id,
+                        userId: newProvider.user_id,
+                        businessName: newProvider.business_name,
+                        description: newProvider.description || '',
+                        services: newProvider.services || [],
+                        location: {
+                          address: newProvider.location?.address || '',
+                          city: newProvider.location?.city || '',
+                          state: newProvider.location?.state || '',
+                          zipCode: newProvider.location?.zip || '',
+                          coordinates: {
+                            lat: newProvider.location?.coordinates?.lat || 0,
+                            lng: newProvider.location?.coordinates?.lng || 0
+                          }
+                        },
+                        rating: newProvider.rating || 0,
+                        reviewCount: newProvider.review_count || 0,
+                        priceRange: {
+                          min: newProvider.price_range?.min || 0,
+                          max: newProvider.price_range?.max || 0
+                        },
+                        availability: newProvider.availability || {},
+                        images: newProvider.images || [],
+                        certifications: newProvider.certifications || [],
+                        experience: newProvider.experience_years || 0,
+                        status: newProvider.status || 'active',
+                        createdAt: newProvider.created_at,
+                        updatedAt: newProvider.updated_at
+                      }
+                      
+                      setProvider(serviceProvider)
+                      setShowCompleteProfileModal(false)
+                      setShowCompleteProfile(false)
+                      
+                      addNotification({
+                        type: 'success',
+                        title: 'Profile Created',
+                        message: 'Your provider profile has been created successfully!'
+                      })
+                    } catch (error) {
+                      console.error('Error creating provider profile:', error)
+                      addNotification({
+                        type: 'error',
+                        title: 'Error',
+                        message: 'Failed to create provider profile. Please try again.'
+                      })
+                    }
                   }}
                   disabled={!profileForm.businessDescription || !profileForm.experience || !profileForm.priceRange.min || !profileForm.priceRange.max}
                 >

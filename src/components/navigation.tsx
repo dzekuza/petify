@@ -86,7 +86,14 @@ export const Navigation = () => {
         providerForm.email, 
         providerForm.password, 
         providerForm.fullName, 
-        'provider'
+        'provider',
+        {
+          business_name: providerForm.businessName,
+          service_type: providerForm.serviceType,
+          phone: providerForm.phone,
+          city: providerForm.city,
+          state: providerForm.state
+        }
       )
       
       if (error) {

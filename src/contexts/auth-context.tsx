@@ -9,7 +9,7 @@ interface AuthContextType {
   session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-  signUp: (email: string, password: string, fullName: string, role?: string) => Promise<{ error: Error | null }>
+  signUp: (email: string, password: string, fullName: string, role?: string, additionalData?: Record<string, any>) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: Error | null }>
 }
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return { error }
   }
 
-  const signUp = async (email: string, password: string, fullName: string, role?: string) => {
+  const signUp = async (email: string, password: string, fullName: string, role?: string, additionalData?: Record<string, any>) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         data: {
           full_name: fullName,
           role: role || 'customer',
+          ...additionalData,
         },
       },
     })
