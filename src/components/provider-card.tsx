@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -75,8 +74,7 @@ export const ProviderCard = ({
   const availability = getAvailabilityStatus()
 
   return (
-    <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1", className)}>
-      <CardContent className="p-0">
+    <div className={cn("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm group hover:shadow-lg transition-all duration-200 hover:-translate-y-1", className)}>
         {/* Image Section */}
         <div className="relative">
           <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 overflow-hidden rounded-t-lg">
@@ -245,7 +243,6 @@ export const ProviderCard = ({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   )
 }
