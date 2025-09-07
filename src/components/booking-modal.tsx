@@ -212,7 +212,7 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                     key={pet.id} 
                     className={`cursor-pointer transition-colors ${
                       selectedPets.includes(pet.id) 
-                        ? 'border-blue-500 bg-blue-50' 
+                        ? 'border-black bg-gray-50' 
                         : 'hover:border-gray-300'
                     }`}
                     onClick={() => handlePetSelection(pet.id)}
@@ -221,11 +221,14 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                       <div className="flex items-center space-x-3">
                         <div className={`w-4 h-4 rounded border-2 ${
                           selectedPets.includes(pet.id) 
-                            ? 'border-blue-500 bg-blue-500' 
+                            ? 'border-black bg-black' 
                             : 'border-gray-300'
                         }`}>
                           {selectedPets.includes(pet.id) && (
-                            <CheckCircle className="w-4 h-4 text-white" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-check-big w-3 h-3 text-white" aria-hidden="true">
+                              <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                              <path d="m9 11 3 3L22 4"></path>
+                            </svg>
                           )}
                         </div>
                         <div className="flex-1">

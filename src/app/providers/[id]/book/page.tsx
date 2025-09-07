@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { 
@@ -22,6 +23,7 @@ import { ServiceProvider, Service, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
+import { t } from '@/lib/translations'
 
 
 export default function BookingPage() {
@@ -79,15 +81,22 @@ export default function BookingPage() {
   }
 
   const getAvailableTimeSlots = (): string[] => {
-    if (!selectedDate || !provider) return []
+    if (!selectedDate) return []
     
-    const dayName = selectedDate.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
-    const dayAvailability = provider.availability[dayName]
-    
-    if (!dayAvailability || !Array.isArray(dayAvailability)) return []
-    
-    const availableSlots = dayAvailability.filter(slot => slot.available)
-    return availableSlots.map(slot => `${slot.start} - ${slot.end}`)
+    // Use hardcoded time slots for now (same as desktop)
+    // TODO: Implement proper availability checking from provider data
+    return [
+      "09:00",
+      "10:00", 
+      "11:00",
+      "12:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+      "18:00"
+    ]
   }
 
   const calculateTotal = () => {
@@ -103,6 +112,8 @@ export default function BookingPage() {
         return pets.length > 0 && selectedPets.length > 0 && selectedPets.length <= (selectedService?.maxPets || 0)
       case 3:
         return selectedDate && selectedTimeSlot
+      case 4:
+        return selectedService && selectedDate && selectedTimeSlot && selectedPets.length > 0
       default:
         return false
     }
@@ -267,16 +278,16 @@ export default function BookingPage() {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Select a Service</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectService')}</h2>
               <div className="space-y-4">
                 {services.map((service) => (
                   <Card 
                     key={service.id} 
                     className={`cursor-pointer transition-all ${
                       selectedService?.id === service.id 
-                        ? 'border-blue-500 bg-blue-50 shadow-md' 
+                        ? 'border-black bg-gray-50 shadow-md' 
                         : 'hover:border-gray-300 hover:shadow-sm'
                     }`}
                     onClick={() => handleServiceSelect(service)}
@@ -287,7 +298,7 @@ export default function BookingPage() {
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
                             {selectedService?.id === service.id && (
-                              <CheckCircle className="w-5 h-5 text-blue-500" />
+                              <CheckCircle className="w-5 h-5 text-black" />
                             )}
                           </div>
                           <p className="text-gray-600 mb-4">{service.description}</p>
@@ -332,11 +343,11 @@ export default function BookingPage() {
 
       case 2:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Assign pets to service</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('provider.selectPets')}</h2>
               <p className="text-gray-600 mb-4">
-                Select which pets will receive the {selectedService?.name} service
+                {t('provider.selectPetsDescription', `Select which pets will receive the ${selectedService?.name} service`)}
               </p>
               
               {petsLoading ? (
@@ -359,14 +370,14 @@ export default function BookingPage() {
                 <div className="text-center py-8">
                   <div className="text-gray-500 mb-4">
                     <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                    <p className="text-lg font-medium">No pets found</p>
-                    <p className="text-sm">You need to add pets to your profile before booking services.</p>
+                    <p className="text-lg font-medium">{t('provider.noPetsFound')}</p>
+                    <p className="text-sm">{t('provider.addPetsFirst')}</p>
                   </div>
                   <Button 
                     onClick={() => router.push('/pets')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    className="bg-black hover:bg-gray-800 text-white"
                   >
-                    Add Your First Pet
+{t('provider.addFirstPet')}
                   </Button>
                 </div>
               ) : (
@@ -376,22 +387,18 @@ export default function BookingPage() {
                       key={pet.id} 
                       className={`cursor-pointer transition-all ${
                         selectedPets.includes(pet.id) 
-                          ? 'border-blue-500 bg-blue-50 shadow-md' 
+                          ? 'border-black bg-gray-50 shadow-md' 
                           : 'hover:border-gray-300 hover:shadow-sm'
                       }`}
                       onClick={() => handlePetSelect(pet.id)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3">
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                            selectedPets.includes(pet.id) 
-                              ? 'border-blue-500 bg-blue-500' 
-                              : 'border-gray-300'
-                          }`}>
-                            {selectedPets.includes(pet.id) && (
-                              <CheckCircle className="w-3 h-3 text-white" />
-                            )}
-                          </div>
+                          <Checkbox
+                            checked={selectedPets.includes(pet.id)}
+                            onCheckedChange={() => handlePetSelect(pet.id)}
+                            className="w-5 h-5"
+                          />
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900">{pet.name}</h4>
                             <p className="text-sm text-gray-600">
@@ -417,13 +424,13 @@ export default function BookingPage() {
 
       case 3:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Select date and time</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectDateAndTime')}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">Choose a date</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">{t('provider.chooseDate')}</h3>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -450,22 +457,25 @@ export default function BookingPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">Choose a time</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">{t('provider.chooseTime')}</h3>
                   <div className="space-y-2">
                     {getAvailableTimeSlots().length > 0 ? (
                       getAvailableTimeSlots().map((slot, index) => (
-                        <Button
+                        <button
                           key={index}
-                          variant={selectedTimeSlot === slot ? "default" : "outline"}
-                          className="w-full justify-start"
+                          className={`w-full px-4 py-2 text-sm font-medium rounded-md border transition-colors ${
+                            selectedTimeSlot === slot 
+                              ? 'bg-black text-white border-black' 
+                              : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
+                          }`}
                           onClick={() => setSelectedTimeSlot(slot)}
                         >
                           {slot}
-                        </Button>
+                        </button>
                       ))
                     ) : (
                       <p className="text-sm text-gray-500">
-                        {selectedDate ? "No available time slots" : "Select a date first"}
+                        {selectedDate ? t('provider.noAvailableTimeSlots') : t('provider.selectDateFirst')}
                       </p>
                     )}
                   </div>
@@ -477,16 +487,16 @@ export default function BookingPage() {
 
       case 4:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 py-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Confirm your booking</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.confirmYourBooking')}</h2>
               
               <Card>
-                <CardHeader>
+                <CardHeader className="pt-6">
                   <CardTitle className="text-lg">{selectedService?.name}</CardTitle>
                   <CardDescription>{selectedService?.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pb-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Provider</span>
                     <span className="font-medium">{provider.businessName}</span>
@@ -530,13 +540,6 @@ export default function BookingPage() {
       <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
             <div>
               <h1 className="text-lg font-semibold text-gray-900">Book a service</h1>
               <p className="text-sm text-gray-600">{provider.businessName}</p>
@@ -549,7 +552,7 @@ export default function BookingPage() {
               <div
                 key={step}
                 className={`w-2 h-2 rounded-full ${
-                  currentStep >= step ? 'bg-blue-500' : 'bg-gray-300'
+                  currentStep >= step ? 'bg-black' : 'bg-gray-300'
                 }`}
               />
             ))}
@@ -579,19 +582,32 @@ export default function BookingPage() {
                 onClick={handleBack}
                 className="px-6"
               >
-                Back
+{t('provider.back')}
               </Button>
             )}
             <Button
               variant="gradient"
               size="lg"
               onClick={currentStep === 4 ? () => {
-                // Handle booking confirmation
-                alert('Booking confirmed!')
+                // Redirect to payment page with booking parameters
+                const bookingParams = new URLSearchParams()
+                if (selectedDate) {
+                  bookingParams.set('date', selectedDate.toISOString().split('T')[0])
+                }
+                if (selectedTimeSlot) {
+                  bookingParams.set('time', selectedTimeSlot)
+                }
+                if (selectedPets.length > 0) {
+                  bookingParams.set('pets', selectedPets.join(','))
+                }
+                if (selectedService) {
+                  bookingParams.set('service', selectedService.id)
+                }
+                router.push(`/providers/${params.id}/payment?${bookingParams.toString()}`)
               } : handleNext}
               disabled={!canProceed()}
             >
-              {currentStep === 4 ? 'Confirm booking' : 'Continue'}
+              {currentStep === 4 ? t('provider.confirmBookingButton') : t('provider.continue')}
             </Button>
           </div>
         </div>

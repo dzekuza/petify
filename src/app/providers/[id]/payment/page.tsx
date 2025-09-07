@@ -13,6 +13,8 @@ import {
   Calendar,
   Clock,
   Users,
+  CreditCard,
+  Shield,
 } from 'lucide-react'
 import { ServiceProvider, Service, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
@@ -341,85 +343,83 @@ export default function PaymentPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Payment Form */}
-          <div className="space-y-6">
-            {isCreatingPayment ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-600">Initializing payment...</p>
-                </div>
+          {isCreatingPayment ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600">{t('payment.initializingPayment')}</p>
               </div>
-            ) : clientSecret ? (
-              <Elements
-                stripe={getStripe()}
-                options={{
-                  clientSecret,
-                  appearance: {
-                    theme: 'stripe',
-                    variables: {
-                      colorPrimary: '#3b82f6',
-                      colorBackground: '#ffffff',
-                      colorText: '#1f2937',
-                      colorDanger: '#ef4444',
-                      fontFamily: 'system-ui, sans-serif',
-                      spacingUnit: '4px',
-                      borderRadius: '8px',
-                    },
+            </div>
+          ) : clientSecret ? (
+            <Elements
+              stripe={getStripe()}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: 'stripe',
+                  variables: {
+                    colorPrimary: '#3b82f6',
+                    colorBackground: '#ffffff',
+                    colorText: '#1f2937',
+                    colorDanger: '#ef4444',
+                    fontFamily: 'system-ui, sans-serif',
+                    spacingUnit: '4px',
+                    borderRadius: '8px',
                   },
+                },
+              }}
+            >
+              <StripePaymentForm
+                clientSecret={clientSecret}
+                amount={calculateGrandTotal() * 100} // Convert to cents
+                currency="eur"
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+                bookingDetails={{
+                  serviceName: selectedService?.name || '',
+                  providerName: provider?.businessName || '',
+                  date: format(new Date(selectedDate), 'MMM d, yyyy'),
+                  time: selectedTime,
                 }}
+              />
+            </Elements>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Failed to initialize payment. Please refresh the page.</p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="mt-4"
               >
-                <StripePaymentForm
-                  clientSecret={clientSecret}
-                  amount={calculateGrandTotal() * 100} // Convert to cents
-                  currency="eur"
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
-                  bookingDetails={{
-                    serviceName: selectedService?.name || '',
-                    providerName: provider?.businessName || '',
-                    date: format(new Date(selectedDate), 'MMM d, yyyy'),
-                    time: selectedTime,
-                  }}
-                />
-              </Elements>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-600">Failed to initialize payment. Please refresh the page.</p>
-                <Button
-                  onClick={() => window.location.reload()}
-                  className="mt-4"
-                >
-                  Refresh Page
-                </Button>
-              </div>
-            )}
-          </div>
+                Refresh Page
+              </Button>
+            </div>
+          )}
 
           {/* Right Column - Booking Summary */}
           <div>
             <div className="sticky top-24">
               <Card>
-                <CardHeader>
+                <CardHeader className="pt-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">✂️</span>
                     </div>
                     <div>
                       <CardTitle className="text-lg">{provider.businessName}</CardTitle>
-                      <CardDescription>Pet service booking</CardDescription>
+                      <CardDescription>{t('payment.petServiceBooking')}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pb-6">
                   <div className="text-sm text-gray-600">
-                    This reservation is non-refundable. <span className="text-blue-600 underline cursor-pointer">Full policy</span>
+                    {t('payment.nonRefundableReservation')} <span className="text-blue-600 underline cursor-pointer">{t('payment.fullPolicy')}</span>
                   </div>
                   
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">Date</span>
+                        <span className="text-sm text-gray-600">{t('payment.date')}</span>
                       </div>
                       <div className="text-sm font-medium">
                         {format(new Date(selectedDate), 'MMM d, yyyy')}
@@ -429,7 +429,7 @@ export default function PaymentPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">Time</span>
+                        <span className="text-sm text-gray-600">{t('payment.time')}</span>
                       </div>
                       <div className="text-sm font-medium">{selectedTime}</div>
                     </div>
@@ -437,7 +437,7 @@ export default function PaymentPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Users className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">Pets</span>
+                        <span className="text-sm text-gray-600">{t('payment.pets')}</span>
                       </div>
                       <div className="text-sm font-medium">
                         {selectedPets.length} {selectedPets.length === 1 ? 'pet' : 'pets'}
@@ -453,22 +453,40 @@ export default function PaymentPage() {
                       <span className="font-medium">€{calculateTotal()}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Petify service fee</span>
+                      <span className="text-gray-600">{t('payment.petifyServiceFee')}</span>
                       <span className="font-medium">€{calculateServiceFee()}</span>
                     </div>
                   </div>
                   
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold text-gray-900">Total EUR</span>
+                      <span className="text-lg font-semibold text-gray-900">{t('payment.totalEUR')}</span>
                       <span className="text-xl font-bold text-gray-900">
                         €{(calculateTotal() + calculateServiceFee()).toFixed(2)}
                       </span>
                     </div>
                   </div>
                   
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <CreditCard className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">{t('payment.paymentMethod')}</span>
+                      </div>
+                      <div className="text-sm font-medium">{t('payment.creditDebitCard')}</div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Shield className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">{t('payment.security')}</span>
+                      </div>
+                      <div className="text-sm font-medium text-green-600">{t('payment.securedByStripe')}</div>
+                    </div>
+                  </div>
+                  
                   <div className="text-center text-sm text-gray-500">
-                    Complete your payment using the secure form on the left
+                    {t('payment.completePaymentInstruction')}
                   </div>
                 </CardContent>
               </Card>

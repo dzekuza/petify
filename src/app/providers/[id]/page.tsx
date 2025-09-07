@@ -22,7 +22,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
-  Home,
   PawPrint,
   Calendar as CalendarIcon
 } from 'lucide-react'
@@ -220,16 +219,28 @@ export default function ProviderDetailPage() {
   }
 
   const handleBookService = () => {
-    if (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0) {
+    // For mobile, allow booking without pre-selections (will be made in next step)
+    // For desktop, require all selections
+    const isMobile = window.innerWidth < 1024
+    if (!isMobile && (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0)) {
       return
     }
 
-    const bookingParams = new URLSearchParams({
-      date: selectedDate.toISOString().split('T')[0],
-      time: selectedTime,
-      pets: selectedPets.join(','),
-      service: selectedService
-    })
+    const bookingParams = new URLSearchParams()
+    
+    // Only add parameters if they exist (for mobile compatibility)
+    if (selectedDate) {
+      bookingParams.set('date', selectedDate.toISOString().split('T')[0])
+    }
+    if (selectedTime) {
+      bookingParams.set('time', selectedTime)
+    }
+    if (selectedPets.length > 0) {
+      bookingParams.set('pets', selectedPets.join(','))
+    }
+    if (selectedService) {
+      bookingParams.set('service', selectedService)
+    }
 
     if (isDesktop) {
       // Desktop: redirect directly to payment page
@@ -560,8 +571,7 @@ export default function ProviderDetailPage() {
           <div className="px-6 pt-8 pb-24">
             {/* Header Info */}
             <div className="mb-6">
-              <div className="flex items-start space-x-3 mb-4">
-                <Home className="w-5 h-5 text-gray-600 mt-1" />
+              <div className="mb-4">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 mb-1">
                     {provider.businessName}
@@ -683,7 +693,7 @@ export default function ProviderDetailPage() {
             )}
 
             {/* Mobile Booking Form */}
-            <div className="border-t border-gray-200 pt-6 mb-6">
+            <div className="hidden lg:block border-t border-gray-200 pt-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Book this service</h2>
               
               <div className="space-y-4">
@@ -760,7 +770,7 @@ export default function ProviderDetailPage() {
                       </div>
                       <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                         <DialogTrigger asChild>
-                          <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
+                          <button className="w-full text-sm text-black hover:text-gray-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors">
                             {t('provider.addAnotherPet')}
                           </button>
                         </DialogTrigger>
@@ -875,7 +885,7 @@ export default function ProviderDetailPage() {
                       <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
                       <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                         <DialogTrigger asChild>
-                          <button className="text-sm text-blue-600 hover:text-blue-800">
+                          <button className="text-sm text-black hover:text-gray-800">
                             Add your first pet
                           </button>
                         </DialogTrigger>
@@ -1019,7 +1029,6 @@ export default function ProviderDetailPage() {
               variant="gradient"
               size="lg"
               onClick={handleBookService}
-              disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
             >
               Book
             </Button>
@@ -1300,7 +1309,7 @@ export default function ProviderDetailPage() {
                           </div>
                           <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                             <DialogTrigger asChild>
-                              <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
+                              <button className="w-full text-sm text-black hover:text-gray-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors">
                                 {t('provider.addAnotherPet')}
                               </button>
                             </DialogTrigger>
@@ -1415,7 +1424,7 @@ export default function ProviderDetailPage() {
                           <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
                           <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                             <DialogTrigger asChild>
-                              <button className="text-sm text-blue-600 hover:text-blue-800">
+                              <button className="text-sm text-black hover:text-gray-800">
                                 Add your first pet
                               </button>
                             </DialogTrigger>

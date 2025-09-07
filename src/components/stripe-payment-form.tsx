@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Loader2, CreditCard, Shield, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { t } from '@/lib/translations'
 
 interface StripePaymentFormProps {
   clientSecret: string
@@ -60,7 +61,7 @@ export const StripePaymentForm = ({
           setMessage('Your payment is processing.')
           break
         case 'requires_payment_method':
-          setMessage('Your payment was not successful, please try again.')
+          setMessage(t('payment.paymentNotSuccessful'))
           break
         default:
           setMessage('Something went wrong.')
@@ -117,88 +118,88 @@ export const StripePaymentForm = ({
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="w-full max-w-md mx-auto space-y-6">
+      {/* Header */}
+      <div className="space-y-1.5">
+        <h3 className="leading-none font-semibold flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          Payment Details
-        </CardTitle>
-        <CardDescription>
-          Complete your booking payment securely
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Booking Summary */}
-        {bookingDetails && (
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-            <h4 className="font-medium text-sm">Booking Summary</h4>
-            <div className="text-sm text-gray-600 space-y-1">
-              <div>Service: {bookingDetails.serviceName}</div>
-              <div>Provider: {bookingDetails.providerName}</div>
-              <div>Date: {bookingDetails.date}</div>
-              <div>Time: {bookingDetails.time}</div>
+          {t('payment.paymentDetails')}
+        </h3>
+        <p className="text-muted-foreground text-sm">
+          {t('payment.completePaymentSecurely')}
+        </p>
+      </div>
+
+      {/* Booking Summary */}
+      {bookingDetails && (
+        <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+          <h4 className="font-medium text-sm">{t('payment.bookingSummary')}</h4>
+          <div className="text-sm text-gray-600 space-y-1">
+            <div>{t('payment.service')}: {bookingDetails.serviceName}</div>
+            <div>{t('payment.provider')}: {bookingDetails.providerName}</div>
+            <div>{t('payment.date')}: {bookingDetails.date}</div>
+            <div>{t('payment.time')}: {bookingDetails.time}</div>
+          </div>
+          <div className="pt-2 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">{t('payment.totalAmount')}:</span>
+              <span className="font-bold text-lg">{formatAmount(amount, currency)}</span>
             </div>
-            <div className="pt-2 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Total Amount:</span>
-                <span className="font-bold text-lg">{formatAmount(amount, currency)}</span>
-              </div>
-            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <LinkAuthenticationElement
+          onChange={(e) => setEmail(e.value.email)}
+        />
+        <PaymentElement />
+        
+        {message && (
+          <div className={`p-3 rounded-md text-sm ${
+            message.includes('succeeded') 
+              ? 'bg-green-50 text-green-700 border border-green-200' 
+              : 'bg-red-50 text-red-700 border border-red-200'
+          }`}>
+            {message}
           </div>
         )}
 
-        {/* Payment Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <LinkAuthenticationElement
-            onChange={(e) => setEmail(e.value.email)}
-          />
-          <PaymentElement />
-          
-          {message && (
-            <div className={`p-3 rounded-md text-sm ${
-              message.includes('succeeded') 
-                ? 'bg-green-50 text-green-700 border border-green-200' 
-                : 'bg-red-50 text-red-700 border border-red-200'
-            }`}>
-              {message}
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            disabled={isLoading || !stripe || !elements}
-            className="w-full"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
+        <Button
+          type="submit"
+          disabled={isLoading || !stripe || !elements}
+          className="w-full"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
             ) : (
               <>
                 <CreditCard className="mr-2 h-4 w-4" />
-                Pay {formatAmount(amount, currency)}
+                {t('payment.pay')} {formatAmount(amount, currency)}
               </>
             )}
-          </Button>
-        </form>
+        </Button>
+      </form>
 
-        {/* Security Badge */}
+      {/* Security Badge */}
         <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
           <Shield className="h-4 w-4" />
-          <span>Secured by Stripe</span>
+          <span>{t('payment.securedByStripe')}</span>
         </div>
 
-        {/* Test Card Information */}
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <h5 className="font-medium text-sm text-blue-900 mb-2">Test Cards</h5>
-          <div className="text-xs text-blue-700 space-y-1">
-            <div>Success: 4242 4242 4242 4242</div>
-            <div>Decline: 4000 0000 0000 0002</div>
-            <div>Use any future date and any 3-digit CVC</div>
-          </div>
+      {/* Test Card Information */}
+      <div className="bg-blue-50 p-3 rounded-lg">
+        <h5 className="font-medium text-sm text-blue-900 mb-2">{t('payment.testCards')}</h5>
+        <div className="text-xs text-blue-700 space-y-1">
+          <div>{t('payment.success')}: 4242 4242 4242 4242</div>
+          <div>{t('payment.decline')}: 4000 0000 0000 0002</div>
+          <div>{t('payment.testCardInstructions')}</div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

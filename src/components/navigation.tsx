@@ -166,7 +166,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   }
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="bg-white border-b">
       <nav className="mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className={cn("flex items-center justify-between", showSearchBar ? "h-20" : "h-16")}>
           {/* Logo */}
