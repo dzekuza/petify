@@ -599,7 +599,7 @@ export default function ProviderDashboard() {
       }
 
       // Handle gallery images upload
-      let galleryImageUrls: string[] = []
+      const galleryImageUrls: string[] = []
       if (editProfileForm.galleryImages.length > 0) {
         for (const file of editProfileForm.galleryImages) {
           // Validate the file

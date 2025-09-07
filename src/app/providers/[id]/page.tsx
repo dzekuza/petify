@@ -1,24 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Layout } from '@/components/layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { 
   Star, 
-  MapPin, 
   Clock, 
-  Phone, 
-  MessageCircle, 
   Heart, 
   Share2, 
-  Award,
   Users,
-  Calendar,
-  Shield
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  Home,
+  PawPrint
 } from 'lucide-react'
 import Image from 'next/image'
 import { ServiceProvider, Service, Review } from '@/types'
@@ -28,11 +25,29 @@ import { t } from '@/lib/translations'
 
 export default function ProviderDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  const handlePreviousImage = () => {
+    if (provider?.images) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? provider.images.length - 1 : prev - 1
+      )
+    }
+  }
+
+  const handleNextImage = () => {
+    if (provider?.images) {
+      setCurrentImageIndex((prev) => 
+        prev === provider.images.length - 1 ? 0 : prev + 1
+      )
+    }
+  }
 
   useEffect(() => {
     const fetchProviderData = async () => {
@@ -177,13 +192,13 @@ export default function ProviderDetailPage() {
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="flex gap-2 h-[400px] overflow-hidden rounded-3xl">
-                    <div className="flex-1 bg-gray-200 rounded-3xl"></div>
+                  <div className="flex gap-2 overflow-hidden rounded-3xl">
+                    <div className="flex-1 aspect-square bg-gray-200 rounded-3xl"></div>
                     <div className="flex-1 grid grid-cols-2 gap-2">
-                      <div className="bg-gray-200 rounded-2xl"></div>
-                      <div className="bg-gray-200 rounded-2xl"></div>
-                      <div className="bg-gray-200 rounded-2xl"></div>
-                      <div className="bg-gray-200 rounded-2xl"></div>
+                      <div className="aspect-square bg-gray-200 rounded-2xl"></div>
+                      <div className="aspect-square bg-gray-200 rounded-2xl"></div>
+                      <div className="aspect-square bg-gray-200 rounded-2xl"></div>
+                      <div className="aspect-square bg-gray-200 rounded-2xl"></div>
                     </div>
                   </div>
                   <div className="h-32 bg-gray-200 rounded"></div>
@@ -213,385 +228,234 @@ export default function ProviderDetailPage() {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {provider.businessName}
-                </h1>
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center">
-                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span className="text-lg font-medium text-gray-900 ml-1">
-                      {provider.rating}
-                    </span>
-                    <span className="text-gray-500 ml-1">
-                      ({provider.reviewCount} {t('search.reviews')})
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-500">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {provider.location.city}, {provider.location.state}
-                  </div>
+    <div className="min-h-screen bg-white">
+      {/* Image Section */}
+      <div className="relative">
+        {/* Image with overlay controls */}
+        {provider.images && provider.images.length > 0 ? (
+          <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh]">
+            <Image
+              src={provider.images[currentImageIndex]}
+              alt={`${provider.businessName} - Image ${currentImageIndex + 1}`}
+              fill
+              className="object-cover"
+              priority
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+                const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                if (fallback) {
+                  fallback.style.display = 'flex'
+                }
+              }}
+            />
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200" style={{ display: 'none' }}>
+              <span className="text-6xl">✂️</span>
+            </div>
+            
+            {/* Overlay Controls */}
+            <div className="absolute inset-0 bg-black/20">
+              {/* Top Controls */}
+              <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                <button
+                  onClick={() => router.back()}
+                  className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-700" />
+                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  >
+                    <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
+                  </button>
+                  <button className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
+                    <Share2 className="w-5 h-5 text-gray-700" />
+                  </button>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsFavorite(!isFavorite)}
-                >
-                  <Heart className={`h-4 w-4 mr-2 ${isFavorite ? 'text-red-500 fill-current' : ''}`} />
-                  {isFavorite ? t('provider.saved') : t('provider.save')}
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  {t('provider.share')}
-                </Button>
+              
+              {/* Image Counter */}
+              {provider.images.length > 1 && (
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {provider.images.length}
+                </div>
+              )}
+              
+              {/* Navigation Arrows */}
+              {provider.images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePreviousImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-gray-700" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5 text-gray-700" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="h-[50vh] sm:h-[60vh] lg:h-[70vh] bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+            <span className="text-6xl">✂️</span>
+          </div>
+        )}
+      </div>
+
+      {/* Content Section */}
+      <div className="relative -mt-8 bg-white rounded-t-3xl">
+        <div className="px-6 pt-8 pb-24">
+          {/* Header Info */}
+          <div className="mb-6">
+            <div className="flex items-start space-x-3 mb-4">
+              <Home className="w-5 h-5 text-gray-600 mt-1" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                  {provider.businessName}
+                </h1>
+                <p className="text-gray-600 mb-2">
+                  Pet service in {provider.location.city}, {provider.location.state}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  {services.length > 0 ? `${services.length} services available` : 'Services available'} • {provider.experience} years experience
+                </p>
+              </div>
+            </div>
+            
+            {/* Reviews */}
+            <div className="flex items-center space-x-2 mb-4">
+              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              <span className="text-sm font-medium">{provider.rating}</span>
+              <span className="text-sm text-gray-500">({provider.reviewCount} reviews)</span>
+            </div>
+          </div>
+
+          {/* Host Information */}
+          <div className="border-t border-gray-200 pt-6 mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                <span className="text-lg font-semibold text-gray-600">
+                  {provider.businessName.charAt(0)}
+                </span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
+                <p className="text-sm text-gray-600">{provider.experience} years hosting</p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Image Gallery */}
-              <Card className="py-0">
-                <CardContent className="p-0">
-                  {provider.images && provider.images.length > 0 ? (
-                    <div className="flex gap-2 h-[400px] overflow-hidden rounded-3xl">
-                      {/* Main cover image - left side (50% width) */}
-                      <div className="flex-1 bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-3xl overflow-hidden">
-                        <Image
-                          src={provider.images[0]}
-                          alt={provider.businessName}
-                          fill
-                          className="object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none'
-                            const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                            if (fallback) {
-                              fallback.style.display = 'flex'
-                            }
-                          }}
-                        />
-                        <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
-                          <span className="text-6xl">✂️</span>
-                        </div>
-                      </div>
-                      
-                      {/* Gallery images - right side 2x2 grid (50% width) */}
-                      <div className="flex-1 grid grid-cols-2 gap-2">
-                        {provider.images.slice(1, 5).map((image, index) => (
-                          <div key={index} className="bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-2xl overflow-hidden">
-                            <Image
-                              src={image}
-                              alt={`${provider.businessName} - Image ${index + 2}`}
-                              fill
-                              className="object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none'
-                                const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                                if (fallback) {
-                                  fallback.style.display = 'flex'
-                                }
-                              }}
-                            />
-                            <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
-                              <span className="text-4xl">✂️</span>
-                            </div>
-                          </div>
-                        ))}
-                        
-                        {/* Show all photos button if more than 5 images */}
-                        {provider.images.length > 5 && (
-                          <div className="bg-black bg-opacity-50 relative flex items-center justify-center cursor-pointer hover:bg-opacity-60 transition-all rounded-2xl">
-                            <div className="text-white text-center">
-                              <div className="text-2xl font-bold">+{provider.images.length - 5}</div>
-                              <div className="text-sm">Show all photos</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                      <span className="text-6xl">✂️</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* About */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('provider.about')} {provider.businessName}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{provider.description}</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                      <Users className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{t('provider.experience')}</p>
-                        <p className="text-sm text-gray-600">{provider.experience} {t('provider.years')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Shield className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{t('provider.certifications')}</p>
-                        <p className="text-sm text-gray-600">{provider.certifications?.length || 0} {t('provider.certified')}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {provider.certifications && provider.certifications.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">{t('provider.certifications')}</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {provider.certifications.map((cert, index) => (
-                          <Badge key={index} variant="secondary" className="flex items-center">
-                            <Award className="h-3 w-3 mr-1" />
-                            {cert}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Services */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('provider.servicesAndPricing')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {services.map((service) => (
-                      <div key={service.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900">{service.name}</h4>
-                            <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                              <span className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                {service.duration} {t('provider.min')}
-                              </span>
-                              <span className="flex items-center">
-                                <Users className="h-4 w-4 mr-1" />
-                                {t('provider.upTo')} {service.maxPets} {service.maxPets > 1 ? t('provider.pets') : t('provider.pet')}
-                              </span>
-                            </div>
-                            {service.includes && service.includes.length > 0 && (
-                              <div className="mt-2">
-                                <p className="text-xs font-medium text-gray-700 mb-1">{t('provider.includes')}</p>
-                                <div className="flex flex-wrap gap-1">
-                                  {service.includes.map((item, index) => (
-                                    <Badge key={index} variant="outline" className="text-xs">
-                                      {item}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div className="text-right ml-4">
-                            <div className="text-lg font-semibold text-gray-900">
-                              €{service.price}
-                            </div>
-                            <Button size="sm" className="mt-2" asChild>
-                              <Link href={`/providers/${params.id}/book`}>
-                                {t('search.bookNow')}
-                              </Link>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Reviews */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('provider.reviews')} ({provider.reviewCount})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="border-b border-gray-100 pb-4 last:border-b-0">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${
-                                  i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-500">
-                            {new Date(review.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-gray-600">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Contact Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('provider.contactAndBooking')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">
-                      €{provider.priceRange.min}-€{provider.priceRange.max}
-                    </div>
-                    <div className="text-sm text-gray-600">{t('search.perService')}</div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Button className="w-full" asChild>
-                      <Link href={`/providers/${params.id}/book`}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {t('search.bookNow')}
-                      </Link>
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      {t('search.message')}
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {t('search.call')}
-                    </Button>
-                  </div>
-
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-medium text-gray-900">{t('provider.workingHours')}</h4>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          // Navigate to booking page where customers can see full availability
-                          window.location.href = `/providers/${params.id}/book`
-                        }}
-                        className="text-xs"
-                      >
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Book Now
-                      </Button>
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      {Object.entries(provider.availability)
-                        .filter(([day]) => {
-                          // Only show full day names, filter out abbreviated ones
-                          const fullDayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-                          return fullDayNames.includes(day.toLowerCase())
-                        })
-                        .map(([day, slots]) => {
-                        // Handle different availability data structures
-                        let hasAvailability = false
-                        let startTime = ''
-                        let endTime = ''
-                        
-                        if (Array.isArray(slots) && slots.length > 0) {
-                          // Check if slots have available property (time slot format)
-                          if (slots[0] && typeof slots[0] === 'object' && 'available' in slots[0]) {
-                            const availableSlots = slots.filter((slot: { available: boolean; start: string; end: string }) => slot.available)
-                            hasAvailability = availableSlots.length > 0
-                            if (hasAvailability) {
-                              startTime = availableSlots[0].start
-                              endTime = availableSlots[availableSlots.length - 1].end
-                            }
-                          } else if (slots[0] && typeof slots[0] === 'object' && 'start' in slots[0]) {
-                            // Direct time slot format without available property
-                            hasAvailability = true
-                            startTime = (slots[0] as { start: string; end: string }).start
-                            endTime = (slots[slots.length - 1] as { start: string; end: string }).end
-                          } else if (typeof slots[0] === 'string') {
-                            // Simple string format
-                            hasAvailability = true
-                            startTime = slots[0] as string
-                            endTime = slots[slots.length - 1] as unknown as string
-                          }
-                        } else if (typeof slots === 'object' && slots !== null && 'start' in slots) {
-                          // Single time range object
-                          hasAvailability = true
-                          startTime = (slots as unknown as { start: string; end: string }).start
-                          endTime = (slots as unknown as { start: string; end: string }).end
-                        } else if (typeof slots === 'boolean') {
-                          // Simple boolean availability
-                          hasAvailability = slots
-                          if (hasAvailability) {
-                            startTime = '9:00'
-                            endTime = '17:00'
-                          }
-                        }
-                        
-                        return (
-                          <div key={day} className="flex justify-between">
-                            <span className="capitalize">{day}</span>
-                            <span className="text-gray-600">
-                              {hasAvailability ? `${startTime} - ${endTime}` : t('provider.closed')}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-xs text-gray-500 text-center">
-                        Click "Book Now" to see detailed availability and make a booking
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Location */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('provider.location')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-start space-x-2">
-                      <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium text-gray-900">{provider.location.address}</p>
-                        <p className="text-gray-600">
-                          {provider.location.city}, {provider.location.state} {provider.location.zipCode}
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full mt-3">
-                      {t('provider.getDirections')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Pet Policy */}
+          <div className="border-t border-gray-200 pt-6 mb-6">
+            <div className="flex items-start space-x-3">
+              <PawPrint className="w-5 h-5 text-gray-600 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Pet-friendly services</h3>
+                <p className="text-sm text-gray-600">Professional care for your beloved pets.</p>
+              </div>
             </div>
           </div>
+
+          {/* Description */}
+          <div className="border-t border-gray-200 pt-6 mb-6">
+            <p className="text-gray-600 leading-relaxed">{provider.description}</p>
+          </div>
+
+          {/* Services */}
+          {services.length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Services & Pricing</h2>
+              <div className="space-y-4">
+                {services.slice(0, 3).map((service) => (
+                  <div key={service.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{service.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                          <span className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {service.duration} min
+                          </span>
+                          <span className="flex items-center">
+                            <Users className="h-4 w-4 mr-1" />
+                            Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <div className="text-lg font-semibold text-gray-900">
+                          €{service.price}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {services.length > 3 && (
+                  <p className="text-sm text-gray-500 text-center">
+                    +{services.length - 3} more services available
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Reviews */}
+          {reviews.length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews ({provider.reviewCount})</h2>
+              <div className="space-y-4">
+                {reviews.slice(0, 2).map((review) => (
+                  <div key={review.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </Layout>
+
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div className="flex items-center justify-between max-w-md mx-auto">
+          <div>
+            <div className="text-lg font-semibold text-gray-900">
+              €{provider.priceRange.min}-€{provider.priceRange.max}
+            </div>
+            <div className="text-sm text-gray-600">per service</div>
+          </div>
+          <Button 
+            className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8 py-3 rounded-lg font-semibold"
+            asChild
+          >
+            <Link href={`/providers/${params.id}/book`}>
+              Book
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }

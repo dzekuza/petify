@@ -1,27 +1,112 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { BookingModal } from '@/components/booking-modal'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Star, MapPin, Clock, Users, ArrowLeft, MessageCircle, Phone } from 'lucide-react'
-import { ServiceProvider, Service } from '@/types'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { 
+  Clock, 
+  Users, 
+  ArrowLeft, 
+  Calendar as CalendarIcon,
+  CheckCircle
+} from 'lucide-react'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
+import { ServiceProvider, Service, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
+import { petsApi } from '@/lib/pets'
+import { useAuth } from '@/contexts/auth-context'
 
 
 export default function BookingPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
+  const [pets, setPets] = useState<Pet[]>([])
   const [selectedService, setSelectedService] = useState<Service | null>(null)
-  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [selectedPets, setSelectedPets] = useState<string[]>([])
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('')
+  const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [petsLoading, setPetsLoading] = useState(false)
+
+  const fetchPets = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      setPetsLoading(true)
+      const userPets = await petsApi.getUserPets(user.id)
+      setPets(userPets)
+    } catch (error) {
+      console.error('Error fetching pets:', error)
+    } finally {
+      setPetsLoading(false)
+    }
+  }, [user])
+
+  const handleServiceSelect = (service: Service) => {
+    setSelectedService(service)
+    setCurrentStep(2)
+  }
+
+  const handlePetSelect = (petId: string) => {
+    setSelectedPets(prev => 
+      prev.includes(petId) 
+        ? prev.filter(id => id !== petId)
+        : [...prev, petId]
+    )
+  }
+
+  const handleNext = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const getAvailableTimeSlots = (): string[] => {
+    if (!selectedDate || !provider) return []
+    
+    const dayName = selectedDate.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
+    const dayAvailability = provider.availability[dayName]
+    
+    if (!dayAvailability || !Array.isArray(dayAvailability)) return []
+    
+    const availableSlots = dayAvailability.filter(slot => slot.available)
+    return availableSlots.map(slot => `${slot.start} - ${slot.end}`)
+  }
+
+  const calculateTotal = () => {
+    if (!selectedService) return 0
+    return selectedService.price * selectedPets.length
+  }
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return selectedService !== null
+      case 2:
+        return pets.length > 0 && selectedPets.length > 0 && selectedPets.length <= (selectedService?.maxPets || 0)
+      case 3:
+        return selectedDate && selectedTimeSlot
+      default:
+        return false
+    }
+  }
 
   useEffect(() => {
     const fetchProviderData = async () => {
@@ -131,10 +216,11 @@ export default function BookingPage() {
     }
   }, [params.id])
 
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service)
-    setShowBookingModal(true)
-  }
+  useEffect(() => {
+    if (user) {
+      fetchPets()
+    }
+  }, [user, fetchPets])
 
   if (loading) {
     return (
@@ -177,265 +263,338 @@ export default function BookingPage() {
     )
   }
 
-  return (
-    <Layout>
-      <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            {/* Header */}
-            <div className="mb-8">
-              <Button
-                variant="ghost"
-                onClick={() => router.back()}
-                className="mb-4"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Book a Service
-              </h1>
-              <p className="text-gray-600">
-                Choose a service and book with {provider.businessName}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Provider Info */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Provider Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage src="/placeholder-avatar.jpg" alt={provider.businessName} />
-                        <AvatarFallback>
-                          {provider.businessName.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-900">
-                          {provider.businessName}
-                        </h3>
-                        <div className="flex items-center space-x-4 mt-2">
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span className="text-sm font-medium text-gray-900 ml-1">
-                              {provider.rating}
-                            </span>
-                            <span className="text-sm text-gray-500 ml-1">
-                              ({provider.reviewCount} reviews)
-                            </span>
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Select a Service</h2>
+              <div className="space-y-4">
+                {services.map((service) => (
+                  <Card 
+                    key={service.id} 
+                    className={`cursor-pointer transition-all ${
+                      selectedService?.id === service.id 
+                        ? 'border-blue-500 bg-blue-50 shadow-md' 
+                        : 'hover:border-gray-300 hover:shadow-sm'
+                    }`}
+                    onClick={() => handleServiceSelect(service)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
+                            {selectedService?.id === service.id && (
+                              <CheckCircle className="w-5 h-5 text-blue-500" />
+                            )}
                           </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            {provider.location.city}, {provider.location.state}
+                          <p className="text-gray-600 mb-4">{service.description}</p>
+                          
+                          <div className="flex items-center space-x-6 text-sm text-gray-500">
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-1" />
+                              {service.duration} min
+                            </div>
+                            <div className="flex items-center">
+                              <Users className="h-4 w-4 mr-1" />
+                              Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
+                            </div>
                           </div>
-                        </div>
-                        <p className="text-gray-600 mt-2">{provider.description}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
 
-                {/* Services */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Available Services</CardTitle>
-                    <CardDescription>
-                      Select a service to book
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {services.map((service) => (
-                        <div key={service.id} className="border border-gray-200 rounded-lg p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                                {service.name}
-                              </h4>
-                              <p className="text-gray-600 mb-4">{service.description}</p>
-                              
-                              <div className="flex items-center space-x-6 mb-4 text-sm text-gray-500">
-                                <div className="flex items-center">
-                                  <Clock className="h-4 w-4 mr-1" />
-                                  {service.duration} minutes
-                                </div>
-                                <div className="flex items-center">
-                                  <Users className="h-4 w-4 mr-1" />
-                                  Up to {service.maxPets} pet{service.maxPets > 1 ? 's' : ''}
-                                </div>
+                          {service.includes && service.includes.length > 0 && (
+                            <div className="mt-3">
+                              <div className="flex flex-wrap gap-2">
+                                {service.includes.map((item, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {item}
+                                  </Badge>
+                                ))}
                               </div>
-
-                              {service.includes && service.includes.length > 0 && (
-                                <div className="mb-4">
-                                  <p className="text-sm font-medium text-gray-700 mb-2">Includes:</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {service.includes.map((item, index) => (
-                                      <Badge key={index} variant="outline" className="text-xs">
-                                        {item}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-
-                              {service.requirements && service.requirements.length > 0 && (
-                                <div className="mb-4">
-                                  <p className="text-sm font-medium text-gray-700 mb-2">Requirements:</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {service.requirements.map((req, index) => (
-                                      <Badge key={index} variant="secondary" className="text-xs">
-                                        {req}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
                             </div>
-                            
-                            <div className="text-right ml-6">
-                              <div className="text-2xl font-bold text-gray-900 mb-2">
-                                €{service.price}
-                              </div>
-                              <Button onClick={() => handleServiceSelect(service)}>
-                                Book This Service
-                              </Button>
-                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="text-right ml-6">
+                          <div className="text-2xl font-bold text-gray-900">
+                            €{service.price}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Booking Summary */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Booking Process</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">1</span>
-                        </div>
-                        <span className="text-sm text-gray-600">Select a service</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600">2</span>
-                        </div>
-                        <span className="text-sm text-gray-600">Choose date & time</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600">3</span>
-                        </div>
-                        <span className="text-sm text-gray-600">Select your pets</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600">4</span>
-                        </div>
-                        <span className="text-sm text-gray-600">Confirm booking</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Provider Contact */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Contact Provider</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Send Message
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call Provider
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Working Hours */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Working Hours</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm">
-                      {Object.entries(provider.availability)
-                        .filter(([day]) => {
-                          // Only show full day names, filter out abbreviated ones
-                          const fullDayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-                          return fullDayNames.includes(day.toLowerCase())
-                        })
-                        .map(([day, slots]) => {
-                        const hasAvailability = Array.isArray(slots) && slots.length > 0
-                        
-                        if (!hasAvailability) {
-                          return (
-                            <div key={day} className="flex justify-between">
-                              <span className="capitalize font-medium">{day}</span>
-                              <span className="text-gray-600">Closed</span>
-                            </div>
-                          )
-                        }
-                        
-                        // Get working hours from first and last available slots
-                        const availableSlots = slots.filter(slot => slot.available)
-                        if (availableSlots.length === 0) {
-                          return (
-                            <div key={day} className="flex justify-between">
-                              <span className="capitalize font-medium">{day}</span>
-                              <span className="text-gray-600">Closed</span>
-                            </div>
-                          )
-                        }
-                        
-                        const startTime = availableSlots[0].start
-                        const endTime = availableSlots[availableSlots.length - 1].end
-                        
-                        return (
-                          <div key={day} className="flex justify-between">
-                            <span className="capitalize font-medium">{day}</span>
-                            <span className="text-gray-600">{startTime} - {endTime}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           </div>
-        </div>
+        )
 
-        {/* Booking Modal */}
-        {selectedService && (
-          <BookingModal
-            isOpen={showBookingModal}
-            onClose={() => {
-              setShowBookingModal(false)
-              setSelectedService(null)
-            }}
-            provider={provider}
-            service={selectedService}
-          />
-        )}
-      </ProtectedRoute>
-    </Layout>
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Assign pets to service</h2>
+              <p className="text-gray-600 mb-4">
+                Select which pets will receive the {selectedService?.name} service
+              </p>
+              
+              {petsLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-32"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : pets.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 mb-4">
+                    <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                    <p className="text-lg font-medium">No pets found</p>
+                    <p className="text-sm">You need to add pets to your profile before booking services.</p>
+                  </div>
+                  <Button 
+                    onClick={() => router.push('/pets')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Add Your First Pet
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pets.map((pet) => (
+                    <Card 
+                      key={pet.id} 
+                      className={`cursor-pointer transition-all ${
+                        selectedPets.includes(pet.id) 
+                          ? 'border-blue-500 bg-blue-50 shadow-md' 
+                          : 'hover:border-gray-300 hover:shadow-sm'
+                      }`}
+                      onClick={() => handlePetSelect(pet.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                            selectedPets.includes(pet.id) 
+                              ? 'border-blue-500 bg-blue-500' 
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedPets.includes(pet.id) && (
+                              <CheckCircle className="w-3 h-3 text-white" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{pet.name}</h4>
+                            <p className="text-sm text-gray-600">
+                              {pet.breed && `${pet.breed} • `}{pet.age} years{pet.weight && ` • ${pet.weight}kg`}
+                            </p>
+                            {pet.specialNeeds && pet.specialNeeds.length > 0 && (
+                              <div className="mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  Special needs
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Select date and time</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">Choose a date</h3>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">Choose a time</h3>
+                  <div className="space-y-2">
+                    {getAvailableTimeSlots().length > 0 ? (
+                      getAvailableTimeSlots().map((slot, index) => (
+                        <Button
+                          key={index}
+                          variant={selectedTimeSlot === slot ? "default" : "outline"}
+                          className="w-full justify-start"
+                          onClick={() => setSelectedTimeSlot(slot)}
+                        >
+                          {slot}
+                        </Button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">
+                        {selectedDate ? "No available time slots" : "Select a date first"}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Confirm your booking</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">{selectedService?.name}</CardTitle>
+                  <CardDescription>{selectedService?.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Provider</span>
+                    <span className="font-medium">{provider.businessName}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Date & Time</span>
+                    <span className="font-medium">
+                      {selectedDate && format(selectedDate, "PPP")} {selectedTimeSlot}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Pets</span>
+                    <span className="font-medium">
+                      {selectedPets.length} {selectedPets.length === 1 ? 'pet' : 'pets'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Service price</span>
+                    <span className="font-medium">€{selectedService?.price} × {selectedPets.length}</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-xl font-bold text-gray-900">€{calculateTotal()}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Book a service</h1>
+              <p className="text-sm text-gray-600">{provider.businessName}</p>
+            </div>
+          </div>
+          
+          {/* Progress Steps */}
+          <div className="flex items-center space-x-2">
+            {[1, 2, 3, 4].map((step) => (
+              <div
+                key={step}
+                className={`w-2 h-2 rounded-full ${
+                  currentStep >= step ? 'bg-blue-500' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-6 py-6 pb-24">
+        {renderStepContent()}
+      </div>
+
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div className="flex items-center justify-between max-w-md mx-auto">
+          <div>
+            {currentStep === 4 && (
+              <div className="text-lg font-semibold text-gray-900">
+                €{calculateTotal()}
+              </div>
+            )}
+          </div>
+          <div className="flex space-x-3">
+            {currentStep > 1 && (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="px-6"
+              >
+                Back
+              </Button>
+            )}
+            <Button
+              onClick={currentStep === 4 ? () => {
+                // Handle booking confirmation
+                alert('Booking confirmed!')
+              } : handleNext}
+              disabled={!canProceed()}
+              className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8"
+            >
+              {currentStep === 4 ? 'Confirm booking' : 'Continue'}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

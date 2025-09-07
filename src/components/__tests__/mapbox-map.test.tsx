@@ -5,17 +5,17 @@ import { SearchResult } from '@/types'
 // Mock react-map-gl
 jest.mock('react-map-gl/mapbox', () => ({
   __esModule: true,
-  default: ({ children, ...props }: any) => (
+  default: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
     <div data-testid="mapbox-map" {...props}>
       {children}
     </div>
   ),
-  Marker: ({ children, ...props }: any) => (
+  Marker: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
     <div data-testid="marker" {...props}>
       {children}
     </div>
   ),
-  Popup: ({ children, ...props }: any) => (
+  Popup: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
     <div data-testid="popup" {...props}>
       {children}
     </div>

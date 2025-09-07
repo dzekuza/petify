@@ -4,10 +4,6 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import Map, { 
   Marker, 
   Popup, 
-  NavigationControl, 
-  FullscreenControl,
-  ScaleControl,
-  GeolocateControl,
   MapRef,
   ViewState
 } from 'react-map-gl/mapbox'
@@ -17,10 +13,9 @@ import { MapPin, Star, Heart, X, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
-import { MapControls } from '@/components/map-controls'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Custom styles for mapbox popup
+// Custom styles for mapbox popup and canvas
 const popupStyles = `
   .mapbox-popup .mapboxgl-popup-content {
     padding: 0;
@@ -37,6 +32,25 @@ const popupStyles = `
   
   .mapbox-popup .mapboxgl-popup-close-button {
     display: none;
+  }
+  
+  .mapboxgl-canvas {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    transform: none !important;
+    object-fit: cover !important;
+  }
+  
+  .mapboxgl-map {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .mapboxgl-canvas-container {
+    width: 100% !important;
+    height: 100% !important;
   }
 `
 
@@ -124,9 +138,22 @@ export const MapboxMap = ({
   }, [calculateMapCenter])
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
-  const [currentMapStyle, setCurrentMapStyle] = useState(MAPBOX_CONFIG.style)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
   const mapRef = useRef<MapRef>(null)
+
+  // Check screen size for desktop/mobile
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+    
+    checkScreenSize()
+    window.addEventListener('resize', checkScreenSize)
+    
+    return () => {
+      window.removeEventListener('resize', checkScreenSize)
+    }
+  }, [])
 
   // Inject custom popup styles
   useEffect(() => {
@@ -156,14 +183,6 @@ export const MapboxMap = ({
     setSelectedResult(null)
   }, [])
 
-  const handleStyleChange = useCallback((style: string) => {
-    setCurrentMapStyle(style)
-  }, [])
-
-  const handleFullscreenToggle = useCallback(() => {
-    setIsFullscreen(!isFullscreen)
-  }, [isFullscreen])
-
 
   const formatPrice = (priceRange: { min: number; max: number }) => {
     if (priceRange.min === priceRange.max) {
@@ -187,38 +206,16 @@ export const MapboxMap = ({
   }
 
   return (
-    <div className={`relative rounded-lg overflow-hidden ${className} ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {showControls && (
-        <MapControls
-          onStyleChange={handleStyleChange}
-          onSearchClick={onSearchClick || (() => {})}
-          onFiltersClick={onFiltersClick || (() => {})}
-          onFullscreenClick={handleFullscreenToggle}
-          currentStyle={currentMapStyle}
-          resultCount={results.length}
-          className="absolute top-4 left-4 z-10"
-        />
-      )}
-      
+    <div className={`relative overflow-hidden ${isDesktop ? 'rounded-lg' : ''} ${className}`}>
       <Map
         ref={mapRef}
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         mapboxAccessToken={MAPBOX_CONFIG.accessToken}
-        style={{ width: '100%', height: '100%' }}
-        mapStyle={currentMapStyle}
+        mapStyle={MAPBOX_CONFIG.style}
         attributionControl={false}
         logoPosition="bottom-right"
       >
-        {/* Map Controls */}
-        <NavigationControl position="top-right" />
-        <FullscreenControl position="top-right" />
-        <ScaleControl position="bottom-left" />
-        <GeolocateControl 
-          position="top-right"
-          trackUserLocation={true}
-          showAccuracyCircle={false}
-        />
 
         {/* Provider Markers */}
         {results.map((result) => (
@@ -246,8 +243,8 @@ export const MapboxMap = ({
           </Marker>
         ))}
 
-        {/* Popup for selected marker */}
-        {selectedResult && (
+        {/* Popup for selected marker - Desktop only */}
+        {selectedResult && isDesktop && (
           <Popup
             longitude={selectedResult.provider.location.coordinates.lng}
             latitude={selectedResult.provider.location.coordinates.lat}
@@ -379,10 +376,83 @@ export const MapboxMap = ({
         )}
       </Map>
       
-      {/* Map attribution */}
-      <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
-        © Mapbox © OpenStreetMap
-      </div>
+      {/* Mobile Listing Card - Shows when marker is selected */}
+      {selectedResult && (
+        <div className="lg:hidden absolute bottom-24 left-4 right-4 z-20">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+            <div className="flex">
+              {/* Image Section */}
+              <div className="relative w-24 h-24 flex-shrink-0">
+                {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
+                  <Image 
+                    src={selectedResult.provider.images[0]} 
+                    alt={selectedResult.provider.businessName}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                    <span className="text-2xl">
+                      {selectedResult.provider.services[0] === 'grooming' ? '🐕' : 
+                       selectedResult.provider.services[0] === 'veterinary' ? '🏥' :
+                       selectedResult.provider.services[0] === 'boarding' ? '🏠' :
+                       selectedResult.provider.services[0] === 'training' ? '🎓' : '🐾'}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Close Button */}
+                <button 
+                  onClick={handleClosePopup}
+                  className="absolute top-1 left-1 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                >
+                  <X className="w-3 h-3 text-gray-700" />
+                </button>
+              </div>
+              
+              {/* Content Section */}
+              <div className="flex-1 p-3 min-w-0">
+                <div className="flex items-start justify-between mb-1">
+                  <h4 className="font-semibold text-gray-900 text-sm leading-tight truncate">
+                    {selectedResult.provider.businessName}
+                  </h4>
+                  <button className="w-6 h-6 flex items-center justify-center ml-2 flex-shrink-0">
+                    <Heart className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
+                
+                <p className="text-xs text-gray-600 mb-2 truncate">
+                  {selectedResult.provider.services.join(' • ')} • {selectedResult.provider.location.city}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-semibold text-gray-900">
+                    {formatPrice(selectedResult.provider.priceRange)}
+                    <span className="text-xs font-normal text-gray-600 ml-1">service</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <Star className="w-3 h-3 text-black fill-current" />
+                    <span className="text-xs font-medium text-gray-900 ml-1">
+                      {selectedResult.provider.rating}
+                    </span>
+                    <span className="text-xs text-gray-500 ml-1">
+                      ({selectedResult.provider.reviewCount})
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Map attribution - Desktop only */}
+      {isDesktop && (
+        <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
+          © Mapbox © OpenStreetMap
+        </div>
+      )}
     </div>
   )
 }

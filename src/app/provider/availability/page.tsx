@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import AvailabilityCalendar from '@/components/availability-calendar'
-import { ServiceProvider } from '@/types'
+import { ServiceProvider, TimeSlot } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 
@@ -60,13 +60,13 @@ export default function ProviderAvailabilityPage() {
       setProvider(prev => prev ? {
         ...prev,
         availability: {
-          monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday as any[] : [],
-          tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday as any[] : [],
-          wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday as any[] : [],
-          thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday as any[] : [],
-          friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday as any[] : [],
-          saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday as any[] : [],
-          sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday as any[] : []
+          monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday as TimeSlot[] : [],
+          tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday as TimeSlot[] : [],
+          wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday as TimeSlot[] : [],
+          thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday as TimeSlot[] : [],
+          friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday as TimeSlot[] : [],
+          saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday as TimeSlot[] : [],
+          sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday as TimeSlot[] : []
         }
       } : null)
     } catch (error) {
