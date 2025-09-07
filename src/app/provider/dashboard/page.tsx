@@ -1931,6 +1931,44 @@ export default function ProviderDashboard() {
               <div>
                 <Label>Cover Image</Label>
                 <p className="text-sm text-gray-600 mb-3">Upload a cover image for your business profile</p>
+                
+                {/* Show current cover image if exists */}
+                {provider?.images?.[0] && !editProfileForm.coverImage && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">Current cover image:</p>
+                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={provider.images[0]}
+                        alt="Current cover image"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Show preview of new cover image */}
+                {editProfileForm.coverImage && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">New cover image preview:</p>
+                    <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={URL.createObjectURL(editProfileForm.coverImage)}
+                        alt="Cover image preview"
+                        fill
+                        className="object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditProfileForm(prev => ({ ...prev, coverImage: null }))}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
@@ -1952,7 +1990,7 @@ export default function ProviderDashboard() {
                         </svg>
                       </div>
                       <p className="text-sm text-gray-600">
-                        {editProfileForm.coverImage ? editProfileForm.coverImage.name : 'Click to upload cover image'}
+                        {editProfileForm.coverImage ? 'Click to change cover image' : 'Click to upload cover image'}
                       </p>
                     </div>
                   </label>
@@ -1963,6 +2001,44 @@ export default function ProviderDashboard() {
               <div>
                 <Label>Profile Picture</Label>
                 <p className="text-sm text-gray-600 mb-3">Upload a profile picture for your business</p>
+                
+                {/* Show current profile picture if exists */}
+                {provider?.avatarUrl && !editProfileForm.profilePicture && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">Current profile picture:</p>
+                    <div className="relative w-24 h-24 bg-gray-100 rounded-full overflow-hidden">
+                      <Image
+                        src={provider.avatarUrl}
+                        alt="Current profile picture"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Show preview of new profile picture */}
+                {editProfileForm.profilePicture && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">New profile picture preview:</p>
+                    <div className="relative w-24 h-24 bg-gray-100 rounded-full overflow-hidden">
+                      <Image
+                        src={URL.createObjectURL(editProfileForm.profilePicture)}
+                        alt="Profile picture preview"
+                        fill
+                        className="object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditProfileForm(prev => ({ ...prev, profilePicture: null }))}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
@@ -1984,7 +2060,7 @@ export default function ProviderDashboard() {
                         </svg>
                       </div>
                       <p className="text-sm text-gray-600">
-                        {editProfileForm.profilePicture ? editProfileForm.profilePicture.name : 'Click to upload profile picture'}
+                        {editProfileForm.profilePicture ? 'Click to change profile picture' : 'Click to upload profile picture'}
                       </p>
                     </div>
                   </label>
@@ -1995,6 +2071,26 @@ export default function ProviderDashboard() {
               <div>
                 <Label>Gallery Images</Label>
                 <p className="text-sm text-gray-600 mb-3">Upload additional images to showcase your business (up to 10 images)</p>
+                
+                {/* Show current gallery images if exist */}
+                {provider?.images && provider.images.length > 1 && editProfileForm.galleryImages.length === 0 && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">Current gallery images:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {provider.images.slice(1).map((image, index) => (
+                        <div key={index} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                          <Image
+                            src={image}
+                            alt={`Current gallery image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <input
                     type="file"
@@ -2021,8 +2117,8 @@ export default function ProviderDashboard() {
                       </div>
                       <p className="text-sm text-gray-600">
                         {editProfileForm.galleryImages.length > 0 
-                          ? `${editProfileForm.galleryImages.length} image(s) selected` 
-                          : 'Click to upload gallery images'
+                          ? `${editProfileForm.galleryImages.length} new image(s) selected` 
+                          : 'Click to upload new gallery images'
                         }
                       </p>
                     </div>
