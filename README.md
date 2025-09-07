@@ -48,7 +48,15 @@ pnpm install
 This will create a `.env.local` file with all required environment variables.
 You'll need to replace the placeholder values with your actual keys.
 
-4. Configure your environment variables in `.env.local`:
+4. Verify your environment setup:
+
+```bash
+./check-env.sh
+```
+
+This will check that all required environment variables are properly configured.
+
+5. Configure your environment variables in `.env.local`:
 
 ```env
 # Stripe Configuration (Required for payments)
@@ -65,7 +73,25 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 **Important**: You need to set up Stripe keys to use the payment functionality.
 See [STRIPE_SETUP.md](STRIPE_SETUP.md) for detailed instructions.
 
-5. Run the development server:
+## 🔒 Security & Environment Variables
+
+This project uses a comprehensive `.gitignore` file to ensure sensitive
+information is never committed to version control:
+
+- **Environment files**: All `.env*` files are ignored
+- **API keys**: Stripe, Supabase, and other service keys are protected
+- **Database files**: Local database files are excluded
+- **Logs**: All log files are ignored
+- **Cache**: Build and dependency cache files are excluded
+
+### Environment Variable Security
+
+- ✅ `.env.local` is automatically ignored by git
+- ✅ All environment files (`.env*`) are excluded from version control
+- ✅ API keys and secrets are never committed
+- ✅ Use `./check-env.sh` to verify your environment setup
+
+6. Run the development server:
 
 ```bash
 pnpm dev

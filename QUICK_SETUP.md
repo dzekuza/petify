@@ -24,7 +24,12 @@ set up.
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51ABC123...  # Your actual publishable key
    ```
 
-4. **Restart your development server**:
+4. **Verify your environment setup**:
+   ```bash
+   ./check-env.sh
+   ```
+
+5. **Restart your development server**:
    ```bash
    pnpm dev
    ```
