@@ -107,7 +107,8 @@ export default function ProviderDashboard() {
     },
     certifications: [] as string[],
     coverImage: null as File | null,
-    profilePicture: null as File | null
+    profilePicture: null as File | null,
+    galleryImages: [] as File[]
   })
   const [editProfileLoading, setEditProfileLoading] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
@@ -517,7 +518,8 @@ export default function ProviderDashboard() {
         },
         certifications: provider.certifications || [],
         coverImage: null,
-        profilePicture: null
+        profilePicture: null,
+        galleryImages: []
       })
     }
     setShowEditProfileModal(true)
@@ -596,6 +598,37 @@ export default function ProviderDashboard() {
         profilePictureUrl = getPublicUrl('profile-images', uploadResult.data!.path)
       }
 
+      // Handle gallery images upload
+      let galleryImageUrls: string[] = []
+      if (editProfileForm.galleryImages.length > 0) {
+        for (const file of editProfileForm.galleryImages) {
+          // Validate the file
+          const validation = validateFile(file, 5)
+          if (!validation.valid) {
+            addNotification({
+              type: 'error',
+              title: 'Invalid File',
+              message: validation.error || 'Please select valid image files'
+            })
+            return
+          }
+
+          // Upload the image
+          const uploadResult = await uploadCoverImage(file, provider.id)
+          if (uploadResult.error) {
+            addNotification({
+              type: 'error',
+              title: 'Upload Failed',
+              message: 'Failed to upload gallery image. Please try again.'
+            })
+            return
+          }
+
+          // Get the public URL
+          galleryImageUrls.push(getPublicUrl('profile-images', uploadResult.data!.path))
+        }
+      }
+
       // Prepare update data
       const updateData = {
         businessName: editProfileForm.businessName,
@@ -622,7 +655,7 @@ export default function ProviderDashboard() {
         availability: editProfileForm.availability,
         certifications: editProfileForm.certifications,
         experienceYears: parseInt(editProfileForm.experience) || 0,
-        images: coverImageUrl ? [coverImageUrl] : [],
+        images: [...(coverImageUrl ? [coverImageUrl] : []), ...galleryImageUrls],
         avatarUrl: profilePictureUrl
       }
 
@@ -1956,6 +1989,75 @@ export default function ProviderDashboard() {
                     </div>
                   </label>
                 </div>
+              </div>
+
+              {/* Gallery Images Upload */}
+              <div>
+                <Label>Gallery Images</Label>
+                <p className="text-sm text-gray-600 mb-3">Upload additional images to showcase your business (up to 10 images)</p>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || [])
+                      if (files.length > 0) {
+                        setEditProfileForm(prev => ({ 
+                          ...prev, 
+                          galleryImages: [...prev.galleryImages, ...files].slice(0, 10) // Limit to 10 images
+                        }))
+                      }
+                    }}
+                    className="hidden"
+                    id="gallery-images-upload"
+                  />
+                  <label htmlFor="gallery-images-upload" className="cursor-pointer">
+                    <div className="space-y-2">
+                      <div className="mx-auto h-12 w-12 text-gray-400">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {editProfileForm.galleryImages.length > 0 
+                          ? `${editProfileForm.galleryImages.length} image(s) selected` 
+                          : 'Click to upload gallery images'
+                        }
+                      </p>
+                    </div>
+                  </label>
+                </div>
+                
+                {/* Show selected gallery images */}
+                {editProfileForm.galleryImages.length > 0 && (
+                  <div className="mt-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {editProfileForm.galleryImages.map((file, index) => (
+                        <div key={index} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                          <Image
+                            src={URL.createObjectURL(file)}
+                            alt={`Gallery image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditProfileForm(prev => ({
+                                ...prev,
+                                galleryImages: prev.galleryImages.filter((_, i) => i !== index)
+                              }))
+                            }}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

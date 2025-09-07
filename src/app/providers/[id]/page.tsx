@@ -177,7 +177,13 @@ export default function ProviderDetailPage() {
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="h-32 bg-gray-200 rounded-lg"></div>
+                  <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden">
+                    <div className="col-span-2 row-span-2 aspect-square bg-gray-200"></div>
+                    <div className="aspect-square bg-gray-200"></div>
+                    <div className="aspect-square bg-gray-200"></div>
+                    <div className="aspect-square bg-gray-200"></div>
+                    <div className="aspect-square bg-gray-200"></div>
+                  </div>
                   <div className="h-32 bg-gray-200 rounded"></div>
                 </div>
                 <div className="h-32 bg-gray-200 rounded"></div>
@@ -254,27 +260,65 @@ export default function ProviderDetailPage() {
               {/* Image Gallery */}
               <Card className="py-0">
                 <CardContent className="p-0">
-                  <div className="bg-gradient-to-br from-blue-100 to-blue-200 h-32 rounded-lg overflow-hidden relative">
-                    {provider.images && provider.images.length > 0 ? (
-                      <Image
-                        src={provider.images[0]}
-                        alt={provider.businessName}
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          // Fallback to emoji if image fails to load
-                          e.currentTarget.style.display = 'none'
-                          const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                          if (fallback) {
-                            fallback.style.display = 'flex'
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div className="w-full h-full flex items-center justify-center" style={{ display: provider.images && provider.images.length > 0 ? 'none' : 'flex' }}>
+                  {provider.images && provider.images.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden">
+                      {/* Main large image */}
+                      <div className="col-span-2 row-span-2 aspect-square bg-gradient-to-br from-blue-100 to-blue-200 relative">
+                        <Image
+                          src={provider.images[0]}
+                          alt={provider.businessName}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                            if (fallback) {
+                              fallback.style.display = 'flex'
+                            }
+                          }}
+                        />
+                        <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
+                          <span className="text-6xl">✂️</span>
+                        </div>
+                      </div>
+                      
+                      {/* Additional images */}
+                      {provider.images.slice(1, 5).map((image, index) => (
+                        <div key={index} className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 relative">
+                          <Image
+                            src={image}
+                            alt={`${provider.businessName} - Image ${index + 2}`}
+                            fill
+                            className="object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                              const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                              if (fallback) {
+                                fallback.style.display = 'flex'
+                              }
+                            }}
+                          />
+                          <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
+                            <span className="text-4xl">✂️</span>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Show all photos button if more than 5 images */}
+                      {provider.images.length > 5 && (
+                        <div className="aspect-square bg-black bg-opacity-50 relative flex items-center justify-center cursor-pointer hover:bg-opacity-60 transition-all">
+                          <div className="text-white text-center">
+                            <div className="text-2xl font-bold">+{provider.images.length - 5}</div>
+                            <div className="text-sm">Show all photos</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                       <span className="text-6xl">✂️</span>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 
