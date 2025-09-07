@@ -177,13 +177,13 @@ export default function ProviderDetailPage() {
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="flex gap-2 items-center justify-start overflow-hidden rounded-3xl">
-                    <div className="shrink-0 w-[318px] h-[318px] bg-gray-200 rounded-3xl"></div>
-                    <div className="flex flex-wrap gap-2 items-start justify-start relative shrink-0 w-[318px]">
-                      <div className="shrink-0 w-[155px] h-[155px] bg-gray-200 rounded-2xl"></div>
-                      <div className="shrink-0 w-[155px] h-[155px] bg-gray-200 rounded-2xl"></div>
-                      <div className="shrink-0 w-[155px] h-[155px] bg-gray-200 rounded-2xl"></div>
-                      <div className="shrink-0 w-[155px] h-[155px] bg-gray-200 rounded-2xl"></div>
+                  <div className="flex gap-2 h-[400px] overflow-hidden rounded-3xl">
+                    <div className="flex-1 bg-gray-200 rounded-3xl"></div>
+                    <div className="flex-1 grid grid-cols-2 gap-2">
+                      <div className="bg-gray-200 rounded-2xl"></div>
+                      <div className="bg-gray-200 rounded-2xl"></div>
+                      <div className="bg-gray-200 rounded-2xl"></div>
+                      <div className="bg-gray-200 rounded-2xl"></div>
                     </div>
                   </div>
                   <div className="h-32 bg-gray-200 rounded"></div>
@@ -263,9 +263,9 @@ export default function ProviderDetailPage() {
               <Card className="py-0">
                 <CardContent className="p-0">
                   {provider.images && provider.images.length > 0 ? (
-                    <div className="flex gap-2 items-center justify-start overflow-hidden rounded-3xl">
-                      {/* Main cover image - left side */}
-                      <div className="shrink-0 w-[318px] h-[318px] bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-3xl overflow-hidden">
+                    <div className="flex gap-2 h-[400px] overflow-hidden rounded-3xl">
+                      {/* Main cover image - left side (50% width) */}
+                      <div className="flex-1 bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-3xl overflow-hidden">
                         <Image
                           src={provider.images[0]}
                           alt={provider.businessName}
@@ -284,10 +284,10 @@ export default function ProviderDetailPage() {
                         </div>
                       </div>
                       
-                      {/* Gallery images - right side 2x2 grid */}
-                      <div className="flex flex-wrap gap-2 items-start justify-start relative shrink-0 w-[318px]">
+                      {/* Gallery images - right side 2x2 grid (50% width) */}
+                      <div className="flex-1 grid grid-cols-2 gap-2">
                         {provider.images.slice(1, 5).map((image, index) => (
-                          <div key={index} className="shrink-0 w-[155px] h-[155px] bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-2xl overflow-hidden">
+                          <div key={index} className="bg-gradient-to-br from-blue-100 to-blue-200 relative rounded-2xl overflow-hidden">
                             <Image
                               src={image}
                               alt={`${provider.businessName} - Image ${index + 2}`}
@@ -309,7 +309,7 @@ export default function ProviderDetailPage() {
                         
                         {/* Show all photos button if more than 5 images */}
                         {provider.images.length > 5 && (
-                          <div className="shrink-0 w-[155px] h-[155px] bg-black bg-opacity-50 relative flex items-center justify-center cursor-pointer hover:bg-opacity-60 transition-all rounded-2xl">
+                          <div className="bg-black bg-opacity-50 relative flex items-center justify-center cursor-pointer hover:bg-opacity-60 transition-all rounded-2xl">
                             <div className="text-white text-center">
                               <div className="text-2xl font-bold">+{provider.images.length - 5}</div>
                               <div className="text-sm">Show all photos</div>
