@@ -583,12 +583,13 @@ export default function BookingPage() {
               </Button>
             )}
             <Button
+              variant="gradient"
+              size="lg"
               onClick={currentStep === 4 ? () => {
                 // Handle booking confirmation
                 alert('Booking confirmed!')
               } : handleNext}
               disabled={!canProceed()}
-              className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8"
             >
               {currentStep === 4 ? 'Confirm booking' : 'Continue'}
             </Button>

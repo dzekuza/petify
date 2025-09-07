@@ -9,7 +9,7 @@ import Map, {
 } from 'react-map-gl/mapbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Star, Heart, X, ChevronRight } from 'lucide-react'
+import { MapPin, Star, Heart, X, ChevronRight, ChevronLeft } from 'lucide-react'
 import Image from 'next/image'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
@@ -139,6 +139,8 @@ export const MapboxMap = ({
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
+  const [popupImageIndex, setPopupImageIndex] = useState(0)
+  const [isPopupTransitioning, setIsPopupTransitioning] = useState(false)
   const mapRef = useRef<MapRef>(null)
 
   // Check screen size for desktop/mobile
@@ -168,6 +170,7 @@ export const MapboxMap = ({
 
   const handleMarkerClick = useCallback((result: SearchResult) => {
     setSelectedResult(result)
+    setPopupImageIndex(0) // Reset to first image when selecting new marker
     onMarkerClick?.(result)
     
     // Center map on marker
@@ -181,7 +184,28 @@ export const MapboxMap = ({
 
   const handleClosePopup = useCallback(() => {
     setSelectedResult(null)
+    setPopupImageIndex(0)
   }, [])
+
+  const handlePopupPreviousImage = useCallback(() => {
+    if (selectedResult?.provider.images && !isPopupTransitioning) {
+      setIsPopupTransitioning(true)
+      setPopupImageIndex((prev) => 
+        prev === 0 ? selectedResult.provider.images.length - 1 : prev - 1
+      )
+      setTimeout(() => setIsPopupTransitioning(false), 300)
+    }
+  }, [selectedResult?.provider.images, isPopupTransitioning])
+
+  const handlePopupNextImage = useCallback(() => {
+    if (selectedResult?.provider.images && !isPopupTransitioning) {
+      setIsPopupTransitioning(true)
+      setPopupImageIndex((prev) => 
+        prev === selectedResult.provider.images.length - 1 ? 0 : prev + 1
+      )
+      setTimeout(() => setIsPopupTransitioning(false), 300)
+    }
+  }, [selectedResult?.provider.images, isPopupTransitioning])
 
 
   const formatPrice = (priceRange: { min: number; max: number }) => {
@@ -195,7 +219,6 @@ export const MapboxMap = ({
     return (
       <div className={`h-96 bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center">
-          <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Unavailable</h3>
           <p className="text-gray-600">
             Please add your Mapbox access token to environment variables
@@ -228,7 +251,7 @@ export const MapboxMap = ({
             <div
               className="cursor-pointer flex items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-110 border-2 border-white"
               style={{
-                backgroundColor: selectedProviderId === result.provider.id ? '#FF5A5F' : '#00A699',
+                backgroundColor: selectedProviderId === result.provider.id ? '#FF5A5F' : '#000000',
                 color: 'white',
                 fontSize: '12px',
                 fontWeight: '600',
@@ -257,14 +280,27 @@ export const MapboxMap = ({
           >
             <div className="w-80 bg-white rounded-xl shadow-xl overflow-hidden">
               {/* Cover Image Section */}
-              <div className="relative h-48 w-full">
+              <div className="relative h-48 w-full overflow-hidden">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
-                  <Image 
-                    src={selectedResult.provider.images[0]} 
-                    alt={selectedResult.provider.businessName}
-                    fill
-                    className="object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    {selectedResult.provider.images.map((image, index) => (
+                      <div
+                        key={index}
+                        className={`absolute inset-0 transition-all duration-300 ease-in-out ${
+                          index === popupImageIndex
+                            ? 'opacity-100 scale-100'
+                            : 'opacity-0 scale-105'
+                        }`}
+                      >
+                        <Image 
+                          src={image} 
+                          alt={selectedResult.provider.businessName}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                     <span className="text-4xl">
@@ -292,21 +328,43 @@ export const MapboxMap = ({
                   </button>
                 </div>
                 
-                {/* Navigation Arrow (if multiple images) */}
+                {/* Navigation Arrows (if multiple images) */}
                 {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
-                  <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
-                    <ChevronRight className="w-4 h-4 text-gray-700" />
-                  </button>
+                  <>
+                    <button 
+                      onClick={handlePopupPreviousImage}
+                      disabled={isPopupTransitioning}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-gray-700" />
+                    </button>
+                    <button 
+                      onClick={handlePopupNextImage}
+                      disabled={isPopupTransitioning}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight className="w-4 h-4 text-gray-700" />
+                    </button>
+                  </>
                 )}
                 
                 {/* Pagination Dots (if multiple images) */}
                 {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
                   <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
                     {selectedResult.provider.images.slice(0, 5).map((_, index) => (
-                      <div 
+                      <button
                         key={index}
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          index === 0 ? 'bg-white' : 'bg-white/60'
+                        onClick={() => {
+                          if (!isPopupTransitioning) {
+                            setIsPopupTransitioning(true)
+                            setPopupImageIndex(index)
+                            setTimeout(() => setIsPopupTransitioning(false), 300)
+                          }
+                        }}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          index === popupImageIndex
+                            ? 'bg-white scale-125'
+                            : 'bg-white/60 hover:bg-white/80'
                         }`}
                       />
                     ))}

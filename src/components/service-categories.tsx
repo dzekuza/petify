@@ -7,8 +7,7 @@ import {
   Home, 
   GraduationCap, 
   Footprints, 
-  Heart,
-  PawPrint
+  Heart
 } from 'lucide-react'
 import { ServiceCategory } from '@/types'
 import { t } from '@/lib/translations'
@@ -89,8 +88,8 @@ export const ServiceCategories = () => {
               <Link key={category.id} href={category.href}>
                 <Card className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer">
                   <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className={`p-3 rounded-lg ${category.color}`}>
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className={`p-2 rounded-lg ${category.color}`}>
                         <Icon className="h-6 w-6" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -119,7 +118,6 @@ export const ServiceCategories = () => {
         {/* CTA Section */}
         <div className="mt-16 text-center">
           <div className="bg-gray-50 rounded-2xl p-8">
-            <PawPrint className="h-12 w-12 text-blue-600 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               {t('landing.serviceCategories.cta.title')}
             </h3>

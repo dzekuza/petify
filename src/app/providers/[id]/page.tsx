@@ -4,7 +4,15 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Layout } from '@/components/layout'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { 
   Star, 
   Clock, 
@@ -15,38 +23,199 @@ import {
   ChevronRight,
   ArrowLeft,
   Home,
-  PawPrint
+  PawPrint,
+  Plus,
+  Minus,
+  Dog,
+  Cat
 } from 'lucide-react'
 import Image from 'next/image'
-import { ServiceProvider, Service, Review } from '@/types'
+import { ServiceProvider, Service, Review, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
+import { petsApi } from '@/lib/pets'
+import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 
 
 export default function ProviderDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
+  const [userPets, setUserPets] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  
+  // Booking form state
+  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedTime, setSelectedTime] = useState('')
+  const [selectedPets, setSelectedPets] = useState<string[]>([])
+  const [selectedService, setSelectedService] = useState('')
+  
+  // Add pet dialog state
+  const [addPetDialogOpen, setAddPetDialogOpen] = useState(false)
+  const [addPetForm, setAddPetForm] = useState({
+    name: '',
+    species: 'dog' as 'dog' | 'cat' | 'bird' | 'rabbit' | 'other',
+    breed: '',
+    age: '',
+    weight: '',
+    specialNeeds: '',
+    medicalNotes: ''
+  })
+  const [addPetLoading, setAddPetLoading] = useState(false)
+  const [addPetError, setAddPetError] = useState('')
+
+  const handleShare = async () => {
+    const shareData = {
+      title: provider?.businessName || 'Pet Service Provider',
+      text: `Check out ${provider?.businessName} - Professional pet services in ${provider?.location.city}, ${provider?.location.state}`,
+      url: window.location.href
+    }
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData)
+      } catch (error) {
+        console.log('Error sharing:', error)
+        // Fallback to clipboard
+        fallbackShare()
+      }
+    } else {
+      // Fallback to clipboard
+      fallbackShare()
+    }
+  }
+
+  const fallbackShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      // You could add a toast notification here
+      alert('Link copied to clipboard!')
+    } catch (error) {
+      console.log('Failed to copy to clipboard:', error)
+      // Final fallback - show the URL
+      alert(`Share this link: ${window.location.href}`)
+    }
+  }
 
   const handlePreviousImage = () => {
-    if (provider?.images) {
+    if (provider?.images && !isTransitioning) {
+      setIsTransitioning(true)
       setCurrentImageIndex((prev) => 
         prev === 0 ? provider.images.length - 1 : prev - 1
       )
+      setTimeout(() => setIsTransitioning(false), 300)
     }
   }
 
   const handleNextImage = () => {
-    if (provider?.images) {
+    if (provider?.images && !isTransitioning) {
+      setIsTransitioning(true)
       setCurrentImageIndex((prev) => 
         prev === provider.images.length - 1 ? 0 : prev + 1
       )
+      setTimeout(() => setIsTransitioning(false), 300)
     }
+  }
+
+  // Keyboard navigation for image gallery
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (provider?.images && provider.images.length > 1 && !isTransitioning) {
+        if (event.key === 'ArrowLeft') {
+          handlePreviousImage()
+        } else if (event.key === 'ArrowRight') {
+          handleNextImage()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [provider?.images, isTransitioning])
+
+  // Fetch user pets
+  const fetchUserPets = async () => {
+    if (!user) return
+    
+    try {
+      const pets = await petsApi.getUserPets(user.id)
+      setUserPets(pets)
+    } catch (error) {
+      console.error('Error fetching user pets:', error)
+    }
+  }
+
+  // Pet selection handlers
+  const handlePetSelection = (petId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPets(prev => [...prev, petId])
+    } else {
+      setSelectedPets(prev => prev.filter(id => id !== petId))
+    }
+  }
+
+  const getPetIcon = (species: string) => {
+    switch (species) {
+      case 'dog':
+        return <Dog className="h-4 w-4" />
+      case 'cat':
+        return <Cat className="h-4 w-4" />
+      default:
+        return <PawPrint className="h-4 w-4" />
+    }
+  }
+
+  // Add pet handlers
+  const handleAddPet = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+
+    setAddPetLoading(true)
+    setAddPetError('')
+
+    try {
+      const petData = {
+        name: addPetForm.name,
+        species: addPetForm.species,
+        breed: addPetForm.breed || undefined,
+        age: parseInt(addPetForm.age),
+        weight: addPetForm.weight ? parseFloat(addPetForm.weight) : undefined,
+        specialNeeds: addPetForm.specialNeeds ? addPetForm.specialNeeds.split(',').map(s => s.trim()) : undefined,
+        medicalNotes: addPetForm.medicalNotes || undefined
+      }
+
+      const newPet = await petsApi.createPet(petData, user.id)
+      
+      // Add the new pet to the list and select it
+      setUserPets(prev => [...prev, newPet])
+      setSelectedPets(prev => [...prev, newPet.id])
+      
+      // Reset form and close dialog
+      setAddPetForm({
+        name: '',
+        species: 'dog',
+        breed: '',
+        age: '',
+        weight: '',
+        specialNeeds: '',
+        medicalNotes: ''
+      })
+      setAddPetDialogOpen(false)
+    } catch (error) {
+      setAddPetError(error instanceof Error ? error.message : 'Failed to add pet')
+    } finally {
+      setAddPetLoading(false)
+    }
+  }
+
+  const handleAddPetFormChange = (field: string, value: string) => {
+    setAddPetForm(prev => ({ ...prev, [field]: value }))
   }
 
   useEffect(() => {
@@ -143,6 +312,11 @@ export default function ProviderDetailPage() {
             updatedAt: service.updated_at
           }))
           setServices(transformedServices)
+          
+          // Set default service if none selected
+          if (transformedServices.length > 0 && !selectedService) {
+            setSelectedService(transformedServices[0].id)
+          }
         }
 
         // Fetch reviews for this provider
@@ -181,6 +355,13 @@ export default function ProviderDetailPage() {
       fetchProviderData()
     }
   }, [params.id])
+
+  // Fetch user pets when user changes
+  useEffect(() => {
+    if (user) {
+      fetchUserPets()
+    }
+  }, [user])
 
   if (loading) {
     return (
@@ -229,233 +410,825 @@ export default function ProviderDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Image Section */}
-      <div className="relative">
-        {/* Image with overlay controls */}
-        {provider.images && provider.images.length > 0 ? (
-          <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh]">
-            <Image
-              src={provider.images[currentImageIndex]}
-              alt={`${provider.businessName} - Image ${currentImageIndex + 1}`}
-              fill
-              className="object-cover"
-              priority
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                if (fallback) {
-                  fallback.style.display = 'flex'
-                }
-              }}
-            />
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200" style={{ display: 'none' }}>
-              <span className="text-6xl">✂️</span>
-            </div>
-            
-            {/* Overlay Controls */}
-            <div className="absolute inset-0 bg-black/20">
-              {/* Top Controls */}
-              <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
-                <button
-                  onClick={() => router.back()}
-                  className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 text-gray-700" />
-                </button>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+      <Navigation />
+      {/* Mobile Layout (default) */}
+      <div className="lg:hidden">
+        {/* Image Section */}
+        <div className="relative">
+          {/* Image with overlay controls */}
+          {provider.images && provider.images.length > 0 ? (
+            <div className="relative h-[50vh] sm:h-[60vh] overflow-hidden">
+              <div className="relative w-full h-full">
+                {provider.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-all duration-300 ease-in-out ${
+                      index === currentImageIndex
+                        ? 'opacity-100 scale-100'
+                        : 'opacity-0 scale-105'
+                    }`}
                   >
-                    <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
-                  </button>
-                  <button className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
-                    <Share2 className="w-5 h-5 text-gray-700" />
-                  </button>
-                </div>
-              </div>
-              
-              {/* Image Counter */}
-              {provider.images.length > 1 && (
-                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                  {currentImageIndex + 1} / {provider.images.length}
-                </div>
-              )}
-              
-              {/* Navigation Arrows */}
-              {provider.images.length > 1 && (
-                <>
-                  <button
-                    onClick={handlePreviousImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5 text-gray-700" />
-                  </button>
-                  <button
-                    onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5 text-gray-700" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="h-[50vh] sm:h-[60vh] lg:h-[70vh] bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-            <span className="text-6xl">✂️</span>
-          </div>
-        )}
-      </div>
-
-      {/* Content Section */}
-      <div className="relative -mt-8 bg-white rounded-t-3xl">
-        <div className="px-6 pt-8 pb-24">
-          {/* Header Info */}
-          <div className="mb-6">
-            <div className="flex items-start space-x-3 mb-4">
-              <Home className="w-5 h-5 text-gray-600 mt-1" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                  {provider.businessName}
-                </h1>
-                <p className="text-gray-600 mb-2">
-                  Pet service in {provider.location.city}, {provider.location.state}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {services.length > 0 ? `${services.length} services available` : 'Services available'} • {provider.experience} years experience
-                </p>
-              </div>
-            </div>
-            
-            {/* Reviews */}
-            <div className="flex items-center space-x-2 mb-4">
-              <Star className="h-4 w-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-medium">{provider.rating}</span>
-              <span className="text-sm text-gray-500">({provider.reviewCount} reviews)</span>
-            </div>
-          </div>
-
-          {/* Host Information */}
-          <div className="border-t border-gray-200 pt-6 mb-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-lg font-semibold text-gray-600">
-                  {provider.businessName.charAt(0)}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
-                <p className="text-sm text-gray-600">{provider.experience} years hosting</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Pet Policy */}
-          <div className="border-t border-gray-200 pt-6 mb-6">
-            <div className="flex items-start space-x-3">
-              <PawPrint className="w-5 h-5 text-gray-600 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-gray-900">Pet-friendly services</h3>
-                <p className="text-sm text-gray-600">Professional care for your beloved pets.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="border-t border-gray-200 pt-6 mb-6">
-            <p className="text-gray-600 leading-relaxed">{provider.description}</p>
-          </div>
-
-          {/* Services */}
-          {services.length > 0 && (
-            <div className="border-t border-gray-200 pt-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Services & Pricing</h2>
-              <div className="space-y-4">
-                {services.slice(0, 3).map((service) => (
-                  <div key={service.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{service.name}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                          <span className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {service.duration} min
-                          </span>
-                          <span className="flex items-center">
-                            <Users className="h-4 w-4 mr-1" />
-                            Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right ml-4">
-                        <div className="text-lg font-semibold text-gray-900">
-                          €{service.price}
-                        </div>
-                      </div>
+                    <Image
+                      src={image}
+                      alt={`${provider.businessName} - Image ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      priority={index === 0}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                        if (fallback) {
+                          fallback.style.display = 'flex'
+                        }
+                      }}
+                    />
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200" style={{ display: 'none' }}>
+                      <span className="text-6xl">✂️</span>
                     </div>
                   </div>
                 ))}
-                {services.length > 3 && (
-                  <p className="text-sm text-gray-500 text-center">
-                    +{services.length - 3} more services available
-                  </p>
+              </div>
+              
+              {/* Overlay Controls */}
+              <div className="absolute inset-0 bg-black/20">
+                {/* Top Controls */}
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                  <button
+                    onClick={() => router.back()}
+                    className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 text-gray-700" />
+                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setIsFavorite(!isFavorite)}
+                      className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                    >
+                      <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
+                    </button>
+                    <button 
+                      onClick={handleShare}
+                      className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                    >
+                      <Share2 className="w-5 h-5 text-gray-700" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Image Counter */}
+                {provider.images.length > 1 && (
+                  <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                    {currentImageIndex + 1} / {provider.images.length}
+                  </div>
+                )}
+                
+                {/* Navigation Arrows */}
+                {provider.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePreviousImage}
+                      disabled={isTransitioning}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-700" />
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      disabled={isTransitioning}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gray-700" />
+                    </button>
+                  </>
+                )}
+                
+                {/* Pagination Dots */}
+                {provider.images.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {provider.images.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          if (!isTransitioning) {
+                            setIsTransitioning(true)
+                            setCurrentImageIndex(index)
+                            setTimeout(() => setIsTransitioning(false), 300)
+                          }
+                        }}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex
+                            ? 'bg-white scale-125'
+                            : 'bg-white/60 hover:bg-white/80'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
+          ) : (
+            <div className="h-[50vh] sm:h-[60vh] bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+              <span className="text-6xl">✂️</span>
+            </div>
           )}
+        </div>
 
-          {/* Reviews */}
-          {reviews.length > 0 && (
-            <div className="border-t border-gray-200 pt-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews ({provider.reviewCount})</h2>
-              <div className="space-y-4">
-                {reviews.slice(0, 2).map((review) => (
-                  <div key={review.id} className="border-b border-gray-100 pb-4 last:border-b-0">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 text-sm">{review.comment}</p>
-                  </div>
-                ))}
+        {/* Content Section */}
+        <div className="relative -mt-8 bg-white rounded-t-3xl">
+          <div className="px-6 pt-8 pb-24">
+            {/* Header Info */}
+            <div className="mb-6">
+              <div className="flex items-start space-x-3 mb-4">
+                <Home className="w-5 h-5 text-gray-600 mt-1" />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    {provider.businessName}
+                  </h1>
+                  <p className="text-gray-600 mb-2">
+                    Pet service in {provider.location.city}, {provider.location.state}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {services.length > 0 ? `${services.length} services available` : 'Services available'} • {provider.experience} years experience
+                  </p>
+                </div>
+              </div>
+              
+              {/* Reviews */}
+              <div className="flex items-center space-x-2 mb-4">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <span className="text-sm font-medium">{provider.rating}</span>
+                <span className="text-sm text-gray-500">({provider.reviewCount} reviews)</span>
               </div>
             </div>
-          )}
+
+            {/* Host Information */}
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-semibold text-gray-600">
+                    {provider.businessName.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
+                  <p className="text-sm text-gray-600">{provider.experience} years hosting</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pet Policy */}
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <div className="flex items-start space-x-3">
+                <PawPrint className="w-5 h-5 text-gray-600 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Pet-friendly services</h3>
+                  <p className="text-sm text-gray-600">Professional care for your beloved pets.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <p className="text-gray-600 leading-relaxed">{provider.description}</p>
+            </div>
+
+            {/* Services */}
+            {services.length > 0 && (
+              <div className="border-t border-gray-200 pt-6 mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Services & Pricing</h2>
+                <div className="space-y-4">
+                  {services.slice(0, 3).map((service) => (
+                    <div key={service.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{service.name}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                            <span className="flex items-center">
+                              <Clock className="h-4 w-4 mr-1" />
+                              {service.duration} min
+                            </span>
+                            <span className="flex items-center">
+                              <Users className="h-4 w-4 mr-1" />
+                              Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-lg font-semibold text-gray-900">
+                            €{service.price}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {services.length > 3 && (
+                    <p className="text-sm text-gray-500 text-center">
+                      +{services.length - 3} more services available
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Reviews */}
+            {reviews.length > 0 && (
+              <div className="border-t border-gray-200 pt-6 mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Reviews ({provider.reviewCount})</h2>
+                <div className="space-y-4">
+                  {reviews.slice(0, 2).map((review) => (
+                    <div key={review.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-sm">{review.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fixed Bottom Bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+          <div className="flex items-center justify-between max-w-md mx-auto">
+            <div>
+              <div className="text-lg font-semibold text-gray-900">
+                €{provider.priceRange.min}-€{provider.priceRange.max}
+              </div>
+              <div className="text-sm text-gray-600">per service</div>
+            </div>
+            <Button 
+              variant="gradient"
+              size="lg"
+              asChild
+            >
+              <Link href={`/providers/${params.id}/book`}>
+                Book
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Fixed Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="flex items-center justify-between max-w-md mx-auto">
-          <div>
-            <div className="text-lg font-semibold text-gray-900">
-              €{provider.priceRange.min}-€{provider.priceRange.max}
+      {/* Desktop Layout (lg and above) */}
+      <div className="hidden lg:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header with back button and actions */}
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back</span>
+            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleShare}
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Share</span>
+              </button>
+              <button
+                onClick={() => setIsFavorite(!isFavorite)}
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Heart className={`w-4 h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
+                <span>Save</span>
+              </button>
             </div>
-            <div className="text-sm text-gray-600">per service</div>
           </div>
-          <Button 
-            className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8 py-3 rounded-lg font-semibold"
-            asChild
-          >
-            <Link href={`/providers/${params.id}/book`}>
-              Book
-            </Link>
-          </Button>
+
+          {/* Main content grid */}
+          <div className="grid grid-cols-3 gap-8">
+            {/* Left column - Image gallery and content */}
+            <div className="col-span-2 space-y-8">
+              {/* Image Gallery */}
+              {provider.images && provider.images.length > 0 ? (
+                <div className="grid grid-cols-4 gap-2 h-[400px]">
+                  {/* Main large image */}
+                  <div className="col-span-2 row-span-2 relative overflow-hidden rounded-2xl">
+                    <Image
+                      src={provider.images[currentImageIndex]}
+                      alt={`${provider.businessName} - Image ${currentImageIndex + 1}`}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                  {/* Smaller images */}
+                  {provider.images.slice(1, 5).map((image, index) => (
+                    <div key={index} className="relative overflow-hidden rounded-xl">
+                      <Image
+                        src={image}
+                        alt={`${provider.businessName} - Image ${index + 2}`}
+                        fill
+                        className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setCurrentImageIndex(index + 1)}
+                      />
+                    </div>
+                  ))}
+                  {provider.images.length > 5 && (
+                    <div className="relative overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                      <div className="text-center">
+                        <div className="text-2xl font-semibold text-gray-600">+{provider.images.length - 5}</div>
+                        <div className="text-sm text-gray-500">more</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="h-[400px] bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+                  <span className="text-6xl">✂️</span>
+                </div>
+              )}
+
+              {/* Provider Info */}
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    {provider.businessName}
+                  </h1>
+                  <p className="text-lg text-gray-600 mb-4">
+                    Pet service in {provider.location.city}, {provider.location.state}
+                  </p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>{services.length} services available</span>
+                    <span>•</span>
+                    <span>{provider.experience} years experience</span>
+                    <span>•</span>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span>{provider.rating}</span>
+                      <span>({provider.reviewCount} reviews)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Host Information */}
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                      <span className="text-xl font-semibold text-gray-600">
+                        {provider.businessName.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
+                      <p className="text-gray-600">{provider.experience} years hosting</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pet Policy */}
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-start space-x-4">
+                    <PawPrint className="w-6 h-6 text-gray-600 mt-1" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Pet-friendly services</h3>
+                      <p className="text-gray-600">Professional care for your beloved pets.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="border-t border-gray-200 pt-6">
+                  <p className="text-gray-600 leading-relaxed text-lg">{provider.description}</p>
+                </div>
+
+                {/* Services */}
+                {services.length > 0 && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Services & Pricing</h2>
+                    <div className="space-y-4">
+                      {services.map((service) => (
+                        <div key={service.id} className="border border-gray-200 rounded-xl p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-lg font-medium text-gray-900 mb-2">{service.name}</h4>
+                              <p className="text-gray-600 mb-3">{service.description}</p>
+                              <div className="flex items-center space-x-6 text-sm text-gray-500">
+                                <span className="flex items-center">
+                                  <Clock className="h-4 w-4 mr-2" />
+                                  {service.duration} min
+                                </span>
+                                <span className="flex items-center">
+                                  <Users className="h-4 w-4 mr-2" />
+                                  Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right ml-6">
+                              <div className="text-2xl font-bold text-gray-900">
+                                €{service.price}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews */}
+                {reviews.length > 0 && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Reviews ({provider.reviewCount})</h2>
+                    <div className="space-y-6">
+                      {reviews.slice(0, 3).map((review) => (
+                        <div key={review.id} className="border-b border-gray-100 pb-6 last:border-b-0">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-5 w-5 ${
+                                    i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-gray-500">
+                              {new Date(review.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-gray-600">{review.comment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right column - Booking widget */}
+            <div className="col-span-1">
+              <div className="sticky top-8">
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                  <div className="text-2xl font-bold text-gray-900 mb-2">
+                    €{provider.priceRange.min}-€{provider.priceRange.max}
+                  </div>
+                  <div className="text-gray-600 mb-6">per service</div>
+                  
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE DATE</label>
+                      <Input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TIME</label>
+                      <Select value={selectedTime} onValueChange={setSelectedTime}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="09:00">9:00 AM</SelectItem>
+                          <SelectItem value="10:00">10:00 AM</SelectItem>
+                          <SelectItem value="11:00">11:00 AM</SelectItem>
+                          <SelectItem value="12:00">12:00 PM</SelectItem>
+                          <SelectItem value="13:00">1:00 PM</SelectItem>
+                          <SelectItem value="14:00">2:00 PM</SelectItem>
+                          <SelectItem value="15:00">3:00 PM</SelectItem>
+                          <SelectItem value="16:00">4:00 PM</SelectItem>
+                          <SelectItem value="17:00">5:00 PM</SelectItem>
+                          <SelectItem value="18:00">6:00 PM</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SELECT PETS</label>
+                      {userPets.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+                            {userPets.map((pet) => (
+                              <div key={pet.id} className="flex items-center space-x-3">
+                                <Checkbox
+                                  id={`pet-${pet.id}`}
+                                  checked={selectedPets.includes(pet.id)}
+                                  onCheckedChange={(checked) => handlePetSelection(pet.id, checked as boolean)}
+                                />
+                                <label
+                                  htmlFor={`pet-${pet.id}`}
+                                  className="flex items-center space-x-2 cursor-pointer flex-1"
+                                >
+                                  {getPetIcon(pet.species)}
+                                  <span className="text-sm text-gray-900">{pet.name}</span>
+                                  <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                          <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
+                            <DialogTrigger asChild>
+                              <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
+                                + Add another pet
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>Add Your Pet</DialogTitle>
+                              </DialogHeader>
+                              <form onSubmit={handleAddPet} className="space-y-4">
+                                {addPetError && (
+                                  <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
+                                    {addPetError}
+                                  </div>
+                                )}
+                                
+                                <div>
+                                  <Label htmlFor="petName">Pet Name *</Label>
+                                  <Input
+                                    id="petName"
+                                    value={addPetForm.name}
+                                    onChange={(e) => handleAddPetFormChange('name', e.target.value)}
+                                    required
+                                    placeholder="Enter pet name"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="petSpecies">Species *</Label>
+                                  <Select value={addPetForm.species} onValueChange={(value) => handleAddPetFormChange('species', value)}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="dog">Dog</SelectItem>
+                                      <SelectItem value="cat">Cat</SelectItem>
+                                      <SelectItem value="bird">Bird</SelectItem>
+                                      <SelectItem value="rabbit">Rabbit</SelectItem>
+                                      <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="petBreed">Breed</Label>
+                                  <Input
+                                    id="petBreed"
+                                    value={addPetForm.breed}
+                                    onChange={(e) => handleAddPetFormChange('breed', e.target.value)}
+                                    placeholder="Enter breed (optional)"
+                                  />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="petAge">Age (years) *</Label>
+                                    <Input
+                                      id="petAge"
+                                      type="number"
+                                      min="0"
+                                      max="30"
+                                      value={addPetForm.age}
+                                      onChange={(e) => handleAddPetFormChange('age', e.target.value)}
+                                      required
+                                      placeholder="0"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="petWeight">Weight (kg)</Label>
+                                    <Input
+                                      id="petWeight"
+                                      type="number"
+                                      min="0"
+                                      step="0.1"
+                                      value={addPetForm.weight}
+                                      onChange={(e) => handleAddPetFormChange('weight', e.target.value)}
+                                      placeholder="0.0"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="specialNeeds">Special Needs</Label>
+                                  <Input
+                                    id="specialNeeds"
+                                    value={addPetForm.specialNeeds}
+                                    onChange={(e) => handleAddPetFormChange('specialNeeds', e.target.value)}
+                                    placeholder="Comma-separated list (optional)"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="medicalNotes">Medical Notes</Label>
+                                  <Textarea
+                                    id="medicalNotes"
+                                    value={addPetForm.medicalNotes}
+                                    onChange={(e) => handleAddPetFormChange('medicalNotes', e.target.value)}
+                                    placeholder="Any medical information (optional)"
+                                    rows={3}
+                                  />
+                                </div>
+
+                                <div className="flex justify-end space-x-3 pt-4">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setAddPetDialogOpen(false)}
+                                    disabled={addPetLoading}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    type="submit"
+                                    disabled={addPetLoading || !addPetForm.name || !addPetForm.age}
+                                  >
+                                    {addPetLoading ? 'Adding...' : 'Add Pet'}
+                                  </Button>
+                                </div>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      ) : (
+                        <div className="border border-gray-300 rounded-md p-3 text-center">
+                          <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+                          <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
+                            <DialogTrigger asChild>
+                              <button className="text-sm text-blue-600 hover:text-blue-800">
+                                Add your first pet
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>Add Your Pet</DialogTitle>
+                              </DialogHeader>
+                              <form onSubmit={handleAddPet} className="space-y-4">
+                                {addPetError && (
+                                  <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
+                                    {addPetError}
+                                  </div>
+                                )}
+                                
+                                <div>
+                                  <Label htmlFor="petName">Pet Name *</Label>
+                                  <Input
+                                    id="petName"
+                                    value={addPetForm.name}
+                                    onChange={(e) => handleAddPetFormChange('name', e.target.value)}
+                                    required
+                                    placeholder="Enter pet name"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="petSpecies">Species *</Label>
+                                  <Select value={addPetForm.species} onValueChange={(value) => handleAddPetFormChange('species', value)}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="dog">Dog</SelectItem>
+                                      <SelectItem value="cat">Cat</SelectItem>
+                                      <SelectItem value="bird">Bird</SelectItem>
+                                      <SelectItem value="rabbit">Rabbit</SelectItem>
+                                      <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="petBreed">Breed</Label>
+                                  <Input
+                                    id="petBreed"
+                                    value={addPetForm.breed}
+                                    onChange={(e) => handleAddPetFormChange('breed', e.target.value)}
+                                    placeholder="Enter breed (optional)"
+                                  />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="petAge">Age (years) *</Label>
+                                    <Input
+                                      id="petAge"
+                                      type="number"
+                                      min="0"
+                                      max="30"
+                                      value={addPetForm.age}
+                                      onChange={(e) => handleAddPetFormChange('age', e.target.value)}
+                                      required
+                                      placeholder="0"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="petWeight">Weight (kg)</Label>
+                                    <Input
+                                      id="petWeight"
+                                      type="number"
+                                      min="0"
+                                      step="0.1"
+                                      value={addPetForm.weight}
+                                      onChange={(e) => handleAddPetFormChange('weight', e.target.value)}
+                                      placeholder="0.0"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="specialNeeds">Special Needs</Label>
+                                  <Input
+                                    id="specialNeeds"
+                                    value={addPetForm.specialNeeds}
+                                    onChange={(e) => handleAddPetFormChange('specialNeeds', e.target.value)}
+                                    placeholder="Comma-separated list (optional)"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label htmlFor="medicalNotes">Medical Notes</Label>
+                                  <Textarea
+                                    id="medicalNotes"
+                                    value={addPetForm.medicalNotes}
+                                    onChange={(e) => handleAddPetFormChange('medicalNotes', e.target.value)}
+                                    placeholder="Any medical information (optional)"
+                                    rows={3}
+                                  />
+                                </div>
+
+                                <div className="flex justify-end space-x-3 pt-4">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setAddPetDialogOpen(false)}
+                                    disabled={addPetLoading}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    type="submit"
+                                    disabled={addPetLoading || !addPetForm.name || !addPetForm.age}
+                                  >
+                                    {addPetLoading ? 'Adding...' : 'Add Pet'}
+                                  </Button>
+                                </div>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TYPE</label>
+                      <Select value={selectedService} onValueChange={setSelectedService}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {services.map((service) => (
+                            <SelectItem key={service.id} value={service.id}>
+                              {service.name} - €{service.price}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="gradient"
+                    size="lg"
+                    className="w-full mb-4"
+                    asChild
+                    disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
+                  >
+                    <Link href={`/providers/${params.id}/book?date=${selectedDate}&time=${selectedTime}&pets=${selectedPets.join(',')}&service=${selectedService}`}>
+                      Book Service
+                    </Link>
+                  </Button>
+                  
+                  <div className="text-center text-sm text-gray-600">
+                    Secure booking • No payment required upfront
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
