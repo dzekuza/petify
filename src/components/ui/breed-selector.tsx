@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Check, ChevronsUpDown, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getBreedsBySpecies, searchBreeds, type Breed } from '@/lib/breeds'
 
@@ -37,6 +37,12 @@ export function BreedSelector({
 
   const selectedBreed = breeds.find(breed => breed.name === value)
 
+  const handleBreedSelect = (breedName: string) => {
+    onValueChange(breedName === value ? '' : breedName)
+    setOpen(false)
+    setSearchQuery('')
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -51,44 +57,51 @@ export function BreedSelector({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
-        <Command>
-          <div className="flex items-center border-b px-3">
+        <div className="flex flex-col">
+          {/* Search Input */}
+          <div className="flex items-center border-b px-3 py-2">
             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-            <CommandInput
+            <Input
               placeholder="Search breeds..."
               value={searchQuery}
-              onValueChange={setSearchQuery}
-              className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-0 shadow-none focus-visible:ring-0"
             />
           </div>
-          <CommandList>
-            <CommandEmpty>No breed found.</CommandEmpty>
-            <CommandGroup>
-              {breeds.map((breed) => (
-                <CommandItem
-                  key={breed.name}
-                  value={breed.name}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? '' : currentValue)
-                    setOpen(false)
-                    setSearchQuery('')
-                  }}
-                >
-                  <Check
+          
+          {/* Breeds List */}
+          <div className="max-h-60 overflow-auto">
+            {breeds.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                No breed found.
+              </div>
+            ) : (
+              <div className="p-1">
+                {breeds.map((breed) => (
+                  <div
+                    key={breed.name}
                     className={cn(
-                      "mr-2 h-4 w-4",
-                      value === breed.name ? "opacity-100" : "opacity-0"
+                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
+                      value === breed.name && "bg-accent text-accent-foreground"
                     )}
-                  />
-                  {breed.name}
-                  {breed.popularity >= 80 && (
-                    <span className="ml-auto text-xs text-muted-foreground">Popular</span>
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+                    onClick={() => handleBreedSelect(breed.name)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === breed.name ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <span className="flex-1">{breed.name}</span>
+                    {breed.popularity >= 80 && (
+                      <span className="ml-auto text-xs text-muted-foreground">Popular</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   )

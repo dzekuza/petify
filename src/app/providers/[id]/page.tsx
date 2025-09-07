@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Layout } from '@/components/layout'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import { BreedSelector } from '@/components/ui/breed-selector'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { 
   Star, 
   Clock, 
@@ -24,7 +25,8 @@ import {
   Home,
   PawPrint,
   Dog,
-  Cat
+  Cat,
+  Calendar as CalendarIcon
 } from 'lucide-react'
 import Image from 'next/image'
 import { ServiceProvider, Service, Review, Pet } from '@/types'
@@ -33,6 +35,8 @@ import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { useDeviceDetection } from '@/lib/device-detection'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 
 
 export default function ProviderDetailPage() {
@@ -50,7 +54,7 @@ export default function ProviderDetailPage() {
   const [isTransitioning, setIsTransitioning] = useState(false)
   
   // Booking form state
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState('')
   const [selectedPets, setSelectedPets] = useState<string[]>([])
   const [selectedService, setSelectedService] = useState('')
@@ -223,7 +227,7 @@ export default function ProviderDetailPage() {
     }
 
     const bookingParams = new URLSearchParams({
-      date: selectedDate,
+      date: selectedDate.toISOString().split('T')[0],
       time: selectedTime,
       pets: selectedPets.join(','),
       service: selectedService
@@ -687,13 +691,29 @@ export default function ProviderDetailPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE DATE</label>
-                  <Input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 
                 <div>
@@ -781,13 +801,15 @@ export default function ProviderDetailPage() {
                               ]}
                             />
 
-                            <InputWithLabel
-                              id="mobilePetBreed"
-                              label="Breed"
-                              value={addPetForm.breed}
-                              onChange={(value) => handleAddPetFormChange('breed', value)}
-                              placeholder="Enter breed (optional)"
-                            />
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                              <BreedSelector
+                                value={addPetForm.breed}
+                                onValueChange={(value) => handleAddPetFormChange('breed', value)}
+                                species={addPetForm.species}
+                                placeholder="Select breed (optional)"
+                              />
+                            </div>
 
                             <div className="grid grid-cols-2 gap-4">
                               <InputWithLabel
@@ -1209,15 +1231,32 @@ export default function ProviderDetailPage() {
                   <div className="text-gray-600 mb-6">per service</div>
                   
                   <div className="space-y-4 mb-6">
-                    <InputWithLabel
-                      id="serviceDate"
-                      label="SERVICE DATE"
-                      type="date"
-                      value={selectedDate}
-                      onChange={setSelectedDate}
-                      required
-                      min={new Date().toISOString().split('T')[0]}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE DATE</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !selectedDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={setSelectedDate}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <SelectWithLabel
                       id="serviceTime"
                       label="SERVICE TIME"
@@ -1302,13 +1341,15 @@ export default function ProviderDetailPage() {
                                   ]}
                                 />
 
-                                <InputWithLabel
-                                  id="petBreed"
-                                  label="Breed"
-                                  value={addPetForm.breed}
-                                  onChange={(value) => handleAddPetFormChange('breed', value)}
-                                  placeholder="Enter breed (optional)"
-                                />
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                                  <BreedSelector
+                                    value={addPetForm.breed}
+                                    onValueChange={(value) => handleAddPetFormChange('breed', value)}
+                                    species={addPetForm.species}
+                                    placeholder="Select breed (optional)"
+                                  />
+                                </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                   <InputWithLabel
@@ -1415,13 +1456,15 @@ export default function ProviderDetailPage() {
                                   ]}
                                 />
 
-                                <InputWithLabel
-                                  id="petBreed"
-                                  label="Breed"
-                                  value={addPetForm.breed}
-                                  onChange={(value) => handleAddPetFormChange('breed', value)}
-                                  placeholder="Enter breed (optional)"
-                                />
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                                  <BreedSelector
+                                    value={addPetForm.breed}
+                                    onValueChange={(value) => handleAddPetFormChange('breed', value)}
+                                    species={addPetForm.species}
+                                    placeholder="Select breed (optional)"
+                                  />
+                                </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                   <InputWithLabel
