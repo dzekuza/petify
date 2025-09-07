@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { OnboardingData, ProviderType } from '@/types/onboarding'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 interface ConditionalBusinessNameStepProps {
   data: OnboardingData
@@ -47,21 +45,11 @@ export default function ConditionalBusinessNameStep({ data, onUpdate, onNext, on
   const [businessName, setBusinessName] = useState(data.businessName || '')
   const [error, setError] = useState('')
 
-  const handleNext = () => {
-    if (!businessName.trim()) {
-      setError('Please enter your business name')
-      return
-    }
-
-    onUpdate({ businessName: businessName.trim() })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">{getBusinessNameLabel(data.providerType as ProviderType)}</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           {data.providerType === 'ads' 
             ? 'Enter your name or the name you\'d like to use for your services'
             : 'Enter the name that customers will see when booking your services'
@@ -74,8 +62,10 @@ export default function ConditionalBusinessNameStep({ data, onUpdate, onNext, on
           placeholder={getBusinessNamePlaceholder(data.providerType as ProviderType)}
           value={businessName}
           onChange={(e) => {
-            setBusinessName(e.target.value)
+            const value = e.target.value
+            setBusinessName(value)
             setError('')
+            onUpdate({ businessName: value })
           }}
           className="text-lg"
         />
@@ -86,17 +76,6 @@ export default function ConditionalBusinessNameStep({ data, onUpdate, onNext, on
           {error}
         </div>
       )}
-
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext} disabled={!businessName.trim()} className="flex items-center space-x-2">
-          <span>Continue</span>
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
     </div>
   )
 }

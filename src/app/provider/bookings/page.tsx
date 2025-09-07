@@ -200,7 +200,7 @@ export default function ProviderBookings() {
 
   if (loading) {
     return (
-      <Layout>
+      <Layout hideServiceCategories={true}>
         <ProtectedRoute requiredRole="provider">
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -221,7 +221,7 @@ export default function ProviderBookings() {
   }
 
   return (
-    <Layout>
+    <Layout hideServiceCategories={true}>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">

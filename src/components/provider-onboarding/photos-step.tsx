@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft, Upload, X, Camera, Image as ImageIcon } from 'lucide-react'
+import { Upload, X, Camera, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
 interface PhotosStepProps {
@@ -30,8 +30,11 @@ export default function PhotosStep({ data, onUpdate, onNext, onPrevious }: Photo
           const result = e.target?.result as string
           if (isProfile) {
             setProfilePhoto(result)
+            onUpdate({ profilePhoto: result })
           } else {
-            setPhotos(prev => [...prev, result])
+            const updatedPhotos = [...photos, result]
+            setPhotos(updatedPhotos)
+            onUpdate({ photos: updatedPhotos })
           }
         }
         reader.readAsDataURL(file)
@@ -40,26 +43,21 @@ export default function PhotosStep({ data, onUpdate, onNext, onPrevious }: Photo
   }
 
   const handleRemovePhoto = (index: number) => {
-    setPhotos(prev => prev.filter((_, i) => i !== index))
+    const updatedPhotos = photos.filter((_, i) => i !== index)
+    setPhotos(updatedPhotos)
+    onUpdate({ photos: updatedPhotos })
   }
 
   const handleRemoveProfilePhoto = () => {
     setProfilePhoto('')
+    onUpdate({ profilePhoto: '' })
   }
 
-  const handleNext = () => {
-    onUpdate({ 
-      photos,
-      profilePhoto
-    })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Add photos to showcase your work</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Upload photos that showcase your services and help customers understand what you offer
         </p>
       </div>
@@ -191,15 +189,6 @@ export default function PhotosStep({ data, onUpdate, onNext, onPrevious }: Photo
         </CardContent>
       </Card>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

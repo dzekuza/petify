@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -746,7 +746,7 @@ export default function ProviderDashboard() {
 
   if (loading) {
     return (
-      <Layout>
+      <Layout hideServiceCategories={true}>
         <ProtectedRoute requiredRole="provider">
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -767,7 +767,7 @@ export default function ProviderDashboard() {
   }
 
   return (
-    <Layout>
+    <Layout hideServiceCategories={true}>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -1306,6 +1306,9 @@ export default function ProviderDashboard() {
                   <X className="h-4 w-4" />
                 </Button>
               </DialogTitle>
+              <DialogDescription>
+                View and manage booking details for your services.
+              </DialogDescription>
             </DialogHeader>
             
             {selectedBooking && (
@@ -1469,6 +1472,9 @@ export default function ProviderDashboard() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Complete Your Provider Profile</DialogTitle>
+              <DialogDescription>
+                Fill out your business information to start accepting bookings and grow your business.
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-6">
@@ -1725,6 +1731,9 @@ export default function ProviderDashboard() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Service</DialogTitle>
+              <DialogDescription>
+                Create a new service offering for your customers to book.
+              </DialogDescription>
             </DialogHeader>
             
             <form onSubmit={handleCreateService} className="space-y-6">
@@ -1924,6 +1933,9 @@ export default function ProviderDashboard() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Business Profile</DialogTitle>
+              <DialogDescription>
+                Update your business information and profile details.
+              </DialogDescription>
             </DialogHeader>
             
             <form onSubmit={handleEditProfile} className="space-y-6">
@@ -2404,6 +2416,9 @@ export default function ProviderDashboard() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Service</DialogTitle>
+              <DialogDescription>
+                Update the details of your service offering.
+              </DialogDescription>
             </DialogHeader>
             
             <form onSubmit={handleUpdateService} className="space-y-6">

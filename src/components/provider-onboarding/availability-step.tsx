@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface AvailabilityStepProps {
   data: OnboardingData
@@ -36,31 +34,11 @@ export default function AvailabilityStep({ data, onUpdate, onNext, onPrevious }:
   })
   const [error, setError] = useState('')
 
-  const handleDayToggle = (day: string) => {
-    setAvailability(prev => ({
-      ...prev,
-      [day]: !prev[day as keyof typeof prev]
-    }))
-    setError('')
-  }
-
-  const handleNext = () => {
-    const hasAnyDaySelected = Object.values(availability).some(day => day)
-    
-    if (!hasAnyDaySelected) {
-      setError('Please select at least one day you\'re available')
-      return
-    }
-
-    onUpdate({ availability })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">When are you available?</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Select the days you're available to provide services
         </p>
       </div>
@@ -74,7 +52,15 @@ export default function AvailabilityStep({ data, onUpdate, onNext, onPrevious }:
                 <Checkbox
                   id={day.id}
                   checked={availability[day.id as keyof typeof availability]}
-                  onCheckedChange={() => handleDayToggle(day.id)}
+                  onCheckedChange={() => {
+                    const newAvailability = {
+                      ...availability,
+                      [day.id]: !availability[day.id as keyof typeof availability]
+                    }
+                    setAvailability(newAvailability)
+                    setError('')
+                    onUpdate({ availability: newAvailability })
+                  }}
                 />
                 <label htmlFor={day.id} className="text-sm font-medium cursor-pointer">
                   {day.name}
@@ -90,16 +76,6 @@ export default function AvailabilityStep({ data, onUpdate, onNext, onPrevious }:
           {error}
         </div>
       )}
-
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

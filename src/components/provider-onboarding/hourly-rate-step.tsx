@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface HourlyRateStepProps {
   data: OnboardingData
@@ -19,24 +17,11 @@ export default function HourlyRateStep({ data, onUpdate, onNext, onPrevious }: H
   const [currency, setCurrency] = useState(data.currency || 'EUR')
   const [error, setError] = useState('')
 
-  const handleNext = () => {
-    if (pricePerHour <= 0) {
-      setError('Please enter a valid hourly rate')
-      return
-    }
-
-    onUpdate({ 
-      pricePerHour,
-      currency
-    })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">What's your hourly rate?</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Set your hourly rate for extended services or consultations
         </p>
       </div>
@@ -45,7 +30,10 @@ export default function HourlyRateStep({ data, onUpdate, onNext, onPrevious }: H
         <div className="space-y-2">
           <label className="text-sm font-medium">Hourly Rate</label>
           <div className="flex space-x-2">
-            <Select value={currency} onValueChange={setCurrency}>
+            <Select value={currency} onValueChange={(value) => {
+              setCurrency(value)
+              onUpdate({ pricePerHour, currency: value })
+            }}>
               <SelectTrigger className="w-20">
                 <SelectValue />
               </SelectTrigger>
@@ -59,7 +47,12 @@ export default function HourlyRateStep({ data, onUpdate, onNext, onPrevious }: H
               type="number"
               placeholder="0"
               value={pricePerHour || ''}
-              onChange={(e) => setPricePerHour(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Number(e.target.value)
+                setPricePerHour(value)
+                setError('')
+                onUpdate({ pricePerHour: value, currency })
+              }}
               className="flex-1"
             />
           </div>
@@ -82,15 +75,6 @@ export default function HourlyRateStep({ data, onUpdate, onNext, onPrevious }: H
         </div>
       )}
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext} disabled={pricePerHour <= 0}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

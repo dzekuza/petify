@@ -344,6 +344,27 @@ export const providerApi = {
     }
   },
 
+  // Check if user has completed provider registration
+  async hasProviderProfile(userId: string) {
+    try {
+      const { data: provider, error } = await supabase
+        .from('providers')
+        .select('id, status')
+        .eq('user_id', userId)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking provider profile:', error)
+        throw error
+      }
+
+      return !!provider
+    } catch (error) {
+      console.error('Error in hasProviderProfile:', error)
+      throw error
+    }
+  },
+
   // Search providers with filters and services
   async searchProviders(filters?: {
     category?: string

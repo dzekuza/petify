@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface WorkingHoursStepProps {
   data: OnboardingData
@@ -30,30 +28,24 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
   const [error, setError] = useState('')
 
   const handleStartTimeChange = (startTime: string) => {
-    setWorkingHours(prev => ({ ...prev, start: startTime }))
+    const updatedHours = { ...workingHours, start: startTime }
+    setWorkingHours(updatedHours)
     setError('')
+    onUpdate({ workingHours: updatedHours })
   }
 
   const handleEndTimeChange = (endTime: string) => {
-    setWorkingHours(prev => ({ ...prev, end: endTime }))
+    const updatedHours = { ...workingHours, end: endTime }
+    setWorkingHours(updatedHours)
     setError('')
+    onUpdate({ workingHours: updatedHours })
   }
 
-  const handleNext = () => {
-    if (workingHours.start >= workingHours.end) {
-      setError('End time must be after start time')
-      return
-    }
-
-    onUpdate({ workingHours })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">What are your working hours?</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Set your typical working hours (you can adjust this later)
         </p>
       </div>
@@ -102,15 +94,6 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
         </div>
       )}
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

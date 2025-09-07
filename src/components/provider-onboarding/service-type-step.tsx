@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
+import Image from 'next/image'
 
 interface ServiceTypeStepProps {
   data: OnboardingData
@@ -14,23 +13,15 @@ interface ServiceTypeStepProps {
 }
 
 const serviceTypes = [
-  { id: 'grooming', name: 'Kirpyklos', description: 'Pet grooming and beauty services', icon: '✂️' },
-  { id: 'training', name: 'Dresūra', description: 'Pet training and behavior services', icon: '🎓' },
-  { id: 'veterinary', name: 'Veterinarijos', description: 'Veterinary and medical services', icon: '🏥' },
-  { id: 'ads', name: 'Skelbimai', description: 'Pet advertising and sales services', icon: '📢' }
+  { id: 'grooming', name: 'Kirpyklos', description: 'Pet grooming and beauty services', icon: '/Animal_Care_Icon Background Removed.png' },
+  { id: 'training', name: 'Dresūra', description: 'Pet training and behavior services', icon: '/Pet_Training_Icon Background Removed.png' },
+  { id: 'veterinary', name: 'Veterinarijos', description: 'Veterinary and medical services', icon: '/Pet_Veterinary_Icon Background Removed.png' },
+  { id: 'ads', name: 'Skelbimai', description: 'Pet advertising and sales services', icon: '/Pet_Ads_Icon Background Removed.png' }
 ]
 
 export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceTypeStepProps) {
   const [error, setError] = useState('')
 
-  const handleNext = () => {
-    if (!data.serviceType) {
-      setError('Please select a service type')
-      return
-    }
-    setError('')
-    onNext()
-  }
 
   const handleServiceTypeSelect = (serviceType: string) => {
     onUpdate({ serviceType })
@@ -39,12 +30,6 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold">Service Type</h2>
-        <p className="text-muted-foreground mt-2">
-          Your service type has been automatically selected based on your provider type
-        </p>
-      </div>
       
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -58,18 +43,26 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
               }`}
             >
               <CardContent className="py-4">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{service.icon}</span>
-                  <div>
-                    <CardTitle className="text-lg">{service.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{service.description}</p>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-4">
+                    <Image
+                      src={service.icon}
+                      alt={service.name}
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                    <div className="text-left">
+                      <CardTitle className="text-lg">{service.name}</CardTitle>
+                      <p className="text-sm text-muted-foreground">{service.description}</p>
+                      {data.serviceType === service.id && (
+                        <div className="text-sm text-primary font-medium mt-2">
+                          ✓ Selected based on your provider type
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                {data.serviceType === service.id && (
-                  <div className="mt-3 text-sm text-primary font-medium">
-                    ✓ Selected based on your provider type
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}
@@ -84,15 +77,6 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
         </div>
       </div>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrevious}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <Button onClick={handleNext} className="px-8">
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

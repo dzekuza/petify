@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface BusinessAddressStepProps {
   data: OnboardingData
@@ -17,27 +15,6 @@ interface BusinessAddressStepProps {
 export function BusinessAddressStep({ data, onUpdate, onNext, onPrevious }: BusinessAddressStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleNext = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!data.address.trim()) {
-      newErrors.address = 'Address is required'
-    }
-    if (!data.city.trim()) {
-      newErrors.city = 'City is required'
-    }
-    if (!data.state.trim()) {
-      newErrors.state = 'State/Region is required'
-    }
-    if (!data.zipCode.trim()) {
-      newErrors.zipCode = 'Postal code is required'
-    }
-
-    setErrors(newErrors)
-    if (Object.keys(newErrors).length === 0) {
-      onNext()
-    }
-  }
 
   const handleInputChange = (field: keyof OnboardingData, value: string) => {
     onUpdate({ [field]: value })
@@ -111,15 +88,6 @@ export function BusinessAddressStep({ data, onUpdate, onNext, onPrevious }: Busi
         </div>
       </div>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrevious}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <Button onClick={handleNext} className="px-8">
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

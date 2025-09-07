@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface ContactInformationStepProps {
   data: OnboardingData
@@ -16,18 +14,6 @@ interface ContactInformationStepProps {
 export function ContactInformationStep({ data, onUpdate, onNext, onPrevious }: ContactInformationStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleNext = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!data.phone.trim()) {
-      newErrors.phone = 'Phone number is required'
-    }
-
-    setErrors(newErrors)
-    if (Object.keys(newErrors).length === 0) {
-      onNext()
-    }
-  }
 
   const handleInputChange = (field: keyof OnboardingData, value: string) => {
     onUpdate({ [field]: value })
@@ -67,15 +53,6 @@ export function ContactInformationStep({ data, onUpdate, onNext, onPrevious }: C
         </div>
       </div>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrevious}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <Button onClick={handleNext} className="px-8">
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

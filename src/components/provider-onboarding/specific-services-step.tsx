@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft } from 'lucide-react'
 
 interface SpecificServicesStepProps {
   data: OnboardingData
@@ -80,15 +78,6 @@ export default function SpecificServicesStep({ data, onUpdate, onNext, onPreviou
     setError('')
   }
 
-  const handleNext = () => {
-    if (selectedServices.length === 0) {
-      setError('Please select at least one specific service')
-      return
-    }
-
-    onUpdate({ services: selectedServices })
-    onNext()
-  }
 
   const currentServiceType = data.serviceType
   const availableServices = specificServices[currentServiceType as keyof typeof specificServices] || []
@@ -96,8 +85,7 @@ export default function SpecificServicesStep({ data, onUpdate, onNext, onPreviou
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Which specific services do you offer?</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Select all the specific services you provide for {currentServiceType}
         </p>
       </div>
@@ -111,13 +99,27 @@ export default function SpecificServicesStep({ data, onUpdate, onNext, onPreviou
                 ? 'ring-2 ring-primary border-primary bg-primary/5'
                 : 'border-muted-foreground/25'
             }`}
-            onClick={() => handleServiceToggle(service.id)}
+            onClick={() => {
+              const newServices = selectedServices.includes(service.id)
+                ? selectedServices.filter(id => id !== service.id)
+                : [...selectedServices, service.id]
+              setSelectedServices(newServices)
+              setError('')
+              onUpdate({ services: newServices })
+            }}
           >
             <CardContent className="p-4">
               <div className="flex items-start space-x-3">
                 <Checkbox
                   checked={selectedServices.includes(service.id)}
-                  onChange={() => handleServiceToggle(service.id)}
+                  onChange={() => {
+                    const newServices = selectedServices.includes(service.id)
+                      ? selectedServices.filter(id => id !== service.id)
+                      : [...selectedServices, service.id]
+                    setSelectedServices(newServices)
+                    setError('')
+                    onUpdate({ services: newServices })
+                  }}
                   className="mt-1"
                 />
                 <div className="flex-1">
@@ -135,16 +137,6 @@ export default function SpecificServicesStep({ data, onUpdate, onNext, onPreviou
           {error}
         </div>
       )}
-
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext} disabled={selectedServices.length === 0}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

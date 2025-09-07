@@ -6,17 +6,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
-import { PawPrint, Check } from 'lucide-react'
+import { providerApi } from '@/lib/providers'
+import { PawPrint, Check, ArrowLeft, ArrowRight } from 'lucide-react'
 // Import new step components
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
 import ConditionalBusinessNameStep from '@/components/provider-onboarding/conditional-business-name-step'
 import ConditionalBusinessDescriptionStep from '@/components/provider-onboarding/conditional-business-description-step'
 import { ContactInformationStep } from '@/components/provider-onboarding/contact-information-step'
 import { BusinessAddressStep } from '@/components/provider-onboarding/business-address-step'
-import { ServiceTypeStep } from '@/components/provider-onboarding/service-type-step'
 import SpecificServicesStep from '@/components/provider-onboarding/specific-services-step'
 import ExperienceLevelStep from '@/components/provider-onboarding/experience-level-step'
-import CertificationsStep from '@/components/provider-onboarding/certifications-step'
 import ServiceAreasStep from '@/components/provider-onboarding/service-areas-step'
 import { BasePricingStep } from '@/components/provider-onboarding/base-pricing-step'
 import HourlyRateStep from '@/components/provider-onboarding/hourly-rate-step'
@@ -51,11 +50,9 @@ const mainSteps = [
     title: 'Service Details', 
     description: 'What services do you offer?',
     subSteps: [
-      { id: 1, title: 'Service Type', description: 'What type of service do you provide?' },
-      { id: 2, title: 'Specific Services', description: 'Which specific services do you offer?' },
-      { id: 3, title: 'Experience Level', description: 'How much experience do you have?' },
-      { id: 4, title: 'Certifications', description: 'Do you have any certifications?' },
-      { id: 5, title: 'Service Areas', description: 'Where do you provide services?' }
+      { id: 1, title: 'Specific Services', description: 'Which specific services do you offer?' },
+      { id: 2, title: 'Experience Level', description: 'How much experience do you have?' },
+      { id: 3, title: 'Service Areas', description: 'Where do you provide services?' }
     ]
   },
   { 
@@ -133,46 +130,89 @@ export default function ProviderOnboardingPage() {
 
   // Handle navigation based on user state
   useEffect(() => {
-    console.log('Auth state changed:', { user: !!user, loading, userRole: user?.user_metadata?.role })
-    
-    // Don't redirect if we're still loading
-    if (loading) {
-      console.log('Still loading, waiting...')
-      return
-    }
-    
-    if (!user) {
-      console.log('No user found, redirecting to signin')
-      router.push('/auth/signin')
-      return
+    const checkUserStatus = async () => {
+      console.log('Auth state changed:', { user: !!user, loading, userRole: user?.user_metadata?.role })
+      
+      // Don't redirect if we're still loading
+      if (loading) {
+        console.log('Still loading, waiting...')
+        return
+      }
+      
+      if (!user) {
+        console.log('No user found, redirecting to signin')
+        router.push('/auth/signin')
+        return
+      }
+
+      // Check if user already has a provider profile
+      try {
+        const hasProfile = await providerApi.hasProviderProfile(user.id)
+        
+        if (hasProfile) {
+          console.log('User already has a provider profile, redirecting to dashboard')
+          router.push('/provider/dashboard')
+          return
+        }
+      } catch (error) {
+        console.error('Error checking provider profile:', error)
+        // Continue with onboarding on error
+      }
+      
+      console.log('User authenticated, proceeding with onboarding')
     }
 
-    if (user.user_metadata?.role === 'provider') {
-      console.log('User is already a provider, redirecting to dashboard')
-      router.push('/provider/dashboard')
-      return
-    }
-    
-    console.log('User authenticated, proceeding with onboarding')
+    checkUserStatus()
   }, [user, loading, router])
 
   const handleNext = () => {
+    // Validation logic based on current step
+    if (currentMainStep === 0 && currentSubStep === 1) {
+      // Provider type step - must select a provider type
+      if (!onboardingData.providerType) {
+        return // Don't proceed if no provider type selected
+      }
+    }
+    
+    if (currentMainStep === 1 && currentSubStep === 1) {
+      // Business name step - must enter a business name
+      if (!onboardingData.businessName || !onboardingData.businessName.trim()) {
+        return // Don't proceed if no business name entered
+      }
+    }
+    
     const currentMainStepData = mainSteps.find(step => step.id === currentMainStep)
-    if (currentSubStep < currentMainStepData!.subSteps.length) {
+    
+    // Check if we've reached the end of the onboarding
+    if (!currentMainStepData) {
+      // Handle completion - redirect to dashboard or show success message
+      handleOnboardingComplete()
+      return
+    }
+    
+    if (currentSubStep < currentMainStepData.subSteps.length) {
       setCurrentSubStep(currentSubStep + 1)
-    } else if (currentMainStep < mainSteps.length) {
+    } else if (currentMainStep < mainSteps.length - 1) {
       setCurrentMainStep(currentMainStep + 1)
       setCurrentSubStep(1)
+    } else {
+      // We've reached the end of the onboarding
+      console.log('Onboarding completed!', onboardingData)
+      // Here you would typically redirect to the provider dashboard
+      // or show a success message
+      handleOnboardingComplete()
     }
   }
 
   const handlePrevious = () => {
     if (currentSubStep > 1) {
       setCurrentSubStep(currentSubStep - 1)
-    } else if (currentMainStep > 1) {
+    } else if (currentMainStep > 0) {
       setCurrentMainStep(currentMainStep - 1)
       const previousMainStepData = mainSteps.find(step => step.id === currentMainStep - 1)
-      setCurrentSubStep(previousMainStepData!.subSteps.length)
+      if (previousMainStepData) {
+        setCurrentSubStep(previousMainStepData.subSteps.length)
+      }
     }
   }
 
@@ -187,6 +227,69 @@ export default function ProviderOnboardingPage() {
       
       return updatedData
     })
+  }
+
+  const handleOnboardingComplete = async () => {
+    try {
+      console.log('Onboarding completed successfully!', onboardingData)
+      
+      // Save the onboarding data to create a provider profile
+      const providerData = {
+        userId: user?.id || '',
+        businessName: onboardingData.businessName || '',
+        businessType: onboardingData.providerType || 'individual',
+        description: onboardingData.businessDescription || '',
+        services: onboardingData.services || [],
+        location: {
+          address: onboardingData.address || '',
+          city: onboardingData.city || '',
+          state: onboardingData.state || '',
+          zip: onboardingData.zipCode || '',
+          coordinates: {
+            lat: 0, // Will be geocoded later
+            lng: 0
+          }
+        },
+        contactInfo: {
+          phone: onboardingData.phone || '',
+          email: user?.email || '',
+          website: onboardingData.website || ''
+        },
+        businessHours: {
+          monday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.monday || false },
+          tuesday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.tuesday || false },
+          wednesday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.wednesday || false },
+          thursday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.thursday || false },
+          friday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.friday || false },
+          saturday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.saturday || false },
+          sunday: { start: onboardingData.workingHours?.start || '09:00', end: onboardingData.workingHours?.end || '17:00', available: onboardingData.availability?.sunday || false }
+        },
+        priceRange: {
+          min: onboardingData.basePrice || 0,
+          max: onboardingData.pricePerHour || 0,
+          currency: onboardingData.currency || 'EUR'
+        },
+        availability: onboardingData.availability || {},
+        certifications: onboardingData.certifications || [],
+        experienceYears: parseInt(onboardingData.experience?.split('-')[0] || '0')
+      }
+      
+      // Import the provider API
+      const { providerApi } = await import('@/lib/providers')
+      
+      // Create the provider profile
+      const newProvider = await providerApi.createProvider(providerData)
+      
+      console.log('Provider profile created:', newProvider)
+      
+      // Redirect to the provider dashboard
+      router.push('/provider/dashboard')
+      
+    } catch (error) {
+      console.error('Error creating provider profile:', error)
+      // Still redirect to dashboard - the user can complete their profile there
+      router.push('/provider/dashboard')
+    }
   }
 
   const handleSubmit = async () => {
@@ -347,7 +450,7 @@ export default function ProviderOnboardingPage() {
       switch (currentSubStep) {
         case 1:
           return (
-            <ServiceTypeStep
+            <SpecificServicesStep
               data={onboardingData}
               onUpdate={handleDataUpdate}
               onNext={handleNext}
@@ -356,15 +459,6 @@ export default function ProviderOnboardingPage() {
           )
         case 2:
           return (
-            <SpecificServicesStep
-              data={onboardingData}
-              onUpdate={handleDataUpdate}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 3:
-          return (
             <ExperienceLevelStep
               data={onboardingData}
               onUpdate={handleDataUpdate}
@@ -372,16 +466,7 @@ export default function ProviderOnboardingPage() {
               onPrevious={handlePrevious}
             />
           )
-        case 4:
-          return (
-            <CertificationsStep
-              data={onboardingData}
-              onUpdate={handleDataUpdate}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 5:
+        case 3:
           return (
             <ServiceAreasStep
               data={onboardingData}
@@ -532,121 +617,53 @@ export default function ProviderOnboardingPage() {
 
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Side - Steps Overview */}
-          <div className="lg:col-span-1">
-            <Card className="py-6">
-              <CardContent className="space-y-4">
-                <CardTitle className="text-lg mb-4">Getting Started</CardTitle>
-                {mainSteps.map((step) => (
-                  <div key={step.id} className="space-y-2">
-                    <div
-                      className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                        currentMainStep === step.id
-                          ? 'bg-primary/10 border border-primary/20'
-                          : currentMainStep > step.id
-                          ? 'bg-green-50 border border-green-200'
-                          : 'bg-muted/50'
-                      }`}
-                    >
-                      <div
-                        className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                          currentMainStep === step.id
-                            ? 'bg-primary text-primary-foreground'
-                            : currentMainStep > step.id
-                            ? 'bg-green-500 text-white'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {currentMainStep > step.id ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          step.id
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{step.title}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {step.description}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Sub-steps */}
-                    {currentMainStep === step.id && (
-                      <div className="ml-4 space-y-1">
-                        {step.subSteps.map((subStep) => (
-                          <div
-                            key={subStep.id}
-                            className={`flex items-center space-x-2 p-2 rounded text-xs ${
-                              currentSubStep === subStep.id
-                                ? 'bg-primary/5 text-primary'
-                                : currentSubStep > subStep.id
-                                ? 'bg-green-50 text-green-700'
-                                : 'text-muted-foreground'
-                            }`}
-                          >
-                            <div
-                              className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                                currentSubStep === subStep.id
-                                  ? 'bg-primary text-white'
-                                  : currentSubStep > subStep.id
-                                  ? 'bg-green-500 text-white'
-                                  : 'bg-muted'
-                              }`}
-                            >
-                              {currentSubStep > subStep.id ? (
-                                <Check className="w-2 h-2" />
-                              ) : (
-                                subStep.id
-                              )}
-                            </div>
-                            <span>{subStep.title}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Side - Step Content */}
-          <div className="lg:col-span-2">
-            <Card className="py-6">
-              <CardContent>
-                <CardTitle className="text-2xl mb-6">
-                  {currentMainStepData?.subSteps[currentSubStep - 1]?.title}
-                </CardTitle>
-                {renderStep()}
-              </CardContent>
-            </Card>
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
+        <div className="py-6">
+          <div className="px-6">
+            <div className="font-semibold text-2xl mb-6">
+              {currentMainStepData?.subSteps[currentSubStep - 1]?.title}
+            </div>
+            {renderStep()}
           </div>
         </div>
       </div>
 
-      {/* Fixed Progress Bar at Bottom */}
+      {/* Progress Bar Above Bottom Navigation */}
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t z-40">
+        <div className="w-full px-4 py-3">
+          <div className="bg-primary/20 relative w-full overflow-hidden rounded-full h-2">
+            <div 
+              className="bg-primary h-full w-full flex-1 transition-all" 
+              style={{ 
+                transform: `translateX(-${100 - (currentMainStep * 100 + (currentSubStep - 1) * 20) / mainSteps.length}%)` 
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t z-50">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Step {currentMainStep + 1} of {mainSteps.length} - {mainSteps.find(step => step.id === currentMainStep)?.title}</span>
-              <span>{Math.round((currentMainStep * 100 + (currentSubStep - 1) * 20) / mainSteps.length)}% complete</span>
-            </div>
-            <div className="bg-primary/20 relative w-full overflow-hidden rounded-full h-2">
-              <div 
-                className="bg-primary h-full w-full flex-1 transition-all" 
-                style={{ 
-                  transform: `translateX(-${100 - (currentMainStep * 100 + (currentSubStep - 1) * 20) / mainSteps.length}%)` 
-                }}
-              />
-            </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Sub-step {currentSubStep} of {mainSteps.find(step => step.id === currentMainStep)?.subSteps.length}</span>
-              <span>{(currentMainStep * 4 + currentSubStep)} of {mainSteps.reduce((total, step) => total + step.subSteps.length, 0)} completed</span>
-            </div>
+          <div className="flex justify-between items-center">
+            <Button 
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={currentMainStep === 0 && currentSubStep === 1}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none h-9 px-4 py-2 border-black text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Back
+            </Button>
+            <Button 
+              onClick={handleNext}
+              disabled={
+                (currentMainStep === 0 && currentSubStep === 1 && !onboardingData.providerType) ||
+                (currentMainStep === 1 && currentSubStep === 1 && (!onboardingData.businessName || !onboardingData.businessName.trim()))
+              }
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none h-9 px-4 py-2 bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </Button>
           </div>
         </div>
       </div>

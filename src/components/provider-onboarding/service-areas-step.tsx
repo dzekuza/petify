@@ -3,9 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { OnboardingData } from '@/types/onboarding'
-import { ArrowLeft, Plus, X, MapPin } from 'lucide-react'
+import { Plus, X, MapPin } from 'lucide-react'
 
 interface ServiceAreasStepProps {
   data: OnboardingData
@@ -21,26 +20,25 @@ export default function ServiceAreasStep({ data, onUpdate, onNext, onPrevious }:
 
   const handleAddArea = () => {
     if (newArea.trim() && !serviceAreas.includes(newArea.trim())) {
-      setServiceAreas(prev => [...prev, newArea.trim()])
+      const updatedAreas = [...serviceAreas, newArea.trim()]
+      setServiceAreas(updatedAreas)
+      onUpdate({ services: updatedAreas })
       setNewArea('')
       setShowAddForm(false)
     }
   }
 
   const handleRemoveArea = (areaToRemove: string) => {
-    setServiceAreas(prev => prev.filter(area => area !== areaToRemove))
+    const updatedAreas = serviceAreas.filter(area => area !== areaToRemove)
+    setServiceAreas(updatedAreas)
+    onUpdate({ services: updatedAreas })
   }
 
-  const handleNext = () => {
-    onUpdate({ services: serviceAreas })
-    onNext()
-  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Where do you provide services?</h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground">
           Add the areas where you can provide your services
         </p>
       </div>
@@ -102,15 +100,6 @@ export default function ServiceAreasStep({ data, onUpdate, onNext, onPrevious }:
         )}
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrevious} className="flex items-center space-x-2">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Button>
-        <Button onClick={handleNext}>
-          Continue
-        </Button>
-      </div>
     </div>
   )
 }

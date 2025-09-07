@@ -21,6 +21,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { providerApi } from '@/lib/providers'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -167,6 +168,30 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
     setProviderForm(prev => ({ ...prev, [field]: value }))
   }
 
+  const handleSwitchToProvider = async () => {
+    if (!user) {
+      router.push('/auth/signin')
+      return
+    }
+
+    try {
+      // Check if user already has a provider profile
+      const hasProfile = await providerApi.hasProviderProfile(user.id)
+      
+      if (hasProfile) {
+        // User already has a provider profile, redirect to dashboard
+        router.push('/provider/dashboard')
+      } else {
+        // User doesn't have a provider profile, redirect to onboarding
+        router.push('/provider/onboarding')
+      }
+    } catch (error) {
+      console.error('Error checking provider status:', error)
+      // On error, default to onboarding
+      router.push('/provider/onboarding')
+    }
+  }
+
   return (
     <header className="bg-white border-b">
       <nav className="mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
@@ -224,17 +249,13 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       <Heart className="h-4 w-4 mr-2" />
                       {t('navigation.favorites')}
                     </Link>
-                    <Link href="/provider/onboarding">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          console.log('Switch to provider clicked, current user:', user)
-                        }}
-                      >
-                        {t('navigation.switchToProvider')}
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleSwitchToProvider}
+                    >
+                      {t('navigation.switchToProvider')}
+                    </Button>
                   </>
                 )}
                 
@@ -499,15 +520,16 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   <span>{t('navigation.favoritesMobile')}</span>
                                 </Link>
                               </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/onboarding"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Settings className="h-5 w-5" />
-                                  <span>{t('navigation.switchToProvider')}</span>
-                                </Link>
-                              </DrawerClose>
+                              <button
+                                onClick={() => {
+                                  handleSwitchToProvider()
+                                  setMobileMenuOpen(false)
+                                }}
+                                className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                              >
+                                <Settings className="h-5 w-5" />
+                                <span>{t('navigation.switchToProvider')}</span>
+                              </button>
                             </>
                           )}
                           
