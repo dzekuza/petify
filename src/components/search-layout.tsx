@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
-import { SearchFilters } from '@/components/search-filters'
 import { ProvidersGridStatic } from '@/components/providers-grid-static'
 import { FilterModal } from '@/components/filter-modal'
-import { SearchResult, SearchFilters as SearchFiltersType, ServiceProvider, Service } from '@/types'
+import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
 import { Button } from '@/components/ui/button'
-import { Map, List, Filter } from 'lucide-react'
 import { t } from '@/lib/translations'
 
 interface SearchLayoutProps {
@@ -24,7 +22,6 @@ interface SearchLayoutProps {
 export const SearchLayout = ({ results, filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
-  const [showFilters, setShowFilters] = useState(false)
   const [rating, setRating] = useState(0)
   const [providerType, setProviderType] = useState('any')
 
@@ -77,7 +74,6 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                 <ProvidersGridStatic
                   title={`${results.length} ${t('search.providersFound')}`}
                   providers={results.map(result => result.provider)}
-                  services={results.flatMap(result => result.services)}
                   showViewAll={false}
                   gridCols="grid-cols-1 md:grid-cols-2"
                 />
@@ -127,7 +123,6 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
               <ProvidersGridStatic
                 title={`${results.length} ${t('search.providersFound')}`}
                 providers={results.map(result => result.provider)}
-                services={results.flatMap(result => result.services)}
                 showViewAll={false}
               />
             )}

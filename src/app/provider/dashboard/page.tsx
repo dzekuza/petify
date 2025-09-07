@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import Image from 'next/image'
 import { 
   Calendar, 
   Users, 
@@ -1093,10 +1094,11 @@ export default function ProviderDashboard() {
                   {/* Cover Image Section */}
                   <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
                     {provider?.images && provider.images.length > 0 ? (
-                      <img 
+                      <Image 
                         src={provider.images[0]} 
                         alt="Business cover" 
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

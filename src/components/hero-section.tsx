@@ -12,12 +12,13 @@ import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { ProvidersGrid } from '@/components/providers-grid'
 import { providerApi } from '@/lib/providers'
+import { ServiceProvider } from '@/types'
 
 export const HeroSection = () => {
   const [location, setLocation] = useState('')
   const [providerName, setProviderName] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [latestProviders, setLatestProviders] = useState<any[]>([])
+  const [latestProviders, setLatestProviders] = useState<ServiceProvider[]>([])
   const [loading, setLoading] = useState(true)
 
   // Fetch all providers for hero section
@@ -28,7 +29,7 @@ export const HeroSection = () => {
         
         // Fetch all providers (latest first)
         const allResults = await providerApi.searchProviders({})
-        setLatestProviders(allResults.slice(0, 12)) // Limit to 12 for display
+        setLatestProviders(allResults.slice(0, 12).map(result => result.provider)) // Limit to 12 for display
         
       } catch (error) {
         console.error('Error fetching providers for hero:', error)
@@ -159,8 +160,7 @@ export const HeroSection = () => {
           {!loading && latestProviders.length > 0 && (
             <ProvidersGrid
               title="Latest"
-              providers={latestProviders.map(result => result.provider)}
-              services={latestProviders.flatMap(result => result.services)}
+              providers={latestProviders}
             />
           )}
         </div>

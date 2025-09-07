@@ -14,7 +14,8 @@ import Map, {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Star, Heart, X, ChevronRight } from 'lucide-react'
-import { MAPBOX_CONFIG, MAP_MARKERS } from '@/lib/mapbox'
+import Image from 'next/image'
+import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
 import { MapControls } from '@/components/map-controls'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -123,7 +124,6 @@ export const MapboxMap = ({
   }, [calculateMapCenter])
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
-  const [hoveredProviderId] = useState<string | null>(null)
   const [currentMapStyle, setCurrentMapStyle] = useState(MAPBOX_CONFIG.style)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const mapRef = useRef<MapRef>(null)
@@ -262,10 +262,11 @@ export const MapboxMap = ({
               {/* Cover Image Section */}
               <div className="relative h-48 w-full">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
-                  <img 
+                  <Image 
                     src={selectedResult.provider.images[0]} 
                     alt={selectedResult.provider.businessName}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">

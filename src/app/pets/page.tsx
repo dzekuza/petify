@@ -16,7 +16,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 import { Pet } from '@/types'
 import { uploadPetProfilePicture, uploadPetGalleryImage, validateFile, getPublicUrl } from '@/lib/storage'
-import { Dog, Plus, Edit, Trash2, Loader2, Upload, X, Camera, Image as ImageIcon } from 'lucide-react'
+import { Dog, Plus, Edit, Trash2, Loader2, X, Camera, Image as ImageIcon } from 'lucide-react'
+import Image from 'next/image'
 
 export default function PetsPage() {
   const { user } = useAuth()
@@ -544,9 +545,11 @@ export default function PetsPage() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {petForm.galleryImages.map((image, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={image}
                             alt={`Gallery ${index + 1}`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 object-cover rounded-lg"
                           />
                           <Button

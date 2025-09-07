@@ -15,7 +15,6 @@ export const SearchResults = ({ filters }: SearchResultsProps) => {
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -45,17 +44,6 @@ export const SearchResults = ({ filters }: SearchResultsProps) => {
     fetchProviders()
   }, [filters])
 
-  const toggleFavorite = (providerId: string) => {
-    setFavorites(prev => {
-      const newFavorites = new Set(prev)
-      if (newFavorites.has(providerId)) {
-        newFavorites.delete(providerId)
-      } else {
-        newFavorites.add(providerId)
-      }
-      return newFavorites
-    })
-  }
 
   if (loading) {
     return (
@@ -107,7 +95,6 @@ export const SearchResults = ({ filters }: SearchResultsProps) => {
           <ProviderCard
             key={result.provider.id}
             provider={result.provider}
-            services={result.services}
             distance={result.distance}
           />
         ))}

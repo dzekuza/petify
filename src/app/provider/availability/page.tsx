@@ -36,18 +36,38 @@ export default function ProviderAvailabilityPage() {
     fetchProviderData()
   }, [user])
 
-  const handleAvailabilityUpdate = async (updatedAvailability: any) => {
+  const handleAvailabilityUpdate = async (updatedAvailability: Record<string, unknown>) => {
     if (!provider) return
 
     try {
-      await providerApi.updateProvider(provider.id, {
-        availability: updatedAvailability
+      // Convert to boolean format for API
+      const availabilityBoolean: Record<string, boolean> = {}
+      Object.entries(updatedAvailability).forEach(([day, value]) => {
+        if (Array.isArray(value)) {
+          availabilityBoolean[day] = value.length > 0
+        } else if (typeof value === 'boolean') {
+          availabilityBoolean[day] = value
+        } else {
+          availabilityBoolean[day] = false
+        }
       })
       
-      // Update local state
+      await providerApi.updateProvider(provider.id, {
+        availability: availabilityBoolean
+      })
+      
+      // Update local state - convert back to proper format
       setProvider(prev => prev ? {
         ...prev,
-        availability: updatedAvailability
+        availability: {
+          monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday as any[] : [],
+          tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday as any[] : [],
+          wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday as any[] : [],
+          thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday as any[] : [],
+          friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday as any[] : [],
+          saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday as any[] : [],
+          sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday as any[] : []
+        }
       } : null)
     } catch (error) {
       console.error('Error updating availability:', error)

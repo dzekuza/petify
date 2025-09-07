@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
@@ -48,8 +48,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
+
   // Popular Lithuanian cities and districts
-  const popularLocations = [
+  const popularLocations = useMemo(() => [
     // Major cities
     'Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai',
     'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė',
@@ -70,7 +71,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     // Kaunas districts
     'Centras', 'Žaliakalnis', 'Šančiai', 'Aleksotas', 'Dainava', 'Petrašiūnai',
     'Šilainiai', 'Vilijampolė', 'Panemunė', 'Kalniečiai', 'Raudondvaris'
-  ]
+  ], [])
 
   // Debounced search function
   const searchAddresses = useCallback(async (query: string) => {
@@ -181,7 +182,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [popularLocations])
 
   // Handle input change with debouncing
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

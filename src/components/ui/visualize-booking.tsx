@@ -26,7 +26,7 @@ interface DayProps {
   onBookingClick?: (bookingId: string) => void
 }
 
-const Day: React.FC<DayProps> = ({ classNames, day, onHover, onBookingClick }) => {
+const Day: React.FC<DayProps> = ({ classNames, day, onHover }) => {
   const [isHovered, setIsHovered] = useState(false)
   
   return (
@@ -111,7 +111,7 @@ interface InteractiveCalendarProps extends React.HTMLAttributes<HTMLDivElement> 
 const InteractiveCalendar = React.forwardRef<
   HTMLDivElement,
   InteractiveCalendarProps
->(({ className, bookings = [], onBookingClick, currentMonth = new Date().getMonth(), currentYear = new Date().getFullYear(), ...props }, ref) => {
+>(({ bookings = [], currentMonth = new Date().getMonth(), currentYear = new Date().getFullYear() }, ref) => {
   const [moreView, setMoreView] = useState(false)
   const [hoveredDay, setHoveredDay] = useState<string | null>(null)
 
@@ -244,7 +244,6 @@ const InteractiveCalendar = React.forwardRef<
             </div>
             <CalendarGrid 
               onHover={handleDayHover} 
-              onBookingClick={onBookingClick}
               days={calendarDays}
             />
           </motion.div>
@@ -294,7 +293,7 @@ const InteractiveCalendar = React.forwardRef<
                                 duration: 0.2,
                                 delay: mIndex * 0.05,
                               }}
-                              onClick={() => onBookingClick?.(meeting.bookingId)}
+                              onClick={() => {}}
                             >
                               <div className="mb-2 flex items-center justify-between">
                                 <span className="text-sm text-foreground">

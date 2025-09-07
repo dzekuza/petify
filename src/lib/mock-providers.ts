@@ -330,7 +330,7 @@ export const mockProviders: ServiceProvider[] = [
 
 // Helper function to get providers by category
 export const getProvidersByCategory = (category: string): ServiceProvider[] => {
-  return mockProviders.filter(provider => provider.services.includes(category as any))
+  return mockProviders.filter(provider => provider.services.includes(category as ServiceProvider['services'][0]))
 }
 
 // Helper function to get popular providers (high rating)
@@ -348,3 +348,4 @@ export const getWeekendAvailableProviders = (): ServiceProvider[] => {
     return (saturday && saturday.length > 0) || (sunday && sunday.length > 0)
   })
 }
+

@@ -4,12 +4,9 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Layout } from '@/components/layout'
-import { ProviderCard } from '@/components/provider-card'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Star, 
   MapPin, 
@@ -21,11 +18,10 @@ import {
   Award,
   Users,
   Calendar,
-  Shield,
-  CheckCircle
+  Shield
 } from 'lucide-react'
+import Image from 'next/image'
 import { ServiceProvider, Service, Review } from '@/types'
-import { providerApi } from '@/lib/providers'
 import { supabase } from '@/lib/supabase'
 import { t } from '@/lib/translations'
 
@@ -260,10 +256,11 @@ export default function ProviderDetailPage() {
                 <CardContent className="p-0">
                   <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-64 rounded-lg overflow-hidden">
                     {provider.images && provider.images.length > 0 ? (
-                      <img
+                      <Image
                         src={provider.images[0]}
                         alt={provider.businessName}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                         onError={(e) => {
                           // Fallback to emoji if image fails to load
                           e.currentTarget.style.display = 'none'
@@ -471,7 +468,7 @@ export default function ProviderDetailPage() {
                         if (Array.isArray(slots) && slots.length > 0) {
                           // Check if slots have available property (time slot format)
                           if (slots[0] && typeof slots[0] === 'object' && 'available' in slots[0]) {
-                            const availableSlots = slots.filter((slot: any) => slot.available)
+                            const availableSlots = slots.filter((slot: { available: boolean; start: string; end: string }) => slot.available)
                             hasAvailability = availableSlots.length > 0
                             if (hasAvailability) {
                               startTime = availableSlots[0].start
@@ -480,8 +477,8 @@ export default function ProviderDetailPage() {
                           } else if (slots[0] && typeof slots[0] === 'object' && 'start' in slots[0]) {
                             // Direct time slot format without available property
                             hasAvailability = true
-                            startTime = (slots[0] as any).start
-                            endTime = (slots[slots.length - 1] as any).end
+                            startTime = (slots[0] as { start: string; end: string }).start
+                            endTime = (slots[slots.length - 1] as { start: string; end: string }).end
                           } else if (typeof slots[0] === 'string') {
                             // Simple string format
                             hasAvailability = true
@@ -491,8 +488,8 @@ export default function ProviderDetailPage() {
                         } else if (typeof slots === 'object' && slots !== null && 'start' in slots) {
                           // Single time range object
                           hasAvailability = true
-                          startTime = (slots as any).start
-                          endTime = (slots as any).end
+                          startTime = (slots as unknown as { start: string; end: string }).start
+                          endTime = (slots as unknown as { start: string; end: string }).end
                         } else if (typeof slots === 'boolean') {
                           // Simple boolean availability
                           hasAvailability = slots

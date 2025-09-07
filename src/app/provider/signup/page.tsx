@@ -9,7 +9,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useAuth } from '@/contexts/auth-context'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import { 
   Award,
@@ -52,7 +51,6 @@ const benefits = [
 ]
 
 export default function ProviderSignupPage() {
-  const { signUp } = useAuth()
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -78,7 +76,6 @@ export default function ProviderSignupPage() {
     }
   })
   const [loading, setLoading] = useState(false)
-  const [error] = useState('')
 
   const handleInputChange = (field: string, value: string | number | boolean | object) => {
     setFormData(prev => ({ ...prev, [field]: value }))

@@ -107,6 +107,10 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   const [error, setError] = useState('')
   const { user, signOut, signUp } = useAuth()
 
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+  }
+
   const handleSignOut = async () => {
     await signOut()
   }
@@ -361,230 +365,24 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
             )}
           </div>
 
-          {/* Mobile menu button with Drawer */}
+          {/* Mobile menu button */}
           <div className="md:hidden">
-            <Drawer direction="right" open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <DrawerTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label={t('navigation.toggleMobileMenu')}
-                >
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="h-full w-80">
-                <DrawerHeader className="border-b">
-                  <div className="flex items-center justify-between">
-                    <DrawerTitle className="flex items-center space-x-2">
-                      <PawPrint className="h-6 w-6 text-black" />
-                      <span className="text-lg font-bold text-gray-900">Petify</span>
-                    </DrawerTitle>
-                    <DrawerClose asChild>
-                      <Button variant="ghost" size="sm">
-                        <X className="h-5 w-5" />
-                      </Button>
-                    </DrawerClose>
-                  </div>
-                </DrawerHeader>
-                
-                <div className="flex-1 overflow-y-auto">
-                  {/* Mobile Search Bar */}
-                  {showSearchBar && (
-                    <div className="p-4 border-b border-gray-200">
-                      <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
-                    </div>
-                  )}
-                  
-                  <div className="p-4 space-y-4">
-                    {!hideServiceCategories && (
-                      <div className="space-y-2">
-                        <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                          {t('navigation.serviceCategories')}
-                        </h3>
-                        {navigation.map((item) => (
-                          <DrawerClose asChild key={item.name}>
-                            <Link
-                              href={item.href}
-                              className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                            >
-                              <div className="h-5 w-5 relative">
-                                <Image
-                                  src={item.icon}
-                                  alt={item.shortName}
-                                  fill
-                                  className="object-contain"
-                                />
-                              </div>
-                              <span>{item.shortName}</span>
-                            </Link>
-                          </DrawerClose>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {user ? (
-                      <div className="pt-4 border-t border-gray-200">
-                        <div className="flex items-center space-x-3 mb-4">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name || 'User'} />
-                            <AvatarFallback>
-                              {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || <User className="h-5 w-5" />}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="text-base font-medium text-gray-800">
-                              {user.user_metadata?.full_name || 'User'}
-                            </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <DrawerClose asChild>
-                            <Link
-                              href="/profile"
-                              className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                            >
-                              <User className="h-5 w-5" />
-                              <span>{t('navigation.profileMobile')}</span>
-                            </Link>
-                          </DrawerClose>
-                          
-                          {/* Customer-specific mobile menu items */}
-                          {user.user_metadata?.role !== 'provider' && (
-                            <>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/pets"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Dog className="h-5 w-5" />
-                                  <span>{t('navigation.myPetsMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/bookings"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Calendar className="h-5 w-5" />
-                                  <span>{t('navigation.myBookingsMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/favorites"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Heart className="h-5 w-5" />
-                                  <span>{t('navigation.favoritesMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                            </>
-                          )}
-                          
-                          {/* Provider-specific mobile menu items */}
-                          {user.user_metadata?.role === 'provider' && (
-                            <>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/dashboard"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Settings className="h-5 w-5" />
-                                  <span>{t('navigation.providerDashboardMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/bookings"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Calendar className="h-5 w-5" />
-                                  <span>{t('navigation.manageBookingsMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/services"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Star className="h-5 w-5" />
-                                  <span>{t('navigation.myServicesMobile')}</span>
-                                </Link>
-                              </DrawerClose>
-                            </>
-                          )}
-                          
-                          <div className="pt-2 border-t border-gray-200">
-                            <button 
-                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors"
-                              onClick={() => {
-                                handleSignOut()
-                                setMobileMenuOpen(false)
-                              }}
-                            >
-                              <LogOut className="h-5 w-5" />
-                              <span>{t('navigation.logOut')}</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="pt-4 border-t border-gray-200">
-                        <div className="space-y-2">
-                          <DrawerClose asChild>
-                            <Link
-                              href="/auth/signin"
-                              className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                            >
-                              <User className="h-5 w-5" />
-                              <span>{t('navigation.signIn')}</span>
-                            </Link>
-                          </DrawerClose>
-                          <DrawerClose asChild>
-                            <Link
-                              href="/auth/signup"
-                              className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                            >
-                              <User className="h-5 w-5" />
-                              <span>{t('navigation.signUp')}</span>
-                            </Link>
-                          </DrawerClose>
-                        </div>
-                        
-                        <div className="pt-4 border-t border-gray-200">
-                          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
-                            {t('navigation.helpCenter')}
-                          </h3>
-                          <div className="space-y-2">
-                            <DrawerClose asChild>
-                              <Link
-                                href="/how-it-works"
-                                className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                              >
-                                <span>{t('navigation.howItWorksNav')}</span>
-                              </Link>
-                            </DrawerClose>
-                            <DrawerClose asChild>
-                              <Link
-                                href="/help"
-                                className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                              >
-                                <span>{t('navigation.helpCenterNav')}</span>
-                              </Link>
-                            </DrawerClose>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </DrawerContent>
-            </Drawer>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMobileMenuToggle}
+              aria-expanded={mobileMenuOpen}
+              aria-label={t('navigation.toggleMobileMenu')}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
           </div>
         </div>
+
       </nav>
 
       {/* Provider Signup Modal */}

@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react'
-import { ServiceProvider, Service } from '@/types'
+import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
 import Image from 'next/image'
@@ -12,7 +12,6 @@ import Link from 'next/link'
 interface ProvidersGridProps {
   title: string
   providers: ServiceProvider[]
-  services: Service[]
   showViewAll?: boolean
   className?: string
 }
@@ -20,7 +19,6 @@ interface ProvidersGridProps {
 export const ProvidersGrid = ({ 
   title, 
   providers, 
-  services, 
   showViewAll = true,
   className 
 }: ProvidersGridProps) => {
@@ -84,32 +82,6 @@ export const ProvidersGrid = ({
     }
   }
 
-  const getAvailabilityStatus = (provider: ServiceProvider) => {
-    const now = new Date()
-    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
-    const todaySlots = provider.availability[currentDay] || []
-    
-    const hasAnyAvailability = Object.values(provider.availability).some(daySlots => 
-      Array.isArray(daySlots) && daySlots.length > 0
-    )
-    
-    if (!hasAnyAvailability) {
-      return { status: 'unavailable', text: t('search.notSet') }
-    }
-    
-    if (todaySlots.length === 0) {
-      return { status: 'closed', text: t('search.closed') }
-    }
-    
-    const currentTime = now.toTimeString().slice(0, 5)
-    const isAvailable = todaySlots.some(slot => 
-      slot.available && currentTime >= slot.start && currentTime <= slot.end
-    )
-    
-    return isAvailable 
-      ? { status: 'open', text: t('search.open') }
-      : { status: 'closed', text: t('search.closed') }
-  }
 
   if (providers.length === 0) {
     return null
@@ -169,7 +141,6 @@ export const ProvidersGrid = ({
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {providers.map((provider) => {
-            const availability = getAvailabilityStatus(provider)
             const isFavorite = favorites.has(provider.id)
             
             return (

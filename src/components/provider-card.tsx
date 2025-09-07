@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Star, MapPin, Clock, Heart, Users, Award, Phone, MessageCircle } from 'lucide-react'
-import { ServiceProvider, Service } from '@/types'
+import Image from 'next/image'
+import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
 
 interface ProviderCardProps {
   provider: ServiceProvider
-  services: Service[]
   distance?: number
   showActions?: boolean
   className?: string
@@ -20,7 +20,6 @@ interface ProviderCardProps {
 
 export const ProviderCard = ({ 
   provider, 
-  services, 
   distance, 
   showActions = true,
   className 
@@ -91,10 +90,11 @@ export const ProviderCard = ({
         <div className="relative">
           <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 overflow-hidden rounded-t-lg">
             {!imageError && provider.images[0] ? (
-              <img
+              <Image
                 src={provider.images[0]}
                 alt={provider.businessName}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-200"
                 onError={handleImageError}
               />
             ) : (

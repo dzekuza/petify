@@ -2,16 +2,13 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { Search, CalendarIcon, Users, Filter } from 'lucide-react'
-import { ServiceCategory } from '@/types'
 import { t } from '@/lib/translations'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import Image from 'next/image'
 
 interface NavigationSearchProps {
   className?: string
@@ -42,11 +39,6 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
     setIsOpen(false)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch()
-    }
-  }
 
   return (
     <div className={cn("relative flex items-center", className)}>

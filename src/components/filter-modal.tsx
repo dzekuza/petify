@@ -4,9 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Slider } from '@/components/ui/slider'
-import { X, Map, Grid3X3, List, Star } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { t } from '@/lib/translations'
+import { Map, Grid3X3, List, Star } from 'lucide-react'
 
 interface FilterModalProps {
   isOpen: boolean
