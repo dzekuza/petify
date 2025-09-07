@@ -38,9 +38,19 @@ export const createPaymentIntent = async (
       clientSecret: paymentIntent.client_secret!,
       paymentIntentId: paymentIntent.id,
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating payment intent:', error)
-    throw new Error('Failed to create payment intent')
+    
+    // Provide more specific error messages
+    if (error?.type === 'StripeAuthenticationError') {
+      throw new Error('Invalid Stripe API key. Please check your STRIPE_SECRET_KEY in .env.local')
+    }
+    
+    if (error?.code === 'invalid_request_error') {
+      throw new Error(`Stripe request error: ${error.message}`)
+    }
+    
+    throw new Error(`Failed to create payment intent: ${error?.message || 'Unknown error'}`)
   }
 }
 

@@ -21,6 +21,12 @@ export const getStripeServer = () => {
   if (!secretKey) {
     throw new Error('Missing STRIPE_SECRET_KEY environment variable')
   }
+  
+  // Check if the key is a placeholder
+  if (secretKey.includes('your_stripe_secret_key_here') || secretKey.includes('sk_test_*********************************')) {
+    throw new Error('STRIPE_SECRET_KEY contains placeholder value. Please set a real Stripe secret key in your .env.local file')
+  }
+  
   return new StripeServer(secretKey, {
     apiVersion: '2025-08-27.basil',
     typescript: true,

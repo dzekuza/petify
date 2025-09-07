@@ -41,11 +41,21 @@ export async function POST(request: NextRequest) {
       paymentIntentId: paymentIntent.paymentIntentId,
       totalAmount,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating payment intent:', error)
+    
+    // Return more specific error messages
+    const errorMessage = error?.message || 'Failed to create payment intent'
+    const statusCode = errorMessage.includes('API key') ? 401 : 500
+    
     return NextResponse.json(
-      { error: 'Failed to create payment intent' },
-      { status: 500 }
+      { 
+        error: errorMessage,
+        details: errorMessage.includes('API key') 
+          ? 'Please check your Stripe configuration in .env.local' 
+          : undefined
+      },
+      { status: statusCode }
     )
   }
 }
