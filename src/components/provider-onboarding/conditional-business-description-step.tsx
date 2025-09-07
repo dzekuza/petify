@@ -15,14 +15,14 @@ interface ConditionalBusinessDescriptionStepProps {
 
 const getBusinessDescriptionPlaceholder = (providerType: ProviderType): string => {
   switch (providerType) {
-    case 'individual':
-      return "Tell us about yourself and your experience with pets..."
-    case 'business':
-      return "Describe your company and the services you provide..."
-    case 'home_based':
-      return "Describe your home-based business and what makes it special..."
-    case 'franchise':
-      return "Tell us about your franchise location and services..."
+    case 'grooming':
+      return "Tell us about your grooming services and experience..."
+    case 'training':
+      return "Describe your training methods and expertise..."
+    case 'veterinary':
+      return "Tell us about your veterinary services and qualifications..."
+    case 'ads':
+      return "Describe your pet advertising services..."
     default:
       return "Describe your business..."
   }
@@ -30,14 +30,14 @@ const getBusinessDescriptionPlaceholder = (providerType: ProviderType): string =
 
 const getBusinessDescriptionLabel = (providerType: ProviderType): string => {
   switch (providerType) {
-    case 'individual':
-      return "About You"
-    case 'business':
-      return "About Your Company"
-    case 'home_based':
-      return "About Your Home-Based Business"
-    case 'franchise':
-      return "About Your Franchise Location"
+    case 'grooming':
+      return "About Your Grooming Services"
+    case 'training':
+      return "About Your Training Services"
+    case 'veterinary':
+      return "About Your Veterinary Services"
+    case 'ads':
+      return "About Your Advertising Services"
     default:
       return "Business Description"
   }
@@ -45,14 +45,14 @@ const getBusinessDescriptionLabel = (providerType: ProviderType): string => {
 
 const getBusinessDescriptionHint = (providerType: ProviderType): string => {
   switch (providerType) {
-    case 'individual':
-      return "Share your background, experience, and what makes you passionate about pet care"
-    case 'business':
-      return "Describe your company's mission, team, and the quality of services you provide"
-    case 'home_based':
-      return "Explain what makes your home-based business unique and why customers should choose you"
-    case 'franchise':
-      return "Describe your franchise location, team, and how you maintain brand standards"
+    case 'grooming':
+      return "Share your grooming experience, techniques, and what makes your services special"
+    case 'training':
+      return "Describe your training methods, certifications, and success stories"
+    case 'veterinary':
+      return "Explain your medical expertise, equipment, and approach to pet care"
+    case 'ads':
+      return "Describe how you help with pet adoption, sales, and advertising"
     default:
       return "Help customers understand what makes your business special"
   }

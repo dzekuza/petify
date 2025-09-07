@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { OnboardingData, ProviderType } from '@/types/onboarding'
-import { ArrowRight, Users, Building2, Home, Store } from 'lucide-react'
+import { ArrowRight, Scissors, GraduationCap, Stethoscope, Megaphone } from 'lucide-react'
 
 interface ProviderTypeStepProps {
   data: OnboardingData
@@ -14,51 +14,51 @@ interface ProviderTypeStepProps {
 
 const providerTypes = [
   {
-    id: 'individual',
-    name: 'Individual Provider',
-    description: 'I work independently and provide services directly to pet owners',
-    icon: Users,
+    id: 'grooming',
+    name: 'Kirpyklos',
+    description: 'Pet grooming and beauty services',
+    icon: Scissors,
     features: [
-      'Set your own schedule',
-      'Direct client relationships',
-      'Keep 100% of your earnings',
-      'Flexible service offerings'
+      'Pet grooming and styling',
+      'Bath and hygiene services',
+      'Nail trimming and care',
+      'Professional pet beauty'
     ]
   },
   {
-    id: 'business',
-    name: 'Business/Company',
-    description: 'I represent a business or company that provides pet services',
-    icon: Building2,
+    id: 'training',
+    name: 'Dresūra',
+    description: 'Pet training and behavior services',
+    icon: GraduationCap,
     features: [
-      'Multiple service providers',
-      'Business branding',
-      'Team management',
-      'Corporate partnerships'
+      'Obedience training',
+      'Behavior modification',
+      'Puppy training programs',
+      'Specialized training services'
     ]
   },
   {
-    id: 'home_based',
-    name: 'Home-Based Business',
-    description: 'I operate a pet service business from my home',
-    icon: Home,
+    id: 'veterinary',
+    name: 'Veterinarijos',
+    description: 'Veterinary and medical services',
+    icon: Stethoscope,
     features: [
-      'Home-based operations',
-      'Lower overhead costs',
-      'Personalized service',
-      'Local community focus'
+      'Health checkups and exams',
+      'Vaccinations and treatments',
+      'Emergency care services',
+      'Medical consultations'
     ]
   },
   {
-    id: 'franchise',
-    name: 'Franchise Owner',
-    description: 'I own or operate a franchise of a pet service brand',
-    icon: Store,
+    id: 'ads',
+    name: 'Skelbimai',
+    description: 'Pet advertising and sales services',
+    icon: Megaphone,
     features: [
-      'Established brand recognition',
-      'Proven business model',
-      'Marketing support',
-      'Training programs'
+      'Pet adoption listings',
+      'Pet sales advertisements',
+      'Breeding announcements',
+      'Pet rehoming services'
     ]
   }
 ]

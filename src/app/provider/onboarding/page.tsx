@@ -177,7 +177,16 @@ export default function ProviderOnboardingPage() {
   }
 
   const handleDataUpdate = (stepData: Partial<OnboardingData>) => {
-    setOnboardingData(prev => ({ ...prev, ...stepData }))
+    setOnboardingData(prev => {
+      const updatedData = { ...prev, ...stepData }
+      
+      // Auto-set service type based on provider type
+      if (stepData.providerType && stepData.providerType !== prev.providerType) {
+        updatedData.serviceType = stepData.providerType
+      }
+      
+      return updatedData
+    })
   }
 
   const handleSubmit = async () => {

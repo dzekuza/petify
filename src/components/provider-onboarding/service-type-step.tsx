@@ -14,12 +14,10 @@ interface ServiceTypeStepProps {
 }
 
 const serviceTypes = [
-  { id: 'grooming', name: 'Pet Grooming', description: 'Bathing, brushing, nail trimming, and styling', icon: '✂️' },
-  { id: 'veterinary', name: 'Veterinary Care', description: 'Health checkups, vaccinations, and medical care', icon: '🏥' },
-  { id: 'training', name: 'Pet Training', description: 'Behavioral training and obedience classes', icon: '🎓' },
-  { id: 'boarding', name: 'Pet Boarding', description: 'Overnight care and pet sitting services', icon: '🏠' },
-  { id: 'walking', name: 'Dog Walking', description: 'Exercise and outdoor activities for dogs', icon: '🚶' },
-  { id: 'pairing', name: 'Pet Pairing', description: 'Breeding and pet adoption services', icon: '💕' }
+  { id: 'grooming', name: 'Kirpyklos', description: 'Pet grooming and beauty services', icon: '✂️' },
+  { id: 'training', name: 'Dresūra', description: 'Pet training and behavior services', icon: '🎓' },
+  { id: 'veterinary', name: 'Veterinarijos', description: 'Veterinary and medical services', icon: '🏥' },
+  { id: 'ads', name: 'Skelbimai', description: 'Pet advertising and sales services', icon: '📢' }
 ]
 
 export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceTypeStepProps) {
@@ -41,25 +39,37 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
 
   return (
     <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-semibold">Service Type</h2>
+        <p className="text-muted-foreground mt-2">
+          Your service type has been automatically selected based on your provider type
+        </p>
+      </div>
+      
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {serviceTypes.map((service) => (
             <Card
               key={service.id}
-              className={`cursor-pointer transition-all hover:shadow-md ${
+              className={`transition-all ${
                 data.serviceType === service.id
                   ? 'ring-2 ring-primary border-primary bg-primary/5'
-                  : 'hover:border-primary/50'
+                  : 'border-muted-foreground/25 opacity-50'
               }`}
-              onClick={() => handleServiceTypeSelect(service.id)}
             >
               <CardContent className="py-4">
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">{service.icon}</span>
                   <div>
                     <CardTitle className="text-lg">{service.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{service.description}</p>
                   </div>
                 </div>
+                {data.serviceType === service.id && (
+                  <div className="mt-3 text-sm text-primary font-medium">
+                    ✓ Selected based on your provider type
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -86,3 +96,4 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
     </div>
   )
 }
+

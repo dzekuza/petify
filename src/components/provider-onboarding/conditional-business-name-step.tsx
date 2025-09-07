@@ -15,14 +15,14 @@ interface ConditionalBusinessNameStepProps {
 
 const getBusinessNamePlaceholder = (providerType: ProviderType): string => {
   switch (providerType) {
-    case 'individual':
-      return "What's your name or business name?"
-    case 'business':
-      return "What's your company name?"
-    case 'home_based':
-      return "What's your home-based business name?"
-    case 'franchise':
-      return "What's your franchise location name?"
+    case 'grooming':
+      return "What's your grooming business name?"
+    case 'training':
+      return "What's your training business name?"
+    case 'veterinary':
+      return "What's your veterinary clinic name?"
+    case 'ads':
+      return "What's your business or personal name?"
     default:
       return "What's your business name?"
   }
@@ -30,14 +30,14 @@ const getBusinessNamePlaceholder = (providerType: ProviderType): string => {
 
 const getBusinessNameLabel = (providerType: ProviderType): string => {
   switch (providerType) {
-    case 'individual':
-      return "Your Name or Business Name"
-    case 'business':
-      return "Company Name"
-    case 'home_based':
-      return "Home-Based Business Name"
-    case 'franchise':
-      return "Franchise Location Name"
+    case 'grooming':
+      return "Grooming Business Name"
+    case 'training':
+      return "Training Business Name"
+    case 'veterinary':
+      return "Veterinary Clinic Name"
+    case 'ads':
+      return "Business or Personal Name"
     default:
       return "Business Name"
   }
@@ -62,7 +62,7 @@ export default function ConditionalBusinessNameStep({ data, onUpdate, onNext, on
       <div>
         <h2 className="text-2xl font-semibold">{getBusinessNameLabel(data.providerType as ProviderType)}</h2>
         <p className="text-muted-foreground mt-2">
-          {data.providerType === 'individual' 
+          {data.providerType === 'ads' 
             ? 'Enter your name or the name you\'d like to use for your services'
             : 'Enter the name that customers will see when booking your services'
           }
