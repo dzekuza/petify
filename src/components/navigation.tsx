@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -794,9 +794,5 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
 }
 
 export const Navigation = ({ hideServiceCategories = false, onFiltersClick }: NavigationProps) => {
-  return (
-    <Suspense fallback={<div className="h-16 bg-white shadow-sm border-b" />}>
-      <NavigationContent hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
-    </Suspense>
-  )
+  return <NavigationContent hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
 }
