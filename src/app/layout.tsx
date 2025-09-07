@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "PetServices - Pet Care Marketplace",
+  title: "Petify - Pet Care Marketplace",
   description: "Find trusted pet service providers in your area - grooming, veterinary, boarding, training, and more.",
 };
 

@@ -58,14 +58,69 @@ export const MapboxMap = ({
   onFiltersClick,
   showControls = true
 }: MapboxMapProps) => {
-  const [viewState, setViewState] = useState<ViewState>({
-    longitude: MAPBOX_CONFIG.defaultCenter[0],
-    latitude: MAPBOX_CONFIG.defaultCenter[1],
-    zoom: MAPBOX_CONFIG.defaultZoom,
-    bearing: 0,
-    pitch: 0,
-    padding: { top: 0, bottom: 0, left: 0, right: 0 }
+  // Calculate center based on results
+  const calculateMapCenter = useCallback(() => {
+    if (results.length === 0) {
+      return {
+        longitude: MAPBOX_CONFIG.defaultCenter[0],
+        latitude: MAPBOX_CONFIG.defaultCenter[1],
+        zoom: MAPBOX_CONFIG.defaultZoom
+      }
+    }
+
+    // Calculate bounds of all markers
+    const lats = results.map(r => r.provider.location.coordinates.lat)
+    const lngs = results.map(r => r.provider.location.coordinates.lng)
+    
+    const minLat = Math.min(...lats)
+    const maxLat = Math.max(...lats)
+    const minLng = Math.min(...lngs)
+    const maxLng = Math.max(...lngs)
+    
+    // Calculate center point
+    const centerLat = (minLat + maxLat) / 2
+    const centerLng = (minLng + maxLng) / 2
+    
+    // Calculate zoom level based on bounds
+    const latDiff = maxLat - minLat
+    const lngDiff = maxLng - minLng
+    const maxDiff = Math.max(latDiff, lngDiff)
+    
+    let zoom = MAPBOX_CONFIG.defaultZoom
+    if (maxDiff > 0.1) zoom = 10
+    else if (maxDiff > 0.05) zoom = 12
+    else if (maxDiff > 0.02) zoom = 14
+    else zoom = 16
+    
+    return {
+      longitude: centerLng,
+      latitude: centerLat,
+      zoom: zoom
+    }
+  }, [results])
+
+  const [viewState, setViewState] = useState<ViewState>(() => {
+    const center = calculateMapCenter()
+    return {
+      longitude: center.longitude,
+      latitude: center.latitude,
+      zoom: center.zoom,
+      bearing: 0,
+      pitch: 0,
+      padding: { top: 0, bottom: 0, left: 0, right: 0 }
+    }
   })
+
+  // Update map center when results change
+  useEffect(() => {
+    const center = calculateMapCenter()
+    setViewState(prev => ({
+      ...prev,
+      longitude: center.longitude,
+      latitude: center.latitude,
+      zoom: center.zoom
+    }))
+  }, [calculateMapCenter])
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
   const [hoveredProviderId] = useState<string | null>(null)

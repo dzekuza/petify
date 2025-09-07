@@ -1,4 +1,4 @@
-# PetServices - Pet Care Marketplace
+# Petify - Pet Care Marketplace
 
 An Airbnb-style marketplace for pet service providers including groomers,
 veterinarians, pet sitters, trainers, and care providers.

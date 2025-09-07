@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Star, MapPin, Clock } from 'lucide-react'
+import { t } from '@/lib/translations'
 
 // Mock data for featured providers
 const featuredProviders = [
@@ -51,10 +52,10 @@ export const FeaturedProviders = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Featured Service Providers
+            {t('landing.featuredProviders.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Meet some of our top-rated pet care professionals
+            {t('landing.featuredProviders.subtitle')}
           </p>
         </div>
 
@@ -69,7 +70,7 @@ export const FeaturedProviders = () => {
                 </div>
                 <div className="absolute top-4 right-4">
                   <Badge variant="secondary" className="bg-white/90">
-                    Featured
+                    {t('landing.featuredProviders.featured')}
                   </Badge>
                 </div>
               </div>
@@ -94,7 +95,7 @@ export const FeaturedProviders = () => {
                         </span>
                       </div>
                       <span className="text-sm text-gray-500">
-                        ({provider.reviewCount} reviews)
+                        ({provider.reviewCount} {t('landing.featuredProviders.reviews')})
                       </span>
                     </div>
                   </div>
@@ -123,14 +124,14 @@ export const FeaturedProviders = () => {
                   ))}
                   {provider.services.length > 3 && (
                     <Badge variant="outline" className="text-xs">
-                      +{provider.services.length - 3} more
+                      +{provider.services.length - 3} {t('landing.featuredProviders.more')}
                     </Badge>
                   )}
                 </div>
 
                 <Button asChild className="w-full">
                   <Link href={`/providers/${provider.id}`}>
-                    View Profile
+                    {t('landing.featuredProviders.viewProfile')}
                   </Link>
                 </Button>
               </CardContent>
@@ -141,7 +142,7 @@ export const FeaturedProviders = () => {
         <div className="text-center mt-12">
           <Button variant="outline" size="lg" asChild>
             <Link href="/search">
-              View All Providers
+              {t('landing.featuredProviders.viewAllProviders')}
             </Link>
           </Button>
         </div>

@@ -1,4 +1,4 @@
-// Lithuanian translations for PetServices application
+// Lithuanian translations for Petify application
 
 export const translations = {
   // Search and Filters
@@ -163,7 +163,7 @@ export const translations = {
   auth: {
     signin: {
       welcomeBack: 'Sveiki sugrįžę',
-      signinSubtitle: 'Prisijunkite prie savo PetServices paskyros',
+      signinSubtitle: 'Prisijunkite prie savo Petify paskyros',
       signIn: 'Prisijungti',
       signInDesc: 'Įveskite savo duomenis, kad prisijungtumėte prie paskyros',
       emailAddress: 'El. pašto adresas',
@@ -246,16 +246,14 @@ export const translations = {
   // Landing Page
   landing: {
     hero: {
-      title: 'Pasirinkite iš 400+ paslaugų teikėjų savo gyvūnui aplink jus',
+      title: 'Pasirinkite iš 400+ paslaugų teikėjų<br/>savo gyvūnui aplink jus',
       search: {
-        where: 'Kur ieškote?',
-        wherePlaceholder: 'Įveskite lokaciją',
-        priceFrom: 'Kaina nuo',
-        priceFromPlaceholder: 'Įveskite kainą',
-        priceTo: 'Kaina iki',
-        priceToPlaceholder: 'Įveskite kainą',
+        where: 'Kur',
+        wherePlaceholder: 'Pridėkite miestą ar rajoną',
+        provider: 'Teikėjas',
+        providerPlaceholder: 'Pridėkite teikėją',
         date: 'Data',
-        datePlaceholder: 'Pasirinkite datą',
+        datePlaceholder: 'Pridėkite datas',
         searchButton: 'Ieškoti'
       },
       categories: {
@@ -264,6 +262,13 @@ export const translations = {
         boarding: 'Poravimas',
         veterinary: 'Veterinarijos',
         walking: 'Skelbimai'
+      },
+      providersGrid: {
+        popularGrooming: 'Populiarios kirpyklos Palangoje',
+        availableVeterinary: 'Prieinamos veterinarijos paslaugos šį savaitgalį',
+        topTraining: 'Geriausi trenerių paslaugų teikėjai',
+        nearbyBoarding: 'Artimiausios prieglaudos aplink jus',
+        viewAll: 'Peržiūrėti visus'
       }
     },
     serviceCategories: {

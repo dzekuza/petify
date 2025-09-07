@@ -106,16 +106,19 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
     const dayName = selectedDate.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     const dayAvailability = provider.availability[dayName]
     
+    // Debug logging
+    console.log('Selected date:', selectedDate)
+    console.log('Day name:', dayName)
+    console.log('Provider availability:', provider.availability)
+    console.log('Day availability:', dayAvailability)
+    
     if (!dayAvailability) return []
     
-    // Handle different availability data structures
+    // The availability should be an array of TimeSlot objects
     if (Array.isArray(dayAvailability)) {
-      return dayAvailability.filter(slot => slot.available)
-    } else if (typeof dayAvailability === 'object' && dayAvailability !== null) {
-      // Handle object format like { start: '09:00', end: '17:00', available: true }
-      if ('available' in dayAvailability && (dayAvailability as Record<string, unknown>).available) {
-        return [dayAvailability as TimeSlot]
-      }
+      const availableSlots = dayAvailability.filter(slot => slot.available)
+      console.log('Available slots:', availableSlots)
+      return availableSlots
     }
     
     return []

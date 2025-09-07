@@ -1,4 +1,4 @@
-# PetServices Deployment Guide
+# Petify Deployment Guide
 
 ## Vercel Deployment Setup
 

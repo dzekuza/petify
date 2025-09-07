@@ -1,33 +1,46 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
 import { Search } from 'lucide-react'
-import { ServiceCategory } from '@/types'
 import { t } from '@/lib/translations'
-import Image from 'next/image'
-
-// Service category icons
-const imgAnimalCareIcon = '/da178ce5d9e0efbaa63f916c95100c2daf751dac.png'
-const imgPetTrainingIcon = '/abf5832628a6acaf2c4259ad14de133d3866577f.png'
-const imgPetsPairingIcon = '/dad9cde557f42c866425d0fe77924deee8551656.png'
-const imgPetVeterinaryIcon = '/1ad308669bee0a61d08eb85cb050afe5af94b466.png'
-const imgPetAdsIcon = '/e9e2b26d5bf286f094c7cdffe862fc917fbe23f6.png'
+import AddressAutocomplete from '@/components/address-autocomplete'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { ProvidersGrid } from '@/components/providers-grid'
+import { providerApi } from '@/lib/providers'
 
 export const HeroSection = () => {
-  const serviceCategories: { value: ServiceCategory; label: string; icon: string }[] = [
-    { value: 'grooming', label: t('landing.hero.categories.grooming'), icon: imgAnimalCareIcon },
-    { value: 'training', label: t('landing.hero.categories.training'), icon: imgPetTrainingIcon },
-    { value: 'boarding', label: t('landing.hero.categories.boarding'), icon: imgPetsPairingIcon },
-    { value: 'veterinary', label: t('landing.hero.categories.veterinary'), icon: imgPetVeterinaryIcon },
-    { value: 'walking', label: t('landing.hero.categories.walking'), icon: imgPetAdsIcon },
-  ]
   const [location, setLocation] = useState('')
-  const [priceFrom, setPriceFrom] = useState('')
-  const [priceTo, setPriceTo] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | null>(null)
+  const [providerName, setProviderName] = useState('')
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [latestProviders, setLatestProviders] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch all providers for hero section
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch all providers (latest first)
+        const allResults = await providerApi.searchProviders({})
+        setLatestProviders(allResults.slice(0, 12)) // Limit to 12 for display
+        
+      } catch (error) {
+        console.error('Error fetching providers for hero:', error)
+        // Fallback to empty array if there's an error
+        setLatestProviders([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProviders()
+  }, [])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -37,22 +50,14 @@ export const HeroSection = () => {
       params.set('location', location.trim())
     }
     
-    // Add price range if provided
-    if (priceFrom.trim() && !isNaN(Number(priceFrom))) {
-      params.set('priceFrom', priceFrom.trim())
-    }
-    if (priceTo.trim() && !isNaN(Number(priceTo))) {
-      params.set('priceTo', priceTo.trim())
+    // Add provider name if provided
+    if (providerName.trim()) {
+      params.set('provider', providerName.trim())
     }
     
     // Add date if provided
     if (selectedDate) {
-      params.set('date', selectedDate)
-    }
-    
-    // Add category if selected
-    if (selectedCategory) {
-      params.set('category', selectedCategory)
+      params.set('date', selectedDate.toISOString().split('T')[0])
     }
     
     // Navigate to search page with parameters
@@ -66,139 +71,98 @@ export const HeroSection = () => {
   }
 
   return (
-    <section className="bg-neutral-50 py-8">
+    <section className="bg-white py-8">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 items-center justify-center">
           {/* Main Heading */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-black leading-tight sm:text-5xl lg:text-6xl">
-              {t('landing.hero.title')}
-            </h1>
+            <h1 
+              className="text-4xl font-bold text-black leading-tight sm:text-5xl lg:text-6xl"
+              dangerouslySetInnerHTML={{ __html: t('landing.hero.title') }}
+            />
           </div>
 
-          {/* Service Category Chips */}
-          <div className="flex flex-wrap gap-4 items-center justify-center w-full">
-            {serviceCategories.map((category) => (
-              <button
-                key={category.value}
-                onClick={() => setSelectedCategory(selectedCategory === category.value ? null : category.value)}
-                className={`flex gap-3 items-center justify-center px-6 py-3 rounded-lg border transition-all ${
-                  selectedCategory === category.value
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-black border-black hover:bg-gray-50'
-                }`}
-              >
-                <div className="w-8 h-8 relative">
-                  <Image
-                    src={category.icon}
-                    alt={category.label}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <span className="font-bold text-base whitespace-nowrap">
-                  {category.label}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Search Form */}
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
-            <div className="grid grid-cols-1 lg:grid-cols-11 gap-4 items-end">
+          {/* Search Form - Clean Style */}
+          <div className="bg-white rounded-full shadow-lg p-2 w-full max-w-4xl">
+            <div className="flex items-center">
               {/* Location */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="font-bold text-sm text-black">
+              <div className="flex-1 px-6 py-4 hover:bg-gray-50 rounded-l-full transition-colors duration-200">
+                <div className="text-xs font-semibold text-gray-900 mb-1">
                   {t('landing.hero.search.where')}
-                </label>
-                <Input
-                  variant='hero'
-                  placeholder={t('landing.hero.search.wherePlaceholder')}
+                </div>
+                <AddressAutocomplete
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onChange={setLocation}
+                  placeholder={t('landing.hero.search.wherePlaceholder')}
+                  label=""
+                  className="[&_label]:hidden [&_input]:border-0 [&_input]:p-0 [&_input]:h-auto [&_input]:text-sm [&_input]:font-normal [&_input]:focus:ring-0 [&_input]:focus:outline-none [&_input]:bg-transparent [&_input]:shadow-none"
                 />
               </div>
 
-              {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
-                <div className="w-px h-12 bg-gray-300"></div>
-              </div>
-
-              {/* Price From */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="font-bold text-sm text-black">
-                  {t('landing.hero.search.priceFrom')}
-                </label>
+              {/* Provider Name */}
+              <div className="flex-1 px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
+                <div className="text-xs font-semibold text-gray-900 mb-1">
+                  {t('landing.hero.search.provider')}
+                </div>
                 <Input
-                  variant='hero'
-                  type='number'
-                  placeholder={t('landing.hero.search.priceFromPlaceholder')}
-                  value={priceFrom}
-                  onChange={(e) => setPriceFrom(e.target.value)}
+                  type="text"
+                  placeholder={t('landing.hero.search.providerPlaceholder')}
+                  value={providerName}
+                  onChange={(e) => setProviderName(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  min="0"
-                  step="1"
-                  aria-label={t('landing.hero.search.priceFrom')}
+                  className="border-0 p-0 h-auto text-sm font-normal focus:ring-0 focus:outline-none bg-transparent shadow-none"
                 />
-              </div>
-
-              {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
-                <div className="w-px h-12 bg-gray-300"></div>
-              </div>
-
-              {/* Price To */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="font-bold text-sm text-black">
-                  {t('landing.hero.search.priceTo')}
-                </label>
-                <Input
-                  variant='hero'
-                  type='number'
-                  placeholder={t('landing.hero.search.priceToPlaceholder')}
-                  value={priceTo}
-                  onChange={(e) => setPriceTo(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  min="0"
-                  step="1"
-                  aria-label={t('landing.hero.search.priceTo')}
-                />
-              </div>
-
-              {/* Divider */}
-              <div className="hidden lg:flex items-center justify-center h-14 lg:col-span-1">
-                <div className="w-px h-12 bg-gray-300"></div>
               </div>
 
               {/* Date */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="font-bold text-sm text-black">
+              <div className="flex-1 px-6 py-4 hover:bg-gray-50 rounded-r-full transition-colors duration-200">
+                <div className="text-xs font-semibold text-gray-900 mb-1">
                   {t('landing.hero.search.date')}
-                </label>
-                <Input
-                  variant='hero'
-                  type='date'
-                  placeholder={t('landing.hero.search.datePlaceholder')}
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  aria-label={t('landing.hero.search.date')}
-                />
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start text-left font-normal p-0 h-auto text-sm hover:bg-transparent",
+                        !selectedDate && "text-gray-500"
+                      )}
+                    >
+                      {selectedDate ? format(selectedDate, "MMM dd") : t('landing.hero.search.datePlaceholder')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Search Button */}
-              <div className="lg:col-span-2">
+              <div className="px-2">
                 <Button 
                   onClick={handleSearch}
-                  className="w-full px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold"
+                  className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 text-white p-0 transition-colors duration-200"
                 >
-                  <Search className="h-4 w-4 mr-2" />
-                  {t('landing.hero.search.searchButton')}
+                  <Search className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
+
+          {/* Latest Providers Grid */}
+          {!loading && latestProviders.length > 0 && (
+            <ProvidersGrid
+              title="Latest"
+              providers={latestProviders.map(result => result.provider)}
+              services={latestProviders.flatMap(result => result.services)}
+            />
+          )}
         </div>
       </div>
     </section>

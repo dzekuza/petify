@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
 import { SearchFilters } from '@/components/search-filters'
-import { ProviderCard } from '@/components/provider-card'
-import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
+import { ProvidersGridStatic } from '@/components/providers-grid-static'
+import { FilterModal } from '@/components/filter-modal'
+import { SearchResult, SearchFilters as SearchFiltersType, ServiceProvider, Service } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Map, List, Filter } from 'lucide-react'
 import { t } from '@/lib/translations'
@@ -15,12 +16,17 @@ interface SearchLayoutProps {
   onFiltersChange: (filters: SearchFiltersType) => void
   loading: boolean
   error?: string | null
+  onFiltersClick?: () => void
+  showFilterModal?: boolean
+  onFilterModalClose?: () => void
 }
 
-export const SearchLayout = ({ results, filters, onFiltersChange, loading, error }: SearchLayoutProps) => {
+export const SearchLayout = ({ results, filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
   const [showFilters, setShowFilters] = useState(false)
+  const [rating, setRating] = useState(0)
+  const [providerType, setProviderType] = useState('any')
 
   const handleMarkerClick = (result: SearchResult) => {
     setSelectedProviderId(result.provider.id)
@@ -32,72 +38,15 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
   }
 
   const handleFiltersClick = () => {
-    setShowFilters(!showFilters)
+    onFiltersClick?.()
+  }
+
+  const handleFilterModalClose = () => {
+    onFilterModalClose?.()
   }
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header with filters and view toggle */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Filters */}
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFiltersClick}
-                className="flex items-center space-x-2"
-              >
-                <Filter className="h-4 w-4" />
-                <span>{t('search.filters')}</span>
-              </Button>
-              
-              {showFilters && (
-                <div className="absolute top-16 left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-30">
-                  <SearchFilters
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* View Toggle */}
-            <div className="flex items-center border border-gray-300 rounded-lg p-1">
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="flex items-center space-x-2"
-              >
-                <List className="h-4 w-4" />
-                <span>{t('search.list')}</span>
-              </Button>
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="flex items-center space-x-2"
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                <span>{t('search.grid')}</span>
-              </Button>
-              <Button
-                variant={viewMode === 'map' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('map')}
-                className="flex items-center space-x-2"
-              >
-                <Map className="h-4 w-4" />
-                <span>{t('search.map')}</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -116,31 +65,23 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {/* Left: Provider Grid */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {results.length} {t('search.providersFound')}
-                </h2>
-              </div>
-              
-              <div className="provider-grid-split">
-                {loading ? (
-                  [...Array(6)].map((_, i) => (
+              {loading ? (
+                <div className="space-y-4">
+                  {[...Array(6)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                       <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
                     </div>
-                  ))
-                ) : (
-                  results.map((result) => (
-                    <ProviderCard
-                      key={result.provider.id}
-                      provider={result.provider}
-                      services={result.services}
-                      distance={result.distance}
-                      className={selectedProviderId === result.provider.id ? 'ring-2 ring-blue-500' : ''}
-                    />
-                  ))
-                )}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <ProvidersGridStatic
+                  title={`${results.length} ${t('search.providersFound')}`}
+                  providers={results.map(result => result.provider)}
+                  services={results.flatMap(result => result.services)}
+                  showViewAll={false}
+                  gridCols="grid-cols-1 md:grid-cols-2"
+                />
+              )}
             </div>
 
             {/* Right: Map */}
@@ -174,31 +115,22 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
         ) : viewMode === 'grid' ? (
           /* Grid Only View */
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {results.length} {t('search.providersFound')}
-              </h2>
-            </div>
-            
-            <div className="provider-grid">
-              {loading ? (
-                [...Array(12)].map((_, i) => (
+            {loading ? (
+              <div className="provider-grid">
+                {[...Array(12)].map((_, i) => (
                   <div key={i} className="animate-pulse">
                     <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
                   </div>
-                ))
-              ) : (
-                results.map((result) => (
-                  <ProviderCard
-                    key={result.provider.id}
-                    provider={result.provider}
-                    services={result.services}
-                    distance={result.distance}
-                    className={selectedProviderId === result.provider.id ? 'ring-2 ring-blue-500' : ''}
-                  />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <ProvidersGridStatic
+                title={`${results.length} ${t('search.providersFound')}`}
+                providers={results.map(result => result.provider)}
+                services={results.flatMap(result => result.services)}
+                showViewAll={false}
+              />
+            )}
           </div>
         ) : (
           /* Map Only View */
@@ -215,6 +147,36 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
           </div>
         )}
       </div>
+
+      {/* Filter Modal */}
+      <FilterModal
+        isOpen={showFilterModal || false}
+        onClose={handleFilterModalClose}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        priceRange={[filters.priceRange?.min || 0, filters.priceRange?.max || 5000]}
+        onPriceRangeChange={(range) => onFiltersChange({
+          ...filters,
+          priceRange: { min: range[0], max: range[1] }
+        })}
+        rating={rating}
+        onRatingChange={setRating}
+        providerType={providerType}
+        onProviderTypeChange={setProviderType}
+        onApplyFilters={() => {
+          // Apply filters logic here
+          console.log('Applying filters:', { rating, providerType })
+        }}
+        onClearAll={() => {
+          setRating(0)
+          setProviderType('any')
+          onFiltersChange({
+            ...filters,
+            priceRange: { min: 0, max: 5000 }
+          })
+        }}
+        resultsCount={results.length}
+      />
     </div>
   )
 }

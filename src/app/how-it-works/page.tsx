@@ -75,7 +75,7 @@ const features = [
   {
     icon: Users,
     title: 'Trusted Community',
-    description: 'Join thousands of pet owners who trust PetServices for their pet care needs.'
+    description: 'Join thousands of pet owners who trust Petify for their pet care needs.'
   },
   {
     icon: Clock,
@@ -125,10 +125,10 @@ export default function HowItWorksPage() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                How PetServices Works
+                How Petify Works
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-                Getting started with PetServices is simple. Follow these easy steps to find and book 
+                Getting started with Petify is simple. Follow these easy steps to find and book 
                 trusted pet care services for your furry friends.
               </p>
             </div>
@@ -193,7 +193,7 @@ export default function HowItWorksPage() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Why Choose PetServices?
+                Why Choose Petify?
               </h2>
               <p className="mt-4 text-lg text-gray-600">
                 We're committed to providing the best pet care experience for you and your pets
@@ -231,7 +231,7 @@ export default function HowItWorksPage() {
                 Frequently Asked Questions
               </h2>
               <p className="mt-4 text-lg text-gray-600">
-                Get answers to common questions about using PetServices
+                Get answers to common questions about using Petify
               </p>
             </div>
 
@@ -260,7 +260,7 @@ export default function HowItWorksPage() {
                 Ready to Get Started?
               </h2>
               <p className="mt-4 text-lg text-blue-100">
-                Join thousands of pet owners who trust PetServices for their pet care needs
+                Join thousands of pet owners who trust Petify for their pet care needs
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>

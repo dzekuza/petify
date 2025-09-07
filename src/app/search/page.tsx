@@ -31,6 +31,7 @@ function SearchPageContent() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showFilterModal, setShowFilterModal] = useState(false)
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -63,14 +64,21 @@ function SearchPageContent() {
     setFilters(newFilters)
   }
 
+  const handleFiltersClick = () => {
+    setShowFilterModal(!showFilterModal)
+  }
+
   return (
-    <Layout>
+    <Layout hideServiceCategories={true} onFiltersClick={handleFiltersClick}>
       <SearchLayout
         results={results}
         filters={filters}
         onFiltersChange={handleFiltersChange}
         loading={loading}
         error={error}
+        onFiltersClick={handleFiltersClick}
+        showFilterModal={showFilterModal}
+        onFilterModalClose={() => setShowFilterModal(false)}
       />
     </Layout>
   )

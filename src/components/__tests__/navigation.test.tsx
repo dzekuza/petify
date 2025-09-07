@@ -12,10 +12,10 @@ vi.mock('../../contexts/auth-context', () => ({
 }))
 
 describe('Navigation', () => {
-  it('renders the PetServices logo', () => {
+  it('renders the Petify logo', () => {
     render(<Navigation />)
     
-    expect(screen.getByText('PetServices')).toBeInTheDocument()
+    expect(screen.getByText('Petify')).toBeInTheDocument()
   })
 
   it('renders navigation links', () => {

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
-import { MapPin, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 interface AddressSuggestion {
   id: string
@@ -48,9 +48,33 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Popular Lithuanian cities and districts
+  const popularLocations = [
+    // Major cities
+    'Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai',
+    'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė',
+    'Šilutė', 'Kretinga', 'Radviliškis', 'Palanga', 'Druskininkai', 'Rokiškis', 'Biržai', 'Gargždai',
+    'Kuršėnai', 'Garliava', 'Vilkaviškis', 'Raseiniai', 'Anykščiai', 'Lentvaris', 'Grigiškės',
+    'Naujoji Akmenė', 'Kazlų Rūda', 'Joniškis', 'Kelmė', 'Varėna', 'Kaišiadorys', 'Pasvalys',
+    'Kupiškis', 'Zarasai', 'Skuodas', 'Širvintos', 'Pakruojis', 'Švenčionys', 'Ignalina',
+    'Molėtai', 'Šalčininkai', 'Vievis', 'Lazdijai', 'Kalvarija', 'Rietavas', 'Žiežmariai',
+    'Elektrėnai', 'Šakiai', 'Šilalė', 'Jurbarkas', 'Raudondvaris', 'Viešintos', 'Neringa',
+    'Pagėgiai', 'Vilkija', 'Žagarė', 'Viekšniai', 'Seda', 'Subačius', 'Baltoji Vokė',
+    'Daugai', 'Simnas', 'Gelgaudiškis', 'Kudirkos Naumiestis', 'Šeduva', 'Pandėlys',
+    'Dusetos', 'Užventis', 'Kavarskas', 'Smalininkai', 'Joniškėlis', 'Linkuva', 'Veisiejai',
+    // Vilnius districts
+    'Justiniškės', 'Karoliniškės', 'Antakalnis', 'Žvėrynas', 'Senamiestis', 'Naujamiestis',
+    'Šnipiškės', 'Pašilaičiai', 'Fabijoniškės', 'Pilaitė', 'Lazdynai', 'Viršuliškės',
+    'Šeškinė', 'Naujininkai', 'Rasos', 'Užupis', 'Markučiai', 'Santariškės', 'Verkių',
+    'Baltupiai', 'Jeruzalė', 'Grigiškės', 'Vilkpėdė', 'Naujoji Vilnia', 'Paneriai',
+    // Kaunas districts
+    'Centras', 'Žaliakalnis', 'Šančiai', 'Aleksotas', 'Dainava', 'Petrašiūnai',
+    'Šilainiai', 'Vilijampolė', 'Panemunė', 'Kalniečiai', 'Raudondvaris'
+  ]
+
   // Debounced search function
   const searchAddresses = useCallback(async (query: string) => {
-    if (!query || query.length < 3) {
+    if (!query || query.length < 2) {
       setSuggestions([])
       setShowSuggestions(false)
       return
@@ -62,10 +86,10 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
         `access_token=${MAPBOX_CONFIG.accessToken}&` +
-        `country=${MAPBOX_CONFIG.defaultCountry}&` +
-        `types=address,poi&` +
-        `limit=5&` +
-        `language=en`
+        `country=LT&` +
+        `types=place,locality,neighborhood&` +
+        `limit=8&` +
+        `language=lt`
       )
 
       if (!response.ok) {
@@ -76,31 +100,34 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       
       const formattedSuggestions: AddressSuggestion[] = data.features.map((feature: Record<string, unknown>) => {
         const context = (feature.context as Record<string, unknown>[]) || []
-        const address = (feature.properties as Record<string, unknown>)?.address as string || ''
         const placeName = feature.place_name || ''
+        const featureText = feature.text || ''
         
-        // Extract city, state, and zip code from context
+        // Extract city, region, and district from context
         let city = ''
-        let state = ''
-        let zipCode = ''
+        let region = ''
+        let district = ''
         
         context.forEach((item: Record<string, unknown>) => {
           if (item.id && typeof item.id === 'string' && item.id.startsWith('place.')) {
             city = item.text as string
           } else if (item.id && typeof item.id === 'string' && item.id.startsWith('region.')) {
-            state = item.text as string
-          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('postcode.')) {
-            zipCode = item.text as string
+            region = item.text as string
+          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('neighborhood.')) {
+            district = item.text as string
           }
         })
+
+        // For cities and districts, use the main text as the address
+        const address = featureText as string
 
         return {
           id: feature.id,
           place_name: placeName,
-          address: address || placeName,
-          city,
-          state,
-          zipCode,
+          address: address,
+          city: city || address,
+          state: region,
+          zipCode: district,
           coordinates: {
             lat: (feature.center as number[])[1],
             lng: (feature.center as number[])[0]
@@ -108,13 +135,49 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         }
       })
 
+      // If we have few API results, add popular locations that match the query
+      if (formattedSuggestions.length < 5) {
+        const matchingPopular = popularLocations
+          .filter(location => 
+            location.toLowerCase().includes(query.toLowerCase()) &&
+            !formattedSuggestions.some(s => s.address.toLowerCase() === location.toLowerCase())
+          )
+          .slice(0, 5 - formattedSuggestions.length)
+          .map(location => ({
+            id: `popular-${location}`,
+            place_name: location,
+            address: location,
+            city: location,
+            state: 'Lietuva',
+            zipCode: '',
+            coordinates: { lat: 0, lng: 0 }
+          }))
+        
+        formattedSuggestions.push(...matchingPopular)
+      }
+
       setSuggestions(formattedSuggestions)
       setShowSuggestions(true)
       setSelectedIndex(-1)
     } catch (error) {
       console.error('Error fetching address suggestions:', error)
-      setSuggestions([])
-      setShowSuggestions(false)
+      // Fallback to popular locations on error
+      const matchingPopular = popularLocations
+        .filter(location => location.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 8)
+        .map(location => ({
+          id: `popular-${location}`,
+          place_name: location,
+          address: location,
+          city: location,
+          state: 'Lietuva',
+          zipCode: '',
+          coordinates: { lat: 0, lng: 0 }
+        }))
+      
+      setSuggestions(matchingPopular)
+      setShowSuggestions(true)
+      setSelectedIndex(-1)
     } finally {
       setIsLoading(false)
     }
@@ -219,7 +282,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           placeholder={placeholder}
           required={required}
           disabled={disabled}
-          className="mt-1 pr-10"
+          className="mt-1"
           autoComplete="off"
         />
         
@@ -227,13 +290,6 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
             <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-          </div>
-        )}
-        
-        {/* Map pin icon when not loading */}
-        {!isLoading && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <MapPin className="h-4 w-4 text-gray-400" />
           </div>
         )}
       </div>
@@ -253,15 +309,14 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               onClick={() => handleSuggestionSelect(suggestion)}
               onMouseEnter={() => setSelectedIndex(index)}
             >
-              <div className="flex items-start space-x-3">
-                <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start">
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-gray-900 truncate">
                     {suggestion.address}
                   </div>
-                  {(suggestion.city || suggestion.state || suggestion.zipCode) && (
+                  {(suggestion.state || suggestion.zipCode) && (
                     <div className="text-xs text-gray-500 mt-1">
-                      {[suggestion.city, suggestion.state, suggestion.zipCode]
+                      {[suggestion.state, suggestion.zipCode]
                         .filter(Boolean)
                         .join(', ')}
                     </div>

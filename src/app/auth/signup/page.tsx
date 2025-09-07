@@ -97,7 +97,7 @@ export default function SignUpPage() {
             Create your account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join PetServices as a pet owner and find trusted care for your pets
+            Join Petify as a pet owner and find trusted care for your pets
           </p>
         </div>
 

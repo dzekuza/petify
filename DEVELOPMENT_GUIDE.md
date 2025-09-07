@@ -1,8 +1,8 @@
-# PetServices Development Guide
+# Petify Development Guide
 
 ## Project Overview
 
-PetServices is an Airbnb-style marketplace for pet service providers (groomers,
+Petify is an Airbnb-style marketplace for pet service providers (groomers,
 veterinary, boarding, training, care, ads). Built with Next.js 15, TypeScript,
 and modern React patterns.
 

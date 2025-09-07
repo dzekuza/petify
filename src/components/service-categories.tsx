@@ -75,10 +75,10 @@ export const ServiceCategories = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Gyvūnų paslaugos, kurias siūlome
+            {t('landing.serviceCategories.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Raskite tobulą priežiūrą savo gyvūnui su mūsų išsamiais paslaugų spektru
+            {t('landing.serviceCategories.subtitle')}
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export const ServiceCategories = () => {
                           </h3>
                           {category.popular && (
                             <Badge variant="secondary" className="text-xs">
-                              Popular
+                              {t('landing.serviceCategories.popular')}
                             </Badge>
                           )}
                         </div>
@@ -121,21 +121,20 @@ export const ServiceCategories = () => {
           <div className="bg-gray-50 rounded-2xl p-8">
             <PawPrint className="h-12 w-12 text-blue-600 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Don't see what you're looking for?
+              {t('landing.serviceCategories.cta.title')}
             </h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              We're constantly expanding our network of service providers. 
-              Let us know what specific care your pet needs, and we'll help you find it.
+              {t('landing.serviceCategories.cta.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/search">
                 <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                  Browse All Services
+                  {t('landing.serviceCategories.cta.browseAll')}
                 </button>
               </Link>
               <Link href="/contact">
                 <button className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                  Request a Service
+                  {t('landing.serviceCategories.cta.requestService')}
                 </button>
               </Link>
             </div>

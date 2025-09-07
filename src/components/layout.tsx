@@ -3,12 +3,14 @@ import { Footer } from './footer'
 
 interface LayoutProps {
   children: React.ReactNode
+  hideServiceCategories?: boolean
+  onFiltersClick?: () => void
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, hideServiceCategories = false, onFiltersClick }: LayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Navigation hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
       <main className="flex-1">
         {children}
       </main>

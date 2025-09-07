@@ -14,6 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog } from 'lucide-react'
+import Image from 'next/image'
+import { NavigationSearch } from '@/components/navigation-search'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
@@ -32,10 +35,49 @@ const serviceTypes = [
   { value: 'sitting', label: 'Gyvūnų prižiūrėtojas' },
 ]
 
-export const Navigation = () => {
+interface NavigationProps {
+  hideServiceCategories?: boolean
+  onFiltersClick?: () => void
+}
+
+export const Navigation = ({ hideServiceCategories = false, onFiltersClick }: NavigationProps) => {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const isSearchPage = pathname === '/search'
+  const hasCategory = searchParams?.get('category')
+  const showSearchBar = isSearchPage || hasCategory
+
   const navigation = [
-    { name: t('navigation.findServices'), href: '/search' },
-    { name: t('navigation.howItWorks'), href: '/how-it-works' },
+    { 
+      name: t('landing.hero.categories.grooming'), 
+      href: '/search?category=grooming',
+      icon: '/Animal_Care_Icon Background Removed.png',
+      shortName: 'Kirpyklos'
+    },
+    { 
+      name: t('landing.hero.categories.training'), 
+      href: '/search?category=training',
+      icon: '/Pet_Training_Icon Background Removed.png',
+      shortName: 'Dresūra'
+    },
+    { 
+      name: t('landing.hero.categories.boarding'), 
+      href: '/search?category=boarding',
+      icon: '/Pets_Pairing_Icon Background Removed.png',
+      shortName: 'Poravimas'
+    },
+    { 
+      name: t('landing.hero.categories.veterinary'), 
+      href: '/search?category=veterinary',
+      icon: '/Pet_Veterinary_Icon Background Removed.png',
+      shortName: 'Veterinarijos'
+    },
+    { 
+      name: t('landing.hero.categories.walking'), 
+      href: '/search?category=walking',
+      icon: '/Pet_Ads_Icon Background Removed.png',
+      shortName: 'Skelbimai'
+    },
   ]
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [providerSignupOpen, setProviderSignupOpen] = useState(false)
@@ -122,27 +164,44 @@ export const Navigation = () => {
   return (
     <header className="bg-white shadow-sm border-b">
       <nav className="mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
-        <div className="flex h-16 items-center justify-between">
+        <div className={cn("flex items-center justify-between", showSearchBar ? "h-20" : "h-16")}>
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <PawPrint className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">PetServices</span>
+              <PawPrint className="h-8 w-8 text-black" />
+              <span className="text-xl font-bold text-gray-900">Petify</span>
             </Link>
           </div>
 
+          {/* Search Bar - Show when on search page or category selected */}
+          {showSearchBar && (
+            <div className="hidden md:block flex-1 max-w-2xl mx-8">
+              <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
+            </div>
+          )}
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          {!hideServiceCategories && (
+            <div className="hidden md:flex md:items-center md:space-x-6">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-black transition-colors group"
+                >
+                  <div className="h-10 w-10 relative">
+                    <Image
+                      src={item.icon}
+                      alt={item.shortName}
+                      fill
+                      className="object-contain group-hover:opacity-80 transition-opacity"
+                    />
+                  </div>
+                  <span>{item.shortName}</span>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Desktop Actions */}
           <div className="hidden md:flex md:items-center md:space-x-4">
@@ -269,8 +328,8 @@ export const Navigation = () => {
                   <DropdownMenuContent className="w-64" align="end">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex items-center space-x-2">
-                        <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 text-sm">?</span>
+                        <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <span className="text-black text-sm">?</span>
                         </div>
                         <span>{t('navigation.helpCenter')}</span>
                       </div>
@@ -321,15 +380,30 @@ export const Navigation = () => {
           'md:hidden',
           mobileMenuOpen ? 'block' : 'hidden'
         )}>
+          {/* Mobile Search Bar */}
+          {showSearchBar && (
+            <div className="px-4 py-3 border-b border-gray-200">
+              <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
+            </div>
+          )}
+          
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
-            {navigation.map((item) => (
+            {!hideServiceCategories && navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                {item.name}
+                <div className="h-5 w-5 relative">
+                  <Image
+                    src={item.icon}
+                    alt={item.shortName}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span>{item.shortName}</span>
               </Link>
             ))}
             {user ? (
@@ -353,7 +427,7 @@ export const Navigation = () => {
                 <div className="mt-3 px-2 space-y-1">
                   <Link
                     href="/profile"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {t('navigation.profileMobile')}
@@ -364,21 +438,21 @@ export const Navigation = () => {
                     <>
                       <Link
                         href="/pets"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.myPetsMobile')}
                       </Link>
                       <Link
                         href="/bookings"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.myBookingsMobile')}
                       </Link>
                       <Link
                         href="/favorites"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.favoritesMobile')}
@@ -391,21 +465,21 @@ export const Navigation = () => {
                     <>
                       <Link
                         href="/provider/dashboard"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.providerDashboardMobile')}
                       </Link>
                       <Link
                         href="/provider/bookings"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.manageBookingsMobile')}
                       </Link>
                       <Link
                         href="/provider/services"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('navigation.myServicesMobile')}
@@ -429,14 +503,14 @@ export const Navigation = () => {
                 <div className="px-2 space-y-1">
                   <Link
                     href="/auth/signin"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {t('navigation.signIn')}
                   </Link>
                   <Link
                     href="/auth/signup"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {t('navigation.signUp')}
@@ -624,9 +698,9 @@ export const Navigation = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">{t('auth.signup.readyToStart')}</h4>
-              <p className="text-sm text-blue-800">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">{t('auth.signup.readyToStart')}</h4>
+              <p className="text-sm text-gray-800">
                 {t('auth.signup.readyToStartDesc')}
               </p>
             </div>

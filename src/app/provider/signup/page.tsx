@@ -352,7 +352,7 @@ export default function ProviderSignupPage() {
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Become a PetServices Provider
+              Become a Petify Provider
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
               Join our network of trusted pet care professionals and grow your business
@@ -419,7 +419,7 @@ export default function ProviderSignupPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Why Join PetServices?</CardTitle>
+                  <CardTitle>Why Join Petify?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {benefits.map((benefit, index) => {
