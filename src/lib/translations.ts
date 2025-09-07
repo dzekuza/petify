@@ -299,6 +299,7 @@ export const translations = {
     myServicesMobile: 'Mano paslaugos',
     logOut: 'Atsijungti',
     serviceProvider: 'Paslaugų teikėjas',
+    switchToProvider: 'Perjungti į teikėją',
     toggleMobileMenu: 'Perjungti mobiliąjį meniu'
   },
 

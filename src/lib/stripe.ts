@@ -46,7 +46,7 @@ export const stripe = new Proxy({} as StripeServer, {
 
 // Stripe configuration
 export const STRIPE_CONFIG = {
-  currency: 'usd',
+  currency: 'eur', // Changed to EUR to match the payment page
   paymentMethods: ['card'],
   mode: 'payment' as const,
 } as const

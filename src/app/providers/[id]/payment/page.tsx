@@ -21,7 +21,6 @@ import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { getStripe } from '@/lib/stripe'
-import { calculateBookingTotal } from '@/lib/payments'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { t } from '@/lib/translations'
@@ -41,9 +40,7 @@ export default function PaymentPage() {
   
   // Stripe payment state
   const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
   const [isCreatingPayment, setIsCreatingPayment] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -212,7 +209,6 @@ export default function PaymentPage() {
 
       const data = await response.json()
       setClientSecret(data.clientSecret)
-      setPaymentIntentId(data.paymentIntentId)
     } catch (error) {
       console.error('Error creating payment intent:', error)
       toast.error(t('payment.failedToInitialize'))
@@ -225,31 +221,40 @@ export default function PaymentPage() {
   const handlePaymentSuccess = async (paymentIntent: any) => {
     if (!user || !selectedService || !provider) return
     
-    setIsProcessing(true)
-    
     try {
-      // Create booking record
+      // Warn if multiple pets are selected (database only supports single pet per booking)
+      if (selectedPets.length > 1) {
+        console.warn('Multiple pets selected but database schema only supports single pet per booking. Using first pet:', selectedPets[0]?.name)
+      }
+
+      // Calculate end time based on service duration
+      const startTime = new Date(`2000-01-01T${selectedTime}`)
+      const endTime = new Date(startTime.getTime() + (selectedService.duration || 60) * 60000)
+      const endTimeString = endTime.toTimeString().slice(0, 5)
+
+      // Create booking record using the correct database schema
       const { data: bookingData, error: bookingError } = await supabase
         .from('bookings')
         .insert({
           customer_id: user.id,
           provider_id: provider.id,
           service_id: selectedService.id,
-          pet_ids: selectedPets.map(pet => pet.id),
-          scheduled_date: selectedDate,
-          scheduled_time: selectedTime,
-          total_amount: calculateTotal(),
-          service_fee: calculateServiceFee(),
+          pet_id: selectedPets[0]?.id, // Database schema only supports single pet_id - using first selected pet
+          booking_date: selectedDate,
+          start_time: selectedTime,
+          end_time: endTimeString,
+          duration_minutes: selectedService.duration || 60,
+          total_price: calculateGrandTotal(), // Use grand total including service fee
           status: 'confirmed',
           payment_status: 'paid',
-          payment_method: 'stripe',
-          stripe_payment_intent_id: paymentIntent.id
+          payment_id: paymentIntent.id // Store Stripe payment intent ID
         })
         .select()
         .single()
 
       if (bookingError) {
-        throw new Error('Failed to create booking')
+        console.error('Booking creation error details:', bookingError)
+        throw new Error(`Failed to create booking: ${bookingError.message}`)
       }
 
       toast.success(t('payment.paymentSuccessful'))
@@ -260,8 +265,6 @@ export default function PaymentPage() {
     } catch (error) {
       console.error('Booking creation error:', error)
       toast.error(t('payment.paymentSucceededButBookingFailed'))
-    } finally {
-      setIsProcessing(false)
     }
   }
 

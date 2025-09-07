@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -51,6 +52,7 @@ interface NavigationProps {
 function NavigationContent({ hideServiceCategories = false, onFiltersClick }: NavigationProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const isSearchPage = pathname === '/search'
   const hasCategory = searchParams?.get('category')
   const showSearchBar = isSearchPage || hasCategory
@@ -152,7 +154,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
         // Close modal and redirect to provider dashboard
         setProviderSignupOpen(false)
         // Redirect to provider dashboard where they can complete their profile
-        window.location.href = '/provider/dashboard'
+        router.push('/provider/dashboard')
       }
     } catch {
       setError(t('common.error'))
@@ -198,6 +200,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       src={item.icon}
                       alt={item.shortName}
                       fill
+                      sizes="40px"
                       className="object-contain group-hover:opacity-80 transition-opacity"
                     />
                   </div>
@@ -213,13 +216,26 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
               <>
                 {/* Customer-specific actions */}
                 {user.user_metadata?.role !== 'provider' && (
-                  <Link 
-                    href="/favorites"
-                    className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3 has-[>svg]:px-2.5"
-                  >
-                    <Heart className="h-4 w-4 mr-2" />
-                    {t('navigation.favorites')}
-                  </Link>
+                  <>
+                    <Link 
+                      href="/favorites"
+                      className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3 has-[>svg]:px-2.5"
+                    >
+                      <Heart className="h-4 w-4 mr-2" />
+                      {t('navigation.favorites')}
+                    </Link>
+                    <Link href="/provider/onboarding">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          console.log('Switch to provider clicked, current user:', user)
+                        }}
+                      >
+                        {t('navigation.switchToProvider')}
+                      </Button>
+                    </Link>
+                  </>
                 )}
                 
                 {/* User Menu */}
@@ -414,6 +430,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   src={item.icon}
                                   alt={item.shortName}
                                   fill
+                                  sizes="20px"
                                   className="object-contain"
                                 />
                               </div>
@@ -480,6 +497,15 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                 >
                                   <Heart className="h-5 w-5" />
                                   <span>{t('navigation.favoritesMobile')}</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/onboarding"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <Settings className="h-5 w-5" />
+                                  <span>{t('navigation.switchToProvider')}</span>
                                 </Link>
                               </DrawerClose>
                             </>
