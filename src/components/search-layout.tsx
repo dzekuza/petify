@@ -14,7 +14,8 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer'
-import { ChevronUp, ChevronDown, List } from 'lucide-react'
+import { ChevronUp } from 'lucide-react'
+import { useDeviceDetection } from '@/lib/device-detection'
 
 interface SearchLayoutProps {
   results: SearchResult[]
@@ -28,6 +29,7 @@ interface SearchLayoutProps {
 }
 
 export const SearchLayout = ({ results, filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
+  const { isDesktop } = useDeviceDetection()
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
   const [rating, setRating] = useState(0)
@@ -36,8 +38,8 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
 
   const handleMarkerClick = (result: SearchResult) => {
     setSelectedProviderId(result.provider.id)
-    // Open drawer when marker is clicked on mobile
-    if (window.innerWidth < 1024) {
+    // Only open drawer on mobile devices
+    if (!isDesktop) {
       setIsDrawerOpen(true)
     }
   }
@@ -91,10 +93,10 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
         </div>
 
         {/* Drawer Preview when closed - Overlay on map */}
-        {!isDrawerOpen && (
+        {!isDrawerOpen && !isDesktop && (
           <div 
             className="absolute bottom-4 left-4 right-4 h-16 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg z-10 flex items-center justify-center cursor-pointer hover:bg-white transition-colors shadow-lg"
-            onClick={() => setIsDrawerOpen(true)}
+            onClick={() => !isDesktop && setIsDrawerOpen(true)}
           >
             <div className="text-center">
               <div className="text-sm font-medium text-gray-900">
@@ -108,8 +110,8 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
           </div>
         )}
 
-        {/* Drawer for Listings */}
-        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
+        {/* Drawer for Listings - Only on mobile */}
+        <Drawer open={isDrawerOpen && !isDesktop} onOpenChange={(open) => !isDesktop && setIsDrawerOpen(open)} direction="bottom">
           <DrawerContent className="h-[80vh]">
             <DrawerHeader className="pb-2">
               {/* Results Summary */}

@@ -42,21 +42,28 @@ pnpm install
 3. Set up environment variables:
 
 ```bash
-cp .env.example .env.local
+./setup-env.sh
 ```
+
+This will create a `.env.local` file with all required environment variables.
+You'll need to replace the placeholder values with your actual keys.
 
 4. Configure your environment variables in `.env.local`:
 
 ```env
+# Stripe Configuration (Required for payments)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-
-# Next.js Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret
 ```
+
+**Important**: You need to set up Stripe keys to use the payment functionality.
+See [STRIPE_SETUP.md](STRIPE_SETUP.md) for detailed instructions.
 
 5. Run the development server:
 
@@ -241,7 +248,7 @@ If you have any questions or need help, please:
 - [ ] Advanced search filters
 - [ ] Real-time chat between customers and providers
 - [ ] Mobile app (React Native)
-- [ ] Payment integration (Stripe)
+- [x] Payment integration (Stripe)
 - [ ] Push notifications
 - [ ] Multi-language support
 - [ ] Advanced analytics dashboard

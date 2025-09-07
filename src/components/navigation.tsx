@@ -213,12 +213,13 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
               <>
                 {/* Customer-specific actions */}
                 {user.user_metadata?.role !== 'provider' && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/favorites">
-                      <Heart className="h-4 w-4 mr-2" />
-                      {t('navigation.favorites')}
-                    </Link>
-                  </Button>
+                  <Link 
+                    href="/favorites"
+                    className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3 has-[>svg]:px-2.5"
+                  >
+                    <Heart className="h-4 w-4 mr-2" />
+                    {t('navigation.favorites')}
+                  </Link>
                 )}
                 
                 {/* User Menu */}

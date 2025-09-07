@@ -24,8 +24,6 @@ import {
   ArrowLeft,
   Home,
   PawPrint,
-  Dog,
-  Cat,
   Calendar as CalendarIcon
 } from 'lucide-react'
 import Image from 'next/image'
@@ -102,7 +100,7 @@ export default function ProviderDetailPage() {
     } catch (error) {
       console.log('Failed to copy to clipboard:', error)
       // Final fallback - show the URL
-      alert(`Share this link: ${window.location.href}`)
+      alert(`${t('provider.share')} this link: ${window.location.href}`)
     }
   }
 
@@ -166,9 +164,9 @@ export default function ProviderDetailPage() {
   const getPetIcon = (species: string) => {
     switch (species) {
       case 'dog':
-        return <Dog className="h-4 w-4" />
+        return <PawPrint className="h-4 w-4" />
       case 'cat':
-        return <Cat className="h-4 w-4" />
+        return <PawPrint className="h-4 w-4" />
       default:
         return <PawPrint className="h-4 w-4" />
     }
@@ -569,10 +567,10 @@ export default function ProviderDetailPage() {
                     {provider.businessName}
                   </h1>
                   <p className="text-gray-600 mb-2">
-                    Pet service in {provider.location.city}, {provider.location.state}
+                    {t('provider.petServiceIn')} {provider.location.city}, {provider.location.state}
                   </p>
                   <p className="text-gray-600 text-sm">
-                    {services.length > 0 ? `${services.length} services available` : 'Services available'} • {provider.experience} years experience
+                    {services.length > 0 ? `${services.length} {t('provider.servicesAvailable')}` : 'Services available'} • {provider.experience} {t('provider.yearsExperience')}
                   </p>
                 </div>
               </div>
@@ -594,8 +592,8 @@ export default function ProviderDetailPage() {
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
-                  <p className="text-sm text-gray-600">{provider.experience} years hosting</p>
+                  <h3 className="font-semibold text-gray-900">{t('provider.hostedBy')} {provider.businessName}</h3>
+                  <p className="text-sm text-gray-600">{provider.experience} {t('provider.yearsHosting')}</p>
                 </div>
               </div>
             </div>
@@ -605,8 +603,8 @@ export default function ProviderDetailPage() {
               <div className="flex items-start space-x-3">
                 <PawPrint className="w-5 h-5 text-gray-600 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-gray-900">Pet-friendly services</h3>
-                  <p className="text-sm text-gray-600">Professional care for your beloved pets.</p>
+                  <h3 className="font-semibold text-gray-900">{t('provider.petFriendlyServices')}</h3>
+                  <p className="text-sm text-gray-600">{t('provider.professionalCare')}</p>
                 </div>
               </div>
             </div>
@@ -619,7 +617,7 @@ export default function ProviderDetailPage() {
             {/* Services */}
             {services.length > 0 && (
               <div className="border-t border-gray-200 pt-6 mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Services & Pricing</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('provider.servicesAndPricing')}</h2>
                 <div className="space-y-4">
                   {services.slice(0, 3).map((service) => (
                     <div key={service.id} className="border border-gray-200 rounded-lg p-4">
@@ -648,7 +646,7 @@ export default function ProviderDetailPage() {
                   ))}
                   {services.length > 3 && (
                     <p className="text-sm text-gray-500 text-center">
-                      +{services.length - 3} more services available
+                      +{services.length - 3} more {t('provider.servicesAvailable')}
                     </p>
                   )}
                 </div>
@@ -701,7 +699,7 @@ export default function ProviderDetailPage() {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+                        {selectedDate ? format(selectedDate, "PPP") : "{t('provider.selectDate')}"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -720,7 +718,7 @@ export default function ProviderDetailPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TIME</label>
                   <Select value={selectedTime} onValueChange={setSelectedTime}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
+                      <SelectValue placeholder="{t('provider.selectTime')}" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="09:00">9:00 AM</SelectItem>
@@ -763,7 +761,7 @@ export default function ProviderDetailPage() {
                       <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                         <DialogTrigger asChild>
                           <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
-                            + Add another pet
+                            {t('provider.addAnotherPet')}
                           </button>
                         </DialogTrigger>
                         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -779,7 +777,7 @@ export default function ProviderDetailPage() {
                             
                             <InputWithLabel
                               id="mobilePetName"
-                              label="Pet Name"
+                              label="{t('provider.petName')}"
                               value={addPetForm.name}
                               onChange={(value) => handleAddPetFormChange('name', value)}
                               placeholder="Enter pet name"
@@ -787,22 +785,22 @@ export default function ProviderDetailPage() {
                             />
 
                             <SelectWithLabel
-                              id="mobilePetSpecies"
-                              label="Species"
+                              id="mobilePet{t('provider.species')}"
+                              label="{t('provider.species')}"
                               value={addPetForm.species}
                               onValueChange={(value) => handleAddPetFormChange('species', value)}
                               required
                               options={[
-                                { value: "dog", label: "Dog" },
-                                { value: "cat", label: "Cat" },
-                                { value: "bird", label: "Bird" },
-                                { value: "rabbit", label: "Rabbit" },
-                                { value: "other", label: "Other" }
+                                { value: "dog", label: "{t('provider.dog')}" },
+                                { value: "cat", label: "{t('provider.cat')}" },
+                                { value: "bird", label: "{t('provider.bird')}" },
+                                { value: "rabbit", label: "{t('provider.rabbit')}" },
+                                { value: "other", label: "{t('provider.other')}" }
                               ]}
                             />
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.breed')}</label>
                               <BreedSelector
                                 value={addPetForm.breed}
                                 onValueChange={(value) => handleAddPetFormChange('breed', value)}
@@ -837,7 +835,7 @@ export default function ProviderDetailPage() {
 
                             <InputWithLabel
                               id="mobileSpecialNeeds"
-                              label="Special Needs"
+                              label="{t('provider.specialNeeds')}"
                               value={addPetForm.specialNeeds}
                               onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
                               placeholder="Comma-separated list (optional)"
@@ -845,7 +843,7 @@ export default function ProviderDetailPage() {
 
                             <TextareaWithLabel
                               id="mobileMedicalNotes"
-                              label="Medical Notes"
+                              label="{t('provider.medicalNotes')}"
                               value={addPetForm.medicalNotes}
                               onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
                               placeholder="Any medical information (optional)"
@@ -859,7 +857,7 @@ export default function ProviderDetailPage() {
                                 onClick={() => setAddPetDialogOpen(false)}
                                 disabled={addPetLoading}
                               >
-                                Cancel
+                                {t('provider.cancel')}
                               </Button>
                               <Button
                                 type="submit"
@@ -894,7 +892,7 @@ export default function ProviderDetailPage() {
                             
                             <InputWithLabel
                               id="mobilePetName2"
-                              label="Pet Name"
+                              label="{t('provider.petName')}"
                               value={addPetForm.name}
                               onChange={(value) => handleAddPetFormChange('name', value)}
                               placeholder="Enter pet name"
@@ -902,23 +900,23 @@ export default function ProviderDetailPage() {
                             />
 
                             <SelectWithLabel
-                              id="mobilePetSpecies2"
-                              label="Species"
+                              id="mobilePet{t('provider.species')}2"
+                              label="{t('provider.species')}"
                               value={addPetForm.species}
                               onValueChange={(value) => handleAddPetFormChange('species', value)}
                               required
                               options={[
-                                { value: "dog", label: "Dog" },
-                                { value: "cat", label: "Cat" },
-                                { value: "bird", label: "Bird" },
-                                { value: "rabbit", label: "Rabbit" },
-                                { value: "other", label: "Other" }
+                                { value: "dog", label: "{t('provider.dog')}" },
+                                { value: "cat", label: "{t('provider.cat')}" },
+                                { value: "bird", label: "{t('provider.bird')}" },
+                                { value: "rabbit", label: "{t('provider.rabbit')}" },
+                                { value: "other", label: "{t('provider.other')}" }
                               ]}
                             />
 
                             <InputWithLabel
-                              id="mobilePetBreed2"
-                              label="Breed"
+                              id="mobilePet{t('provider.breed')}2"
+                              label="{t('provider.breed')}"
                               value={addPetForm.breed}
                               onChange={(value) => handleAddPetFormChange('breed', value)}
                               placeholder="Enter breed (optional)"
@@ -950,7 +948,7 @@ export default function ProviderDetailPage() {
 
                             <InputWithLabel
                               id="mobileSpecialNeeds2"
-                              label="Special Needs"
+                              label="{t('provider.specialNeeds')}"
                               value={addPetForm.specialNeeds}
                               onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
                               placeholder="Comma-separated list (optional)"
@@ -958,7 +956,7 @@ export default function ProviderDetailPage() {
 
                             <TextareaWithLabel
                               id="mobileMedicalNotes2"
-                              label="Medical Notes"
+                              label="{t('provider.medicalNotes')}"
                               value={addPetForm.medicalNotes}
                               onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
                               placeholder="Any medical information (optional)"
@@ -972,7 +970,7 @@ export default function ProviderDetailPage() {
                                 onClick={() => setAddPetDialogOpen(false)}
                                 disabled={addPetLoading}
                               >
-                                Cancel
+                                {t('provider.cancel')}
                               </Button>
                               <Button
                                 type="submit"
@@ -992,7 +990,7 @@ export default function ProviderDetailPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TYPE</label>
                   <Select value={selectedService} onValueChange={setSelectedService}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select service" />
+                      <SelectValue placeholder="{t('provider.selectService')}" />
                     </SelectTrigger>
                     <SelectContent>
                       {services.map((service) => (
@@ -1015,7 +1013,7 @@ export default function ProviderDetailPage() {
               <div className="text-lg font-semibold text-gray-900">
                 €{provider.priceRange.min}-€{provider.priceRange.max}
               </div>
-              <div className="text-sm text-gray-600">per service</div>
+              <div className="text-sm text-gray-600">{t('provider.perService')}</div>
             </div>
             <Button 
               variant="gradient"
@@ -1039,7 +1037,7 @@ export default function ProviderDetailPage() {
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back</span>
+              <span>{t('provider.back')}</span>
             </button>
             <div className="flex items-center space-x-4">
               <button
@@ -1047,14 +1045,14 @@ export default function ProviderDetailPage() {
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Share2 className="w-4 h-4" />
-                <span>Share</span>
+                <span>{t('provider.share')}</span>
               </button>
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Heart className={`w-4 h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
-                <span>Save</span>
+                <span>{t('provider.save')}</span>
               </button>
             </div>
           </div>
@@ -1110,12 +1108,12 @@ export default function ProviderDetailPage() {
                     {provider.businessName}
                   </h1>
                   <p className="text-lg text-gray-600 mb-4">
-                    Pet service in {provider.location.city}, {provider.location.state}
+                    {t('provider.petServiceIn')} {provider.location.city}, {provider.location.state}
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>{services.length} services available</span>
+                    <span>{services.length} {t('provider.servicesAvailable')}</span>
                     <span>•</span>
-                    <span>{provider.experience} years experience</span>
+                    <span>{provider.experience} {t('provider.yearsExperience')}</span>
                     <span>•</span>
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -1134,8 +1132,8 @@ export default function ProviderDetailPage() {
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Hosted by {provider.businessName}</h3>
-                      <p className="text-gray-600">{provider.experience} years hosting</p>
+                      <h3 className="text-lg font-semibold text-gray-900">{t('provider.hostedBy')} {provider.businessName}</h3>
+                      <p className="text-gray-600">{provider.experience} {t('provider.yearsHosting')}</p>
                     </div>
                   </div>
                 </div>
@@ -1145,8 +1143,8 @@ export default function ProviderDetailPage() {
                   <div className="flex items-start space-x-4">
                     <PawPrint className="w-6 h-6 text-gray-600 mt-1" />
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Pet-friendly services</h3>
-                      <p className="text-gray-600">Professional care for your beloved pets.</p>
+                      <h3 className="text-lg font-semibold text-gray-900">{t('provider.petFriendlyServices')}</h3>
+                      <p className="text-gray-600">{t('provider.professionalCare')}</p>
                     </div>
                   </div>
                 </div>
@@ -1159,7 +1157,7 @@ export default function ProviderDetailPage() {
                 {/* Services */}
                 {services.length > 0 && (
                   <div className="border-t border-gray-200 pt-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Services & Pricing</h2>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('provider.servicesAndPricing')}</h2>
                     <div className="space-y-4">
                       {services.map((service) => (
                         <div key={service.id} className="border border-gray-200 rounded-xl p-6">
@@ -1228,7 +1226,7 @@ export default function ProviderDetailPage() {
                   <div className="text-2xl font-bold text-gray-900 mb-2">
                     €{provider.priceRange.min}-€{provider.priceRange.max}
                   </div>
-                  <div className="text-gray-600 mb-6">per service</div>
+                  <div className="text-gray-600 mb-6">{t('provider.perService')}</div>
                   
                   <div className="space-y-4 mb-6">
                     <div>
@@ -1243,7 +1241,7 @@ export default function ProviderDetailPage() {
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+                            {selectedDate ? format(selectedDate, "PPP") : "{t('provider.selectDate')}"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -1262,7 +1260,7 @@ export default function ProviderDetailPage() {
                       label="SERVICE TIME"
                       value={selectedTime}
                       onValueChange={setSelectedTime}
-                      placeholder="Select time"
+                      placeholder="{t('provider.selectTime')}"
                       required
                       options={[
                         { value: "09:00", label: "9:00 AM" },
@@ -1303,7 +1301,7 @@ export default function ProviderDetailPage() {
                           <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
                             <DialogTrigger asChild>
                               <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
-                                + Add another pet
+                                {t('provider.addAnotherPet')}
                               </button>
                             </DialogTrigger>
                             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -1319,7 +1317,7 @@ export default function ProviderDetailPage() {
                                 
                                 <InputWithLabel
                                   id="petName"
-                                  label="Pet Name"
+                                  label="{t('provider.petName')}"
                                   value={addPetForm.name}
                                   onChange={(value) => handleAddPetFormChange('name', value)}
                                   placeholder="Enter pet name"
@@ -1327,22 +1325,22 @@ export default function ProviderDetailPage() {
                                 />
 
                                 <SelectWithLabel
-                                  id="petSpecies"
-                                  label="Species"
+                                  id="pet{t('provider.species')}"
+                                  label="{t('provider.species')}"
                                   value={addPetForm.species}
                                   onValueChange={(value) => handleAddPetFormChange('species', value)}
                                   required
                                   options={[
-                                    { value: "dog", label: "Dog" },
-                                    { value: "cat", label: "Cat" },
-                                    { value: "bird", label: "Bird" },
-                                    { value: "rabbit", label: "Rabbit" },
-                                    { value: "other", label: "Other" }
+                                    { value: "dog", label: "{t('provider.dog')}" },
+                                    { value: "cat", label: "{t('provider.cat')}" },
+                                    { value: "bird", label: "{t('provider.bird')}" },
+                                    { value: "rabbit", label: "{t('provider.rabbit')}" },
+                                    { value: "other", label: "{t('provider.other')}" }
                                   ]}
                                 />
 
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.breed')}</label>
                                   <BreedSelector
                                     value={addPetForm.breed}
                                     onValueChange={(value) => handleAddPetFormChange('breed', value)}
@@ -1377,7 +1375,7 @@ export default function ProviderDetailPage() {
 
                                 <InputWithLabel
                                   id="specialNeeds"
-                                  label="Special Needs"
+                                  label="{t('provider.specialNeeds')}"
                                   value={addPetForm.specialNeeds}
                                   onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
                                   placeholder="Comma-separated list (optional)"
@@ -1385,7 +1383,7 @@ export default function ProviderDetailPage() {
 
                                 <TextareaWithLabel
                                   id="medicalNotes"
-                                  label="Medical Notes"
+                                  label="{t('provider.medicalNotes')}"
                                   value={addPetForm.medicalNotes}
                                   onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
                                   placeholder="Any medical information (optional)"
@@ -1399,7 +1397,7 @@ export default function ProviderDetailPage() {
                                     onClick={() => setAddPetDialogOpen(false)}
                                     disabled={addPetLoading}
                                   >
-                                    Cancel
+                                    {t('provider.cancel')}
                                   </Button>
                                   <Button
                                     type="submit"
@@ -1434,7 +1432,7 @@ export default function ProviderDetailPage() {
                                 
                                 <InputWithLabel
                                   id="petName"
-                                  label="Pet Name"
+                                  label="{t('provider.petName')}"
                                   value={addPetForm.name}
                                   onChange={(value) => handleAddPetFormChange('name', value)}
                                   placeholder="Enter pet name"
@@ -1442,22 +1440,22 @@ export default function ProviderDetailPage() {
                                 />
 
                                 <SelectWithLabel
-                                  id="petSpecies"
-                                  label="Species"
+                                  id="pet{t('provider.species')}"
+                                  label="{t('provider.species')}"
                                   value={addPetForm.species}
                                   onValueChange={(value) => handleAddPetFormChange('species', value)}
                                   required
                                   options={[
-                                    { value: "dog", label: "Dog" },
-                                    { value: "cat", label: "Cat" },
-                                    { value: "bird", label: "Bird" },
-                                    { value: "rabbit", label: "Rabbit" },
-                                    { value: "other", label: "Other" }
+                                    { value: "dog", label: "{t('provider.dog')}" },
+                                    { value: "cat", label: "{t('provider.cat')}" },
+                                    { value: "bird", label: "{t('provider.bird')}" },
+                                    { value: "rabbit", label: "{t('provider.rabbit')}" },
+                                    { value: "other", label: "{t('provider.other')}" }
                                   ]}
                                 />
 
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.breed')}</label>
                                   <BreedSelector
                                     value={addPetForm.breed}
                                     onValueChange={(value) => handleAddPetFormChange('breed', value)}
@@ -1492,7 +1490,7 @@ export default function ProviderDetailPage() {
 
                                 <InputWithLabel
                                   id="specialNeeds"
-                                  label="Special Needs"
+                                  label="{t('provider.specialNeeds')}"
                                   value={addPetForm.specialNeeds}
                                   onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
                                   placeholder="Comma-separated list (optional)"
@@ -1500,7 +1498,7 @@ export default function ProviderDetailPage() {
 
                                 <TextareaWithLabel
                                   id="medicalNotes"
-                                  label="Medical Notes"
+                                  label="{t('provider.medicalNotes')}"
                                   value={addPetForm.medicalNotes}
                                   onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
                                   placeholder="Any medical information (optional)"
@@ -1514,7 +1512,7 @@ export default function ProviderDetailPage() {
                                     onClick={() => setAddPetDialogOpen(false)}
                                     disabled={addPetLoading}
                                   >
-                                    Cancel
+                                    {t('provider.cancel')}
                                   </Button>
                                   <Button
                                     type="submit"
@@ -1534,7 +1532,7 @@ export default function ProviderDetailPage() {
                       label="SERVICE TYPE"
                       value={selectedService}
                       onValueChange={setSelectedService}
-                      placeholder="Select service"
+                      placeholder="{t('provider.selectService')}"
                       required
                       options={services.map((service) => ({
                         value: service.id,
@@ -1550,11 +1548,11 @@ export default function ProviderDetailPage() {
                     onClick={handleBookService}
                     disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
                   >
-                    Book Service
+                    {t('provider.bookService')}
                   </Button>
                   
                   <div className="text-center text-sm text-gray-600">
-                    Secure booking • No payment required upfront
+                    {t('provider.secureBooking')}
                   </div>
                 </div>
               </div>

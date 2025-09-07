@@ -149,7 +149,6 @@ export default function HowItWorksPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {steps.map((step, index) => {
-                const Icon = step.icon
                 return (
                   <div key={step.number} className="relative">
                     <Card className="h-full hover:shadow-lg transition-shadow">
@@ -199,7 +198,6 @@ export default function HowItWorksPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, index) => {
-                const Icon = feature.icon
                 return (
                   <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">

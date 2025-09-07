@@ -54,6 +54,25 @@ export const ProviderCard = ({
     }
   }
 
+  const getServiceTypeDisplayName = (serviceType: string) => {
+    switch (serviceType) {
+      case 'grooming':
+        return 'Kirpykla'
+      case 'veterinary':
+        return 'Veterinarija'
+      case 'boarding':
+        return 'Prieglauda'
+      case 'training':
+        return 'Dresūra'
+      case 'walking':
+        return 'Šunų vedimas'
+      case 'sitting':
+        return 'Prižiūrėjimas'
+      default:
+        return 'Paslaugos'
+    }
+  }
+
   const getAvailabilityStatus = () => {
     const now = new Date()
     const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
@@ -104,8 +123,15 @@ export const ProviderCard = ({
             )}
           </div>
           
+          {/* Service Category Badge */}
+          <div className="absolute top-2 left-2 flex flex-col space-y-1">
+            <Badge variant="secondary" className="border-transparent bg-white/90 text-orange-700 text-xs">
+              {getServiceTypeDisplayName(provider.services[0])}
+            </Badge>
+          </div>
+
           {/* Overlay Badges */}
-          <div className="absolute top-3 left-3 flex flex-col space-y-2">
+          <div className="absolute top-3 right-3 flex flex-col space-y-2">
             <Badge variant="secondary" className={`bg-white/90 ${
               availability.status === 'open' ? 'text-green-700' : 
               availability.status === 'unavailable' ? 'text-orange-700' : 
@@ -126,7 +152,7 @@ export const ProviderCard = ({
           {/* Favorite Button */}
           <button
             onClick={handleToggleFavorite}
-            className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+            className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
             aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
           >
             <Heart 
@@ -175,19 +201,7 @@ export const ProviderCard = ({
             {provider.description}
           </p>
 
-          {/* Services */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {provider.services.slice(0, 3).map((service) => (
-              <Badge key={service} variant="outline" className="text-xs">
-                {getServiceCategoryIcon(service)} {service}
-              </Badge>
-            ))}
-            {provider.services.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{provider.services.length - 3} {t('search.more')}
-              </Badge>
-            )}
-          </div>
+          {/* Services - Moved to overlay */}
 
           {/* Location and Distance */}
           <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">

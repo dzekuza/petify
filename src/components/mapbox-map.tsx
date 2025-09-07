@@ -9,10 +9,11 @@ import Map, {
 } from 'react-map-gl/mapbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Star, Heart, X, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Star, Heart, X, ChevronRight, ChevronLeft, MapPin, Clock, Users, Award } from 'lucide-react'
 import Image from 'next/image'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
+import { t } from '@/lib/translations'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Custom styles for mapbox popup and canvas
@@ -68,10 +69,7 @@ export const MapboxMap = ({
   results, 
   onMarkerClick, 
   selectedProviderId,
-  className = '',
-  onSearchClick,
-  onFiltersClick,
-  showControls = true
+  className = ''
 }: MapboxMapProps) => {
   // Calculate center based on results
   const calculateMapCenter = useCallback(() => {
@@ -215,6 +213,72 @@ export const MapboxMap = ({
     return `€${priceRange.min}-€${priceRange.max}`
   }
 
+  const getServiceCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'grooming':
+        return '✂️'
+      case 'veterinary':
+        return '🏥'
+      case 'boarding':
+        return '🏠'
+      case 'training':
+        return '🎓'
+      case 'walking':
+        return '🚶'
+      case 'sitting':
+        return '💝'
+      default:
+        return '🐾'
+    }
+  }
+
+  const getServiceTypeDisplayName = (serviceType: string) => {
+    switch (serviceType) {
+      case 'grooming':
+        return 'Kirpykla'
+      case 'veterinary':
+        return 'Veterinarija'
+      case 'boarding':
+        return 'Prieglauda'
+      case 'training':
+        return 'Dresūra'
+      case 'walking':
+        return 'Šunų vedimas'
+      case 'sitting':
+        return 'Prižiūrėjimas'
+      default:
+        return 'Paslaugos'
+    }
+  }
+
+  const getAvailabilityStatus = (provider: SearchResult['provider']) => {
+    const now = new Date()
+    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
+    const todaySlots = provider.availability[currentDay] || []
+    
+    // Check if provider has any availability set up
+    const hasAnyAvailability = Object.values(provider.availability).some(daySlots => 
+      Array.isArray(daySlots) && daySlots.length > 0
+    )
+    
+    if (!hasAnyAvailability) {
+      return { status: 'unavailable', text: t('search.notSet') }
+    }
+    
+    if (todaySlots.length === 0) {
+      return { status: 'closed', text: t('search.closed') }
+    }
+    
+    const currentTime = now.toTimeString().slice(0, 5)
+    const isAvailable = todaySlots.some(slot => 
+      slot.available && currentTime >= slot.start && currentTime <= slot.end
+    )
+    
+    return isAvailable 
+      ? { status: 'open', text: t('search.open') }
+      : { status: 'closed', text: t('search.closed') }
+  }
+
   if (!MAPBOX_CONFIG.accessToken) {
     return (
       <div className={`h-96 bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
@@ -278,9 +342,9 @@ export const MapboxMap = ({
             offset={[0, -10]}
             className="mapbox-popup"
           >
-            <div className="w-80 bg-white rounded-xl shadow-xl overflow-hidden">
+            <div className="w-72 bg-white rounded-xl shadow-xl overflow-hidden">
               {/* Cover Image Section */}
-              <div className="relative h-48 w-full overflow-hidden">
+              <div className="relative h-32 w-full overflow-hidden">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
                   <div className="relative w-full h-full">
                     {selectedResult.provider.images.map((image, index) => (
@@ -303,128 +367,100 @@ export const MapboxMap = ({
                   </div>
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    <span className="text-4xl">
-                      {selectedResult.provider.services[0] === 'grooming' ? '🐕' : 
-                       selectedResult.provider.services[0] === 'veterinary' ? '🏥' :
-                       selectedResult.provider.services[0] === 'boarding' ? '🏠' :
-                       selectedResult.provider.services[0] === 'training' ? '🎓' : '🐾'}
+                    <span className="text-3xl">
+                      {getServiceCategoryIcon(selectedResult.provider.services[0])}
                     </span>
                   </div>
                 )}
                 
+                {/* Overlay Badges */}
+                <div className="absolute top-2 left-2 flex flex-col space-y-1">
+                  <Badge variant="secondary" className="border-transparent bg-white/90 text-orange-700 text-xs">
+                    {getServiceTypeDisplayName(selectedResult.provider.services[0])}
+                  </Badge>
+                  {selectedResult.provider.certifications && selectedResult.provider.certifications.length > 0 && (
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                      <Award className="h-2 w-2 mr-1" />
+                      {t('search.certified')}
+                    </Badge>
+                  )}
+                </div>
+                
                 {/* Overlay Icons */}
-                <div className="absolute top-3 right-3 flex items-center space-x-2">
+                <div className="absolute top-2 right-2 flex items-center space-x-1">
                   {/* Heart Icon */}
-                  <button className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
-                    <Heart className="w-4 h-4 text-gray-700" />
+                  <button className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
+                    <Heart className="w-3 h-3 text-gray-700" />
                   </button>
                   
                   {/* Close Icon */}
                   <button 
                     onClick={handleClosePopup}
-                    className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                    className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
                   >
-                    <X className="w-4 h-4 text-gray-700" />
+                    <X className="w-3 h-3 text-gray-700" />
                   </button>
                 </div>
-                
-                {/* Navigation Arrows (if multiple images) */}
-                {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
-                  <>
-                    <button 
-                      onClick={handlePopupPreviousImage}
-                      disabled={isPopupTransitioning}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft className="w-4 h-4 text-gray-700" />
-                    </button>
-                    <button 
-                      onClick={handlePopupNextImage}
-                      disabled={isPopupTransitioning}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronRight className="w-4 h-4 text-gray-700" />
-                    </button>
-                  </>
-                )}
-                
-                {/* Pagination Dots (if multiple images) */}
-                {selectedResult.provider.images && selectedResult.provider.images.length > 1 && (
-                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                    {selectedResult.provider.images.slice(0, 5).map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          if (!isPopupTransitioning) {
-                            setIsPopupTransitioning(true)
-                            setPopupImageIndex(index)
-                            setTimeout(() => setIsPopupTransitioning(false), 300)
-                          }
-                        }}
-                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                          index === popupImageIndex
-                            ? 'bg-white scale-125'
-                            : 'bg-white/60 hover:bg-white/80'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
               
               {/* Content Section */}
-              <div className="p-4">
+              <div className="p-3">
                 {/* Title and Rating */}
                 <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-900 text-base leading-tight">
+                  <h4 className="font-semibold text-gray-900 text-sm leading-tight">
                     {selectedResult.provider.businessName}
                   </h4>
                   <div className="flex items-center ml-2">
-                    <Star className="w-4 h-4 text-black fill-current" />
-                    <span className="text-sm font-medium text-gray-900 ml-1">
+                    <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                    <span className="text-xs font-medium text-gray-900 ml-1">
                       {selectedResult.provider.rating}
                     </span>
-                    <span className="text-sm text-gray-500 ml-1">
+                    <span className="text-xs text-gray-500 ml-1">
                       ({selectedResult.provider.reviewCount})
                     </span>
                   </div>
                 </div>
                 
                 {/* Description */}
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                <p className="text-xs text-gray-600 mb-2 line-clamp-2">
                   {selectedResult.provider.description}
                 </p>
                 
-                {/* Service Tags */}
-                <div className="flex items-center space-x-1 mb-3">
-                  {selectedResult.provider.services.map((service) => (
-                    <Badge key={service} variant="outline" className="text-xs">
-                      {service}
-                    </Badge>
-                  ))}
+                {/* Services - Moved to overlay */}
+                
+                {/* Location and Experience */}
+                <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
+                  <div className="flex items-center">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {selectedResult.provider.location.city}
+                  </div>
+                  <div className="flex items-center">
+                    <Users className="h-3 w-3 mr-1" />
+                    {selectedResult.provider.experience}y exp
+                  </div>
                 </div>
                 
-                {/* Price */}
+                {/* Price and Actions */}
                 <div className="flex items-center justify-between">
-                  <div className="text-lg font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-gray-900">
                     {formatPrice(selectedResult.provider.priceRange)}
-                    <span className="text-sm font-normal text-gray-600 ml-1">service</span>
+                    <span className="text-xs font-normal text-gray-600 ml-1">service</span>
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-1">
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="text-xs px-3 py-1"
+                      className="text-xs px-2 py-1 h-6"
                     >
-                      View Details
+                      View
                     </Button>
                     <Button 
                       size="sm" 
-                      className="text-xs px-3 py-1"
+                      className="text-xs px-2 py-1 h-6"
                     >
-                      Book Now
+                      Book
                     </Button>
                   </div>
                 </div>
@@ -440,7 +476,7 @@ export const MapboxMap = ({
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
             <div className="flex">
               {/* Image Section */}
-              <div className="relative w-24 h-24 flex-shrink-0">
+              <div className="relative w-20 h-20 flex-shrink-0">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
                   <Image 
                     src={selectedResult.provider.images[0]} 
@@ -450,19 +486,17 @@ export const MapboxMap = ({
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    <span className="text-2xl">
-                      {selectedResult.provider.services[0] === 'grooming' ? '🐕' : 
-                       selectedResult.provider.services[0] === 'veterinary' ? '🏥' :
-                       selectedResult.provider.services[0] === 'boarding' ? '🏠' :
-                       selectedResult.provider.services[0] === 'training' ? '🎓' : '🐾'}
+                    <span className="text-xl">
+                      {getServiceCategoryIcon(selectedResult.provider.services[0])}
                     </span>
                   </div>
                 )}
                 
+                
                 {/* Close Button */}
                 <button 
                   onClick={handleClosePopup}
-                  className="absolute top-1 left-1 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                  className="absolute top-1 right-1 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
                 >
                   <X className="w-3 h-3 text-gray-700" />
                 </button>
@@ -474,14 +508,24 @@ export const MapboxMap = ({
                   <h4 className="font-semibold text-gray-900 text-sm leading-tight truncate">
                     {selectedResult.provider.businessName}
                   </h4>
-                  <button className="w-6 h-6 flex items-center justify-center ml-2 flex-shrink-0">
-                    <Heart className="w-4 h-4 text-gray-400" />
+                  <button className="w-5 h-5 flex items-center justify-center ml-2 flex-shrink-0">
+                    <Heart className="w-3 h-3 text-gray-400" />
                   </button>
                 </div>
                 
-                <p className="text-xs text-gray-600 mb-2 truncate">
-                  {selectedResult.provider.services.join(' • ')} • {selectedResult.provider.location.city}
-                </p>
+                {/* Services - Moved to overlay */}
+                
+                {/* Location and Experience */}
+                <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
+                  <div className="flex items-center">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {selectedResult.provider.location.city}
+                  </div>
+                  <div className="flex items-center">
+                    <Users className="h-3 w-3 mr-1" />
+                    {selectedResult.provider.experience}y
+                  </div>
+                </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-gray-900">
@@ -490,7 +534,7 @@ export const MapboxMap = ({
                   </div>
                   
                   <div className="flex items-center">
-                    <Star className="w-3 h-3 text-black fill-current" />
+                    <Star className="w-3 h-3 text-yellow-400 fill-current" />
                     <span className="text-xs font-medium text-gray-900 ml-1">
                       {selectedResult.provider.rating}
                     </span>
