@@ -11,8 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
 import { 
   Star, 
   Clock, 
@@ -24,8 +23,6 @@ import {
   ArrowLeft,
   Home,
   PawPrint,
-  Plus,
-  Minus,
   Dog,
   Cat
 } from 'lucide-react'
@@ -35,12 +32,14 @@ import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { useDeviceDetection } from '@/lib/device-detection'
 
 
 export default function ProviderDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
+  const { isDesktop } = useDeviceDetection()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
@@ -216,6 +215,27 @@ export default function ProviderDetailPage() {
 
   const handleAddPetFormChange = (field: string, value: string) => {
     setAddPetForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleBookService = () => {
+    if (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0) {
+      return
+    }
+
+    const bookingParams = new URLSearchParams({
+      date: selectedDate,
+      time: selectedTime,
+      pets: selectedPets.join(','),
+      service: selectedService
+    })
+
+    if (isDesktop) {
+      // Desktop: redirect directly to payment page
+      router.push(`/providers/${params.id}/payment?${bookingParams.toString()}`)
+    } else {
+      // Mobile: redirect to booking flow
+      router.push(`/providers/${params.id}/book?${bookingParams.toString()}`)
+    }
   }
 
   useEffect(() => {
@@ -659,6 +679,310 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Mobile Booking Form */}
+            <div className="border-t border-gray-200 pt-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Book this service</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE DATE</label>
+                  <Input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TIME</label>
+                  <Select value={selectedTime} onValueChange={setSelectedTime}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="09:00">9:00 AM</SelectItem>
+                      <SelectItem value="10:00">10:00 AM</SelectItem>
+                      <SelectItem value="11:00">11:00 AM</SelectItem>
+                      <SelectItem value="12:00">12:00 PM</SelectItem>
+                      <SelectItem value="13:00">1:00 PM</SelectItem>
+                      <SelectItem value="14:00">2:00 PM</SelectItem>
+                      <SelectItem value="15:00">3:00 PM</SelectItem>
+                      <SelectItem value="16:00">4:00 PM</SelectItem>
+                      <SelectItem value="17:00">5:00 PM</SelectItem>
+                      <SelectItem value="18:00">6:00 PM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">SELECT PETS</label>
+                  {userPets.length > 0 ? (
+                    <div className="space-y-2">
+                      <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+                        {userPets.map((pet) => (
+                          <div key={pet.id} className="flex items-center space-x-3">
+                            <Checkbox
+                              id={`mobile-pet-${pet.id}`}
+                              checked={selectedPets.includes(pet.id)}
+                              onCheckedChange={(checked) => handlePetSelection(pet.id, checked as boolean)}
+                            />
+                            <label
+                              htmlFor={`mobile-pet-${pet.id}`}
+                              className="flex items-center space-x-2 cursor-pointer flex-1"
+                            >
+                              {getPetIcon(pet.species)}
+                              <span className="text-sm text-gray-900">{pet.name}</span>
+                              <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
+                        <DialogTrigger asChild>
+                          <button className="w-full text-sm text-blue-600 hover:text-blue-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-blue-300 transition-colors">
+                            + Add another pet
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Add Your Pet</DialogTitle>
+                          </DialogHeader>
+                          <form onSubmit={handleAddPet} className="space-y-4">
+                            {addPetError && (
+                              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
+                                {addPetError}
+                              </div>
+                            )}
+                            
+                            <InputWithLabel
+                              id="mobilePetName"
+                              label="Pet Name"
+                              value={addPetForm.name}
+                              onChange={(value) => handleAddPetFormChange('name', value)}
+                              placeholder="Enter pet name"
+                              required
+                            />
+
+                            <SelectWithLabel
+                              id="mobilePetSpecies"
+                              label="Species"
+                              value={addPetForm.species}
+                              onValueChange={(value) => handleAddPetFormChange('species', value)}
+                              required
+                              options={[
+                                { value: "dog", label: "Dog" },
+                                { value: "cat", label: "Cat" },
+                                { value: "bird", label: "Bird" },
+                                { value: "rabbit", label: "Rabbit" },
+                                { value: "other", label: "Other" }
+                              ]}
+                            />
+
+                            <InputWithLabel
+                              id="mobilePetBreed"
+                              label="Breed"
+                              value={addPetForm.breed}
+                              onChange={(value) => handleAddPetFormChange('breed', value)}
+                              placeholder="Enter breed (optional)"
+                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <InputWithLabel
+                                id="mobilePetAge"
+                                label="Age (years)"
+                                type="number"
+                                value={addPetForm.age}
+                                onChange={(value) => handleAddPetFormChange('age', value)}
+                                placeholder="0"
+                                required
+                                min={0}
+                                max={30}
+                              />
+                              <InputWithLabel
+                                id="mobilePetWeight"
+                                label="Weight (kg)"
+                                type="number"
+                                value={addPetForm.weight}
+                                onChange={(value) => handleAddPetFormChange('weight', value)}
+                                placeholder="0.0"
+                                min={0}
+                                step={0.1}
+                              />
+                            </div>
+
+                            <InputWithLabel
+                              id="mobileSpecialNeeds"
+                              label="Special Needs"
+                              value={addPetForm.specialNeeds}
+                              onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+                              placeholder="Comma-separated list (optional)"
+                            />
+
+                            <TextareaWithLabel
+                              id="mobileMedicalNotes"
+                              label="Medical Notes"
+                              value={addPetForm.medicalNotes}
+                              onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+                              placeholder="Any medical information (optional)"
+                              rows={3}
+                            />
+
+                            <div className="flex justify-end space-x-3 pt-4">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setAddPetDialogOpen(false)}
+                                disabled={addPetLoading}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                disabled={addPetLoading || !addPetForm.name || !addPetForm.age}
+                              >
+                                {addPetLoading ? 'Adding...' : 'Add Pet'}
+                              </Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  ) : (
+                    <div className="border border-gray-300 rounded-md p-3 text-center">
+                      <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+                      <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
+                        <DialogTrigger asChild>
+                          <button className="text-sm text-blue-600 hover:text-blue-800">
+                            Add your first pet
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Add Your Pet</DialogTitle>
+                          </DialogHeader>
+                          <form onSubmit={handleAddPet} className="space-y-4">
+                            {addPetError && (
+                              <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
+                                {addPetError}
+                              </div>
+                            )}
+                            
+                            <InputWithLabel
+                              id="mobilePetName2"
+                              label="Pet Name"
+                              value={addPetForm.name}
+                              onChange={(value) => handleAddPetFormChange('name', value)}
+                              placeholder="Enter pet name"
+                              required
+                            />
+
+                            <SelectWithLabel
+                              id="mobilePetSpecies2"
+                              label="Species"
+                              value={addPetForm.species}
+                              onValueChange={(value) => handleAddPetFormChange('species', value)}
+                              required
+                              options={[
+                                { value: "dog", label: "Dog" },
+                                { value: "cat", label: "Cat" },
+                                { value: "bird", label: "Bird" },
+                                { value: "rabbit", label: "Rabbit" },
+                                { value: "other", label: "Other" }
+                              ]}
+                            />
+
+                            <InputWithLabel
+                              id="mobilePetBreed2"
+                              label="Breed"
+                              value={addPetForm.breed}
+                              onChange={(value) => handleAddPetFormChange('breed', value)}
+                              placeholder="Enter breed (optional)"
+                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <InputWithLabel
+                                id="mobilePetAge2"
+                                label="Age (years)"
+                                type="number"
+                                value={addPetForm.age}
+                                onChange={(value) => handleAddPetFormChange('age', value)}
+                                placeholder="0"
+                                required
+                                min={0}
+                                max={30}
+                              />
+                              <InputWithLabel
+                                id="mobilePetWeight2"
+                                label="Weight (kg)"
+                                type="number"
+                                value={addPetForm.weight}
+                                onChange={(value) => handleAddPetFormChange('weight', value)}
+                                placeholder="0.0"
+                                min={0}
+                                step={0.1}
+                              />
+                            </div>
+
+                            <InputWithLabel
+                              id="mobileSpecialNeeds2"
+                              label="Special Needs"
+                              value={addPetForm.specialNeeds}
+                              onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+                              placeholder="Comma-separated list (optional)"
+                            />
+
+                            <TextareaWithLabel
+                              id="mobileMedicalNotes2"
+                              label="Medical Notes"
+                              value={addPetForm.medicalNotes}
+                              onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+                              placeholder="Any medical information (optional)"
+                              rows={3}
+                            />
+
+                            <div className="flex justify-end space-x-3 pt-4">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setAddPetDialogOpen(false)}
+                                disabled={addPetLoading}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                disabled={addPetLoading || !addPetForm.name || !addPetForm.age}
+                              >
+                                {addPetLoading ? 'Adding...' : 'Add Pet'}
+                              </Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TYPE</label>
+                  <Select value={selectedService} onValueChange={setSelectedService}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name} - €{service.price}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -674,11 +998,10 @@ export default function ProviderDetailPage() {
             <Button 
               variant="gradient"
               size="lg"
-              asChild
+              onClick={handleBookService}
+              disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
             >
-              <Link href={`/providers/${params.id}/book`}>
-                Book
-              </Link>
+              Book
             </Button>
           </div>
         </div>
@@ -886,36 +1209,35 @@ export default function ProviderDetailPage() {
                   <div className="text-gray-600 mb-6">per service</div>
                   
                   <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE DATE</label>
-                      <Input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TIME</label>
-                      <Select value={selectedTime} onValueChange={setSelectedTime}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="09:00">9:00 AM</SelectItem>
-                          <SelectItem value="10:00">10:00 AM</SelectItem>
-                          <SelectItem value="11:00">11:00 AM</SelectItem>
-                          <SelectItem value="12:00">12:00 PM</SelectItem>
-                          <SelectItem value="13:00">1:00 PM</SelectItem>
-                          <SelectItem value="14:00">2:00 PM</SelectItem>
-                          <SelectItem value="15:00">3:00 PM</SelectItem>
-                          <SelectItem value="16:00">4:00 PM</SelectItem>
-                          <SelectItem value="17:00">5:00 PM</SelectItem>
-                          <SelectItem value="18:00">6:00 PM</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <InputWithLabel
+                      id="serviceDate"
+                      label="SERVICE DATE"
+                      type="date"
+                      value={selectedDate}
+                      onChange={setSelectedDate}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                    <SelectWithLabel
+                      id="serviceTime"
+                      label="SERVICE TIME"
+                      value={selectedTime}
+                      onValueChange={setSelectedTime}
+                      placeholder="Select time"
+                      required
+                      options={[
+                        { value: "09:00", label: "9:00 AM" },
+                        { value: "10:00", label: "10:00 AM" },
+                        { value: "11:00", label: "11:00 AM" },
+                        { value: "12:00", label: "12:00 PM" },
+                        { value: "13:00", label: "1:00 PM" },
+                        { value: "14:00", label: "2:00 PM" },
+                        { value: "15:00", label: "3:00 PM" },
+                        { value: "16:00", label: "4:00 PM" },
+                        { value: "17:00", label: "5:00 PM" },
+                        { value: "18:00", label: "6:00 PM" }
+                      ]}
+                    />
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">SELECT PETS</label>
                       {userPets.length > 0 ? (
@@ -956,91 +1278,78 @@ export default function ProviderDetailPage() {
                                   </div>
                                 )}
                                 
-                                <div>
-                                  <Label htmlFor="petName">Pet Name *</Label>
-                                  <Input
-                                    id="petName"
-                                    value={addPetForm.name}
-                                    onChange={(e) => handleAddPetFormChange('name', e.target.value)}
-                                    required
-                                    placeholder="Enter pet name"
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="petName"
+                                  label="Pet Name"
+                                  value={addPetForm.name}
+                                  onChange={(value) => handleAddPetFormChange('name', value)}
+                                  placeholder="Enter pet name"
+                                  required
+                                />
 
-                                <div>
-                                  <Label htmlFor="petSpecies">Species *</Label>
-                                  <Select value={addPetForm.species} onValueChange={(value) => handleAddPetFormChange('species', value)}>
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="dog">Dog</SelectItem>
-                                      <SelectItem value="cat">Cat</SelectItem>
-                                      <SelectItem value="bird">Bird</SelectItem>
-                                      <SelectItem value="rabbit">Rabbit</SelectItem>
-                                      <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                                <SelectWithLabel
+                                  id="petSpecies"
+                                  label="Species"
+                                  value={addPetForm.species}
+                                  onValueChange={(value) => handleAddPetFormChange('species', value)}
+                                  required
+                                  options={[
+                                    { value: "dog", label: "Dog" },
+                                    { value: "cat", label: "Cat" },
+                                    { value: "bird", label: "Bird" },
+                                    { value: "rabbit", label: "Rabbit" },
+                                    { value: "other", label: "Other" }
+                                  ]}
+                                />
 
-                                <div>
-                                  <Label htmlFor="petBreed">Breed</Label>
-                                  <Input
-                                    id="petBreed"
-                                    value={addPetForm.breed}
-                                    onChange={(e) => handleAddPetFormChange('breed', e.target.value)}
-                                    placeholder="Enter breed (optional)"
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="petBreed"
+                                  label="Breed"
+                                  value={addPetForm.breed}
+                                  onChange={(value) => handleAddPetFormChange('breed', value)}
+                                  placeholder="Enter breed (optional)"
+                                />
 
                                 <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label htmlFor="petAge">Age (years) *</Label>
-                                    <Input
-                                      id="petAge"
-                                      type="number"
-                                      min="0"
-                                      max="30"
-                                      value={addPetForm.age}
-                                      onChange={(e) => handleAddPetFormChange('age', e.target.value)}
-                                      required
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="petWeight">Weight (kg)</Label>
-                                    <Input
-                                      id="petWeight"
-                                      type="number"
-                                      min="0"
-                                      step="0.1"
-                                      value={addPetForm.weight}
-                                      onChange={(e) => handleAddPetFormChange('weight', e.target.value)}
-                                      placeholder="0.0"
-                                    />
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label htmlFor="specialNeeds">Special Needs</Label>
-                                  <Input
-                                    id="specialNeeds"
-                                    value={addPetForm.specialNeeds}
-                                    onChange={(e) => handleAddPetFormChange('specialNeeds', e.target.value)}
-                                    placeholder="Comma-separated list (optional)"
+                                  <InputWithLabel
+                                    id="petAge"
+                                    label="Age (years)"
+                                    type="number"
+                                    value={addPetForm.age}
+                                    onChange={(value) => handleAddPetFormChange('age', value)}
+                                    placeholder="0"
+                                    required
+                                    min={0}
+                                    max={30}
+                                  />
+                                  <InputWithLabel
+                                    id="petWeight"
+                                    label="Weight (kg)"
+                                    type="number"
+                                    value={addPetForm.weight}
+                                    onChange={(value) => handleAddPetFormChange('weight', value)}
+                                    placeholder="0.0"
+                                    min={0}
+                                    step={0.1}
                                   />
                                 </div>
 
-                                <div>
-                                  <Label htmlFor="medicalNotes">Medical Notes</Label>
-                                  <Textarea
-                                    id="medicalNotes"
-                                    value={addPetForm.medicalNotes}
-                                    onChange={(e) => handleAddPetFormChange('medicalNotes', e.target.value)}
-                                    placeholder="Any medical information (optional)"
-                                    rows={3}
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="specialNeeds"
+                                  label="Special Needs"
+                                  value={addPetForm.specialNeeds}
+                                  onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+                                  placeholder="Comma-separated list (optional)"
+                                />
+
+                                <TextareaWithLabel
+                                  id="medicalNotes"
+                                  label="Medical Notes"
+                                  value={addPetForm.medicalNotes}
+                                  onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+                                  placeholder="Any medical information (optional)"
+                                  rows={3}
+                                />
 
                                 <div className="flex justify-end space-x-3 pt-4">
                                   <Button
@@ -1082,91 +1391,78 @@ export default function ProviderDetailPage() {
                                   </div>
                                 )}
                                 
-                                <div>
-                                  <Label htmlFor="petName">Pet Name *</Label>
-                                  <Input
-                                    id="petName"
-                                    value={addPetForm.name}
-                                    onChange={(e) => handleAddPetFormChange('name', e.target.value)}
-                                    required
-                                    placeholder="Enter pet name"
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="petName"
+                                  label="Pet Name"
+                                  value={addPetForm.name}
+                                  onChange={(value) => handleAddPetFormChange('name', value)}
+                                  placeholder="Enter pet name"
+                                  required
+                                />
 
-                                <div>
-                                  <Label htmlFor="petSpecies">Species *</Label>
-                                  <Select value={addPetForm.species} onValueChange={(value) => handleAddPetFormChange('species', value)}>
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="dog">Dog</SelectItem>
-                                      <SelectItem value="cat">Cat</SelectItem>
-                                      <SelectItem value="bird">Bird</SelectItem>
-                                      <SelectItem value="rabbit">Rabbit</SelectItem>
-                                      <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                                <SelectWithLabel
+                                  id="petSpecies"
+                                  label="Species"
+                                  value={addPetForm.species}
+                                  onValueChange={(value) => handleAddPetFormChange('species', value)}
+                                  required
+                                  options={[
+                                    { value: "dog", label: "Dog" },
+                                    { value: "cat", label: "Cat" },
+                                    { value: "bird", label: "Bird" },
+                                    { value: "rabbit", label: "Rabbit" },
+                                    { value: "other", label: "Other" }
+                                  ]}
+                                />
 
-                                <div>
-                                  <Label htmlFor="petBreed">Breed</Label>
-                                  <Input
-                                    id="petBreed"
-                                    value={addPetForm.breed}
-                                    onChange={(e) => handleAddPetFormChange('breed', e.target.value)}
-                                    placeholder="Enter breed (optional)"
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="petBreed"
+                                  label="Breed"
+                                  value={addPetForm.breed}
+                                  onChange={(value) => handleAddPetFormChange('breed', value)}
+                                  placeholder="Enter breed (optional)"
+                                />
 
                                 <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label htmlFor="petAge">Age (years) *</Label>
-                                    <Input
-                                      id="petAge"
-                                      type="number"
-                                      min="0"
-                                      max="30"
-                                      value={addPetForm.age}
-                                      onChange={(e) => handleAddPetFormChange('age', e.target.value)}
-                                      required
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="petWeight">Weight (kg)</Label>
-                                    <Input
-                                      id="petWeight"
-                                      type="number"
-                                      min="0"
-                                      step="0.1"
-                                      value={addPetForm.weight}
-                                      onChange={(e) => handleAddPetFormChange('weight', e.target.value)}
-                                      placeholder="0.0"
-                                    />
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label htmlFor="specialNeeds">Special Needs</Label>
-                                  <Input
-                                    id="specialNeeds"
-                                    value={addPetForm.specialNeeds}
-                                    onChange={(e) => handleAddPetFormChange('specialNeeds', e.target.value)}
-                                    placeholder="Comma-separated list (optional)"
+                                  <InputWithLabel
+                                    id="petAge"
+                                    label="Age (years)"
+                                    type="number"
+                                    value={addPetForm.age}
+                                    onChange={(value) => handleAddPetFormChange('age', value)}
+                                    placeholder="0"
+                                    required
+                                    min={0}
+                                    max={30}
+                                  />
+                                  <InputWithLabel
+                                    id="petWeight"
+                                    label="Weight (kg)"
+                                    type="number"
+                                    value={addPetForm.weight}
+                                    onChange={(value) => handleAddPetFormChange('weight', value)}
+                                    placeholder="0.0"
+                                    min={0}
+                                    step={0.1}
                                   />
                                 </div>
 
-                                <div>
-                                  <Label htmlFor="medicalNotes">Medical Notes</Label>
-                                  <Textarea
-                                    id="medicalNotes"
-                                    value={addPetForm.medicalNotes}
-                                    onChange={(e) => handleAddPetFormChange('medicalNotes', e.target.value)}
-                                    placeholder="Any medical information (optional)"
-                                    rows={3}
-                                  />
-                                </div>
+                                <InputWithLabel
+                                  id="specialNeeds"
+                                  label="Special Needs"
+                                  value={addPetForm.specialNeeds}
+                                  onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+                                  placeholder="Comma-separated list (optional)"
+                                />
+
+                                <TextareaWithLabel
+                                  id="medicalNotes"
+                                  label="Medical Notes"
+                                  value={addPetForm.medicalNotes}
+                                  onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+                                  placeholder="Any medical information (optional)"
+                                  rows={3}
+                                />
 
                                 <div className="flex justify-end space-x-3 pt-4">
                                   <Button
@@ -1190,33 +1486,28 @@ export default function ProviderDetailPage() {
                         </div>
                       )}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">SERVICE TYPE</label>
-                      <Select value={selectedService} onValueChange={setSelectedService}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select service" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {services.map((service) => (
-                            <SelectItem key={service.id} value={service.id}>
-                              {service.name} - €{service.price}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <SelectWithLabel
+                      id="serviceType"
+                      label="SERVICE TYPE"
+                      value={selectedService}
+                      onValueChange={setSelectedService}
+                      placeholder="Select service"
+                      required
+                      options={services.map((service) => ({
+                        value: service.id,
+                        label: `${service.name} - €${service.price}`
+                      }))}
+                    />
                   </div>
 
                   <Button 
                     variant="gradient"
                     size="lg"
                     className="w-full mb-4"
-                    asChild
+                    onClick={handleBookService}
                     disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
                   >
-                    <Link href={`/providers/${params.id}/book?date=${selectedDate}&time=${selectedTime}&pets=${selectedPets.join(',')}&service=${selectedService}`}>
-                      Book Service
-                    </Link>
+                    Book Service
                   </Button>
                   
                   <div className="text-center text-sm text-gray-600">

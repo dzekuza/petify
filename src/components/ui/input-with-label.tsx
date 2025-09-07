@@ -13,9 +13,10 @@ interface InputWithLabelProps {
   placeholder?: string
   required?: boolean
   disabled?: boolean
-  min?: number
-  max?: number
-  step?: number
+  min?: number | string
+  max?: number | string
+  step?: number | string
+  maxLength?: number
   rows?: number
   className?: string
 }
@@ -56,6 +57,7 @@ export const InputWithLabel: React.FC<InputWithLabelProps> = ({
   min,
   max,
   step,
+  maxLength,
   className = ''
 }) => {
   return (
@@ -75,6 +77,7 @@ export const InputWithLabel: React.FC<InputWithLabelProps> = ({
         min={min}
         max={max}
         step={step}
+        maxLength={maxLength}
         className="w-full"
       />
     </div>
