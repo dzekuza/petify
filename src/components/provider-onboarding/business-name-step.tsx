@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { OnboardingData } from '@/types/onboarding'
 
 interface BusinessNameStepProps {
   data: OnboardingData
@@ -35,7 +35,7 @@ export function BusinessNameStep({ data, onUpdate, onNext }: BusinessNameStepPro
           <Input
             value={data.businessName}
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Enter your business name"
+            placeholder="What's your business name?"
             className={error ? 'border-red-500' : ''}
             autoFocus
           />

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft } from 'lucide-react'
 
 interface ContactInformationStepProps {

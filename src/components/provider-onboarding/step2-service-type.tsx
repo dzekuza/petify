@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft } from 'lucide-react'
 
 interface Step2ServiceTypeProps {
@@ -210,17 +210,14 @@ export function Step2ServiceType({ data, onUpdate, onNext, onPrevious }: Step2Se
                 }`}
                 onClick={() => handleServiceTypeSelect(type.id)}
               >
-                <CardHeader className="pb-3">
+                <CardContent className="pb-3">
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl">{type.icon}</span>
                     <div>
                       <CardTitle className="text-lg">{type.name}</CardTitle>
-                      <CardDescription className="text-sm">
-                        {type.description}
-                      </CardDescription>
                     </div>
                   </div>
-                </CardHeader>
+                </CardContent>
               </Card>
             ))}
           </div>

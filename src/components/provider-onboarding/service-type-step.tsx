@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft } from 'lucide-react'
 
 interface ServiceTypeStepProps {
@@ -53,17 +53,14 @@ export function ServiceTypeStep({ data, onUpdate, onNext, onPrevious }: ServiceT
               }`}
               onClick={() => handleServiceTypeSelect(service.id)}
             >
-              <CardHeader className="py-4">
+              <CardContent className="py-4">
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">{service.icon}</span>
                   <div>
                     <CardTitle className="text-lg">{service.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {service.description}
-                    </CardDescription>
                   </div>
                 </div>
-              </CardHeader>
+              </CardContent>
             </Card>
           ))}
         </div>

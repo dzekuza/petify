@@ -3,65 +3,39 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { supabase } from '@/lib/supabase'
 import { PawPrint, ArrowLeft, ArrowRight, Check } from 'lucide-react'
 // Import new step components
-import { BusinessNameStep } from '@/components/provider-onboarding/business-name-step'
-import { BusinessDescriptionStep } from '@/components/provider-onboarding/business-description-step'
+import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
+import ConditionalBusinessNameStep from '@/components/provider-onboarding/conditional-business-name-step'
+import ConditionalBusinessDescriptionStep from '@/components/provider-onboarding/conditional-business-description-step'
 import { ContactInformationStep } from '@/components/provider-onboarding/contact-information-step'
 import { BusinessAddressStep } from '@/components/provider-onboarding/business-address-step'
 import { ServiceTypeStep } from '@/components/provider-onboarding/service-type-step'
+import SpecificServicesStep from '@/components/provider-onboarding/specific-services-step'
+import ExperienceLevelStep from '@/components/provider-onboarding/experience-level-step'
+import CertificationsStep from '@/components/provider-onboarding/certifications-step'
+import ServiceAreasStep from '@/components/provider-onboarding/service-areas-step'
 import { BasePricingStep } from '@/components/provider-onboarding/base-pricing-step'
-import { PlaceholderStep } from '@/components/provider-onboarding/placeholder-step'
-
-interface OnboardingData {
-  // Step 1: Business Details
-  businessName: string
-  businessDescription: string
-  phone: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  website?: string
-  
-  // Step 2: Service Type
-  serviceType: string
-  services: string[]
-  experience: string
-  certifications: string[]
-  
-  // Step 3: Pricing
-  basePrice: number
-  pricePerHour: number
-  currency: string
-  availability: {
-    monday: boolean
-    tuesday: boolean
-    wednesday: boolean
-    thursday: boolean
-    friday: boolean
-    saturday: boolean
-    sunday: boolean
-  }
-  workingHours: {
-    start: string
-    end: string
-  }
-  
-  // Step 4: Photos
-  photos: File[]
-  profilePhoto?: File
-  
-  // Step 5: Review
-  termsAccepted: boolean
-  privacyAccepted: boolean
-}
+import HourlyRateStep from '@/components/provider-onboarding/hourly-rate-step'
+import AvailabilityStep from '@/components/provider-onboarding/availability-step'
+import WorkingHoursStep from '@/components/provider-onboarding/working-hours-step'
+import PhotosStep from '@/components/provider-onboarding/photos-step'
+import ReviewStep from '@/components/provider-onboarding/review-step'
+import { OnboardingData } from '@/types/onboarding'
 
 const mainSteps = [
+  { 
+    id: 0, 
+    title: 'Provider Type', 
+    description: 'What type of provider are you?',
+    subSteps: [
+      { id: 1, title: 'Select Provider Type', description: 'Choose your provider type' }
+    ]
+  },
   { 
     id: 1, 
     title: 'Business Information', 
@@ -81,7 +55,8 @@ const mainSteps = [
       { id: 1, title: 'Service Type', description: 'What type of service do you provide?' },
       { id: 2, title: 'Specific Services', description: 'Which specific services do you offer?' },
       { id: 3, title: 'Experience Level', description: 'How much experience do you have?' },
-      { id: 4, title: 'Certifications', description: 'Do you have any certifications?' }
+      { id: 4, title: 'Certifications', description: 'Do you have any certifications?' },
+      { id: 5, title: 'Service Areas', description: 'Where do you provide services?' }
     ]
   },
   { 
@@ -100,9 +75,7 @@ const mainSteps = [
     title: 'Photos & Media', 
     description: 'Showcase your work',
     subSteps: [
-      { id: 1, title: 'Profile Photo', description: 'Add a professional photo' },
-      { id: 2, title: 'Service Photos', description: 'Add photos of your work' },
-      { id: 3, title: 'Photo Review', description: 'Review your photos' }
+      { id: 1, title: 'Upload Photos', description: 'Add photos to showcase your work' }
     ]
   },
   { 
@@ -110,17 +83,16 @@ const mainSteps = [
     title: 'Review & Publish', 
     description: 'Review and publish your listing',
     subSteps: [
-      { id: 1, title: 'Review Information', description: 'Review all your information' },
-      { id: 2, title: 'Terms & Conditions', description: 'Accept terms and conditions' },
-      { id: 3, title: 'Publish Listing', description: 'Publish your listing' }
+      { id: 1, title: 'Review Information', description: 'Review all your information' }
     ]
   }
 ]
 
 export default function ProviderOnboardingPage() {
-  const [currentMainStep, setCurrentMainStep] = useState(1)
+  const [currentMainStep, setCurrentMainStep] = useState(0)
   const [currentSubStep, setCurrentSubStep] = useState(1)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
+    providerType: '',
     businessName: '',
     businessDescription: '',
     phone: '',
@@ -150,6 +122,7 @@ export default function ProviderOnboardingPage() {
       end: '17:00'
     },
     photos: [],
+    profilePhoto: '',
     termsAccepted: false,
     privacyAccepted: false
   })
@@ -160,11 +133,6 @@ export default function ProviderOnboardingPage() {
   const router = useRouter()
 
   const currentMainStepData = mainSteps.find(step => step.id === currentMainStep)
-  const totalSubSteps = mainSteps.reduce((total, step) => total + step.subSteps.length, 0)
-  const completedSubSteps = mainSteps
-    .filter(step => step.id < currentMainStep)
-    .reduce((total, step) => total + step.subSteps.length, 0) + (currentSubStep - 1)
-  const progress = (completedSubSteps / totalSubSteps) * 100
 
   // Handle navigation based on user state
   useEffect(() => {
@@ -220,16 +188,89 @@ export default function ProviderOnboardingPage() {
     setError('')
     
     try {
-      // Here you would typically send the data to your API
-      // For now, we'll just simulate the process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      // Prepare the data for database insertion
+      const providerData = {
+        user_id: user.id,
+        business_name: onboardingData.businessName,
+        business_type: 'individual', // Default to individual, can be updated later
+        description: onboardingData.businessDescription,
+        services: [onboardingData.serviceType], // Convert to array
+        location: {
+          address: onboardingData.address,
+          city: onboardingData.city,
+          state: onboardingData.state,
+          zip: onboardingData.zipCode,
+          coordinates: null // Will be populated by geocoding service
+        },
+        contact_info: {
+          phone: onboardingData.phone,
+          email: user.email,
+          website: onboardingData.website || null
+        },
+        business_hours: {
+          monday: onboardingData.availability.monday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          tuesday: onboardingData.availability.tuesday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          wednesday: onboardingData.availability.wednesday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          thursday: onboardingData.availability.thursday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          friday: onboardingData.availability.friday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          saturday: onboardingData.availability.saturday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null,
+          sunday: onboardingData.availability.sunday ? { start: onboardingData.workingHours.start, end: onboardingData.workingHours.end } : null
+        },
+        price_range: {
+          min: onboardingData.basePrice,
+          max: onboardingData.basePrice + (onboardingData.pricePerHour * 8), // Assuming 8-hour day
+          currency: onboardingData.currency
+        },
+        availability: onboardingData.availability,
+        images: onboardingData.photos,
+        certifications: onboardingData.certifications,
+        experience_years: parseInt(onboardingData.experience) || 0,
+        status: 'pending_verification',
+        is_verified: false
+      }
+
+      // Get the session token for API calls
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('No active session')
+      }
+
+      // Save to database
+      const response = await fetch('/api/providers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(providerData)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save provider data')
+      }
+
       // Update user role to provider
-      // This would typically be done via API call
+      const updateUserResponse = await fetch('/api/users/update-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ role: 'provider' })
+      })
+
+      if (!updateUserResponse.ok) {
+        throw new Error('Failed to update user role')
+      }
       
       // Redirect to provider dashboard
       router.push('/provider/dashboard')
     } catch (err) {
+      console.error('Onboarding error:', err)
       setError('Failed to complete onboarding. Please try again.')
     } finally {
       setSubmitting(false)
@@ -242,20 +283,35 @@ export default function ProviderOnboardingPage() {
     
     if (!currentMainStepData || !currentSubStepData) return null
 
-    // Business Information Steps
-    if (currentMainStep === 1) {
+    // Provider Type Step
+    if (currentMainStep === 0) {
       switch (currentSubStep) {
         case 1:
           return (
-            <BusinessNameStep
+            <ProviderTypeStep
               data={onboardingData}
               onUpdate={handleDataUpdate}
               onNext={handleNext}
             />
           )
+      }
+    }
+
+    // Business Information Steps
+    if (currentMainStep === 1) {
+      switch (currentSubStep) {
+        case 1:
+          return (
+            <ConditionalBusinessNameStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+            />
+          )
         case 2:
           return (
-            <BusinessDescriptionStep
+            <ConditionalBusinessDescriptionStep
               data={onboardingData}
               onUpdate={handleDataUpdate}
               onNext={handleNext}
@@ -297,27 +353,36 @@ export default function ProviderOnboardingPage() {
           )
         case 2:
           return (
-            <PlaceholderStep
-              title="Specific Services"
-              description="Which specific services do you offer?"
+            <SpecificServicesStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
           )
         case 3:
           return (
-            <PlaceholderStep
-              title="Experience Level"
-              description="How much experience do you have?"
+            <ExperienceLevelStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
           )
         case 4:
           return (
-            <PlaceholderStep
-              title="Certifications"
-              description="Do you have any certifications?"
+            <CertificationsStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+            />
+          )
+        case 5:
+          return (
+            <ServiceAreasStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
@@ -339,27 +404,27 @@ export default function ProviderOnboardingPage() {
           )
         case 2:
           return (
-            <PlaceholderStep
-              title="Hourly Rate"
-              description="Set your hourly rate"
+            <HourlyRateStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
           )
         case 3:
           return (
-            <PlaceholderStep
-              title="Available Days"
-              description="When are you available?"
+            <AvailabilityStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
           )
         case 4:
           return (
-            <PlaceholderStep
-              title="Working Hours"
-              description="What are your working hours?"
+            <WorkingHoursStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
@@ -372,27 +437,9 @@ export default function ProviderOnboardingPage() {
       switch (currentSubStep) {
         case 1:
           return (
-            <PlaceholderStep
-              title="Profile Photo"
-              description="Add a professional photo"
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 2:
-          return (
-            <PlaceholderStep
-              title="Service Photos"
-              description="Add photos of your work"
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 3:
-          return (
-            <PlaceholderStep
-              title="Photo Review"
-              description="Review your photos"
+            <PhotosStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
@@ -405,27 +452,9 @@ export default function ProviderOnboardingPage() {
       switch (currentSubStep) {
         case 1:
           return (
-            <PlaceholderStep
-              title="Review Information"
-              description="Review all your information"
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 2:
-          return (
-            <PlaceholderStep
-              title="Terms & Conditions"
-              description="Accept terms and conditions"
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-            />
-          )
-        case 3:
-          return (
-            <PlaceholderStep
-              title="Publish Listing"
-              description="Publish your listing"
+            <ReviewStep
+              data={onboardingData}
+              onUpdate={handleDataUpdate}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />
@@ -498,36 +527,15 @@ export default function ProviderOnboardingPage() {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="bg-white border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Step {currentMainStep} of {mainSteps.length} - {currentMainStepData?.title}</span>
-              <span>{Math.round(progress)}% complete</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Sub-step {currentSubStep} of {currentMainStepData?.subSteps.length}</span>
-              <span>{completedSubSteps} of {totalSubSteps} completed</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Side - Steps Overview */}
           <div className="lg:col-span-1">
             <Card className="py-6">
-              <CardHeader>
-                <CardTitle className="text-lg">Getting Started</CardTitle>
-                <CardDescription>
-                  Complete these steps to become a Petify provider
-                </CardDescription>
-              </CardHeader>
               <CardContent className="space-y-4">
+                <CardTitle className="text-lg mb-4">Getting Started</CardTitle>
                 {mainSteps.map((step) => (
                   <div key={step.id} className="space-y-2">
                     <div
@@ -605,18 +613,37 @@ export default function ProviderOnboardingPage() {
           {/* Right Side - Step Content */}
           <div className="lg:col-span-2">
             <Card className="py-6">
-              <CardHeader>
-                <CardTitle className="text-2xl">
+              <CardContent>
+                <CardTitle className="text-2xl mb-6">
                   {currentMainStepData?.subSteps[currentSubStep - 1]?.title}
                 </CardTitle>
-                <CardDescription>
-                  {currentMainStepData?.subSteps[currentSubStep - 1]?.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
                 {renderStep()}
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Progress Bar at Bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t z-50">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Step {currentMainStep + 1} of {mainSteps.length} - {mainSteps.find(step => step.id === currentMainStep)?.title}</span>
+              <span>{Math.round((currentMainStep * 100 + (currentSubStep - 1) * 20) / mainSteps.length)}% complete</span>
+            </div>
+            <div className="bg-primary/20 relative w-full overflow-hidden rounded-full h-2">
+              <div 
+                className="bg-primary h-full w-full flex-1 transition-all" 
+                style={{ 
+                  transform: `translateX(-${100 - (currentMainStep * 100 + (currentSubStep - 1) * 20) / mainSteps.length}%)` 
+                }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Sub-step {currentSubStep} of {mainSteps.find(step => step.id === currentMainStep)?.subSteps.length}</span>
+              <span>{(currentMainStep * 4 + currentSubStep)} of {mainSteps.reduce((total, step) => total + step.subSteps.length, 0)} completed</span>
+            </div>
           </div>
         </div>
       </div>

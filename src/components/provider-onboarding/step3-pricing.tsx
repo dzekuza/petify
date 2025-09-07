@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft } from 'lucide-react'
 
 interface Step3PricingProps {
@@ -105,13 +105,8 @@ export function Step3Pricing({ data, onUpdate, onNext, onPrevious }: Step3Pricin
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="py-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Base Service Price</CardTitle>
-              <CardDescription>
-                The minimum price for your main service
-              </CardDescription>
-            </CardHeader>
             <CardContent>
+              <CardTitle className="text-lg mb-4">Base Service Price</CardTitle>
               <div className="space-y-2">
                 <div className="relative">
                   <Input
@@ -133,13 +128,8 @@ export function Step3Pricing({ data, onUpdate, onNext, onPrevious }: Step3Pricin
           </Card>
 
           <Card className="py-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Hourly Rate</CardTitle>
-              <CardDescription>
-                Additional charges for extended services
-              </CardDescription>
-            </CardHeader>
             <CardContent>
+              <CardTitle className="text-lg mb-4">Hourly Rate</CardTitle>
               <div className="space-y-2">
                 <div className="relative">
                   <Input
@@ -172,10 +162,8 @@ export function Step3Pricing({ data, onUpdate, onNext, onPrevious }: Step3Pricin
         </div>
 
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Available Days</CardTitle>
-          </CardHeader>
           <CardContent>
+            <CardTitle className="text-lg mb-4">Available Days</CardTitle>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {daysOfWeek.map((day) => (
                 <div key={day.id} className="flex items-center space-x-2">
@@ -207,10 +195,8 @@ export function Step3Pricing({ data, onUpdate, onNext, onPrevious }: Step3Pricin
         </div>
 
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Daily Schedule</CardTitle>
-          </CardHeader>
           <CardContent>
+            <CardTitle className="text-lg mb-4">Daily Schedule</CardTitle>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Select

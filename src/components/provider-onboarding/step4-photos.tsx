@@ -3,8 +3,8 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft, Upload, X, Camera, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
@@ -196,12 +196,10 @@ export function Step4Photos({ data, onUpdate, onNext, onPrevious }: Step4PhotosP
         {/* Photo Grid */}
         {data.photos.length > 0 && (
           <Card className="py-6">
-            <CardHeader>
-              <CardTitle className="text-lg">
+            <CardContent>
+              <CardTitle className="text-lg mb-4">
                 Uploaded Photos ({data.photos.length})
               </CardTitle>
-            </CardHeader>
-            <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.photos.map((photo, index) => (
                   <div key={index} className="relative group">

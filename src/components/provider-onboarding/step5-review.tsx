@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { OnboardingData } from '@/app/provider/onboarding/page'
+import { OnboardingData } from '@/types/onboarding'
 import { ArrowLeft, Check, MapPin, Phone, Globe, Clock, Euro } from 'lucide-react'
 import Image from 'next/image'
 
@@ -90,13 +90,11 @@ export function Step5Review({ data, onUpdate, onSubmit, onPrevious, loading, err
 
         {/* Business Information */}
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
+          <CardContent className="space-y-3">
+            <CardTitle className="text-lg flex items-center mb-4">
               <Check className="w-5 h-5 mr-2 text-green-500" />
               Business Information
             </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
             <div>
               <h4 className="font-medium">{data.businessName}</h4>
               <p className="text-sm text-muted-foreground">{data.businessDescription}</p>
@@ -122,13 +120,11 @@ export function Step5Review({ data, onUpdate, onSubmit, onPrevious, loading, err
 
         {/* Service Information */}
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
+          <CardContent className="space-y-3">
+            <CardTitle className="text-lg flex items-center mb-4">
               <Check className="w-5 h-5 mr-2 text-green-500" />
               Service Information
             </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
             <div className="flex items-center space-x-2">
               <Badge variant="secondary">{serviceTypeLabels[data.serviceType]}</Badge>
               <Badge variant="outline">{experienceLabels[data.experience]}</Badge>
@@ -160,13 +156,11 @@ export function Step5Review({ data, onUpdate, onSubmit, onPrevious, loading, err
 
         {/* Pricing & Availability */}
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
+          <CardContent className="space-y-3">
+            <CardTitle className="text-lg flex items-center mb-4">
               <Check className="w-5 h-5 mr-2 text-green-500" />
               Pricing & Availability
             </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Euro className="w-4 h-4 text-muted-foreground" />
@@ -190,18 +184,16 @@ export function Step5Review({ data, onUpdate, onSubmit, onPrevious, loading, err
 
         {/* Photos */}
         <Card className="py-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
+          <CardContent>
+            <CardTitle className="text-lg flex items-center mb-4">
               <Check className="w-5 h-5 mr-2 text-green-500" />
               Photos ({data.photos.length})
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {data.photos.slice(0, 4).map((photo, index) => (
                 <div key={index} className="aspect-square rounded-lg overflow-hidden bg-muted">
                   <Image
-                    src={URL.createObjectURL(photo)}
+                    src={photo}
                     alt={`Service photo ${index + 1}`}
                     width={150}
                     height={150}
@@ -223,10 +215,8 @@ export function Step5Review({ data, onUpdate, onSubmit, onPrevious, loading, err
 
       {/* Terms and Conditions */}
       <Card className="py-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Terms and Conditions</CardTitle>
-        </CardHeader>
         <CardContent className="space-y-4">
+          <CardTitle className="text-lg mb-4">Terms and Conditions</CardTitle>
           <div className="space-y-3">
             <div className="flex items-start space-x-2">
               <Checkbox
