@@ -46,8 +46,10 @@ export function Step4Photos({ data, onUpdate, onNext, onPrevious }: Step4PhotosP
     )
     
     if (newFiles.length > 0) {
+      // Convert files to URLs
+      const newFileUrls = newFiles.map(file => URL.createObjectURL(file))
       onUpdate({
-        photos: [...data.photos, ...newFiles]
+        photos: [...data.photos, ...newFileUrls]
       })
     }
   }
@@ -60,8 +62,10 @@ export function Step4Photos({ data, onUpdate, onNext, onPrevious }: Step4PhotosP
 
   const handleProfilePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      const fileUrl = URL.createObjectURL(file)
       onUpdate({
-        profilePhoto: e.target.files[0]
+        profilePhoto: fileUrl
       })
     }
   }
@@ -101,7 +105,7 @@ export function Step4Photos({ data, onUpdate, onNext, onPrevious }: Step4PhotosP
                 {data.profilePhoto ? (
                   <div className="relative w-24 h-24 rounded-full overflow-hidden">
                     <Image
-                      src={URL.createObjectURL(data.profilePhoto)}
+                      src={data.profilePhoto}
                       alt="Profile"
                       fill
                       className="object-cover"
@@ -205,7 +209,7 @@ export function Step4Photos({ data, onUpdate, onNext, onPrevious }: Step4PhotosP
                   <div key={index} className="relative group">
                     <div className="aspect-square rounded-lg overflow-hidden bg-muted">
                       <Image
-                        src={URL.createObjectURL(photo)}
+                        src={photo}
                         alt={`Service photo ${index + 1}`}
                         width={200}
                         height={200}

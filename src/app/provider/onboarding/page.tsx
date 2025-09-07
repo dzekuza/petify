@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
-import { t } from '@/lib/translations'
 import { supabase } from '@/lib/supabase'
-import { PawPrint, ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { PawPrint, Check } from 'lucide-react'
 // Import new step components
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
 import ConditionalBusinessNameStep from '@/components/provider-onboarding/conditional-business-name-step'
@@ -126,8 +125,6 @@ export default function ProviderOnboardingPage() {
     termsAccepted: false,
     privacyAccepted: false
   })
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
   
   const { user, loading } = useAuth()
   const router = useRouter()
@@ -184,8 +181,6 @@ export default function ProviderOnboardingPage() {
   }
 
   const handleSubmit = async () => {
-    setSubmitting(true)
-    setError('')
     
     try {
       if (!user) {
@@ -271,9 +266,8 @@ export default function ProviderOnboardingPage() {
       router.push('/provider/dashboard')
     } catch (err) {
       console.error('Onboarding error:', err)
-      setError('Failed to complete onboarding. Please try again.')
     } finally {
-      setSubmitting(false)
+      // Handle completion
     }
   }
 

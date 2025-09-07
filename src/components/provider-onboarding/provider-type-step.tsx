@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import { OnboardingData } from '@/types/onboarding'
+import { OnboardingData, ProviderType } from '@/types/onboarding'
 import { ArrowRight, Users, Building2, Home, Store } from 'lucide-react'
 
 interface ProviderTypeStepProps {
@@ -78,7 +78,7 @@ export default function ProviderTypeStep({ data, onUpdate, onNext }: ProviderTyp
       return
     }
 
-    onUpdate({ providerType: selectedType })
+    onUpdate({ providerType: selectedType as ProviderType })
     onNext()
   }
 
