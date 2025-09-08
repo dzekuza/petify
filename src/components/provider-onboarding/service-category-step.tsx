@@ -16,31 +16,31 @@ const serviceCategories = [
     id: 'training',
     name: 'Dresūra',
     description: 'Profesionalūs treniruotės ir elgesio modifikavimas',
-    icon: '/Pet_Training_Icon Background Removed.png'
+    icon: '/image (8).png'
   },
   {
     id: 'grooming',
     name: 'Kirpyklos',
     description: 'Profesionalūs šukavimo paslaugos jūsų kailuotų draugų',
-    icon: '/Animal_Care_Icon Background Removed.png'
+    icon: '/image (8).png'
   },
   {
     id: 'veterinary',
     name: 'Veterinarijos',
     description: 'Ekspertinė medicinos priežiūra ir sveikatos patikrinimai',
-    icon: '/Pet_Veterinary_Icon Background Removed.png'
+    icon: '/image (8).png'
   },
   {
     id: 'boarding',
     name: 'Prieglauda',
     description: 'Saugūs ir patogūs nakvynės',
-    icon: '/Pets_Pairing_Icon Background Removed.png'
+    icon: '/image (8).png'
   },
   {
     id: 'walking',
     name: 'Šunų vedimas',
     description: 'Kasdienės mankštos ir lauko nuotykiai',
-    icon: '/Pet_Ads_Icon Background Removed.png'
+    icon: '/image (8).png'
   }
 ]
 

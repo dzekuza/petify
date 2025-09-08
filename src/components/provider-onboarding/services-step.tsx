@@ -26,8 +26,8 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious }: Ser
               {/* Mobile: Image on top */}
               <div className="lg:hidden w-full max-w-[400px]">
                 <Image
-                  src="/image (7) 2.png"
-                  alt="Pet Family"
+                  src="/image (8).png"
+                  alt="Pet Service Providers"
                   width={400}
                   height={400}
                   className="w-full h-auto"
@@ -53,8 +53,8 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious }: Ser
               {/* Desktop: Right Side - Image */}
               <div className="hidden lg:flex flex-1 justify-center">
                 <Image
-                  src="/image (7) 2.png"
-                  alt="Pet Family"
+                  src="/image (8).png"
+                  alt="Pet Service Providers"
                   width={400}
                   height={400}
                   className="w-full max-w-md h-auto object-contain"

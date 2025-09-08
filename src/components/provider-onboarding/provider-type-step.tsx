@@ -18,7 +18,7 @@ const providerTypes = [
     id: 'grooming',
     name: 'Kirpyklos',
     description: 'Pet grooming and beauty services',
-    icon: '/Animal_Care_Icon Background Removed.png',
+    icon: '/image (8).png',
     features: [
       'Pet grooming and styling',
       'Bath and hygiene services',
@@ -30,7 +30,7 @@ const providerTypes = [
     id: 'training',
     name: 'Dresūra',
     description: 'Pet training and behavior services',
-    icon: '/Pet_Training_Icon Background Removed.png',
+    icon: '/image (8).png',
     features: [
       'Obedience training',
       'Behavior modification',
@@ -42,7 +42,7 @@ const providerTypes = [
     id: 'veterinary',
     name: 'Veterinarijos',
     description: 'Veterinary and medical services',
-    icon: '/Pet_Veterinary_Icon Background Removed.png',
+    icon: '/image (8).png',
     features: [
       'Health checkups and exams',
       'Vaccinations and treatments',
@@ -54,7 +54,7 @@ const providerTypes = [
     id: 'ads',
     name: 'Skelbimai',
     description: 'Pet advertising and sales services',
-    icon: '/Pet_Ads_Icon Background Removed.png',
+    icon: '/image (8).png',
     features: [
       'Pet adoption listings',
       'Pet sales advertisements',

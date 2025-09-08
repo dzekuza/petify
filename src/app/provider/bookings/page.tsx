@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { 
   Calendar, 
@@ -18,7 +17,6 @@ import {
   X,
   Search
 } from 'lucide-react'
-import InteractiveCalendar from '@/components/ui/visualize-booking'
 import { Service, Booking } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
@@ -74,12 +72,6 @@ export default function ProviderBookings() {
     setShowBookingModal(true)
   }
 
-  const handleCalendarBookingClick = (bookingId: string) => {
-    const booking = bookings.find(b => b.id === bookingId)
-    if (booking) {
-      handleViewBookingDetails(booking)
-    }
-  }
 
   const handleAcceptBooking = async (bookingId: string) => {
     try {
@@ -235,234 +227,137 @@ export default function ProviderBookings() {
               </p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Calendar className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                      <p className="text-2xl font-bold text-gray-900">{bookings.length}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
-                      <Clock className="h-6 w-6 text-yellow-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Pending</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {bookings.filter(b => b.status === 'pending').length}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <CheckCircle className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {bookings.filter(b => b.status === 'confirmed').length}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Users className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Completed</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {bookings.filter(b => b.status === 'completed').length}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Filters and Search */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Search by pet name or service..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
             </div>
 
-            {/* Main Content */}
-            <Tabs defaultValue="grid" className="space-y-6">
-              <TabsList>
-                <TabsTrigger value="grid">Grid View</TabsTrigger>
-                <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="grid" className="space-y-6">
-                {/* Filters and Search */}
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="flex-1">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                          <input
-                            type="text"
-                            placeholder="Search by pet name or service..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+            {/* Bookings Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredBookings.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+                  <p className="text-gray-600">
+                    {searchTerm || filterStatus !== 'all' 
+                      ? 'Try adjusting your search or filter criteria.'
+                      : 'When customers book your services, they\'ll appear here.'
+                    }
+                  </p>
+                </div>
+              ) : (
+                filteredBookings.map((booking) => (
+                  <Card key={booking.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(booking.status)}
+                          <Badge className={getStatusColor(booking.status)}>
+                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                          </Badge>
+                        </div>
+                        <div className="text-lg font-bold text-green-600">
+                          ${booking.totalPrice}
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <select
-                          value={filterStatus}
-                          onChange={(e) => setFilterStatus(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="all">All Status</option>
-                          <option value="pending">Pending</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="completed">Completed</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-1">
+                          {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
+                        </p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
 
-                {/* Bookings Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredBookings.length === 0 ? (
-                    <div className="col-span-full text-center py-12">
-                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                      <p className="text-gray-600">
-                        {searchTerm || filterStatus !== 'all' 
-                          ? 'Try adjusting your search or filter criteria.'
-                          : 'When customers book your services, they\'ll appear here.'
-                        }
-                      </p>
-                    </div>
-                  ) : (
-                    filteredBookings.map((booking) => (
-                      <Card key={booking.id} className="hover:shadow-lg transition-shadow">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              {getStatusIcon(booking.status)}
-                              <Badge className={getStatusColor(booking.status)}>
-                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                              </Badge>
-                            </div>
-                            <div className="text-lg font-bold text-green-600">
-                              ${booking.totalPrice}
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 mb-1">
-                              {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
-                            </p>
-                          </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Users className="h-4 w-4 mr-2" />
+                          <span>{booking.pet ? '1 pet' : 'No pets'}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span>{services.find(s => s.id === booking.serviceId)?.duration} min</span>
+                        </div>
+                      </div>
 
-                          <div className="space-y-2">
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Users className="h-4 w-4 mr-2" />
-                              <span>{booking.pet ? '1 pet' : 'No pets'}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Clock className="h-4 w-4 mr-2" />
-                              <span>{services.find(s => s.id === booking.serviceId)?.duration} min</span>
-                            </div>
-                          </div>
+                      {booking.notes && (
+                        <div className="bg-yellow-50 p-3 rounded-md">
+                          <p className="text-sm text-yellow-800">
+                            <strong>Notes:</strong> {booking.notes}
+                          </p>
+                        </div>
+                      )}
 
-                          {booking.notes && (
-                            <div className="bg-yellow-50 p-3 rounded-md">
-                              <p className="text-sm text-yellow-800">
-                                <strong>Notes:</strong> {booking.notes}
-                              </p>
-                            </div>
-                          )}
-
-                          <div className="flex space-x-2 pt-2">
+                      <div className="flex space-x-2 pt-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewBookingDetails(booking)}
+                          className="flex-1"
+                        >
+                          View Details
+                        </Button>
+                        {booking.status === 'pending' && (
+                          <>
                             <Button 
-                              variant="outline" 
                               size="sm"
-                              onClick={() => handleViewBookingDetails(booking)}
+                              onClick={() => handleAcceptBooking(booking.id)}
+                              className="bg-green-600 hover:bg-green-700 flex-1"
+                            >
+                              Accept
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => handleRejectBooking(booking.id)}
                               className="flex-1"
                             >
-                              View Details
+                              Reject
                             </Button>
-                            {booking.status === 'pending' && (
-                              <>
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleAcceptBooking(booking.id)}
-                                  className="bg-green-600 hover:bg-green-700 flex-1"
-                                >
-                                  Accept
-                                </Button>
-                                <Button 
-                                  variant="destructive" 
-                                  size="sm"
-                                  onClick={() => handleRejectBooking(booking.id)}
-                                  className="flex-1"
-                                >
-                                  Reject
-                                </Button>
-                              </>
-                            )}
-                            {booking.status === 'confirmed' && (
-                              <Button 
-                                size="sm"
-                                onClick={() => handleCompleteBooking(booking.id)}
-                                className="bg-blue-600 hover:bg-blue-700 flex-1"
-                              >
-                                Complete
-                              </Button>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="calendar" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Booking Calendar</CardTitle>
-                    <CardDescription>
-                      Visualize and manage your bookings in calendar view
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-card rounded-lg p-4 border">
-                      <InteractiveCalendar 
-                        bookings={bookings}
-                        onBookingClick={handleCalendarBookingClick}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                          </>
+                        )}
+                        {booking.status === 'confirmed' && (
+                          <Button 
+                            size="sm"
+                            onClick={() => handleCompleteBooking(booking.id)}
+                            className="bg-blue-600 hover:bg-blue-700 flex-1"
+                          >
+                            Complete
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
