@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
 import { PawPrint, Eye, EyeOff } from 'lucide-react'
+import { t } from '@/lib/translations'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -37,13 +38,13 @@ export default function SignUpPage() {
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('auth.signup.passwordsDoNotMatch'))
       setLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t('auth.signup.passwordTooShort'))
       setLoading(false)
       return
     }
@@ -72,13 +73,13 @@ export default function SignUpPage() {
               <PawPrint className="h-12 w-12 text-green-600" />
             </div>
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
-              Check your email
+              {t('auth.signup.checkYourEmail')}
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              We've sent you a confirmation link at {formData.email}
+              {t('auth.signup.confirmationLinkSent')} {formData.email}
             </p>
             <p className="mt-4 text-sm text-gray-500">
-              Please check your email and click the link to verify your account.
+              {t('auth.signup.checkEmailInstructions')}
             </p>
           </div>
         </div>
@@ -94,18 +95,18 @@ export default function SignUpPage() {
             <PawPrint className="h-12 w-12 text-blue-600" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Create your account
+            {t('auth.signup.createAccount')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join Petify as a pet owner and find trusted care for your pets
+            {t('auth.signup.joinAsPetOwner')}
           </p>
         </div>
 
         <Card>
           <CardHeader className="pt-8">
-            <CardTitle>Sign Up as Pet Owner</CardTitle>
+            <CardTitle>{t('auth.signup.signUpAsPetOwner')}</CardTitle>
             <CardDescription>
-              Create your account to find trusted pet care services
+              {t('auth.signup.createAccountDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-8">
@@ -117,7 +118,7 @@ export default function SignUpPage() {
               )}
 
               <div>
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName">{t('auth.signup.fullName')}</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -125,12 +126,12 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your full name"
+                  placeholder={t('auth.signup.enterFullName')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">{t('auth.signup.emailAddress')}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -138,13 +139,13 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.signup.enterEmail')}
                 />
               </div>
 
 
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('auth.signup.createPassword')}</Label>
                 <div className="relative mt-1">
                   <Input
                     id="password"
@@ -152,7 +153,7 @@ export default function SignUpPage() {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
-                    placeholder="Create a password"
+                    placeholder={t('auth.signup.createPassword')}
                     className="pr-10"
                   />
                   <button
@@ -168,12 +169,12 @@ export default function SignUpPage() {
                   </button>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
-                  Must be at least 6 characters
+                  {t('auth.signup.passwordMinLength')}
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{t('auth.signup.confirmPassword')}</Label>
                 <div className="relative mt-1">
                   <Input
                     id="confirmPassword"
@@ -181,7 +182,7 @@ export default function SignUpPage() {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
-                    placeholder="Confirm your password"
+                    placeholder={t('auth.signup.confirmYourPassword')}
                     className="pr-10"
                   />
                   <button
@@ -203,7 +204,7 @@ export default function SignUpPage() {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading ? t('auth.signup.creatingAccount') : t('auth.signup.createAccount')}
               </Button>
             </form>
 
@@ -213,7 +214,7 @@ export default function SignUpPage() {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                  <span className="px-2 bg-white text-gray-500">{t('auth.signin.orContinueWith')}</span>
                 </div>
               </div>
 
@@ -237,34 +238,34 @@ export default function SignUpPage() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Google
+                  {t('auth.signin.google')}
                 </Button>
                 <Button variant="outline" className="w-full">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                   </svg>
-                  Facebook
+                  {t('auth.signin.facebook')}
                 </Button>
               </div>
             </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Already have an account?{' '}
+                {t('auth.signin.noAccount')}{' '}
                 <Link
                   href="/auth/signin"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Sign in
+                  {t('auth.signin.signIn')}
                 </Link>
               </p>
               <p className="mt-4 text-xs text-gray-500">
-                Are you a service provider?{' '}
+                {t('auth.signup.areYouServiceProvider')}{' '}
                 <Link
                   href="/provider/signup"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Join as a provider
+                  {t('auth.signup.joinAsProvider')}
                 </Link>
               </p>
             </div>

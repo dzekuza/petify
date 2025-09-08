@@ -292,7 +292,14 @@ export const translations = {
       creatingAccount: 'Kuriama paskyra...',
       createProviderAccount: 'Sukurti teikėjo paskyrą',
       passwordsDoNotMatch: 'Slaptažodžiai nesutampa',
-      passwordTooShort: 'Slaptažodis turi būti bent 6 simbolių'
+      passwordTooShort: 'Slaptažodis turi būti bent 6 simbolių',
+      checkYourEmail: 'Patikrinkite savo el. paštą',
+      confirmationLinkSent: 'Išsiuntėme jums patvirtinimo nuorodą į',
+      checkEmailInstructions: 'Patikrinkite savo el. paštą ir paspauskite nuorodą, kad patvirtintumėte paskyrą.',
+      joinAsPetOwner: 'Prisijunkite prie Petify kaip gyvūnų savininkas ir raskite patikimą priežiūrą savo augintiniams',
+      signUpAsPetOwner: 'Registruotis kaip gyvūnų savininkas',
+      createAccountDescription: 'Sukurkite paskyrą, kad rastumėte patikimas gyvūnų priežiūros paslaugas',
+      areYouServiceProvider: 'Ar esate paslaugų teikėjas?'
     }
   },
 
