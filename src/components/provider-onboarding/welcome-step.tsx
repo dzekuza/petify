@@ -10,7 +10,7 @@ interface WelcomeStepProps {
   onPrevious: () => void
 }
 
-const videoPetFamily = "/A dog breathing, a cat wagging its tail and turning its head, a parrot walking side to side and flapping its wings, a horse twitching its ears and swinging its tail, and a person subtly bouncing..mp4"
+const petFamilyGif = "/mp4-unscreen.gif"
 
 export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: WelcomeStepProps) {
   return (
@@ -19,16 +19,12 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
       <div className="flex-1 overflow-y-auto pb-20">
         <div className="flex items-center justify-center h-full px-4 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-[1200px] gap-8">
-            {/* Mobile: Video on top */}
+            {/* Mobile: GIF on top */}
             <div className="lg:hidden w-full max-w-[400px]">
-              <video
-                src={videoPetFamily}
-                autoPlay
-                loop
-                muted
-                playsInline
+              <img
+                src={petFamilyGif}
+                alt="Pet Family Animation"
                 className="w-full h-auto rounded-lg"
-                aria-label="Pet Family Video"
               />
             </div>
 
@@ -47,16 +43,12 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
               </div>
             </div>
 
-            {/* Desktop: Pet Family Video */}
+            {/* Desktop: Pet Family GIF */}
             <div className="hidden lg:block">
-              <video
-                src={videoPetFamily}
-                autoPlay
-                loop
-                muted
-                playsInline
+              <img
+                src={petFamilyGif}
+                alt="Pet Family Animation"
                 className="w-[500px] h-[500px] object-cover rounded-lg"
-                aria-label="Pet Family Video"
               />
             </div>
           </div>
