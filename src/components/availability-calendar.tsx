@@ -2,11 +2,8 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Check, X } from 'lucide-react'
+import { Clock, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ServiceProvider } from '@/types'
 import { useNotifications } from '@/contexts/notifications-context'
@@ -75,14 +72,20 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const getDayAvailability = (dayName: string) => {
     const dayAvailability = availability[dayName]
     
-    if (!dayAvailability) return { available: false, slots: [] }
+    // Default: day is available and slots are generated from working hours
+    if (!dayAvailability) {
+      const working = getWorkingHours(dayName)
+      return { available: true, slots: generateTimeSlots(working.start, working.end) }
+    }
     
     if (Array.isArray(dayAvailability)) {
       return { available: dayAvailability.length > 0, slots: dayAvailability }
     } else if (typeof dayAvailability === 'object' && dayAvailability !== null) {
       return { available: dayAvailability.available, slots: [dayAvailability] }
     } else {
-      return { available: Boolean(dayAvailability), slots: [] }
+      // If stored as simple boolean, default to generating slots regardless of true/false
+      const working = getWorkingHours(dayName)
+      return { available: true, slots: generateTimeSlots(working.start, working.end) }
     }
   }
 
@@ -128,8 +131,18 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const getTimeSlotsForDay = (dayName: string): TimeSlot[] => {
     const dayAvailability = availability[dayName]
     
-    if (!dayAvailability) return []
+    // If nothing stored, generate defaults using working hours
+    if (!dayAvailability) {
+      const working = getWorkingHours(dayName)
+      return generateTimeSlots(working.start, working.end)
+    }
     
+    // If stored as a simple boolean, generate default slots for both true and false
+    if (typeof dayAvailability === 'boolean') {
+      const working = getWorkingHours(dayName)
+      return generateTimeSlots(working.start, working.end)
+    }
+
     if (Array.isArray(dayAvailability)) {
       return dayAvailability
     } else if (typeof dayAvailability === 'object' && dayAvailability !== null && 'start' in dayAvailability && 'end' in dayAvailability) {
@@ -187,59 +200,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     })
   }
 
-  const handleToggleDayAvailability = (dayName: string) => {
-    const currentAvailability = getDayAvailability(dayName)
-    const workingHours = getWorkingHours(dayName)
-    
-    let updatedAvailability
-    
-    if (!currentAvailability.available) {
-      // Enable the day and generate time slots based on working hours
-      const generatedSlots = generateTimeSlots(workingHours.start, workingHours.end)
-      updatedAvailability = {
-        ...availability,
-        [dayName]: generatedSlots
-      }
-    } else {
-      // Disable the day
-      updatedAvailability = {
-        ...availability,
-        [dayName]: false
-      }
-    }
-    
-    setAvailability(updatedAvailability)
-    onAvailabilityUpdate?.(updatedAvailability)
-    
-    addNotification({
-      type: 'success',
-      title: 'Prieinamumas atnaujintas',
-      message: `${dayName} prieinamumas ${!currentAvailability.available ? 'įjungtas' : 'išjungtas'}.`
-    })
-  }
-
-  const handleUpdateWorkingHours = (dayName: string, field: 'start' | 'end', value: string) => {
-    const currentAvailability = getDayAvailability(dayName)
-    const workingHours = getWorkingHours(dayName)
-    
-    const newStart = field === 'start' ? value : workingHours.start
-    const newEnd = field === 'end' ? value : workingHours.end
-    
-    // Generate new time slots based on updated working hours
-    const newTimeSlots = generateTimeSlots(newStart, newEnd)
-    
-    const updatedAvailability = {
-      ...availability,
-      [dayName]: newTimeSlots.length > 0 ? newTimeSlots : {
-        start: newStart,
-        end: newEnd,
-        available: currentAvailability.available
-      }
-    }
-    
-    setAvailability(updatedAvailability)
-    onAvailabilityUpdate?.(updatedAvailability)
-  }
+  // Removed direct day toggle and working-hours editor UI; availability is managed via calendar slots
 
   const calendarDays = generateCalendarDays()
 
@@ -344,81 +305,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         })}
       </div>
 
-      {/* Working Hours Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Darbo valandos</CardTitle>
-          <CardDescription>
-            Nustatykite savo darbo valandas kiekvienai savaitės dienai
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {daysOfWeek.map((day) => {
-              const dayName = day.toLowerCase()
-              const dayAvailability = getDayAvailability(dayName)
-              const workingHours = getWorkingHours(dayName)
-              
-              return (
-                <div key={day} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium capitalize">{day}</span>
-                      <Button
-                        variant={dayAvailability.available ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleToggleDayAvailability(dayName)}
-                      >
-                        {dayAvailability.available ? (
-                          <>
-                            <Check className="h-4 w-4 mr-1" />
-                            Prieinama
-                          </>
-                        ) : (
-                          <>
-                            <X className="h-4 w-4 mr-1" />
-                            Neprieinama
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                    
-                    {dayAvailability.available && (
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex-1">
-                            <Label htmlFor={`${dayName}-start`} className="text-xs text-gray-500">Nuo</Label>
-                            <Input
-                              id={`${dayName}-start`}
-                              type="time"
-                              value={workingHours.start}
-                              onChange={(e) => handleUpdateWorkingHours(dayName, 'start', e.target.value)}
-                              className="mt-1"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Label htmlFor={`${dayName}-end`} className="text-xs text-gray-500">Iki</Label>
-                            <Input
-                              id={`${dayName}-end`}
-                              type="time"
-                              value={workingHours.end}
-                              onChange={(e) => handleUpdateWorkingHours(dayName, 'end', e.target.value)}
-                              className="mt-1"
-                            />
-                          </div>
-                        </div>
-                        <div className="text-xs text-gray-500 text-center">
-                          {generateTimeSlots(workingHours.start, workingHours.end).length} intervalai (po 15 min)
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Working Hours Settings removed */}
 
       {/* Time Slots Modal */}
       <Dialog open={showTimeModal} onOpenChange={setShowTimeModal}>
@@ -431,67 +318,43 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Current Time Slots */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">Dabartiniai laiko intervalai ({timeSlots.length} intervalai)</Label>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const workingHours = getWorkingHours(selectedDay)
-                    const regeneratedSlots = generateTimeSlots(workingHours.start, workingHours.end)
-                    setTimeSlots(regeneratedSlots)
-                    addNotification({
-                      type: 'success',
-                      title: 'Laiko intervalai atnaujinti',
-                      message: `Sugeneruota ${regeneratedSlots.length} intervalų pagal darbo valandas (${workingHours.start} - ${workingHours.end})`
-                    })
-                  }}
-                >
-                  <Clock className="h-4 w-4 mr-1" />
-                  Atnaujinti pagal darbo valandas
-                </Button>
+            {/* Current Time Slots grid only */}
+            {timeSlots.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>Šiai dienai laiko intervalų nenustatyta</p>
               </div>
-              {timeSlots.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>Šiai dienai laiko intervalų nenustatyta</p>
-                  <p className="text-sm mt-1">Spustelėkite "Atnaujinti pagal darbo valandas", kad sukurtumėte intervalus</p>
-                </div>
-              ) : (
-                <div className="mt-3">
-                  <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
-                    {timeSlots.map((slot, index) => (
-                      <motion.button
-                        key={index}
-                        className={`
-                          p-3 border rounded-lg text-sm font-medium transition-all duration-200
-                          ${slot.available 
-                            ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200' 
-                            : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
-                          }
-                        `}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleToggleTimeSlot(index)}
-                      >
-                        <div className="text-center">
-                          <div className="font-semibold">{slot.start}</div>
-                          <div className="text-xs opacity-75">- {slot.end}</div>
-                          <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-gray-500'}`}>
-                            {slot.available ? 'Prieinama' : 'Neprieinama'}
-                          </div>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </div>
-                  <div className="mt-3 text-sm text-gray-600 text-center">
-                    Spustelėkite laiko blokus, kad perjungtumėte prieinamumą. Kiekvienas blokas reiškia 15 minučių intervalą.
-                  </div>
-                </div>
-              )}
+            ) : (
+              <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                {timeSlots.map((slot, index) => (
+                  <motion.button
+                    key={index}
+                    className={`
+                      p-3 border rounded-lg text-sm font-medium transition-all duration-200
+                      ${slot.available 
+                        ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200' 
+                        : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
+                      }
+                    `}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleToggleTimeSlot(index)}
+                  >
+                    <div className="text-center">
+                      <div className="font-semibold">{slot.start}</div>
+                      <div className="text-xs opacity-75">- {slot.end}</div>
+                      <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-gray-500'}`}>
+                        {slot.available ? 'Prieinama' : 'Neprieinama'}
+                      </div>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+            <div className="text-sm text-gray-600 text-center">
+              Spustelėkite laiko blokus, kad perjungtumėte prieinamumą. Kiekvienas blokas reiškia 15 minučių intervalą.
             </div>
+          </div>
 
 
             {/* Action Buttons */}
@@ -503,7 +366,6 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                 Išsaugoti prieinamumą
               </Button>
             </div>
-          </div>
         </DialogContent>
       </Dialog>
     </div>

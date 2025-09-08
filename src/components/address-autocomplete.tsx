@@ -88,7 +88,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
         `access_token=${MAPBOX_CONFIG.accessToken}&` +
         `country=LT&` +
-        `types=place,locality,neighborhood&` +
+        `types=address,place,locality,neighborhood&` +
         `limit=8&` +
         `language=lt`
       )
@@ -103,32 +103,49 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         const context = (feature.context as Record<string, unknown>[]) || []
         const placeName = feature.place_name || ''
         const featureText = feature.text || ''
+        const properties = (feature.properties as Record<string, unknown>) || {}
         
-        // Extract city, region, and district from context
+        // Extract city, region, postal code, and district from context
         let city = ''
         let region = ''
         let district = ''
+        let zipCode = ''
         
         context.forEach((item: Record<string, unknown>) => {
-          if (item.id && typeof item.id === 'string' && item.id.startsWith('place.')) {
-            city = item.text as string
-          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('region.')) {
-            region = item.text as string
-          } else if (item.id && typeof item.id === 'string' && item.id.startsWith('neighborhood.')) {
-            district = item.text as string
+          if (item.id && typeof item.id === 'string') {
+            if (item.id.startsWith('place.')) {
+              city = item.text as string
+            } else if (item.id.startsWith('region.')) {
+              region = item.text as string
+            } else if (item.id.startsWith('neighborhood.')) {
+              district = item.text as string
+            } else if (item.id.startsWith('postcode.')) {
+              zipCode = item.text as string
+            }
           }
         })
 
-        // For cities and districts, use the main text as the address
-        const address = featureText as string
+        // Extract postal code from properties if available
+        if (!zipCode && properties.address) {
+          const addressStr = properties.address as string
+          const postalMatch = addressStr.match(/\b\d{5}\b/)
+          if (postalMatch) {
+            zipCode = postalMatch[0]
+          }
+        }
+
+        // For full addresses, use the complete place name
+        // For cities/districts, use the main text
+        const placeType = feature.place_type as string[] || []
+        const address = placeType.includes('address') ? placeName : featureText as string
 
         return {
           id: feature.id,
           place_name: placeName,
           address: address,
-          city: city || address,
+          city: city || (featureText as string),
           state: region,
-          zipCode: district,
+          zipCode: zipCode,
           coordinates: {
             lat: (feature.center as number[])[1],
             lng: (feature.center as number[])[0]
@@ -266,7 +283,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <Label htmlFor="address-input">{label}</Label>
+      {label && <Label htmlFor="address-input">{label}</Label>}
       <div className="relative">
         <Input
           ref={inputRef}

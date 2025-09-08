@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Image from 'next/image'
+import { usePathname, useRouter } from 'next/navigation'
 import { 
   Calendar, 
   Users, 
@@ -31,7 +32,13 @@ import {
   MapPin,
   PawPrint
 } from 'lucide-react'
+import { t } from '@/lib/translations'
 import AvailabilityCalendar from '@/components/availability-calendar'
+import BookingsSection from './_sections/BookingsSection'
+import ServicesSection from './_sections/ServicesSection'
+import AnalyticsSection from './_sections/AnalyticsSection'
+import StatsCards from './_sections/StatsCards'
+import BookingDetailsDialog, { BookingLite } from './_sections/BookingDetailsDialog'
 import { ServiceProvider, Service, Booking, CreateServiceForm, ServiceCategory } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
@@ -46,6 +53,8 @@ import AddressAutocomplete from '@/components/address-autocomplete'
 export default function ProviderDashboard() {
   const { user } = useAuth()
   const { addNotification } = useNotifications()
+  const pathname = usePathname()
+  const router = useRouter()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -113,6 +122,13 @@ export default function ProviderDashboard() {
   const [editProfileLoading, setEditProfileLoading] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
   const [showEditServiceModal, setShowEditServiceModal] = useState(false)
+  const currentTab = useMemo(() => {
+    const parts = (pathname || '').split('/').filter(Boolean)
+    const dashboardIndex = parts.indexOf('dashboard')
+    const seg = dashboardIndex >= 0 ? parts[dashboardIndex + 1] : ''
+    const allowed = ['calendar', 'bookings', 'services', 'profile', 'analytics']
+    return allowed.includes(seg) ? seg : 'calendar'
+  }, [pathname])
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -771,15 +787,37 @@ export default function ProviderDashboard() {
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Provider Dashboard
-              </h1>
-              <p className="text-gray-600">
-                Manage your services, bookings, and business
-              </p>
-            </div>
+            {/* Header - dynamic per section; show only on main dashboard sections */}
+            {currentTab === 'calendar' && (
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('providerDashboard.calendar')}</h1>
+                <p className="text-gray-600">{t('calendarHeader.manageAvailability', 'Tvarkykite savo prieinamumą')}</p>
+              </div>
+            )}
+            {currentTab === 'bookings' && (
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('providerDashboard.bookings')}</h1>
+                <p className="text-gray-600">{t('bookings.subtitle')}</p>
+              </div>
+            )}
+            {currentTab === 'services' && (
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('providerDashboard.services')}</h1>
+                <p className="text-gray-600">{t('providerDashboard.manageServices', 'Kurkite ir valdykite savo paslaugas')}</p>
+              </div>
+            )}
+            {currentTab === 'profile' && (
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('providerDashboard.profile')}</h1>
+                <p className="text-gray-600">{t('profile.subtitle')}</p>
+              </div>
+            )}
+            {currentTab === 'analytics' && (
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('providerDashboard.analytics')}</h1>
+                <p className="text-gray-600">{t('providerDashboard.analyticsSubtitle', 'Verslo našumo rodikliai')}</p>
+              </div>
+            )}
 
             {/* Complete Profile Section */}
             {showCompleteProfile && (
@@ -827,299 +865,87 @@ export default function ProviderDashboard() {
               </div>
             )}
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Calendar className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Today's Bookings</p>
-                      <p className="text-2xl font-bold text-gray-900">{bookings.filter(b => new Date(b.date).toDateString() === new Date().toDateString()).length}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <Users className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Total Customers</p>
-                      <p className="text-2xl font-bold text-gray-900">{new Set(bookings.map(b => b.customerId)).size}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
-                      <DollarSign className="h-6 w-6 text-yellow-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">This Month</p>
-                      <p className="text-2xl font-bold text-gray-900">${bookings.reduce((sum, b) => sum + b.totalPrice, 0)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Star className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Rating</p>
-                      <p className="text-2xl font-bold text-gray-900">{provider?.rating || 'N/A'}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Stats Cards - only on main dashboard (calendar) */}
+            {currentTab === 'calendar' && (
+              <StatsCards bookings={bookings as any} provider={provider} />
+            )}
 
             {/* Main Content */}
-            <Tabs defaultValue="calendar" className="space-y-6">
-              <TabsList>
-                <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                <TabsTrigger value="bookings">Bookings</TabsTrigger>
-                <TabsTrigger value="services">Services</TabsTrigger>
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              </TabsList>
+            <Tabs value={currentTab} className="space-y-6" onValueChange={(val) => router.push(`/provider/dashboard/${val}`)}>
+              <TabsList className="hidden" />
 
               <TabsContent value="calendar" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Availability</CardTitle>
-                    <CardDescription>
-                      Manage your availability and time slots for bookings
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {provider ? (
-                      <AvailabilityCalendar 
-                        provider={provider}
-                        onAvailabilityUpdate={async (updatedAvailability) => {
-                          try {
-                            // Convert DayAvailability to the format expected by the database
-                            const dbAvailability: Record<string, boolean> = {}
-                            Object.entries(updatedAvailability).forEach(([day, value]) => {
-                              if (typeof value === 'boolean') {
-                                dbAvailability[day] = value
-                              } else if (Array.isArray(value)) {
-                                dbAvailability[day] = value.length > 0
-                              } else if (typeof value === 'object' && value !== null) {
-                                dbAvailability[day] = true
-                              } else {
-                                dbAvailability[day] = Boolean(value)
-                              }
-                            })
-
-                            // Update provider availability in database
-                            await providerApi.updateProvider(provider.id, {
-                              availability: dbAvailability
-                            })
-                            
-                            // Update local state - convert back to ServiceProvider format
-                            const convertedAvailability = {
-                              monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday : [],
-                              tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday : [],
-                              wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday : [],
-                              thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday : [],
-                              friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday : [],
-                              saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday : [],
-                              sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday : []
-                            }
-                            
-                            setProvider(prev => prev ? {
-                              ...prev,
-                              availability: convertedAvailability
-                            } : null)
-                          } catch (error) {
-                            console.error('Error updating availability:', error)
-                            addNotification({
-                              type: 'error',
-                              title: 'Error',
-                              message: 'Failed to update availability. Please try again.'
-                            })
+                {provider ? (
+                  <AvailabilityCalendar 
+                    provider={provider}
+                    onAvailabilityUpdate={async (updatedAvailability) => {
+                      try {
+                        // Convert DayAvailability to DB format
+                        const dbAvailability: Record<string, boolean> = {}
+                        Object.entries(updatedAvailability).forEach(([day, value]) => {
+                          if (typeof value === 'boolean') {
+                            dbAvailability[day] = value
+                          } else if (Array.isArray(value)) {
+                            dbAvailability[day] = value.length > 0
+                          } else if (typeof value === 'object' && value !== null) {
+                            dbAvailability[day] = true
+                          } else {
+                            dbAvailability[day] = Boolean(value)
                           }
-                        }}
-                      />
-                    ) : (
-                      <div className="text-center py-12">
-                        <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Complete your profile first</h3>
-                        <p className="text-gray-600">You need to complete your provider profile before managing availability.</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                        })
+
+                        await providerApi.updateProvider(provider.id, {
+                          availability: dbAvailability
+                        })
+
+                        const convertedAvailability = {
+                          monday: Array.isArray(updatedAvailability.monday) ? updatedAvailability.monday : [],
+                          tuesday: Array.isArray(updatedAvailability.tuesday) ? updatedAvailability.tuesday : [],
+                          wednesday: Array.isArray(updatedAvailability.wednesday) ? updatedAvailability.wednesday : [],
+                          thursday: Array.isArray(updatedAvailability.thursday) ? updatedAvailability.thursday : [],
+                          friday: Array.isArray(updatedAvailability.friday) ? updatedAvailability.friday : [],
+                          saturday: Array.isArray(updatedAvailability.saturday) ? updatedAvailability.saturday : [],
+                          sunday: Array.isArray(updatedAvailability.sunday) ? updatedAvailability.sunday : []
+                        }
+
+                        setProvider(prev => prev ? { ...prev, availability: convertedAvailability } : null)
+                      } catch (error) {
+                        console.error('Error updating availability:', error)
+                        addNotification({
+                          type: 'error',
+                          title: 'Error',
+                          message: 'Failed to update availability. Please try again.'
+                        })
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Complete your profile first</h3>
+                    <p className="text-gray-600">You need to complete your provider profile before managing availability.</p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="bookings" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Bookings</CardTitle>
-                    <CardDescription>
-                      Manage your upcoming and past bookings
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {bookings.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings yet</h3>
-                        <p className="text-gray-600">When customers book your services, they'll appear here.</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {bookings.map((booking) => (
-                        <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3 mb-2">
-                                <h4 className="font-medium text-gray-900">
-                                  {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
-                                </h4>
-                                <Badge className={getStatusColor(booking.status)}>
-                                  <div className="flex items-center space-x-1">
-                                    {getStatusIcon(booking.status)}
-                                    <span className="capitalize">{booking.status}</span>
-                                  </div>
-                                </Badge>
-                              </div>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <span>{new Date(booking.date).toLocaleDateString()}</span>
-                                <span>{booking.timeSlot.start} - {booking.timeSlot.end}</span>
-                                <span>${booking.totalPrice}</span>
-                              </div>
-                              {booking.notes && (
-                                <p className="text-sm text-gray-600 mt-2">
-                                  <strong>Notes:</strong> {booking.notes}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleViewBookingDetails(booking)}
-                              >
-                                View Details
-                              </Button>
-                              {booking.status === 'pending' && (
-                                <>
-                                  <Button 
-                                    size="sm"
-                                    onClick={() => handleAcceptBooking(booking.id)}
-                                    className="bg-green-600 hover:bg-green-700"
-                                  >
-                                    Accept
-                                  </Button>
-                                  <Button 
-                                    variant="destructive" 
-                                    size="sm"
-                                    onClick={() => handleRejectBooking(booking.id)}
-                                  >
-                                    Reject
-                                  </Button>
-                                </>
-                              )}
-                              {booking.status === 'confirmed' && (
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleCompleteBooking(booking.id)}
-                                  className="bg-blue-600 hover:bg-blue-700"
-                                >
-                                  Mark Complete
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                <BookingsSection
+                  bookings={bookings as any}
+                  services={services as any}
+                  onView={(b) => handleViewBookingDetails(b as any)}
+                  onAccept={handleAcceptBooking}
+                  onReject={handleRejectBooking}
+                  onComplete={handleCompleteBooking}
+                />
               </TabsContent>
 
               <TabsContent value="services" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle>Your Services</CardTitle>
-                        <CardDescription>
-                          Manage your service offerings
-                        </CardDescription>
-                      </div>
-                      <Button onClick={() => setShowAddServiceModal(true)}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Service
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {services.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
-                        <p className="text-gray-600">Add your first service to start accepting bookings.</p>
-                        <Button className="mt-4" onClick={() => setShowAddServiceModal(true)}>
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Your First Service
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {services.map((service) => (
-                        <div key={service.id} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 mb-2">{service.name}</h4>
-                              <p className="text-sm text-gray-600 mb-3">{service.description}</p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span>€{service.price}</span>
-                                <span>{service.duration} min</span>
-                                <span>Max {service.maxPets} pet{service.maxPets > 1 ? 's' : ''}</span>
-                              </div>
-                            </div>
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleEditService(service)}
-                              >
-                                <Edit className="h-4 w-4 mr-1" />
-                                Edit
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleDeleteService(service.id)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                <ServicesSection
+                  services={services as any}
+                  onAdd={() => setShowAddServiceModal(true)}
+                  onEdit={handleEditService as any}
+                  onDelete={handleDeleteService}
+                />
               </TabsContent>
 
               <TabsContent value="profile" className="space-y-6">
@@ -1274,198 +1100,22 @@ export default function ProviderDashboard() {
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Analytics</CardTitle>
-                    <CardDescription>
-                      View your business performance metrics
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12">
-                      <p className="text-gray-500">Analytics dashboard coming soon...</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <AnalyticsSection />
               </TabsContent>
             </Tabs>
           </div>
         </div>
 
         {/* Booking Details Modal */}
-        <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center justify-between">
-                Booking Details
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowBookingModal(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </DialogTitle>
-              <DialogDescription>
-                View and manage booking details for your services.
-              </DialogDescription>
-            </DialogHeader>
-            
-            {selectedBooking && (
-              <div className="space-y-6">
-                {/* Booking Status */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(selectedBooking.status)}
-                    <span className="font-medium">Status: </span>
-                    <Badge className={getStatusColor(selectedBooking.status)}>
-                      {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
-                    </Badge>
-                  </div>
-                  <div className="text-2xl font-bold text-green-600">
-                    ${selectedBooking.totalPrice}
-                  </div>
-                </div>
-
-                {/* Service Information */}
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-lg mb-3">Service Details</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Service</p>
-                      <p className="font-medium">
-                        {services.find(s => s.id === selectedBooking.serviceId)?.name || 'N/A'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Date & Time</p>
-                      <p className="font-medium">
-                        {new Date(selectedBooking.date).toLocaleDateString()} at {selectedBooking.timeSlot.start} - {selectedBooking.timeSlot.end}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pet Information */}
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
-                  {selectedBooking.pet ? (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-600">Pet Name</p>
-                          <p className="font-medium">{selectedBooking.pet.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Species</p>
-                          <p className="font-medium">{selectedBooking.pet.species}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Breed</p>
-                          <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">Age</p>
-                          <p className="font-medium">{selectedBooking.pet.age} months</p>
-                        </div>
-                      </div>
-                      {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
-                        <div className="mt-3">
-                          <p className="text-sm text-gray-600">Special Needs</p>
-                          <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">No pet information available</p>
-                  )}
-                </div>
-
-                {/* Customer Information */}
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold text-lg mb-3">Customer Information</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Customer ID</p>
-                        <p className="font-medium">{selectedBooking.customerId}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Service</p>
-                        <p className="font-medium">
-                          {services.find(s => s.id === selectedBooking.serviceId)?.name || 'N/A'}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Total Price</p>
-                        <p className="font-medium">${selectedBooking.totalPrice}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Booking Date</p>
-                        <p className="font-medium">
-                          {new Date(selectedBooking.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Special Instructions */}
-                {selectedBooking.notes && (
-                  <div className="border-t pt-4">
-                    <h3 className="font-semibold text-lg mb-3">Special Instructions</h3>
-                    <div className="bg-yellow-50 p-4 rounded-lg">
-                      <p className="text-gray-700">{selectedBooking.notes}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="border-t pt-4 flex justify-end space-x-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowBookingModal(false)}
-                  >
-                    Close
-                  </Button>
-                  {selectedBooking.status === 'pending' && (
-                    <>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          handleRejectBooking(selectedBooking.id)
-                          setShowBookingModal(false)
-                        }}
-                      >
-                        Reject Booking
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleAcceptBooking(selectedBooking.id)
-                          setShowBookingModal(false)
-                        }}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        Accept Booking
-                      </Button>
-                    </>
-                  )}
-                  {selectedBooking.status === 'confirmed' && (
-                    <Button
-                      onClick={() => {
-                        handleCompleteBooking(selectedBooking.id)
-                        setShowBookingModal(false)
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Mark as Complete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        <BookingDetailsDialog
+          open={showBookingModal}
+          booking={selectedBooking as unknown as BookingLite}
+          services={services}
+          onClose={() => setShowBookingModal(false)}
+          onAccept={(id) => { handleAcceptBooking(id); setShowBookingModal(false) }}
+          onReject={(id) => { handleRejectBooking(id); setShowBookingModal(false) }}
+          onComplete={(id) => { handleCompleteBooking(id); setShowBookingModal(false) }}
+        />
 
         {/* Complete Profile Modal */}
         <Dialog open={showCompleteProfileModal} onOpenChange={setShowCompleteProfileModal}>
@@ -2323,29 +1973,7 @@ export default function ProviderDashboard() {
                 </div>
               </div>
 
-              <div>
-                <Label>Availability Management</Label>
-                <p className="text-sm text-gray-600 mb-3">Manage your working hours and availability</p>
-                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">Working Hours & Availability</p>
-                      <p className="text-sm text-gray-600">Set your detailed availability schedule</p>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        // Navigate to availability page
-                        window.location.href = '/provider/availability'
-                      }}
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Manage Availability
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              {/* Availability section removed - managed via calendar slots */}
 
               <div>
                 <Label>Certifications (Optional)</Label>

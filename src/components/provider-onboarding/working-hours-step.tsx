@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { OnboardingData } from '@/types/onboarding'
+import { OnboardingStepper } from './onboarding-stepper'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface WorkingHoursStepProps {
   data: OnboardingData
@@ -12,88 +15,193 @@ interface WorkingHoursStepProps {
   onPrevious: () => void
 }
 
-const timeSlots = [
-  '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
-  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
-  '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30',
-  '22:00', '22:30', '23:00', '23:30'
+interface DayHours {
+  enabled: boolean
+  startTime: string
+  endTime: string
+}
+
+interface WorkingHours {
+  monday: DayHours
+  tuesday: DayHours
+  wednesday: DayHours
+  thursday: DayHours
+  friday: DayHours
+  saturday: DayHours
+  sunday: DayHours
+}
+
+const defaultWorkingHours: WorkingHours = {
+  monday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+  tuesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+  wednesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+  thursday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+  friday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+  saturday: { enabled: false, startTime: '10:00', endTime: '15:00' },
+  sunday: { enabled: false, startTime: '10:00', endTime: '15:00' }
+}
+
+const dayNames = [
+  { key: 'monday', label: 'Pirmadienis' },
+  { key: 'tuesday', label: 'Antradienis' },
+  { key: 'wednesday', label: 'Trečiadienis' },
+  { key: 'thursday', label: 'Ketvirtadienis' },
+  { key: 'friday', label: 'Penktadienis' },
+  { key: 'saturday', label: 'Šeštadienis' },
+  { key: 'sunday', label: 'Sekmadienis' }
 ]
 
 export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }: WorkingHoursStepProps) {
-  const [workingHours, setWorkingHours] = useState(data.workingHours || {
-    start: '09:00',
-    end: '17:00'
-  })
-  const [error, setError] = useState('')
+  const [workingHours, setWorkingHours] = useState<WorkingHours>(
+    data.workingHours || defaultWorkingHours
+  )
 
-  const handleStartTimeChange = (startTime: string) => {
-    const updatedHours = { ...workingHours, start: startTime }
-    setWorkingHours(updatedHours)
-    setError('')
-    onUpdate({ workingHours: updatedHours })
+  const handleDayToggle = (day: keyof WorkingHours, enabled: boolean) => {
+    const newWorkingHours = {
+      ...workingHours,
+      [day]: {
+        ...workingHours[day],
+        enabled
+      }
+    }
+    setWorkingHours(newWorkingHours)
+    onUpdate({ workingHours: newWorkingHours })
   }
 
-  const handleEndTimeChange = (endTime: string) => {
-    const updatedHours = { ...workingHours, end: endTime }
-    setWorkingHours(updatedHours)
-    setError('')
-    onUpdate({ workingHours: updatedHours })
+  const handleTimeChange = (day: keyof WorkingHours, field: 'startTime' | 'endTime', value: string) => {
+    const newWorkingHours = {
+      ...workingHours,
+      [day]: {
+        ...workingHours[day],
+        [field]: value
+      }
+    }
+    setWorkingHours(newWorkingHours)
+    onUpdate({ workingHours: newWorkingHours })
   }
 
+  const isFormValid = () => {
+    return Object.values(workingHours).some(day => day.enabled)
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-muted-foreground">
-          Set your typical working hours (you can adjust this later)
-        </p>
-      </div>
-
-      <Card className="py-6">
-        <CardContent>
-          <CardTitle className="text-lg mb-4">Daily Schedule</CardTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Start Time</label>
-              <Select value={workingHours.start} onValueChange={handleStartTimeChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select start time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">End Time</label>
-              <Select value={workingHours.end} onValueChange={handleEndTimeChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select end time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Working Hours">
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
+          <div className="w-full max-w-2xl">
+            <div className="flex flex-col gap-8 items-center justify-center">
+              {/* Title */}
+              <h1 className="text-3xl font-bold text-black text-center">
+                Darbo valandos
+              </h1>
+              
+              {/* Description */}
+              <p className="text-base text-gray-600 text-center max-w-md">
+                Nurodykite, kada esate prieinamas klientams kiekvieną savaitės dieną
+              </p>
+              
+              {/* Working Hours Form */}
+              <div className="w-full space-y-4">
+                {dayNames.map(({ key, label }) => {
+                  const dayKey = key as keyof WorkingHours
+                  const dayData = workingHours[dayKey]
+                  
+                  return (
+                    <div key={dayKey} className="bg-white rounded-xl border border-gray-200 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            id={dayKey}
+                            checked={dayData.enabled}
+                            onCheckedChange={(checked) => handleDayToggle(dayKey, checked as boolean)}
+                          />
+                          <Label htmlFor={dayKey} className="text-base font-medium text-gray-900">
+                            {label}
+                          </Label>
+                        </div>
+                        
+                        {dayData.enabled && (
+                          <div className="flex items-center space-x-3">
+                            <Input
+                              id={`${dayKey}-start`}
+                              type="time"
+                              value={dayData.startTime}
+                              onChange={(e) => handleTimeChange(dayKey, 'startTime', e.target.value)}
+                              className="w-24"
+                            />
+                            <span className="text-sm text-gray-600">-</span>
+                            <Input
+                              id={`${dayKey}-end`}
+                              type="time"
+                              value={dayData.endTime}
+                              onChange={(e) => handleTimeChange(dayKey, 'endTime', e.target.value)}
+                              className="w-24"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="flex gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const weekdaysHours = {
+                      ...defaultWorkingHours,
+                      monday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      tuesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      wednesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      thursday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      friday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      saturday: { enabled: false, startTime: '10:00', endTime: '15:00' },
+                      sunday: { enabled: false, startTime: '10:00', endTime: '15:00' }
+                    }
+                    setWorkingHours(weekdaysHours)
+                    onUpdate({ workingHours: weekdaysHours })
+                  }}
+                  className="text-sm"
+                >
+                  Tik darbo dienos
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const allDaysHours = {
+                      ...defaultWorkingHours,
+                      monday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      tuesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      wednesday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      thursday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      friday: { enabled: true, startTime: '09:00', endTime: '17:00' },
+                      saturday: { enabled: true, startTime: '10:00', endTime: '15:00' },
+                      sunday: { enabled: true, startTime: '10:00', endTime: '15:00' }
+                    }
+                    setWorkingHours(allDaysHours)
+                    onUpdate({ workingHours: allDaysHours })
+                  }}
+                  className="text-sm"
+                >
+                  Visą savaitę
+                </Button>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {error && (
-        <div className="bg-destructive/15 text-destructive p-3 rounded-lg text-sm">
-          {error}
         </div>
-      )}
+      </div>
 
+      {/* Stepper Component */}
+      <OnboardingStepper
+        currentStep={6}
+        totalSteps={8}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        isNextDisabled={!isFormValid()}
+      />
     </div>
   )
 }

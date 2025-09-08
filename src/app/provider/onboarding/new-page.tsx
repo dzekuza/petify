@@ -7,30 +7,19 @@ import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
 import ServiceCategoryStep from '@/components/provider-onboarding/service-category-step'
-import LocationSelectionStep from '@/components/provider-onboarding/location-selection-step'
-import AddressInputStep from '@/components/provider-onboarding/address-input-step'
-import ServicesStep from '@/components/provider-onboarding/services-step'
-import DetailedServiceStep from '@/components/provider-onboarding/detailed-service-step'
-import WorkingHoursStep from '@/components/provider-onboarding/working-hours-step'
-import LogoCoverStep from '@/components/provider-onboarding/logo-cover-step'
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
 
 const onboardingSteps = [
   { id: 0, title: 'Welcome', component: 'welcome' },
   { id: 1, title: 'Service Category', component: 'service-category' },
-  { id: 2, title: 'Location Selection', component: 'location-selection' },
-  { id: 3, title: 'Address Input', component: 'address-input' },
-  { id: 4, title: 'Services', component: 'services' },
-  { id: 5, title: 'Detailed Services', component: 'detailed-services' },
-  { id: 6, title: 'Working Hours', component: 'working-hours' },
-  { id: 7, title: 'Logo and Cover', component: 'logo-cover' },
-  { id: 8, title: 'Provider Type', component: 'provider-type' },
-  { id: 9, title: 'Service Details', component: 'service-details' },
-  { id: 10, title: 'Business Info', component: 'business-info' },
-  { id: 11, title: 'Review', component: 'review' }
+  { id: 2, title: 'Provider Type', component: 'provider-type' },
+  { id: 3, title: 'Location Setup', component: 'location-setup' },
+  { id: 4, title: 'Service Details', component: 'service-details' },
+  { id: 5, title: 'Business Info', component: 'business-info' },
+  { id: 6, title: 'Review', component: 'review' }
 ]
 
-export default function ProviderOnboardingPage() {
+export default function NewProviderOnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     providerType: '',
@@ -107,41 +96,16 @@ export default function ProviderOnboardingPage() {
   }, [user, loading, router])
 
   const handleNext = () => {
-    console.log('Next clicked, current step:', currentStep)
-    console.log('Provider type:', onboardingData.providerType)
-    
-    let nextStep = currentStep + 1
-    
-    // Skip Services and Detailed Services steps if provider type is "Skelbimai" (ads)
-    if (currentStep === 3 && onboardingData.providerType === 'ads') {
-      console.log('Skipping Services and Detailed Services steps for ads provider')
-      nextStep = currentStep + 3 // Skip services (4) and detailed-services (5) steps, go to logo-cover (6)
-    }
-    
-    if (nextStep < onboardingSteps.length) {
-      setCurrentStep(nextStep)
-      console.log('Moving to step:', nextStep)
+    if (currentStep < onboardingSteps.length - 1) {
+      setCurrentStep(currentStep + 1)
     } else {
-      console.log('Completing onboarding')
       handleOnboardingComplete()
     }
   }
 
   const handlePrevious = () => {
-    console.log('Previous clicked, current step:', currentStep)
-    console.log('Provider type:', onboardingData.providerType)
-    
-    let prevStep = currentStep - 1
-    
-    // Skip Services and Detailed Services steps if provider type is "Skelbimai" (ads) when going back
-    if (currentStep === 6 && onboardingData.providerType === 'ads') {
-      console.log('Skipping Services and Detailed Services steps when going back for ads provider')
-      prevStep = currentStep - 3 // Skip services (4) and detailed-services (5) steps, go to address-input (3)
-    }
-    
-    if (prevStep >= 0) {
-      setCurrentStep(prevStep)
-      console.log('Moving to step:', prevStep)
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
     }
   }
 
@@ -217,60 +181,6 @@ export default function ProviderOnboardingPage() {
       case 'service-category':
         return (
           <ServiceCategoryStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'location-selection':
-        return (
-          <LocationSelectionStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'address-input':
-        return (
-          <AddressInputStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'services':
-        return (
-          <ServicesStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'detailed-services':
-        return (
-          <DetailedServiceStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'working-hours':
-        return (
-          <WorkingHoursStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'logo-cover':
-        return (
-          <LogoCoverStep
             data={onboardingData}
             onUpdate={handleDataUpdate}
             onNext={handleNext}

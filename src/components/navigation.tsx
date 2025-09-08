@@ -54,7 +54,8 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const isSearchPage = pathname === '/search'
+  const isProviderRoute = pathname?.startsWith('/provider')
+    const isSearchPage = pathname === '/search'
   const hasCategory = searchParams?.get('category')
   const showSearchBar = isSearchPage || hasCategory
 
@@ -204,15 +205,37 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
             </Link>
           </div>
 
-          {/* Search Bar - Show when on search page or category selected */}
-          {showSearchBar && (
-            <div className="hidden md:block flex-1 max-w-2xl mx-8">
-              <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
-            </div>
-          )}
+          {/* Center section: Search bar or Provider menu */}
+          <div className="hidden md:flex flex-1 justify-center">
+            {isProviderRoute ? (
+              <div className="flex items-center space-x-2">
+                <Link href="/provider/dashboard/calendar" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                  Calendar
+                </Link>
+                <Link href="/provider/dashboard/bookings" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                  Bookings
+                </Link>
+                <Link href="/provider/dashboard/services" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                  Services
+                </Link>
+                <Link href="/provider/dashboard/profile" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                  Profile
+                </Link>
+                <Link href="/provider/dashboard/analytics" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
+                  Analytics
+                </Link>
+              </div>
+            ) : (
+              showSearchBar && (
+                <div className="block flex-1 max-w-2xl mx-8">
+                  <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
+                </div>
+              )
+            )}
+          </div>
 
           {/* Desktop Navigation */}
-          {!hideServiceCategories && (
+          {!hideServiceCategories && !isProviderRoute && (
             <div className="hidden md:flex md:items-center md:space-x-6">
               {navigation.map((item) => (
                 <Link
@@ -239,24 +262,37 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
           <div className="hidden md:flex md:items-center md:space-x-4">
             {user ? (
               <>
+                {/* Dynamic environment switcher - always visible when authenticated */}
+                {isProviderRoute ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push('/')}
+                  >
+                    Išeiti iš teikėjo
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleSwitchToProvider}
+                  >
+                    {t('navigation.switchToProvider')}
+                  </Button>
+                )}
+
+                {/* Provider top menu moved to center */}
+
                 {/* Customer-specific actions */}
-                {user.user_metadata?.role !== 'provider' && (
-                  <>
-                    <Link 
-                      href="/favorites"
-                      className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3 has-[>svg]:px-2.5"
-                    >
-                      <Heart className="h-4 w-4 mr-2" />
-                      {t('navigation.favorites')}
-                    </Link>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handleSwitchToProvider}
-                    >
-                      {t('navigation.switchToProvider')}
-                    </Button>
-                  </>
+                {!isProviderRoute && (
+                  <Link 
+                    href="/favorites"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                    aria-label={t('navigation.favorites')}
+                    title={t('navigation.favorites')}
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Link>
                 )}
                 
                 {/* User Menu */}
@@ -280,7 +316,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
                         </p>
-                        {user.user_metadata?.role === 'provider' && (
+                        {isProviderRoute && (
                           <Badge variant="secondary" className="w-fit text-xs">
                             {t('navigation.serviceProvider')}
                           </Badge>
@@ -289,14 +325,14 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/profile">
+                      <Link href={isProviderRoute ? "/provider/dashboard/profile" : "/profile"}>
                         <User className="mr-2 h-4 w-4" />
                         <span>{t('navigation.profile')}</span>
                       </Link>
                     </DropdownMenuItem>
                     
-                    {/* Customer-specific menu items */}
-                    {user.user_metadata?.role !== 'provider' && (
+                    {/* Customer-specific menu items (shown in customer environment) */}
+                    {!isProviderRoute && (
                       <>
                         <DropdownMenuItem asChild>
                           <Link href="/pets">
@@ -318,8 +354,8 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       </>
                     )}
                     
-                    {/* Provider-specific menu items */}
-                    {user.user_metadata?.role === 'provider' && (
+                    {/* Provider-specific menu items (shown in provider environment) */}
+                    {isProviderRoute && (
                       <>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/dashboard">
@@ -490,8 +526,33 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                             </Link>
                           </DrawerClose>
                           
-                          {/* Customer-specific mobile menu items */}
-                          {user.user_metadata?.role !== 'provider' && (
+                          {/* Dynamic environment switcher - always visible when authenticated (mobile) */}
+                          {isProviderRoute ? (
+                            <button
+                              onClick={() => {
+                                router.push('/')
+                                setMobileMenuOpen(false)
+                              }}
+                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                            >
+                              <Settings className="h-5 w-5" />
+                              <span>Išeiti iš teikėjo</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                handleSwitchToProvider()
+                                setMobileMenuOpen(false)
+                              }}
+                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                            >
+                              <Settings className="h-5 w-5" />
+                              <span>{t('navigation.switchToProvider')}</span>
+                            </button>
+                          )}
+
+                          {/* Customer-specific mobile menu items (customer environment) */}
+                          {!isProviderRoute && (
                             <>
                               <DrawerClose asChild>
                                 <Link
@@ -520,21 +581,11 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   <span>{t('navigation.favoritesMobile')}</span>
                                 </Link>
                               </DrawerClose>
-                              <button
-                                onClick={() => {
-                                  handleSwitchToProvider()
-                                  setMobileMenuOpen(false)
-                                }}
-                                className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                              >
-                                <Settings className="h-5 w-5" />
-                                <span>{t('navigation.switchToProvider')}</span>
-                              </button>
                             </>
                           )}
                           
-                          {/* Provider-specific mobile menu items */}
-                          {user.user_metadata?.role === 'provider' && (
+                          {/* Provider-specific mobile menu items (provider environment) */}
+                          {isProviderRoute && (
                             <>
                               <DrawerClose asChild>
                                 <Link

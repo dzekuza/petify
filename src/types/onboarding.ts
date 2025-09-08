@@ -4,7 +4,40 @@ export interface OnboardingData {
   // Step 0: Provider Type
   providerType: ProviderType | ''
   
-  // Step 1: Business Details
+  // Step 1: Location Type
+  locationType: 'single' | 'multiple' | ''
+  
+  // Step 2: Addresses
+  addresses: Array<{
+    id: string
+    address: string
+    city: string
+    zipCode: string
+  }>
+  
+  // Step 3: Services (only for non-ads providers)
+  serviceDetails: Array<{
+    id: string
+    name: string
+    description: string
+    price: string
+  }>
+  
+  // Step 4: Detailed Services (only for non-ads providers)
+  detailedServices: Array<{
+    id: string
+    name: string
+    description: string
+    duration: string
+    price: string
+    gallery: File[]
+  }>
+  
+  // Step 5: Logo and Cover (for all providers)
+  coverImage: File | null
+  logoImage: File | null
+  
+  // Step 6: Business Details
   businessName: string
   businessDescription: string
   phone: string
@@ -34,8 +67,13 @@ export interface OnboardingData {
     sunday: boolean
   }
   workingHours: {
-    start: string
-    end: string
+    monday: { enabled: boolean; startTime: string; endTime: string }
+    tuesday: { enabled: boolean; startTime: string; endTime: string }
+    wednesday: { enabled: boolean; startTime: string; endTime: string }
+    thursday: { enabled: boolean; startTime: string; endTime: string }
+    friday: { enabled: boolean; startTime: string; endTime: string }
+    saturday: { enabled: boolean; startTime: string; endTime: string }
+    sunday: { enabled: boolean; startTime: string; endTime: string }
   }
   
   // Step 4: Photos

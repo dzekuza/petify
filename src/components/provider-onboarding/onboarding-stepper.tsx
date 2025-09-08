@@ -1,0 +1,61 @@
+'use client'
+
+import { Button } from '@/components/ui/button'
+
+interface OnboardingStepperProps {
+  currentStep: number
+  totalSteps: number
+  onPrevious: () => void
+  onNext: () => void
+  isNextDisabled?: boolean
+  previousText?: string
+  nextText?: string
+}
+
+export function OnboardingStepper({
+  currentStep,
+  totalSteps,
+  onPrevious,
+  onNext,
+  isNextDisabled = false,
+  previousText = 'Atgal',
+  nextText = 'Kitas'
+}: OnboardingStepperProps) {
+  return (
+    <div className="fixed bottom-0 h-20 left-0 right-0 bg-neutral-50">
+      {/* Progress Bar */}
+      <div className="absolute flex gap-2.5 items-center justify-start left-0 top-0 w-full px-16">
+        {Array.from({ length: totalSteps }, (_, index) => (
+          <div
+            key={index}
+            className={`basis-0 grow h-2 min-h-px min-w-px shrink-0 rounded-full ${
+              index < currentStep ? 'bg-black' : 'bg-[#ebebeb]'
+            }`}
+          />
+        ))}
+      </div>
+      
+      {/* Navigation Buttons */}
+      <div className="absolute left-16 top-1/2 -translate-y-1/2">
+        <Button 
+          variant="ghost"
+          onClick={onPrevious}
+          className="text-black hover:bg-gray-100"
+        >
+          {previousText}
+        </Button>
+      </div>
+      
+      <div className="absolute right-16 top-1/2 -translate-y-1/2">
+        <Button 
+          variant="default"
+          onClick={onNext}
+          disabled={isNextDisabled}
+          className="bg-black hover:bg-gray-800 text-white"
+        >
+          {nextText}
+        </Button>
+      </div>
+    </div>
+  )
+}

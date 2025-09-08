@@ -303,6 +303,69 @@ export const translations = {
     toggleMobileMenu: 'Perjungti mobiliąjį meniu'
   },
 
+  // Provider Dashboard (new keys for missing LT)
+  providerDashboard: {
+    emptyBookingsTitle: 'Dar nėra užsakymų',
+    emptyBookingsDesc: 'Kai klientai užsakys jūsų paslaugas, jie bus rodomi čia.',
+    viewDetails: 'Peržiūrėti detalės',
+    notes: 'Pastabos',
+    accept: 'Patvirtinti',
+    reject: 'Atmesti',
+    markComplete: 'Pažymėti kaip įvykdytą',
+    emptyServicesTitle: 'Dar nėra paslaugų',
+    emptyServicesDesc: 'Pridėkite pirmą paslaugą, kad galėtumėte priimti užsakymus.',
+    addFirstService: 'Pridėti pirmą paslaugą',
+    totalCustomers: 'Iš viso klientų',
+    thisMonth: 'Šį mėnesį',
+    rating: 'Įvertinimas',
+    manageServices: 'Kurkite ir valdykite savo paslaugas',
+    analyticsSubtitle: 'Verslo našumo rodikliai',
+    // Tab navigation
+    calendar: 'Kalendorius',
+    bookings: 'Užsakymai',
+    services: 'Paslaugos',
+    profile: 'Profilis',
+    analytics: 'Analitika'
+  },
+
+  // Extra calendar keys used in dashboard header
+  calendarHeader: {
+    title: 'Kalendorius',
+    manageAvailability: 'Tvarkykite savo prieinamumą',
+    months: {
+      january: 'Sausis',
+      february: 'Vasaris',
+      march: 'Kovas',
+      april: 'Balandis',
+      may: 'Gegužė',
+      june: 'Birželis',
+      july: 'Liepa',
+      august: 'Rugpjūtis',
+      september: 'Rugsėjis',
+      october: 'Spalis',
+      november: 'Lapkritis',
+      december: 'Gruodis'
+    },
+    weekdays: {
+      monday: 'Pr',
+      tuesday: 'An',
+      wednesday: 'Tr',
+      thursday: 'Kt',
+      friday: 'Pn',
+      saturday: 'Št',
+      sunday: 'Sk'
+    },
+    weekdaysLong: {
+      monday: 'Pirmadienis',
+      tuesday: 'Antradienis',
+      wednesday: 'Trečiadienis',
+      thursday: 'Ketvirtadienis',
+      friday: 'Penktadienis',
+      saturday: 'Šeštadienis',
+      sunday: 'Sekmadienis'
+    }
+  },
+
   // Landing Page
   landing: {
     hero: {
@@ -377,7 +440,7 @@ export const translations = {
     }
   },
 
-  // Calendar
+  // Calendar (legacy keys kept for other components)
   calendar: {
     months: {
       january: 'Sausis',

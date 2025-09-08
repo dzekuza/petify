@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { OnboardingData, ProviderType } from '@/types/onboarding'
+import { OnboardingStepper } from './onboarding-stepper'
 import Image from 'next/image'
 
 interface ProviderTypeStepProps {
   data: OnboardingData
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
+  onPrevious: () => void
 }
 
 const providerTypes = [
@@ -61,7 +63,7 @@ const providerTypes = [
   }
 ]
 
-export default function ProviderTypeStep({ data, onUpdate, onNext }: ProviderTypeStepProps) {
+export default function ProviderTypeStep({ data, onUpdate, onNext, onPrevious }: ProviderTypeStepProps) {
   const [selectedType, setSelectedType] = useState(data.providerType || '')
   const [error, setError] = useState('')
 
@@ -109,6 +111,16 @@ export default function ProviderTypeStep({ data, onUpdate, onNext }: ProviderTyp
           {error}
         </div>
       )}
+
+      {/* Stepper Component */}
+      <OnboardingStepper
+        currentStep={8}
+        totalSteps={8}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        isNextDisabled={!selectedType}
+        nextText="Baigti"
+      />
     </div>
   )
 }

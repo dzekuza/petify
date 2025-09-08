@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
@@ -19,6 +19,15 @@ export default function ProfilePage() {
   const { user, resetPassword } = useAuth()
   const router = useRouter()
   
+  // If the user is a provider, route this page into the provider dashboard profile tab
+  useEffect(() => {
+    if (!user) return
+    const role = user.user_metadata?.role
+    if (role === 'provider') {
+      router.replace('/provider/dashboard/profile')
+    }
+  }, [user, router])
+
   // State for modals and forms
   const [editProfileOpen, setEditProfileOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
