@@ -156,17 +156,19 @@ export default function BookingsPage() {
                 bookings.map((booking) => (
                   <Card key={booking.id}>
                     <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">
-                              {booking.service?.name || `Service ${booking.serviceId}`}
-                            </h3>
-                            <Badge className={getStatusColor(booking.status)}>
-                              {getStatusText(booking.status)}
-                            </Badge>
-                          </div>
-                          
+                      <div className="space-y-4">
+                        {/* Header with service name and status */}
+                        <div className="flex items-center space-x-3">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {booking.service?.name || `Service ${booking.serviceId}`}
+                          </h3>
+                          <Badge className={getStatusColor(booking.status)}>
+                            {getStatusText(booking.status)}
+                          </Badge>
+                        </div>
+                        
+                        {/* Main booking details */}
+                        <div className="bg-gray-50 rounded-lg p-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex items-center space-x-2 text-gray-600">
                               <User className="h-4 w-4" />
@@ -184,25 +186,44 @@ export default function BookingsPage() {
                               <span className="font-medium">€{booking.totalPrice}</span>
                             </div>
                           </div>
-                          
-                          {booking.pet && (
-                            <div className="mt-2">
-                              <p className="text-sm text-gray-600">
-                                {t('bookings.pet')}: {booking.pet.name} ({booking.pet.species})
-                              </p>
-                            </div>
-                          )}
-                          
-                          {booking.notes && (
-                            <div className="mt-2">
-                              <p className="text-sm text-gray-600">
-                                {t('bookings.notes')}: {booking.notes}
-                              </p>
-                            </div>
-                          )}
                         </div>
                         
-                        <div className="flex space-x-2">
+                        {/* Pet information with image */}
+                        {booking.pet && (
+                          <div className="bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center space-x-3">
+                              {booking.pet.profilePicture ? (
+                                <img 
+                                  src={booking.pet.profilePicture} 
+                                  alt={booking.pet.name}
+                                  className="w-12 h-12 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                  <User className="h-6 w-6 text-gray-400" />
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-sm text-gray-600">
+                                  <span className="font-medium">{t('bookings.pet')}:</span> {booking.pet.name} ({booking.pet.species})
+                                  {booking.pet.breed && ` - ${booking.pet.breed}`}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Notes */}
+                        {booking.notes && (
+                          <div className="bg-gray-50 rounded-lg p-3">
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">{t('bookings.notes')}:</span> {booking.notes}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Action buttons */}
+                        <div className="flex space-x-2 pt-2">
                           <Button 
                             variant="outline" 
                             size="sm"

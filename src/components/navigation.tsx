@@ -205,34 +205,6 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
             </Link>
           </div>
 
-          {/* Center section: Search bar or Provider menu */}
-          <div className="hidden md:flex flex-1 justify-center">
-            {isProviderRoute ? (
-              <div className="flex items-center space-x-2">
-                <Link href="/provider/dashboard/calendar" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                  Calendar
-                </Link>
-                <Link href="/provider/dashboard/bookings" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                  Bookings
-                </Link>
-                <Link href="/provider/dashboard/services" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                  Services
-                </Link>
-                <Link href="/provider/dashboard/profile" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                  Profile
-                </Link>
-                <Link href="/provider/dashboard/analytics" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 px-3">
-                  Analytics
-                </Link>
-              </div>
-            ) : (
-              showSearchBar && (
-                <div className="block flex-1 max-w-2xl mx-8">
-                  <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
-                </div>
-              )
-            )}
-          </div>
 
           {/* Desktop Navigation */}
           {!hideServiceCategories && !isProviderRoute && (
@@ -243,7 +215,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                   href={item.href}
                   className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-black transition-colors group"
                 >
-                  <div className="h-10 w-10 relative">
+                  <div className="h-8 w-8 relative">
                     <Image
                       src={item.icon}
                       alt={item.shortName}
@@ -438,35 +410,37 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                   variant="ghost"
                   size="sm"
                   aria-label={t('navigation.toggleMobileMenu')}
+                  className="h-10 w-10 p-0"
                 >
                   <Menu className="h-6 w-6" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-full w-80">
-                <DrawerHeader className="border-b">
+              <DrawerContent className="h-full w-80 max-w-sm bg-white">
+                <DrawerHeader className="border-b bg-white">
                   <div className="flex items-center justify-between">
                     <DrawerTitle className="flex items-center space-x-2">
-                      <PawPrint className="h-6 w-6 text-black" />
+                      <PawPrint className="h-6 w-6 text-primary" />
                       <span className="text-lg font-bold text-gray-900">Petify</span>
                     </DrawerTitle>
                     <DrawerClose asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <X className="h-5 w-5" />
                       </Button>
                     </DrawerClose>
                   </div>
                 </DrawerHeader>
                 
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto bg-gray-50">
                   {/* Mobile Search Bar */}
                   {showSearchBar && (
-                    <div className="p-4 border-b border-gray-200">
+                    <div className="p-4 border-b border-gray-200 bg-white">
                       <NavigationSearch onFiltersClick={isSearchPage ? onFiltersClick : undefined} />
                     </div>
                   )}
                   
-                  <div className="p-4 space-y-4">
-                    {!hideServiceCategories && (
+                  <div className="p-4 space-y-6">
+                    {/* Categories moved to MobileBottomNav, keep hidden in drawer */}
+                    {!hideServiceCategories && false && (
                       <div className="space-y-2">
                         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                           {t('navigation.serviceCategories')}
@@ -494,27 +468,27 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     )}
                     
                     {user ? (
-                      <div className="pt-4 border-t border-gray-200">
+                      <div className="bg-white rounded-lg p-4 border border-gray-200">
                         <div className="flex items-center space-x-3 mb-4">
-                          <Avatar className="h-10 w-10">
+                          <Avatar className="h-12 w-12">
                             <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name || 'User'} />
-                            <AvatarFallback>
-                              {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || <User className="h-5 w-5" />}
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || <User className="h-6 w-6" />}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <div className="text-base font-medium text-gray-800">
+                          <div className="flex-1">
+                            <div className="text-base font-semibold text-gray-900">
                               {user.user_metadata?.full_name || 'User'}
                             </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm text-gray-500 truncate">{user.email}</div>
                           </div>
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <DrawerClose asChild>
                             <Link
                               href="/profile"
-                              className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                              className="flex items-center space-x-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                             >
                               <User className="h-5 w-5" />
                               <span>{t('navigation.profileMobile')}</span>

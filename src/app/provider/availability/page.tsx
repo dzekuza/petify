@@ -12,6 +12,8 @@ import { ServiceProvider, TimeSlot } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 
+export const dynamic = 'force-dynamic'
+
 export default function ProviderAvailabilityPage() {
   const { user } = useAuth()
   const router = useRouter()

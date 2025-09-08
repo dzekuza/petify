@@ -7,6 +7,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
+// Client-side Supabase client (for browser usage)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -14,6 +15,28 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true
   }
 })
+
+// Server-side Supabase client with service role key for API routes
+// This should only be used in server-side code (API routes, server components)
+export const createSupabaseAdmin = () => {
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseServiceKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for server-side operations')
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+}
+
+// For backward compatibility, create a default admin client
+// This should only be used in server-side contexts
+// Only create this if we're in a server environment
+export const supabaseAdmin = typeof window === 'undefined' ? createSupabaseAdmin() : null
 
 export type Json =
   | string

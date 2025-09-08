@@ -323,7 +323,8 @@ export const translations = {
     logOut: 'Atsijungti',
     serviceProvider: 'Paslaugų teikėjas',
     switchToProvider: 'Perjungti į teikėją',
-    toggleMobileMenu: 'Perjungti mobiliąjį meniu'
+    toggleMobileMenu: 'Perjungti mobiliąjį meniu',
+    serviceCategories: 'Paslaugų kategorijos'
   },
 
   // Provider Dashboard (new keys for missing LT)
@@ -566,6 +567,7 @@ export const translations = {
     decline: 'Atmesti',
     testCardInstructions: 'Naudokite bet kokią ateities datą ir bet kokį 3 skaitmenų CVC'
   },
+
 
   // Common
   common: {
