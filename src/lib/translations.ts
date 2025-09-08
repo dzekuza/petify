@@ -215,6 +215,29 @@ export const translations = {
       pending: 'Laukiantis',
       cancelled: 'Atšauktas',
       completed: 'Užbaigtas'
+    },
+    // Booking Confirmation Page
+    confirmation: {
+      title: 'Užsakymo patvirtinimas',
+      subtitle: 'Jūsų užsakymas sėkmingai patvirtintas!',
+      backToBookings: 'Atgal į užsakymus',
+      bookingNotFound: 'Užsakymas nerastas',
+      bookingNotFoundDesc: 'Ieškomas užsakymas neegzistuoja.',
+      bookingDetails: 'Užsakymo detalės',
+      bookingDetailsDesc: 'Jūsų užsakymas patvirtintas ir mokėjimas apdorotas sėkmingai.',
+      date: 'Data',
+      time: 'Laikas',
+      service: 'Paslauga',
+      totalPaid: 'Iš viso sumokėta',
+      petInformation: 'Augintinio informacija',
+      specialInstructions: 'Specialūs nurodymai',
+      provider: 'Teikėjas',
+      rating: 'Įvertinimas',
+      reviews: 'atsiliepimai',
+      getDirections: 'Gauti maršrutą',
+      addToCalendar: 'Pridėti į kalendorių',
+      addToGoogleCalendar: 'Pridėti į Google kalendorių',
+      addToAppleCalendar: 'Pridėti į Apple kalendorių'
     }
   },
 
