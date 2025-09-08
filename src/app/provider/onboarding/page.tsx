@@ -14,6 +14,9 @@ import DetailedServiceStep from '@/components/provider-onboarding/detailed-servi
 import WorkingHoursStep from '@/components/provider-onboarding/working-hours-step'
 import LogoCoverStep from '@/components/provider-onboarding/logo-cover-step'
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
+import ServiceDetailsStep from '@/components/provider-onboarding/service-details-step'
+import BusinessInfoStep from '@/components/provider-onboarding/business-info-step'
+import ReviewStep from '@/components/provider-onboarding/review-step'
 
 const onboardingSteps = [
   { id: 0, title: 'Welcome', component: 'welcome' },
@@ -280,6 +283,33 @@ export default function ProviderOnboardingPage() {
       case 'provider-type':
         return (
           <ProviderTypeStep
+            data={onboardingData}
+            onUpdate={handleDataUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+          />
+        )
+      case 'service-details':
+        return (
+          <ServiceDetailsStep
+            data={onboardingData}
+            onUpdate={handleDataUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+          />
+        )
+      case 'business-info':
+        return (
+          <BusinessInfoStep
+            data={onboardingData}
+            onUpdate={handleDataUpdate}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+          />
+        )
+      case 'review':
+        return (
+          <ReviewStep
             data={onboardingData}
             onUpdate={handleDataUpdate}
             onNext={handleNext}
