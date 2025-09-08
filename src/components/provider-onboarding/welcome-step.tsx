@@ -2,7 +2,6 @@
 
 import { OnboardingData } from '@/types/onboarding'
 import { OnboardingStepper } from './onboarding-stepper'
-import Image from 'next/image'
 
 interface WelcomeStepProps {
   data: OnboardingData
@@ -11,7 +10,7 @@ interface WelcomeStepProps {
   onPrevious: () => void
 }
 
-const imgPetFamily = "/image (7) 2.png"
+const videoPetFamily = "/A dog breathing, a cat wagging its tail and turning its head, a parrot walking side to side and flapping its wings, a horse twitching its ears and swinging its tail, and a person subtly bouncing..mp4"
 
 export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: WelcomeStepProps) {
   return (
@@ -20,15 +19,16 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
       <div className="flex-1 overflow-y-auto pb-20">
         <div className="flex items-center justify-center h-full px-4 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-[1200px] gap-8">
-            {/* Mobile: Image on top */}
+            {/* Mobile: Video on top */}
             <div className="lg:hidden w-full max-w-[400px]">
-              <Image
-                src={imgPetFamily}
-                alt="Pet Family"
-                width={400}
-                height={400}
-                className="w-full h-auto"
-                priority
+              <video
+                src={videoPetFamily}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-auto rounded-lg"
+                aria-label="Pet Family Video"
               />
             </div>
 
@@ -47,15 +47,16 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
               </div>
             </div>
 
-            {/* Desktop: Pet Family Image */}
+            {/* Desktop: Pet Family Video */}
             <div className="hidden lg:block">
-              <Image
-                src={imgPetFamily}
-                alt="Pet Family"
-                width={500}
-                height={500}
-                className="w-[500px] h-[500px] object-cover"
-                priority
+              <video
+                src={videoPetFamily}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-[500px] h-[500px] object-cover rounded-lg"
+                aria-label="Pet Family Video"
               />
             </div>
           </div>
