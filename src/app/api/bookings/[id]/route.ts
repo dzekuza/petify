@@ -29,7 +29,7 @@ export async function PATCH(
       .eq('id', id)
       .select(`
         *,
-        customer:customers(id, full_name, email, phone),
+        customer:users!customer_id(id, full_name, email, phone),
         provider:providers(id, business_name, user_id),
         service:services(id, name, price)
       `)
@@ -85,7 +85,7 @@ export async function GET(
       .from('bookings')
       .select(`
         *,
-        customer:customers(id, full_name, email, phone, address),
+        customer:users!customer_id(id, full_name, email, phone),
         provider:providers(id, business_name, user_id),
         service:services(id, name, price, description),
         pets:pets(id, name, species, breed, age, special_needs)

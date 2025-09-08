@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ServiceProvider, Service, Review, Pet } from '@/types'
+import { ServiceProvider, Service, Review } from '@/types'
 import { ImageGallery } from './image-gallery'
 import { ProviderInfo } from './provider-info'
 
@@ -79,7 +79,7 @@ export function MobileLayout({
               <Button 
                 variant="gradient"
                 size="lg"
-                onClick={onBookService}
+                onClick={() => onBookService()}
               >
                 Book
               </Button>

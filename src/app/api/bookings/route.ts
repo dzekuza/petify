@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       .from('bookings')
       .select(`
         *,
-        customer:users!bookings_customer_id_fkey(id, full_name, email, phone),
+        customer:users!customer_id(id, full_name, email, phone),
         provider:providers(id, business_name, user_id),
         service:services(id, name, price, description),
         pet:pets(id, name, species, breed, age, special_needs)
