@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog } from 'lucide-react'
+import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog, DollarSign, Clock } from 'lucide-react'
 import Image from 'next/image'
 import { NavigationSearch } from '@/components/navigation-search'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -567,20 +567,56 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/bookings"
+                                  href="/provider/dashboard/analytics"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
-                                  <Calendar className="h-5 w-5" />
-                                  <span>{t('navigation.manageBookingsMobile')}</span>
+                                  <DollarSign className="h-5 w-5" />
+                                  <span>Analitika</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/services"
+                                  href="/provider/dashboard/bookings"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <Calendar className="h-5 w-5" />
+                                  <span>Rezervacijos</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/dashboard/calendar"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <Clock className="h-5 w-5" />
+                                  <span>Kalendorius</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/dashboard/services"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Star className="h-5 w-5" />
-                                  <span>{t('navigation.myServicesMobile')}</span>
+                                  <span>Mano paslaugos</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/dashboard/profile"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <User className="h-5 w-5" />
+                                  <span>Profilis</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/availability"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <Clock className="h-5 w-5" />
+                                  <span>Prieinamumas</span>
                                 </Link>
                               </DrawerClose>
                             </>
