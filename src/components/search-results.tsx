@@ -28,7 +28,8 @@ export const SearchResults = ({ filters }: SearchResultsProps) => {
           priceRange: filters.priceRange,
           rating: filters.rating,
           distance: filters.distance,
-          date: filters.date
+          date: filters.date,
+          petId: filters.petId
         })
 
         setResults(searchResults)

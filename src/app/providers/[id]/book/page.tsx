@@ -1,15 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ServiceCard } from '@/components/ui/service-card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { 
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter
+} from '@/components/ui/drawer'
+import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import { BreedSelector } from '@/components/ui/breed-selector'
 import { 
   Clock, 
   Users, 
@@ -24,11 +34,13 @@ import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { toast } from 'sonner'
 
 
 export default function BookingPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
@@ -40,6 +52,19 @@ export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(true)
   const [petsLoading, setPetsLoading] = useState(false)
+  
+  // Pet addition drawer state
+  const [addPetDrawerOpen, setAddPetDrawerOpen] = useState(false)
+  const [addPetForm, setAddPetForm] = useState({
+    name: '',
+    species: 'dog' as 'dog' | 'cat' | 'bird' | 'rabbit' | 'other',
+    breed: '',
+    age: '',
+    weight: '',
+    specialNeeds: '',
+    medicalNotes: ''
+  })
+  const [addPetLoading, setAddPetLoading] = useState(false)
 
   const fetchPets = useCallback(async () => {
     if (!user) return
@@ -66,6 +91,52 @@ export default function BookingPage() {
         ? prev.filter(id => id !== petId)
         : [...prev, petId]
     )
+  }
+
+  const handleAddPet = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+
+    setAddPetLoading(true)
+
+    try {
+      const petData = {
+        name: addPetForm.name,
+        species: addPetForm.species,
+        breed: addPetForm.breed || undefined,
+        age: parseInt(addPetForm.age),
+        weight: addPetForm.weight ? parseFloat(addPetForm.weight) : undefined,
+        specialNeeds: addPetForm.specialNeeds ? addPetForm.specialNeeds.split(',').map(s => s.trim()) : undefined,
+        medicalNotes: addPetForm.medicalNotes || undefined
+      }
+
+      const newPet = await petsApi.createPet(petData, user.id)
+      
+      // Add the new pet to the list and select it
+      setPets(prev => [...prev, newPet])
+      setSelectedPets(prev => [...prev, newPet.id])
+      
+      // Reset form and close drawer
+      setAddPetForm({
+        name: '',
+        species: 'dog',
+        breed: '',
+        age: '',
+        weight: '',
+        specialNeeds: '',
+        medicalNotes: ''
+      })
+      setAddPetDrawerOpen(false)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add pet'
+      toast.error(errorMessage)
+    } finally {
+      setAddPetLoading(false)
+    }
+  }
+
+  const handleAddPetFormChange = (field: string, value: string) => {
+    setAddPetForm(prev => ({ ...prev, [field]: value }))
   }
 
   const handleNext = () => {
@@ -213,6 +284,16 @@ export default function BookingPage() {
             updatedAt: service.updated_at
           }))
           setServices(transformedServices)
+          
+          // Check if a service is pre-selected from URL parameters
+          const preSelectedServiceId = searchParams.get('service')
+          if (preSelectedServiceId) {
+            const preSelectedService = transformedServices.find(s => s.id === preSelectedServiceId)
+            if (preSelectedService) {
+              setSelectedService(preSelectedService)
+              setCurrentStep(2) // Skip service selection step
+            }
+          }
         }
 
       } catch (error) {
@@ -225,7 +306,7 @@ export default function BookingPage() {
     if (params.id) {
       fetchProviderData()
     }
-  }, [params.id])
+  }, [params.id, searchParams])
 
   useEffect(() => {
     if (user) {
@@ -283,58 +364,13 @@ export default function BookingPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectService')}</h2>
               <div className="space-y-4">
                 {services.map((service) => (
-                  <Card 
-                    key={service.id} 
-                    className={`cursor-pointer transition-all ${
-                      selectedService?.id === service.id 
-                        ? 'border-black bg-gray-50 shadow-md' 
-                        : 'hover:border-gray-300 hover:shadow-sm'
-                    }`}
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    isSelected={selectedService?.id === service.id}
                     onClick={() => handleServiceSelect(service)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-                            {selectedService?.id === service.id && (
-                              <CheckCircle className="w-5 h-5 text-black" />
-                            )}
-                          </div>
-                          <p className="text-gray-600 mb-4">{service.description}</p>
-                          
-                          <div className="flex items-center space-x-6 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {service.duration} min
-                            </div>
-                            <div className="flex items-center">
-                              <Users className="h-4 w-4 mr-1" />
-                              Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
-                            </div>
-                          </div>
-
-                          {service.includes && service.includes.length > 0 && (
-                            <div className="mt-3">
-                              <div className="flex flex-wrap gap-2">
-                                {service.includes.map((item, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {item}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="text-right ml-6">
-                          <div className="text-2xl font-bold text-gray-900">
-                            €{service.price}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    showSelection={true}
+                  />
                 ))}
               </div>
             </div>
@@ -344,6 +380,18 @@ export default function BookingPage() {
       case 2:
         return (
           <div className="space-y-6 py-4">
+            {/* Show selected service if pre-selected */}
+            {selectedService && (
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Selected Service</h2>
+                <ServiceCard
+                  service={selectedService}
+                  isSelected={true}
+                  showSelection={false}
+                />
+              </div>
+            )}
+            
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('provider.selectPets')}</h2>
               <p className="text-gray-600 mb-4">
@@ -374,48 +422,55 @@ export default function BookingPage() {
                     <p className="text-sm">{t('provider.addPetsFirst')}</p>
                   </div>
                   <Button 
-                    onClick={() => router.push('/pets')}
+                    onClick={() => setAddPetDrawerOpen(true)}
                     className="bg-black hover:bg-gray-800 text-white"
                   >
-{t('provider.addFirstPet')}
+                    {t('provider.addFirstPet')}
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {pets.map((pet) => (
-                    <Card 
+                    <div 
                       key={pet.id} 
-                      className={`cursor-pointer transition-all ${
+                      className={`cursor-pointer transition-all rounded-lg border ${
                         selectedPets.includes(pet.id) 
                           ? 'border-black bg-gray-50 shadow-md' 
-                          : 'hover:border-gray-300 hover:shadow-sm'
+                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                       }`}
                       onClick={() => handlePetSelect(pet.id)}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <Checkbox
-                            checked={selectedPets.includes(pet.id)}
-                            onCheckedChange={() => handlePetSelect(pet.id)}
-                            className="w-5 h-5"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900">{pet.name}</h4>
-                            <p className="text-sm text-gray-600">
-                              {pet.breed && `${pet.breed} • `}{pet.age} years{pet.weight && ` • ${pet.weight}kg`}
-                            </p>
-                            {pet.specialNeeds && pet.specialNeeds.length > 0 && (
-                              <div className="mt-1">
-                                <Badge variant="outline" className="text-xs">
-                                  Special needs
-                                </Badge>
-                              </div>
-                            )}
-                          </div>
+                      <div className="flex items-center space-x-3 p-4">
+                        <Checkbox
+                          checked={selectedPets.includes(pet.id)}
+                          onCheckedChange={() => handlePetSelect(pet.id)}
+                          className="w-5 h-5"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{pet.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {pet.breed && `${pet.breed} • `}{pet.age} years{pet.weight && ` • ${pet.weight}kg`}
+                          </p>
+                          {pet.specialNeeds && pet.specialNeeds.length > 0 && (
+                            <div className="mt-1">
+                              <Badge variant="outline" className="text-xs">
+                                Special needs
+                              </Badge>
+                            </div>
+                          )}
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   ))}
+                  
+                  {/* Add another pet button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => setAddPetDrawerOpen(true)}
+                    className="w-full border-dashed border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800"
+                  >
+                    + Add another pet
+                  </Button>
                 </div>
               )}
             </div>
@@ -491,12 +546,12 @@ export default function BookingPage() {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.confirmYourBooking')}</h2>
               
-              <Card>
-                <CardHeader className="pt-6">
-                  <CardTitle className="text-lg">{selectedService?.name}</CardTitle>
-                  <CardDescription>{selectedService?.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 pb-6">
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div className="px-6 pt-6 pb-4">
+                  <h3 className="font-semibold text-lg text-gray-900">{selectedService?.name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{selectedService?.description}</p>
+                </div>
+                <div className="px-6 space-y-4 pb-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Provider</span>
                     <span className="font-medium">{provider.businessName}</span>
@@ -523,8 +578,8 @@ export default function BookingPage() {
                       <span className="text-xl font-bold text-gray-900">€{calculateTotal()}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         )
@@ -612,6 +667,119 @@ export default function BookingPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Pet Drawer */}
+      <Drawer open={addPetDrawerOpen} onOpenChange={setAddPetDrawerOpen} direction="bottom">
+        <DrawerContent className="h-[85vh]">
+          <DrawerHeader className="pb-2">
+            <DrawerTitle className="text-lg font-semibold text-gray-900">Add Your Pet</DrawerTitle>
+            <DrawerDescription className="text-sm text-gray-600">
+              Fill in your pet's information to add them to your profile
+            </DrawerDescription>
+          </DrawerHeader>
+          
+          <div className="flex-1 overflow-y-auto px-4">
+            <form onSubmit={handleAddPet} className="space-y-4 pb-4">
+              <InputWithLabel
+                id="petName"
+                label={t('provider.petName')}
+                value={addPetForm.name}
+                onChange={(value) => handleAddPetFormChange('name', value)}
+                placeholder="Enter pet name"
+                required
+              />
+
+              <SelectWithLabel
+                id="petSpecies"
+                label={t('provider.species')}
+                value={addPetForm.species}
+                onValueChange={(value) => handleAddPetFormChange('species', value)}
+                required
+                options={[
+                  { value: "dog", label: t('provider.dog') },
+                  { value: "cat", label: t('provider.cat') },
+                  { value: "bird", label: t('provider.bird') },
+                  { value: "rabbit", label: t('provider.rabbit') },
+                  { value: "other", label: t('provider.other') }
+                ]}
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.breed')}</label>
+                <BreedSelector
+                  value={addPetForm.breed}
+                  onValueChange={(value) => handleAddPetFormChange('breed', value)}
+                  species={addPetForm.species}
+                  placeholder="Select breed (optional)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <InputWithLabel
+                  id="petAge"
+                  label="Age (years)"
+                  type="number"
+                  value={addPetForm.age}
+                  onChange={(value) => handleAddPetFormChange('age', value)}
+                  placeholder="0"
+                  required
+                  min={0}
+                  max={30}
+                />
+                <InputWithLabel
+                  id="petWeight"
+                  label="Weight (kg)"
+                  type="number"
+                  value={addPetForm.weight}
+                  onChange={(value) => handleAddPetFormChange('weight', value)}
+                  placeholder="0.0"
+                  min={0}
+                  step={0.1}
+                />
+              </div>
+
+              <InputWithLabel
+                id="specialNeeds"
+                label={t('provider.specialNeeds')}
+                value={addPetForm.specialNeeds}
+                onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+                placeholder="Comma-separated list (optional)"
+              />
+
+              <TextareaWithLabel
+                id="medicalNotes"
+                label={t('provider.medicalNotes')}
+                value={addPetForm.medicalNotes}
+                onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+                placeholder="Any medical information (optional)"
+                rows={3}
+              />
+            </form>
+          </div>
+
+          <DrawerFooter className="pt-4">
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAddPetDrawerOpen(false)}
+                disabled={addPetLoading}
+                className="flex-1"
+              >
+                {t('provider.cancel')}
+              </Button>
+              <Button
+                type="submit"
+                disabled={addPetLoading || !addPetForm.name || !addPetForm.age}
+                onClick={handleAddPet}
+                className="flex-1"
+              >
+                {addPetLoading ? 'Adding...' : 'Add Pet'}
+              </Button>
+            </div>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   )
 }

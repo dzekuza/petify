@@ -1,14 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { SearchFilters as SearchFiltersType, ServiceCategory } from '@/types'
-import { MapPin, Filter, X } from 'lucide-react'
+import { SearchFilters as SearchFiltersType, ServiceCategory, Pet } from '@/types'
+import { MapPin, Filter, X, User } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context'
+import { petsApi } from '@/lib/pets'
 
 const serviceCategories: { value: ServiceCategory; label: string }[] = [
   { value: 'grooming', label: 'Gyvūnų šukavimas' },
@@ -26,6 +28,29 @@ interface SearchFiltersProps {
 
 export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [userPets, setUserPets] = useState<Pet[]>([])
+  const [loadingPets, setLoadingPets] = useState(false)
+  const { user } = useAuth()
+
+  // Fetch user pets when component mounts
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user) return
+      
+      try {
+        setLoadingPets(true)
+        const pets = await petsApi.getUserPets(user.id)
+        setUserPets(pets)
+      } catch (error) {
+        console.error('Error fetching user pets:', error)
+        setUserPets([])
+      } finally {
+        setLoadingPets(false)
+      }
+    }
+
+    fetchUserPets()
+  }, [user])
 
   const handleFilterChange = (key: keyof SearchFiltersType, value: string | number | undefined | { min: number; max?: number } | { max: number; min?: number }) => {
     // Convert "all" to undefined for category filter
@@ -43,17 +68,18 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
       priceRange: { min: 0, max: 5000 },
       rating: 0,
       distance: 25,
+      petId: undefined,
     })
   }
 
-  const hasActiveFilters = filters.category || filters.location || (filters.rating && filters.rating > 0)
+  const hasActiveFilters = filters.category || filters.location || (filters.rating && filters.rating > 0) || filters.petId
 
   return (
     <Card>
       <CardContent className="p-6">
         <div className="space-y-4">
           {/* Main Search Row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Service Category */}
             <div>
               <Label htmlFor="category">Paslaugos tipas</Label>
@@ -106,6 +132,37 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                   <SelectItem value="25">Per 25 km</SelectItem>
                   <SelectItem value="50">Per 50 km</SelectItem>
                   <SelectItem value="100">Per 100 km</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Pet Selection */}
+            <div>
+              <Label htmlFor="pet">Gyvūnas</Label>
+              <Select 
+                value={filters.petId || 'all'} 
+                onValueChange={(value) => handleFilterChange('petId', value === 'all' ? undefined : value)}
+                disabled={loadingPets || !user}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Visi gyvūnai</SelectItem>
+                  {userPets.map((pet) => (
+                    <SelectItem key={pet.id} value={pet.id}>
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span>{pet.name}</span>
+                        <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                  {user && userPets.length === 0 && !loadingPets && (
+                    <SelectItem value="no-pets" disabled>
+                      Nėra pridėtų gyvūnų
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -228,6 +285,15 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                   <X 
                     className="h-3 w-3 cursor-pointer" 
                     onClick={() => handleFilterChange('rating', 0)}
+                  />
+                </Badge>
+              )}
+              {filters.petId && (
+                <Badge variant="secondary" className="flex items-center space-x-1">
+                  <span>Gyvūnas: {userPets.find(pet => pet.id === filters.petId)?.name || 'Pasirinktas'}</span>
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => handleFilterChange('petId', undefined)}
                   />
                 </Badge>
               )}

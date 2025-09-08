@@ -262,37 +262,18 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
           <div className="hidden md:flex md:items-center md:space-x-4">
             {user ? (
               <>
-                {/* Dynamic environment switcher - always visible when authenticated */}
-                {isProviderRoute ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push('/')}
-                  >
-                    Išeiti iš teikėjo
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleSwitchToProvider}
-                  >
-                    {t('navigation.switchToProvider')}
-                  </Button>
-                )}
-
-                {/* Provider top menu moved to center */}
-
                 {/* Customer-specific actions */}
                 {!isProviderRoute && (
-                  <Link 
-                    href="/favorites"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => router.push('/favorites')}
                     aria-label={t('navigation.favorites')}
                     title={t('navigation.favorites')}
                   >
                     <Heart className="h-4 w-4" />
-                  </Link>
+                  </Button>
                 )}
                 
                 {/* User Menu */}
@@ -330,6 +311,21 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                         <span>{t('navigation.profile')}</span>
                       </Link>
                     </DropdownMenuItem>
+                    
+                    {/* Environment switcher */}
+                    {isProviderRoute ? (
+                      <DropdownMenuItem onClick={() => router.push('/')}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Išeiti iš teikėjo</span>
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={handleSwitchToProvider}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>{t('navigation.switchToProvider')}</span>
+                      </DropdownMenuItem>
+                    )}
+                    
+                    <DropdownMenuSeparator />
                     
                     {/* Customer-specific menu items (shown in customer environment) */}
                     {!isProviderRoute && (
@@ -378,7 +374,6 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       </>
                     )}
                     
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>{t('navigation.signOut')}</span>

@@ -26,6 +26,7 @@ function SearchPageContent() {
     rating: 0,
     distance: 25,
     date: date || undefined,
+    petId: searchParams.get('petId') || undefined,
   } as SearchFilters)
 
   const [results, setResults] = useState<SearchResult[]>([])
@@ -45,7 +46,8 @@ function SearchPageContent() {
           priceRange: filters.priceRange,
           rating: filters.rating,
           distance: filters.distance,
-          date: filters.date
+          date: filters.date,
+          petId: filters.petId
         })
         setResults(searchResults)
       } catch (err) {

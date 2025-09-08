@@ -373,6 +373,7 @@ export const providerApi = {
     rating?: number
     distance?: number
     date?: string
+    petId?: string
   }) {
     try {
       // Start with a simple query to get all providers

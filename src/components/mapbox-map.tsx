@@ -9,14 +9,14 @@ import Map, {
 } from 'react-map-gl/mapbox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Star, Heart, X, ChevronRight, ChevronLeft, MapPin, Clock, Users, Award } from 'lucide-react'
+import { Star, Heart, X, MapPin, Users, Award } from 'lucide-react'
 import Image from 'next/image'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
 import { t } from '@/lib/translations'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Custom styles for mapbox popup and canvas
+// Custom styles for mapbox popup
 const popupStyles = `
   .mapbox-popup .mapboxgl-popup-content {
     padding: 0;
@@ -33,25 +33,6 @@ const popupStyles = `
   
   .mapbox-popup .mapboxgl-popup-close-button {
     display: none;
-  }
-  
-  .mapboxgl-canvas {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    transform: none !important;
-    object-fit: cover !important;
-  }
-  
-  .mapboxgl-map {
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  .mapboxgl-canvas-container {
-    width: 100% !important;
-    height: 100% !important;
   }
 `
 
@@ -185,25 +166,6 @@ export const MapboxMap = ({
     setPopupImageIndex(0)
   }, [])
 
-  const handlePopupPreviousImage = useCallback(() => {
-    if (selectedResult?.provider.images && !isPopupTransitioning) {
-      setIsPopupTransitioning(true)
-      setPopupImageIndex((prev) => 
-        prev === 0 ? selectedResult.provider.images.length - 1 : prev - 1
-      )
-      setTimeout(() => setIsPopupTransitioning(false), 300)
-    }
-  }, [selectedResult?.provider.images, isPopupTransitioning])
-
-  const handlePopupNextImage = useCallback(() => {
-    if (selectedResult?.provider.images && !isPopupTransitioning) {
-      setIsPopupTransitioning(true)
-      setPopupImageIndex((prev) => 
-        prev === selectedResult.provider.images.length - 1 ? 0 : prev + 1
-      )
-      setTimeout(() => setIsPopupTransitioning(false), 300)
-    }
-  }, [selectedResult?.provider.images, isPopupTransitioning])
 
 
   const formatPrice = (priceRange: { min: number; max: number }) => {
@@ -251,33 +213,6 @@ export const MapboxMap = ({
     }
   }
 
-  const getAvailabilityStatus = (provider: SearchResult['provider']) => {
-    const now = new Date()
-    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
-    const todaySlots = provider.availability[currentDay] || []
-    
-    // Check if provider has any availability set up
-    const hasAnyAvailability = Object.values(provider.availability).some(daySlots => 
-      Array.isArray(daySlots) && daySlots.length > 0
-    )
-    
-    if (!hasAnyAvailability) {
-      return { status: 'unavailable', text: t('search.notSet') }
-    }
-    
-    if (todaySlots.length === 0) {
-      return { status: 'closed', text: t('search.closed') }
-    }
-    
-    const currentTime = now.toTimeString().slice(0, 5)
-    const isAvailable = todaySlots.some(slot => 
-      slot.available && currentTime >= slot.start && currentTime <= slot.end
-    )
-    
-    return isAvailable 
-      ? { status: 'open', text: t('search.open') }
-      : { status: 'closed', text: t('search.closed') }
-  }
 
   if (!MAPBOX_CONFIG.accessToken) {
     return (
@@ -302,6 +237,8 @@ export const MapboxMap = ({
         mapStyle={MAPBOX_CONFIG.style}
         attributionControl={false}
         logoPosition="bottom-right"
+        style={{ width: '100%', height: '100%' }}
+        interactiveLayerIds={[]}
       >
 
         {/* Provider Markers */}
@@ -311,6 +248,7 @@ export const MapboxMap = ({
             longitude={result.provider.location.coordinates.lng}
             latitude={result.provider.location.coordinates.lat}
             onClick={() => handleMarkerClick(result)}
+            anchor="center"
           >
             <div
               className="cursor-pointer flex items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-110 border-2 border-white"
@@ -322,7 +260,8 @@ export const MapboxMap = ({
                 minWidth: '40px',
                 height: '40px',
                 borderRadius: '20px',
-                padding: '0 8px'
+                padding: '0 8px',
+                transform: 'translate(-50%, -50%)'
               }}
             >
               {formatPrice(result.provider.priceRange)}

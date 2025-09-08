@@ -40,7 +40,6 @@ export const StripePaymentForm = ({
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
-  const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (!stripe) {
@@ -54,17 +53,17 @@ export const StripePaymentForm = ({
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent?.status) {
         case 'succeeded':
-          setMessage('Payment succeeded!')
+          toast.success('Payment succeeded!')
           onSuccess(paymentIntent)
           break
         case 'processing':
-          setMessage('Your payment is processing.')
+          toast.info('Your payment is processing.')
           break
         case 'requires_payment_method':
-          setMessage(t('payment.paymentNotSuccessful'))
+          toast.error(t('payment.paymentNotSuccessful'))
           break
         default:
-          setMessage('Something went wrong.')
+          toast.error('Something went wrong.')
           break
       }
     })
@@ -78,7 +77,6 @@ export const StripePaymentForm = ({
     }
 
     setIsLoading(true)
-    setMessage(null)
 
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
@@ -91,19 +89,18 @@ export const StripePaymentForm = ({
 
       if (error) {
         if (error.type === 'card_error' || error.type === 'validation_error') {
-          setMessage(error.message || 'An unexpected error occurred.')
+          toast.error(error.message || 'An unexpected error occurred.')
         } else {
-          setMessage('An unexpected error occurred.')
+          toast.error('An unexpected error occurred.')
         }
         onError(error.message || 'Payment failed')
       } else if (paymentIntent?.status === 'succeeded') {
-        setMessage('Payment succeeded!')
         onSuccess(paymentIntent)
         toast.success('Payment completed successfully!')
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.'
-      setMessage(errorMessage)
+      toast.error(errorMessage)
       onError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -156,15 +153,6 @@ export const StripePaymentForm = ({
         />
         <PaymentElement />
         
-        {message && (
-          <div className={`p-3 rounded-md text-sm ${
-            message.includes('succeeded') 
-              ? 'bg-green-50 text-green-700 border border-green-200' 
-              : 'bg-red-50 text-red-700 border border-red-200'
-          }`}>
-            {message}
-          </div>
-        )}
 
         <Button
           type="submit"

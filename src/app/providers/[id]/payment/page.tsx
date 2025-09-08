@@ -5,7 +5,6 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Elements } from '@stripe/react-stripe-js'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { StripePaymentForm } from '@/components/stripe-payment-form'
 import { 
@@ -401,19 +400,19 @@ export default function PaymentPage() {
           {/* Right Column - Booking Summary */}
           <div>
             <div className="sticky top-24">
-              <Card>
-                <CardHeader className="pt-6">
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div className="px-6 pt-6 pb-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
                       <span className="text-2xl">✂️</span>
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{provider.businessName}</CardTitle>
-                      <CardDescription>{t('payment.petServiceBooking')}</CardDescription>
+                      <h3 className="font-semibold text-lg text-gray-900">{provider.businessName}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{t('payment.petServiceBooking')}</p>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4 pb-6">
+                </div>
+                <div className="px-6 space-y-4 pb-6">
                   <div className="text-sm text-gray-600">
                     {t('payment.nonRefundableReservation')} <span className="text-blue-600 underline cursor-pointer">{t('payment.fullPolicy')}</span>
                   </div>
@@ -491,8 +490,8 @@ export default function PaymentPage() {
                   <div className="text-center text-sm text-gray-500">
                     {t('payment.completePaymentInstruction')}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>

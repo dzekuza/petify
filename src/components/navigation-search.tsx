@@ -1,14 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { Search, CalendarIcon, Users, Filter } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Search, CalendarIcon, Filter, User } from 'lucide-react'
 import { t } from '@/lib/translations'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import { useAuth } from '@/contexts/auth-context'
+import { petsApi } from '@/lib/pets'
+import { Pet } from '@/types'
 
 interface NavigationSearchProps {
   className?: string
@@ -18,8 +22,31 @@ interface NavigationSearchProps {
 export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearchProps) => {
   const [location, setLocation] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [guests, setGuests] = useState(1)
+  const [selectedPetId, setSelectedPetId] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
+  const [userPets, setUserPets] = useState<Pet[]>([])
+  const [loadingPets, setLoadingPets] = useState(false)
+  const { user } = useAuth()
+
+  // Fetch user pets when component mounts
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!user) return
+      
+      try {
+        setLoadingPets(true)
+        const pets = await petsApi.getUserPets(user.id)
+        setUserPets(pets)
+      } catch (error) {
+        console.error('Error fetching user pets:', error)
+        setUserPets([])
+      } finally {
+        setLoadingPets(false)
+      }
+    }
+
+    fetchUserPets()
+  }, [user])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -32,6 +59,11 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
     // Add date if provided
     if (selectedDate) {
       params.set('date', selectedDate.toISOString().split('T')[0])
+    }
+    
+    // Add pet if selected (but not "all")
+    if (selectedPetId && selectedPetId !== 'all') {
+      params.set('petId', selectedPetId)
     }
     
     // Navigate to search page with parameters
@@ -74,13 +106,18 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
             {/* Divider */}
             <div className="w-px h-6 bg-gray-300"></div>
 
-            {/* Guests */}
+            {/* Pets */}
             <div className="flex items-center space-x-2">
               <div className="text-sm font-semibold text-gray-900">
                 Gyvūnai
               </div>
               <div className="text-sm text-gray-500">
-                {guests} {guests === 1 ? 'gyvūnas' : 'gyvūnai'}
+                {selectedPetId === 'all'
+                  ? 'Visi gyvūnai'
+                  : selectedPetId 
+                    ? userPets.find(pet => pet.id === selectedPetId)?.name || 'Pasirinktas'
+                    : 'Pasirinkite gyvūną'
+                }
               </div>
             </div>
 
@@ -157,38 +194,37 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
               </Popover>
             </div>
 
-            {/* Guests */}
+            {/* Pet Selection */}
             <div>
               <div className="text-sm font-semibold text-gray-900 mb-2">
                 Gyvūnai
               </div>
-              <div className="flex items-center justify-between border border-gray-200 rounded-md p-2">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm">
-                    {guests} {guests === 1 ? 'gyvūnas' : 'gyvūnai'}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setGuests(Math.max(1, guests - 1))}
-                    className="w-8 h-8 p-0"
-                  >
-                    -
-                  </Button>
-                  <span className="w-8 text-center">{guests}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setGuests(guests + 1)}
-                    className="w-8 h-8 p-0"
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
+              <Select 
+                value={selectedPetId} 
+                onValueChange={setSelectedPetId}
+                disabled={loadingPets || !user}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Visi gyvūnai</SelectItem>
+                  {userPets.map((pet) => (
+                    <SelectItem key={pet.id} value={pet.id}>
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span>{pet.name}</span>
+                        <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                  {user && userPets.length === 0 && !loadingPets && (
+                    <SelectItem value="no-pets" disabled>
+                      Nėra pridėtų gyvūnų
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Search Button */}

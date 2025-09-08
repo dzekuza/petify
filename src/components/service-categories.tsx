@@ -6,7 +6,6 @@ import {
   Stethoscope, 
   Home, 
   GraduationCap, 
-  Footprints, 
   Heart
 } from 'lucide-react'
 import { ServiceCategory } from '@/types'
@@ -16,56 +15,47 @@ export const ServiceCategories = () => {
   const categories = [
     {
       id: 'grooming' as ServiceCategory,
-      name: t('landing.serviceCategories.grooming.name'),
-      description: t('landing.serviceCategories.grooming.description'),
+      name: 'Kirpyklos',
+      description: 'Profesionalūs gyvūnų šukavimo paslaugos',
       icon: Scissors,
       color: 'bg-pink-100 text-pink-600',
       href: '/search?category=grooming',
       popular: true,
     },
     {
-      id: 'veterinary' as ServiceCategory,
-      name: t('landing.serviceCategories.veterinary.name'),
-      description: t('landing.serviceCategories.veterinary.description'),
-      icon: Stethoscope,
-      color: 'bg-red-100 text-red-600',
-      href: '/search?category=veterinary',
-      popular: true,
-    },
-    {
-      id: 'boarding' as ServiceCategory,
-      name: t('landing.serviceCategories.boarding.name'),
-      description: t('landing.serviceCategories.boarding.description'),
-      icon: Home,
-      color: 'bg-green-100 text-green-600',
-      href: '/search?category=boarding',
-      popular: false,
-    },
-    {
       id: 'training' as ServiceCategory,
-      name: t('landing.serviceCategories.training.name'),
-      description: t('landing.serviceCategories.training.description'),
+      name: 'Dresūra',
+      description: 'Gyvūnų treniruotės ir elgesio koregavimas',
       icon: GraduationCap,
       color: 'bg-blue-100 text-blue-600',
       href: '/search?category=training',
       popular: true,
     },
     {
-      id: 'walking' as ServiceCategory,
-      name: t('landing.serviceCategories.walking.name'),
-      description: t('landing.serviceCategories.walking.description'),
-      icon: Footprints,
-      color: 'bg-yellow-100 text-yellow-600',
-      href: '/search?category=walking',
+      id: 'boarding' as ServiceCategory,
+      name: 'Poravimas',
+      description: 'Gyvūnų poravimo ir reprodukcijos paslaugos',
+      icon: Heart,
+      color: 'bg-purple-100 text-purple-600',
+      href: '/search?category=boarding',
       popular: false,
     },
     {
-      id: 'sitting' as ServiceCategory,
-      name: t('landing.serviceCategories.sitting.name'),
-      description: t('landing.serviceCategories.sitting.description'),
-      icon: Heart,
-      color: 'bg-purple-100 text-purple-600',
-      href: '/search?category=sitting',
+      id: 'veterinary' as ServiceCategory,
+      name: 'Veterinarijos',
+      description: 'Veterinarijos paslaugos ir sveikatos priežiūra',
+      icon: Stethoscope,
+      color: 'bg-red-100 text-red-600',
+      href: '/search?category=veterinary',
+      popular: true,
+    },
+    {
+      id: 'adoption' as ServiceCategory,
+      name: 'Skelbimai',
+      description: 'Gyvūnų įvaikinimo ir pardavimo skelbimai',
+      icon: Home,
+      color: 'bg-green-100 text-green-600',
+      href: '/search?category=adoption',
       popular: false,
     },
   ]
@@ -81,7 +71,9 @@ export const ServiceCategories = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Centered Service Categories */}
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl">
           {categories.map((category) => {
             const Icon = category.icon
             return (
@@ -113,6 +105,7 @@ export const ServiceCategories = () => {
               </Link>
             )
           })}
+          </div>
         </div>
 
         {/* CTA Section */}

@@ -154,6 +154,7 @@ export interface SearchFilters {
     timeSlot?: TimeSlot // laiko intervalas
   }
   distance?: number // atstumas (km)
+  petId?: string // pasirinkto gyvūno ID
 }
 
 export interface SearchResult {
