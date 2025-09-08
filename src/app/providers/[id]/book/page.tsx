@@ -152,10 +152,19 @@ export default function BookingPage() {
   }
 
   const getAvailableTimeSlots = (): string[] => {
-    if (!selectedDate) return []
+    if (!selectedDate || !provider) return []
+    
+    // Get day name from selected date
+    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     
     // Use hardcoded time slots for now (same as desktop)
-    // TODO: Implement proper availability checking from provider data
+    // Check availability from provider data
+    if (provider.availability && provider.availability[dayName]) {
+      const dayAvailability = provider.availability[dayName]
+      // dayAvailability is TimeSlot[], so we need to extract time slots differently
+      return dayAvailability.map(slot => slot.start) || []
+    }
+    return []
     return [
       "09:00",
       "10:00", 
@@ -596,7 +605,7 @@ export default function BookingPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Book a service</h1>
+              <h1 className="text-lg font-semibold text-gray-900">{t('common.bookThisService')}</h1>
               <p className="text-sm text-gray-600">{provider.businessName}</p>
             </div>
           </div>

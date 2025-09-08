@@ -23,14 +23,10 @@ const onboardingSteps = [
   { id: 1, title: 'Service Category', component: 'service-category' },
   { id: 2, title: 'Location Selection', component: 'location-selection' },
   { id: 3, title: 'Address Input', component: 'address-input' },
-  { id: 4, title: 'Services', component: 'services' },
-  { id: 5, title: 'Detailed Services', component: 'detailed-services' },
+  { id: 4, title: 'Business Info', component: 'business-info' },
+  { id: 5, title: 'Services', component: 'services' },
   { id: 6, title: 'Working Hours', component: 'working-hours' },
-  { id: 7, title: 'Logo and Cover', component: 'logo-cover' },
-  { id: 8, title: 'Provider Type', component: 'provider-type' },
-  { id: 9, title: 'Service Details', component: 'service-details' },
-  { id: 10, title: 'Business Info', component: 'business-info' },
-  { id: 11, title: 'Review', component: 'review' }
+  { id: 7, title: 'Logo and Cover', component: 'logo-cover' }
 ]
 
 export default function ProviderOnboardingPage() {
@@ -110,41 +106,39 @@ export default function ProviderOnboardingPage() {
   }, [user, loading, router])
 
   const handleNext = () => {
-    console.log('Next clicked, current step:', currentStep)
-    console.log('Provider type:', onboardingData.providerType)
+    // Navigate to next step
     
     let nextStep = currentStep + 1
     
-    // Skip Services and Detailed Services steps if provider type is "Skelbimai" (ads)
-    if (currentStep === 3 && onboardingData.providerType === 'ads') {
-      console.log('Skipping Services and Detailed Services steps for ads provider')
-      nextStep = currentStep + 3 // Skip services (4) and detailed-services (5) steps, go to logo-cover (6)
+    // Skip Services step if provider type is "Skelbimai" (ads)
+    if (currentStep === 5 && onboardingData.providerType === 'ads') {
+      // Skip Services step for ads provider
+      nextStep = currentStep + 2 // Skip services (5) step, go to working-hours (6)
     }
     
     if (nextStep < onboardingSteps.length) {
       setCurrentStep(nextStep)
-      console.log('Moving to step:', nextStep)
+      // Move to next step
     } else {
-      console.log('Completing onboarding')
+      // Complete onboarding
       handleOnboardingComplete()
     }
   }
 
   const handlePrevious = () => {
-    console.log('Previous clicked, current step:', currentStep)
-    console.log('Provider type:', onboardingData.providerType)
+    // Navigate to previous step
     
     let prevStep = currentStep - 1
     
-    // Skip Services and Detailed Services steps if provider type is "Skelbimai" (ads) when going back
+    // Skip Services step if provider type is "Skelbimai" (ads) when going back
     if (currentStep === 6 && onboardingData.providerType === 'ads') {
-      console.log('Skipping Services and Detailed Services steps when going back for ads provider')
-      prevStep = currentStep - 3 // Skip services (4) and detailed-services (5) steps, go to address-input (3)
+      // Skip Services step when going back for ads provider
+      prevStep = currentStep - 2 // Skip services (5) step, go to business-info (4)
     }
     
     if (prevStep >= 0) {
       setCurrentStep(prevStep)
-      console.log('Moving to step:', prevStep)
+      // Move to previous step
     }
   }
 
@@ -154,7 +148,7 @@ export default function ProviderOnboardingPage() {
 
   const handleOnboardingComplete = async () => {
     try {
-      console.log('Onboarding completed successfully!', onboardingData)
+      // Onboarding completed successfully
       
       // Save the onboarding data to create a provider profile
       const providerData = {
@@ -164,12 +158,17 @@ export default function ProviderOnboardingPage() {
         description: onboardingData.businessDescription || '',
         services: onboardingData.services || [],
         location: {
-          address: onboardingData.address || '',
-          city: onboardingData.city || '',
-          state: onboardingData.state || '',
-          zip: onboardingData.zipCode || '',
+          address: onboardingData.addresses?.[0]?.address || '',
+          city: onboardingData.addresses?.[0]?.city || '',
+          state: '',
+          zip: onboardingData.addresses?.[0]?.zipCode || '',
           coordinates: { lat: 0, lng: 0 }
         },
+        serviceAreas: onboardingData.addresses?.map(addr => ({
+          address: addr.address,
+          city: addr.city,
+          zipCode: addr.zipCode
+        })) || [],
         contactInfo: {
           phone: onboardingData.phone || '',
           email: user?.email || '',
@@ -191,11 +190,11 @@ export default function ProviderOnboardingPage() {
         },
         availability: onboardingData.availability || {},
         certifications: onboardingData.certifications || [],
-        experienceYears: parseInt(onboardingData.experience?.split('-')[0] || '0')
+        experienceYears: parseInt(onboardingData.experience) || 0
       }
       
       const newProvider = await providerApi.createProvider(providerData)
-      console.log('Provider profile created:', newProvider)
+      // Provider profile created successfully
       router.push('/provider/dashboard')
       
     } catch (error) {
@@ -244,18 +243,18 @@ export default function ProviderOnboardingPage() {
             onPrevious={handlePrevious}
           />
         )
-      case 'services':
+      case 'business-info':
         return (
-          <ServicesStep
+          <BusinessInfoStep
             data={onboardingData}
             onUpdate={handleDataUpdate}
             onNext={handleNext}
             onPrevious={handlePrevious}
           />
         )
-      case 'detailed-services':
+      case 'services':
         return (
-          <DetailedServiceStep
+          <ServicesStep
             data={onboardingData}
             onUpdate={handleDataUpdate}
             onNext={handleNext}
@@ -318,7 +317,7 @@ export default function ProviderOnboardingPage() {
         )
       default:
         return (
-          <div className="bg-neutral-50 relative size-full min-h-screen flex items-center justify-center">
+          <div className="bg-white relative size-full min-h-screen flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">{currentStepData.title}</h2>
               <p className="text-gray-600 mb-8">This step is coming soon...</p>
@@ -337,7 +336,7 @@ export default function ProviderOnboardingPage() {
   // Show loading state while checking user authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
@@ -349,7 +348,7 @@ export default function ProviderOnboardingPage() {
   // Show loading state if no user (will redirect to signin)
   if (!user) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-gray-600">Redirecting to sign in...</p>
@@ -359,7 +358,7 @@ export default function ProviderOnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-white">
       {renderStep()}
     </div>
   )

@@ -34,7 +34,7 @@ export default function StatsCards({ bookings, provider }: Props) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">{t('providerDashboard.totalCustomers', 'Iš viso klientų')}</p>
-              <p className="text-2xl font-bold text-gray-900">{new Set(bookings.map(b => (b as any).customerId)).size}</p>
+              <p className="text-2xl font-bold text-gray-900">{new Set(bookings.map(b => b.customerId)).size}</p>
             </div>
           </div>
         </CardContent>

@@ -36,7 +36,7 @@ export default function ProviderDetailPage() {
       try {
         await navigator.share(shareData)
       } catch (error) {
-        console.log('Error sharing:', error)
+        // Handle sharing error
         fallbackShare()
       }
     } else {
@@ -49,7 +49,7 @@ export default function ProviderDetailPage() {
       await navigator.clipboard.writeText(window.location.href)
       alert(t('provider.linkCopied'))
     } catch (error) {
-      console.log('Failed to copy to clipboard:', error)
+      // Handle clipboard error
       alert(`${t('provider.shareLink')}: ${window.location.href}`)
     }
   }

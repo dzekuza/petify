@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +8,7 @@ import { PawPrint, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
 
-export default function EmailConfirmPage() {
+function EmailConfirmContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'expired'>('loading')
   const [error, setError] = useState('')
   const router = useRouter()
@@ -177,5 +177,34 @@ export default function EmailConfirmPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function EmailConfirmPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center">
+              <PawPrint className="h-12 w-12 text-blue-600" />
+            </div>
+            <h1 className="mt-6 text-3xl font-bold text-gray-900">
+              {t('auth.confirm.pageTitle')}
+            </h1>
+          </div>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mx-auto mb-4" />
+                <p className="text-gray-600">Loading...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    }>
+      <EmailConfirmContent />
+    </Suspense>
   )
 }

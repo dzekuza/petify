@@ -22,9 +22,9 @@ export function OnboardingStepper({
   nextText = 'Kitas'
 }: OnboardingStepperProps) {
   return (
-    <div className="fixed bottom-0 h-20 left-0 right-0 bg-neutral-50">
+    <div className="fixed bottom-0 h-20 left-0 right-0 bg-white">
       {/* Progress Bar */}
-      <div className="absolute flex gap-2.5 items-center justify-start left-0 top-0 w-full px-16">
+      <div className="absolute flex gap-2.5 items-center justify-start left-0 top-0 w-full px-4">
         {Array.from({ length: totalSteps }, (_, index) => (
           <div
             key={index}
@@ -36,7 +36,7 @@ export function OnboardingStepper({
       </div>
       
       {/* Navigation Buttons */}
-      <div className="absolute left-16 top-1/2 -translate-y-1/2">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2">
         <Button 
           variant="ghost"
           onClick={onPrevious}
@@ -46,7 +46,7 @@ export function OnboardingStepper({
         </Button>
       </div>
       
-      <div className="absolute right-16 top-1/2 -translate-y-1/2">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2">
         <Button 
           variant="default"
           onClick={onNext}

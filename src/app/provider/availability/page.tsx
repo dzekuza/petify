@@ -153,32 +153,6 @@ export default function ProviderAvailabilityPage() {
               </CardContent>
             </Card>
 
-            {/* Instructions */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>How to Use</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 text-sm text-gray-600">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Setting Working Hours</h4>
-                    <p>Click on any day to set your working hours. You can set different hours for each day of the week.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Managing Time Slots</h4>
-                    <p>Once you set working hours, time slots will be automatically generated in 15-minute intervals. Click on individual slots to mark them as available or unavailable.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Blocking Time</h4>
-                    <p>You can block specific time slots for breaks, personal appointments, or any other reason. Blocked slots will not be available for customer bookings.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Saving Changes</h4>
-                    <p>All changes are automatically saved. Your availability will be updated immediately and visible to customers on your public profile.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </ProtectedRoute>

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
 import { OnboardingStepper } from './onboarding-stepper'
-import { t } from '@/lib/translations'
 
 interface ServiceCategoryStepProps {
   data: OnboardingData
@@ -54,7 +53,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Choose type">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Choose type">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto pb-20">
         <div className="flex flex-col items-center justify-center h-full px-4 py-8">
@@ -70,16 +69,16 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
                 {serviceCategories.map((category) => (
                   <div 
                     key={category.id}
-                    className={`bg-card text-card-foreground rounded-xl shadow-sm py-6 cursor-pointer transition-all hover:shadow-md ${
+                    className={`bg-white rounded-xl shadow-sm py-6 cursor-pointer transition-all hover:shadow-md ${
                       selectedCategory === category.id
                         ? 'border-2 border-black'
                         : 'border border-gray-200'
                     }`}
                     onClick={() => handleCategorySelect(category.id)}
                   >
-                    <div className="flex flex-col gap-4 items-center text-center px-6">
+                    <div className="flex flex-row gap-4 items-center text-left px-6">
                       <div 
-                        className="bg-center bg-cover bg-no-repeat w-16 h-16" 
+                        className="bg-center bg-cover bg-no-repeat w-16 h-16 flex-shrink-0" 
                         style={{ backgroundImage: `url('${category.icon}')` }} 
                       />
                       <div className="flex flex-col gap-2">
@@ -102,7 +101,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
       {/* Stepper Component */}
       <OnboardingStepper
         currentStep={2}
-        totalSteps={7}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!selectedCategory}

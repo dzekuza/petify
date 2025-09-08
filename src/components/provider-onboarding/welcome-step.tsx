@@ -10,21 +10,25 @@ interface WelcomeStepProps {
   onPrevious: () => void
 }
 
-const petFamilyGif = "/mp4-unscreen.gif"
+const firstStepVideo = "/firststepvideo.mp4"
 
-export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: WelcomeStepProps) {
+export default function WelcomeStep({ onNext, onPrevious }: WelcomeStepProps) {
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col">
+    <div className="bg-white relative size-full min-h-screen flex flex-col">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto pb-20">
         <div className="flex items-center justify-center h-full px-4 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-[1200px] gap-8">
-            {/* Mobile: GIF on top */}
+            {/* Mobile: Video on top */}
             <div className="lg:hidden w-full max-w-[400px]">
-              <img
-                src={petFamilyGif}
-                alt="Pet Family Animation"
+              <video
+                src={firstStepVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
                 className="w-full h-auto rounded-lg"
+                aria-label="First Step Video"
               />
             </div>
 
@@ -43,12 +47,16 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
               </div>
             </div>
 
-            {/* Desktop: Pet Family GIF */}
+            {/* Desktop: First Step Video */}
             <div className="hidden lg:block">
-              <img
-                src={petFamilyGif}
-                alt="Pet Family Animation"
+              <video
+                src={firstStepVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
                 className="w-[500px] h-[500px] object-cover rounded-lg"
+                aria-label="First Step Video"
               />
             </div>
           </div>
@@ -58,7 +66,7 @@ export default function WelcomeStep({ data, onUpdate, onNext, onPrevious }: Welc
       {/* Stepper Component */}
       <OnboardingStepper
         currentStep={1}
-        totalSteps={7}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
       />

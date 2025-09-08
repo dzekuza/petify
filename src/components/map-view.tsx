@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Star, Clock } from 'lucide-react'
 import { SearchFilters as SearchFiltersType, SearchResult, ServiceCategory } from '@/types'
+import { t } from '@/lib/translations'
 import { MapboxMap } from '@/components/mapbox-map'
 
 // Mock data - same as search results
@@ -158,12 +159,21 @@ export const MapView = ({ filters }: MapViewProps) => {
   }
 
   const handleSearchClick = () => {
-    // TODO: Implement search functionality
-    console.log('Search clicked')
+    // Trigger search with current filters
+    // Note: This would typically trigger a search in the parent component
+    console.log('Search clicked with filters:', {
+      query: '',
+      location: '',
+      category: filters.category,
+      rating: 0,
+      priceRange: [0, 1000],
+      distance: 50
+    })
   }
 
   const handleFiltersClick = () => {
-    // TODO: Implement filters functionality
+    // Open filters modal
+    // Note: This would typically open a filters modal in the parent component
     console.log('Filters clicked')
   }
 
@@ -178,7 +188,7 @@ export const MapView = ({ filters }: MapViewProps) => {
   return (
     <div className="space-y-4">
       {/* Interactive Mapbox Map */}
-      <div className="h-96 rounded-lg overflow-hidden">
+      <div className="h-96 lg:h-[50vh] rounded-lg overflow-hidden">
         <MapboxMap
           results={results}
           onMarkerClick={handleMarkerClick}
@@ -202,15 +212,15 @@ export const MapView = ({ filters }: MapViewProps) => {
             }`}
             onClick={() => handleMarkerClick(result)}
           >
-            <CardContent className="p-4">
+            <CardHeader className="pb-3">
               <div className="flex items-start space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center flex-shrink-0">
                   <MapPin className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-sm">
+                  <CardTitle className="text-sm">
                     {result.provider.businessName}
-                  </h4>
+                  </CardTitle>
                   <div className="flex items-center space-x-2 mt-1">
                     <div className="flex items-center">
                       <Star className="h-3 w-3 text-yellow-400 fill-current" />
@@ -222,24 +232,29 @@ export const MapView = ({ filters }: MapViewProps) => {
                       ({result.provider.reviewCount})
                     </span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {result.distance} km away
-                  </div>
-                  <div className="mt-2">
-                    <Badge variant="outline" className="text-xs">
-                      {result.provider.services[0]}
-                    </Badge>
-                  </div>
-                  <div className="mt-2 flex space-x-2">
-                    <Button size="sm" variant="outline" className="text-xs px-2 py-1">
-                      View
-                    </Button>
-                    <Button size="sm" className="text-xs px-2 py-1">
-                      Book
-                    </Button>
-                  </div>
                 </div>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="pt-0 space-y-3">
+              <div className="flex items-center text-xs text-gray-500">
+                <Clock className="h-3 w-3 mr-1" />
+                {result.distance} km away
+              </div>
+              
+              <div>
+                <Badge variant="outline" className="text-xs">
+                  {result.provider.services[0]}
+                </Badge>
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                  View
+                </Button>
+                <Button size="sm" className="text-xs px-2 py-1">
+                  {t('common.book')}
+                </Button>
               </div>
             </CardContent>
           </Card>

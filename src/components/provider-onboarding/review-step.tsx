@@ -33,7 +33,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious }: Revie
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Review">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Review">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">

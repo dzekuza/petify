@@ -47,7 +47,7 @@ export default function TestPaymentPage() {
     }
   }
 
-  const handlePaymentSuccess = (paymentIntent: any) => {
+  const handlePaymentSuccess = (paymentIntent: { id: string; status: string }) => {
     console.log('Payment succeeded:', paymentIntent)
     toast.success('Payment completed successfully!')
   }

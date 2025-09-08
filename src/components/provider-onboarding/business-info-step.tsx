@@ -34,12 +34,14 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
     return data.businessName && 
            data.businessDescription && 
            data.phone && 
+           data.basePrice > 0 &&
+           data.pricePerHour > 0 &&
            termsAccepted && 
            privacyAccepted
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Business Info">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Business Info">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -97,6 +99,34 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
                 />
               </div>
 
+              {/* Pricing */}
+              <div className="w-full grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="basePrice">Minimali kaina (€) *</Label>
+                  <Input
+                    id="basePrice"
+                    type="number"
+                    value={data.basePrice || ''}
+                    onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
+                    placeholder="20"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="pricePerHour">Maksimali kaina (€) *</Label>
+                  <Input
+                    id="pricePerHour"
+                    type="number"
+                    value={data.pricePerHour || ''}
+                    onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
+                    placeholder="50"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
               {/* Terms and Privacy */}
               <div className="w-full space-y-4">
                 <div className="flex items-start space-x-2">
@@ -144,12 +174,11 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
 
       {/* Stepper Component */}
       <OnboardingStepper
-        currentStep={10}
-        totalSteps={12}
+        currentStep={5}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
-        nextText="Peržiūrėti"
       />
     </div>
   )

@@ -3,6 +3,7 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { ServiceProvider, Service, Review, Pet } from '@/types'
+import { t } from '@/lib/translations'
 import { ProviderInfo } from './provider-info'
 import { BookingWidget } from './booking-widget'
 
@@ -44,7 +45,7 @@ export function MobileDrawer({
           />
           
           <div className="border-t border-gray-200 pt-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Book this service</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.bookThisService')}</h2>
             <BookingWidget
               provider={provider}
               services={services}
@@ -63,14 +64,14 @@ export function MobileDrawer({
               <div className="text-lg font-semibold text-gray-900">
                 €{provider.priceRange.min}-€{provider.priceRange.max}
               </div>
-              <div className="text-sm text-gray-600">per service</div>
+              <div className="text-sm text-gray-600">{t('common.perService')}</div>
             </div>
             <Button 
               variant="gradient"
               size="lg"
               onClick={onBookService}
             >
-              Book
+              {t('common.book')}
             </Button>
           </div>
         </div>

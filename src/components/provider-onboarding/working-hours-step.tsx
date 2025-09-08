@@ -85,7 +85,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Working Hours">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Working Hours">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -196,7 +196,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
 
       {/* Stepper Component */}
       <OnboardingStepper
-        currentStep={6}
+        currentStep={7}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}

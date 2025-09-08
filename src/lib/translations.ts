@@ -383,8 +383,45 @@ export const translations = {
     serviceCategories: 'Paslaugų kategorijos'
   },
 
-  // Provider Dashboard (new keys for missing LT)
+  // Provider Dashboard
   providerDashboard: {
+    title: 'Teikėjo valdymo skydas',
+    welcomeBack: 'Sveiki sugrįžę',
+    loading: 'Kraunama...',
+    loadingDashboard: 'Kraunamas valdymo skydas...',
+    
+    // Stats cards
+    totalBookings: 'Iš viso užsakymų',
+    completed: 'Užbaigta',
+    totalRevenue: 'Bendros pajamos',
+    averageRating: 'Vidutinis įvertinimas',
+    fromLastMonth: 'nuo praėjusio mėnesio',
+    completionRate: 'užbaigimo rodiklis',
+    basedOnReviews: 'Remiantis',
+    reviews: 'atsiliepimais',
+    
+    // Recent bookings
+    recentBookings: 'Paskutiniai užsakymai',
+    recentBookingsDesc: 'Jūsų paskutiniai klientų užsakymai ir jų būsena',
+    viewAllBookings: 'Peržiūrėti visus užsakymus',
+    view: 'Peržiūrėti',
+    
+    // Quick actions
+    quickActions: 'Greiti veiksmai',
+    manageAvailability: 'Valdyti prieinamumą',
+    viewBookings: 'Peržiūrėti užsakymus',
+    editProfile: 'Redaguoti profilį',
+    
+    // Profile status
+    profileStatus: 'Profilio būsena',
+    profileComplete: 'Profilis užbaigtas',
+    verification: 'Patvirtinimas',
+    availability: 'Prieinamumas',
+    complete: 'Užbaigta',
+    verified: 'Patvirtinta',
+    pending: 'Laukiantis',
+    
+    // Empty states
     emptyBookingsTitle: 'Dar nėra užsakymų',
     emptyBookingsDesc: 'Kai klientai užsakys jūsų paslaugas, jie bus rodomi čia.',
     viewDetails: 'Peržiūrėti detalės',
@@ -400,12 +437,21 @@ export const translations = {
     rating: 'Įvertinimas',
     manageServices: 'Kurkite ir valdykite savo paslaugas',
     analyticsSubtitle: 'Verslo našumo rodikliai',
+    
     // Tab navigation
     calendar: 'Kalendorius',
     bookings: 'Užsakymai',
     services: 'Paslaugos',
     profile: 'Profilis',
-    analytics: 'Analitika'
+    analytics: 'Analitika',
+    
+    // Status translations
+    status: {
+      pending: 'Laukiantis',
+      confirmed: 'Patvirtintas',
+      completed: 'Užbaigtas',
+      cancelled: 'Atšauktas'
+    }
   },
 
   // Extra calendar keys used in dashboard header
@@ -643,7 +689,11 @@ export const translations = {
     submit: 'Pateikti',
     confirm: 'Patvirtinti',
     yes: 'Taip',
-    no: 'Ne'
+    no: 'Ne',
+    tryAgain: 'Bandyti dar kartą',
+    book: 'Užsakyti',
+    bookThisService: 'Užsakyti šią paslaugą',
+    perService: 'už paslaugą'
   }
 }
 

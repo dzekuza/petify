@@ -98,7 +98,7 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Detailed Service">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Detailed Service">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -252,7 +252,7 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
       {/* Stepper Component */}
       <OnboardingStepper
         currentStep={5}
-        totalSteps={7}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}

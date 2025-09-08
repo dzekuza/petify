@@ -217,7 +217,7 @@ export default function PaymentPage() {
   }
 
   // Handle successful payment
-  const handlePaymentSuccess = async (paymentIntent: any) => {
+  const handlePaymentSuccess = async (paymentIntent: { id: string; status: string }) => {
     if (!user || !selectedService || !provider) return
     
     try {

@@ -10,22 +10,24 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
+type Favorite = {
+  id: string
+  provider_id: string
+  provider: {
+    id: string
+    business_name: string
+    services: string[] | null
+    rating: number | null
+    review_count: number | null
+    location: { address?: string } | null
+    contact_info: { phone?: string } | null
+  } | null
+}
+
 export default function FavoritesPage() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
-  const [favorites, setFavorites] = useState<Array<{
-    id: string
-    provider_id: string
-    provider: {
-      id: string
-      business_name: string
-      services: string[] | null
-      rating: number | null
-      review_count: number | null
-      location: { address?: string } | null
-      contact_info: { phone?: string } | null
-    } | null
-  }>>([])
+  const [favorites, setFavorites] = useState<Favorite[]>([])
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -36,7 +38,7 @@ export default function FavoritesPage() {
         .select('id, provider_id, provider:providers(id, business_name, services, rating, review_count, location, contact_info)')
         .eq('user_id', user.id)
 
-      if (!error && data) setFavorites(data as any)
+      if (!error && data) setFavorites(data as unknown as Favorite[])
       setLoading(false)
     }
     fetchFavorites()
@@ -120,11 +122,11 @@ export default function FavoritesPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                               <div className="flex items-center space-x-2">
                                 <MapPin className="h-4 w-4" />
-                                <span>{fav.provider?.location && (fav.provider.location as any).address}</span>
+                                <span>{fav.provider?.location && typeof fav.provider.location === 'object' && 'address' in fav.provider.location ? (fav.provider.location as { address: string }).address : ''}</span>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <Phone className="h-4 w-4" />
-                                <span>{fav.provider?.contact_info && (fav.provider.contact_info as any).phone}</span>
+                                <span>{fav.provider?.contact_info && typeof fav.provider.contact_info === 'object' && 'phone' in fav.provider.contact_info ? (fav.provider.contact_info as { phone: string }).phone : ''}</span>
                               </div>
                             </div>
                           </div>

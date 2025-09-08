@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
 import { OnboardingStepper } from './onboarding-stepper'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 interface LocationSelectionStepProps {
   data: OnboardingData
@@ -33,7 +34,7 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Location Selection">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Location Selection">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -47,26 +48,28 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
               {/* Location Options */}
               <div className="flex flex-col gap-2 w-full">
                 {locationOptions.map((option) => (
-                  <div 
+                  <Card 
                     key={option.id}
-                    className={`bg-card text-card-foreground rounded-xl shadow-sm py-6 cursor-pointer transition-all hover:shadow-md ${
+                    className={`cursor-pointer transition-all hover:shadow-md ${
                       selectedLocationType === option.id
                         ? 'border-2 border-black'
                         : 'border border-gray-200'
                     }`}
                     onClick={() => handleLocationTypeSelect(option.id)}
                   >
-                    <div className="flex gap-3 items-center px-6">
-                      <div className="flex flex-col gap-1">
-                        <h3 className="font-semibold text-base text-black">
-                          {option.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {option.description}
-                        </p>
+                    <CardContent className="px-6 py-4">
+                      <div className="flex gap-3 items-center">
+                        <div className="flex flex-col gap-1 flex-1">
+                          <CardTitle className="text-base">
+                            {option.name}
+                          </CardTitle>
+                          <CardDescription>
+                            {option.description}
+                          </CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </div>
@@ -77,7 +80,7 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
       {/* Stepper Component */}
       <OnboardingStepper
         currentStep={3}
-        totalSteps={7}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!selectedLocationType}

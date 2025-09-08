@@ -3,6 +3,7 @@ import { Input } from './input'
 import { Label } from './label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
 import { Textarea } from './textarea'
+import { cn } from '@/lib/utils'
 
 interface InputWithLabelProps {
   id: string
@@ -61,7 +62,7 @@ export const InputWithLabel: React.FC<InputWithLabelProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={cn("space-y-2", className)}>
       <Label htmlFor={id}>
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
@@ -96,7 +97,7 @@ export const SelectWithLabel: React.FC<SelectWithLabelProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={cn("space-y-2", className)}>
       <Label htmlFor={id}>
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
@@ -129,7 +130,7 @@ export const TextareaWithLabel: React.FC<TextareaWithLabelProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={cn("space-y-2", className)}>
       <Label htmlFor={id}>
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}

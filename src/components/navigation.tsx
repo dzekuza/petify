@@ -241,11 +241,87 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     size="sm"
                     className="h-8 w-8 p-0"
                     onClick={() => router.push('/favorites')}
-                    aria-label={t('navigation.favorites')}
-                    title={t('navigation.favorites')}
+                    aria-label={t('navigation.favorites') || 'Mėgstami'}
+                    title={t('navigation.favorites') || 'Mėgstami'}
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
+                )}
+
+                {/* Provider-specific navigation items */}
+                {isProviderRoute && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 px-3 text-sm font-medium transition-colors",
+                        pathname === '/provider/dashboard' 
+                          ? "bg-accent text-accent-foreground" 
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => router.push('/provider/dashboard')}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 px-3 text-sm font-medium transition-colors",
+                        pathname === '/provider/bookings' 
+                          ? "bg-accent text-accent-foreground" 
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => router.push('/provider/bookings')}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Bookings
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 px-3 text-sm font-medium transition-colors",
+                        pathname === '/provider/services' 
+                          ? "bg-accent text-accent-foreground" 
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => router.push('/provider/services')}
+                    >
+                      <Star className="mr-2 h-4 w-4" />
+                      Services
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 px-3 text-sm font-medium transition-colors",
+                        pathname === '/provider/profile' 
+                          ? "bg-accent text-accent-foreground" 
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => router.push('/provider/profile')}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 px-3 text-sm font-medium transition-colors",
+                        pathname === '/provider/availability' 
+                          ? "bg-accent text-accent-foreground" 
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      onClick={() => router.push('/provider/availability')}
+                    >
+                      <Clock className="mr-2 h-4 w-4" />
+                      Calendar
+                    </Button>
+                  </>
                 )}
                 
                 {/* User Menu */}
@@ -409,7 +485,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-label={t('navigation.toggleMobileMenu')}
+                  aria-label={t('navigation.toggleMobileMenu') || 'Perjungti mobiliąjį meniu'}
                   className="h-10 w-10 p-0"
                 >
                   <Menu className="h-6 w-6" />
@@ -562,52 +638,43 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Settings className="h-5 w-5" />
-                                  <span>{t('navigation.providerDashboardMobile')}</span>
+                                  <span>Dashboard</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/dashboard/analytics"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <DollarSign className="h-5 w-5" />
-                                  <span>Analitika</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/dashboard/bookings"
+                                  href="/provider/bookings"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Calendar className="h-5 w-5" />
-                                  <span>Rezervacijos</span>
+                                  <span>Bookings</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/dashboard/calendar"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Clock className="h-5 w-5" />
-                                  <span>Kalendorius</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/dashboard/services"
+                                  href="/provider/services"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Star className="h-5 w-5" />
-                                  <span>Mano paslaugos</span>
+                                  <span>Services</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/dashboard/profile"
+                                  href="/provider/profile"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <User className="h-5 w-5" />
-                                  <span>Profilis</span>
+                                  <span>Profile</span>
+                                </Link>
+                              </DrawerClose>
+                              <DrawerClose asChild>
+                                <Link
+                                  href="/provider/availability"
+                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                  <Clock className="h-5 w-5" />
+                                  <span>Calendar</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>

@@ -83,7 +83,18 @@ export default function BookingsPage() {
     if (!editingBooking) return
 
     try {
-      // TODO: Implement booking update API call
+      // Update booking via API
+      const response = await fetch(`/api/bookings/${editingBooking.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to update booking')
+      }
       console.log('Updating booking:', editingBooking.id, editForm)
       
       // For now, just close the modal

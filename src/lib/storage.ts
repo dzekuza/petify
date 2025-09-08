@@ -6,7 +6,7 @@ export interface UploadResult {
 }
 
 export interface UploadOptions {
-  bucket: 'profile-images' | 'service-images' | 'assets' | 'pet-images'
+  bucket: 'profile-images' | 'service-images' | 'assets' | 'pet-images' | 'provider-images'
   folder?: string
   fileName?: string
 }
@@ -148,7 +148,7 @@ export const uploadCoverImage = async (
   providerId: string
 ): Promise<UploadResult> => {
   return uploadFile(file, {
-    bucket: 'profile-images',
+    bucket: 'provider-images',
     folder: `providers/${providerId}`,
     fileName: `cover-${Date.now()}.${file.name.split('.').pop()}`
   })
@@ -162,7 +162,7 @@ export const uploadProfilePicture = async (
   providerId: string
 ): Promise<UploadResult> => {
   return uploadFile(file, {
-    bucket: 'profile-images',
+    bucket: 'provider-images',
     folder: `providers/${providerId}`,
     fileName: `profile-${Date.now()}.${file.name.split('.').pop()}`
   })

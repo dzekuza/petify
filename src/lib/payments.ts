@@ -38,19 +38,19 @@ export const createPaymentIntent = async (
       clientSecret: paymentIntent.client_secret!,
       paymentIntentId: paymentIntent.id,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating payment intent:', error)
     
     // Provide more specific error messages
-    if (error?.type === 'StripeAuthenticationError') {
+    if ((error as any)?.type === 'StripeAuthenticationError') {
       throw new Error('Invalid Stripe API key. Please check your STRIPE_SECRET_KEY in .env.local')
     }
     
-    if (error?.code === 'invalid_request_error') {
-      throw new Error(`Stripe request error: ${error.message}`)
+    if ((error as any)?.code === 'invalid_request_error') {
+      throw new Error(`Stripe request error: ${(error as any).message}`)
     }
     
-    throw new Error(`Failed to create payment intent: ${error?.message || 'Unknown error'}`)
+    throw new Error(`Failed to create payment intent: ${(error as Error)?.message || 'Unknown error'}`)
   }
 }
 
@@ -133,7 +133,7 @@ export const validateWebhookSignature = (
 /**
  * Handle successful payment webhook
  */
-export const handlePaymentSucceeded = async (paymentIntent: any) => {
+export const handlePaymentSucceeded = async (paymentIntent: { id: string; status: string; metadata: Record<string, string> }) => {
   try {
     const bookingId = paymentIntent.metadata?.bookingId
     if (!bookingId) {
@@ -144,8 +144,8 @@ export const handlePaymentSucceeded = async (paymentIntent: any) => {
     // For now, we'll just log the successful payment
     console.log(`Payment succeeded for booking ${bookingId}:`, {
       paymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
+      amount: (paymentIntent as any).amount,
+      currency: (paymentIntent as any).currency,
     })
 
     return { success: true, bookingId }
@@ -158,7 +158,7 @@ export const handlePaymentSucceeded = async (paymentIntent: any) => {
 /**
  * Handle failed payment webhook
  */
-export const handlePaymentFailed = async (paymentIntent: any) => {
+export const handlePaymentFailed = async (paymentIntent: { id: string; status: string; metadata: Record<string, string> }) => {
   try {
     const bookingId = paymentIntent.metadata?.bookingId
     if (!bookingId) {
@@ -168,7 +168,7 @@ export const handlePaymentFailed = async (paymentIntent: any) => {
     // Here you would typically update your database to mark the booking as failed
     console.log(`Payment failed for booking ${bookingId}:`, {
       paymentIntentId: paymentIntent.id,
-      lastPaymentError: paymentIntent.last_payment_error,
+      lastPaymentError: (paymentIntent as any).last_payment_error,
     })
 
     return { success: true, bookingId }

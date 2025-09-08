@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { t } from '@/lib/translations'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
@@ -283,5 +283,37 @@ export default function ResetPasswordPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center">
+              <PawPrint className="h-12 w-12 text-blue-600" />
+            </div>
+            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+              {t('auth.resetPassword.pageTitle')}
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              {t('auth.resetPassword.pageDescription')}
+            </p>
+          </div>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mx-auto mb-4" />
+                <p className="text-gray-600">Loading...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }

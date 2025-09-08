@@ -117,7 +117,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }:
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Address Input">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Address Input">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -216,7 +216,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }:
               </div>
               
               {/* Right Side - Map */}
-              <div className="flex-1 max-w-[500px]">
+              <div className="w-full lg:flex-1 lg:max-w-[500px]">
                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ height: '400px' }}>
                   {mapCenter ? (
                     <Map
@@ -253,7 +253,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }:
       {/* Stepper Component */}
       <OnboardingStepper
         currentStep={4}
-        totalSteps={7}
+        totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}

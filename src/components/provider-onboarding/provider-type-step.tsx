@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { OnboardingData, ProviderType } from '@/types/onboarding'
 import { OnboardingStepper } from './onboarding-stepper'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import Image from 'next/image'
 
 interface ProviderTypeStepProps {
@@ -78,16 +79,16 @@ export default function ProviderTypeStep({ data, onUpdate, onNext, onPrevious }:
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {providerTypes.map((type) => (
-          <div 
+          <Card 
             key={type.id}
-            className={`bg-card text-card-foreground rounded-xl border shadow-sm cursor-pointer transition-all hover:border-primary/50 p-6 ${
+            className={`cursor-pointer transition-all hover:border-primary/50 ${
               selectedType === type.id
                 ? 'ring-2 ring-primary border-primary bg-primary/5'
                 : 'border-muted-foreground/25'
             }`}
             onClick={() => handleTypeSelect(type.id)}
           >
-            <div className="space-y-4">
+            <CardContent className="p-6">
               <div className="flex items-center space-x-4">
                 <Image
                   src={type.icon}
@@ -97,12 +98,12 @@ export default function ProviderTypeStep({ data, onUpdate, onNext, onPrevious }:
                   className="object-contain"
                 />
                 <div className="text-left">
-                  <div className="font-semibold text-lg mb-2">{type.name}</div>
-                  <p className="text-sm text-muted-foreground">{type.description}</p>
+                  <CardTitle className="text-lg mb-2">{type.name}</CardTitle>
+                  <CardDescription>{type.description}</CardDescription>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 

@@ -17,6 +17,7 @@ import {
   Users,
   DollarSign
 } from 'lucide-react'
+import { t } from '@/lib/translations'
 
 const serviceCategories = [
   { value: 'grooming', label: 'Pet Grooming' },
@@ -271,7 +272,7 @@ export default function ProviderSignupPage() {
             </div>
 
             <div>
-              <Label>Price Range (per service)</Label>
+              <Label>Price Range ({t('common.perService')})</Label>
               <div className="grid grid-cols-2 gap-4 mt-1">
                 <div>
                   <Input

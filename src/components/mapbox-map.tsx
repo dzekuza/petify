@@ -16,25 +16,35 @@ import { SearchResult } from '@/types'
 import { t } from '@/lib/translations'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Custom styles for mapbox popup
+// Custom styles for mapbox popup and responsive canvas
 const popupStyles = `
   .mapbox-popup .mapboxgl-popup-content {
     padding: 0;
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    border: none;
-    background: transparent;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
   .mapbox-popup .mapboxgl-popup-tip {
-    border-top-color: white;
-    border-width: 8px;
-  }
-  
-  .mapbox-popup .mapboxgl-popup-close-button {
     display: none;
   }
+  
+  /* Force responsive canvas on mobile */
+  @media (max-width: 1024px) {
+    .mapboxgl-map {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+    
+    /* Ensure map container takes full space */
+    .mapboxgl-map-container {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
 `
+
 
 interface MapboxMapProps {
   results: SearchResult[]
@@ -399,7 +409,7 @@ export const MapboxMap = ({
                       size="sm" 
                       className="text-xs px-2 py-1 h-6"
                     >
-                      Book
+                      {t('common.book')}
                     </Button>
                   </div>
                 </div>
@@ -411,7 +421,7 @@ export const MapboxMap = ({
       
       {/* Mobile Listing Card - Shows when marker is selected */}
       {selectedResult && (
-        <div className="lg:hidden absolute bottom-24 left-4 right-4 z-20">
+        <div className="lg:hidden absolute bottom-16 left-4 right-4 z-20">
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
             <div className="flex">
               {/* Image Section */}

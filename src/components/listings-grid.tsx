@@ -5,10 +5,11 @@ import { Heart } from 'lucide-react'
 import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
+import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
 
-interface ProvidersGridStaticProps {
+interface ListingsGridProps {
   title: string
   providers: ServiceProvider[]
   showViewAll?: boolean
@@ -16,13 +17,13 @@ interface ProvidersGridStaticProps {
   gridCols?: string
 }
 
-export const ProvidersGridStatic = ({ 
+export const ListingsGrid = ({ 
   title, 
   providers, 
   showViewAll = true,
   className,
   gridCols = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-}: ProvidersGridStaticProps) => {
+}: ListingsGridProps) => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
 
   const toggleFavorite = (providerId: string) => {
@@ -56,7 +57,6 @@ export const ProvidersGridStatic = ({
     }
   }
 
-
   if (providers.length === 0) {
     return null
   }
@@ -76,7 +76,7 @@ export const ProvidersGridStatic = ({
         )}
       </div>
 
-      {/* Static Grid */}
+      {/* Listings Grid */}
       <div className={cn("grid gap-6", gridCols)}>
         {providers.map((provider) => {
           const isFavorite = favorites.has(provider.id)
@@ -87,9 +87,9 @@ export const ProvidersGridStatic = ({
               className="group cursor-pointer"
             >
               <Link href={`/providers/${provider.id}`}>
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
                   {/* Image Section */}
-                  <div className="relative overflow-hidden rounded-t-xl">
+                  <div className="relative overflow-hidden">
                     <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48">
                       {provider.images[0] ? (
                         <Image
@@ -131,22 +131,22 @@ export const ProvidersGridStatic = ({
                     </button>
                   </div>
 
-                  {/* Content Section */}
-                  <div className="p-4">
+                  {/* Card Content - No top/bottom padding */}
+                  <CardContent className="px-4 py-0">
                     {/* Business Name */}
-                    <div className="text-sm font-medium text-gray-900 mb-1">
+                    <CardTitle className="text-sm mb-1">
                       {provider.businessName}
-                    </div>
+                    </CardTitle>
 
                     {/* Service Type and Location */}
-                    <div className="text-sm text-gray-600 mb-1">
+                    <CardDescription className="text-sm mb-1">
                       {provider.services[0] === 'grooming' ? 'Kirpykla' :
                        provider.services[0] === 'veterinary' ? 'Veterinarija' :
                        provider.services[0] === 'boarding' ? 'Prieglauda' :
                        provider.services[0] === 'training' ? 'Dresūra' :
                        provider.services[0] === 'walking' ? 'Pasivaikščiojimas' :
                        'Paslaugos'} • {provider.location.city}
-                    </div>
+                    </CardDescription>
 
                     {/* Price and Rating */}
                     <div className="flex items-center justify-between">
@@ -160,8 +160,8 @@ export const ProvidersGridStatic = ({
                         )}
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </Link>
             </div>
           )

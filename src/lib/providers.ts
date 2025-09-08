@@ -28,8 +28,8 @@ export interface CreateProviderData {
     currency: string
   }
   availability: Record<string, boolean>
-  certifications: string[]
-  experienceYears: number
+  certifications?: string[]
+  experienceYears?: number
 }
 
 export interface UpdateProviderData {
@@ -130,6 +130,7 @@ export const providerApi = {
           experienceYears: provider.experience_years,
           isVerified: provider.is_verified,
           verificationDocuments: provider.verification_documents,
+          avatarUrl: provider.avatar_url,
           createdAt: provider.created_at,
           updatedAt: provider.updated_at
         }
@@ -185,6 +186,7 @@ export const providerApi = {
           experienceYears: provider.experience_years,
           isVerified: provider.is_verified,
           verificationDocuments: provider.verification_documents,
+          avatarUrl: provider.avatar_url,
           createdAt: provider.created_at,
           updatedAt: provider.updated_at
         }
@@ -240,6 +242,7 @@ export const providerApi = {
           experienceYears: provider.experience_years,
           isVerified: provider.is_verified,
           verificationDocuments: provider.verification_documents,
+          avatarUrl: provider.avatar_url,
           createdAt: provider.created_at,
           updatedAt: provider.updated_at
         }
@@ -374,18 +377,25 @@ export const providerApi = {
     distance?: number
     date?: string
     petId?: string
+    verifiedOnly?: boolean
   }) {
     try {
+      
       // Start with a simple query to get all providers
       let query = supabase
         .from('providers')
         .select('*')
         .eq('status', 'active')
-        .eq('is_verified', true)
+      
+      // Only filter by verification if explicitly requested (default to true for public search)
+      if (filters?.verifiedOnly !== false) {
+        query = query.eq('is_verified', true)
+      }
 
       // Apply category filter
       if (filters?.category && filters.category !== 'all') {
-        query = query.contains('services', [filters.category])
+        // Use overlaps to check if any service in the array matches the category
+        query = query.overlaps('services', [filters.category])
       }
 
       // Apply rating filter
@@ -401,15 +411,18 @@ export const providerApi = {
 
       const { data: providers, error } = await query
 
+
       if (error) {
         console.error('Error searching providers:', error)
         throw error
       }
 
+      console.log('Found providers:', providers?.length || 0)
+
       // Transform snake_case to camelCase and add services
       const transformedProviders = await Promise.all(
         (providers || []).map(async (provider) => {
-          // Fetch services for this provider
+          // Fetch services for this provider from the services table (if any)
           const { data: services } = await supabase
             .from('services')
             .select('*')
@@ -457,22 +470,40 @@ export const providerApi = {
           }
 
           // Transform services data to match Service interface
-          const transformedServices = (services || []).map(service => ({
-            id: service.id,
-            providerId: service.provider_id,
-            category: service.category,
-            name: service.name,
-            description: service.description,
-            price: service.price,
-            duration: service.duration_minutes,
-            maxPets: service.max_pets,
-            requirements: service.requirements || [],
-            includes: service.includes || [],
-            images: service.images || [],
-            status: service.is_active ? 'active' as const : 'inactive' as const,
-            createdAt: service.created_at,
-            updatedAt: service.updated_at
-          }))
+          // Use services from the services table if available, otherwise create mock services from provider.services array
+          const transformedServices = (services && services.length > 0) 
+            ? services.map(service => ({
+                id: service.id,
+                providerId: service.provider_id,
+                category: service.category,
+                name: service.name,
+                description: service.description,
+                price: service.price,
+                duration: service.duration_minutes,
+                maxPets: service.max_pets,
+                requirements: service.requirements || [],
+                includes: service.includes || [],
+                images: service.images || [],
+                status: service.is_active ? 'active' as const : 'inactive' as const,
+                createdAt: service.created_at,
+                updatedAt: service.updated_at
+              }))
+            : (provider.services || []).map((serviceName: string, index: number) => ({
+                id: `mock-${provider.id}-${index}`,
+                providerId: provider.id,
+                category: serviceName,
+                name: serviceName,
+                description: `${serviceName} service`,
+                price: 50,
+                duration: 60,
+                maxPets: 1,
+                requirements: [],
+                includes: [],
+                images: [],
+                status: 'active' as const,
+                createdAt: provider.created_at,
+                updatedAt: provider.updated_at
+              }))
 
           return {
             provider: transformedProvider,

@@ -3,6 +3,7 @@
 import { Clock, Users, CheckCircle } from 'lucide-react'
 import { Service } from '@/types'
 import { Badge } from './badge'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './card'
 import { cn } from '@/lib/utils'
 
 interface ServiceCardProps {
@@ -19,9 +20,9 @@ export function ServiceCard({
   showSelection = true 
 }: ServiceCardProps) {
   return (
-    <div
+    <Card
       className={cn(
-        "bg-white border rounded-xl p-6 cursor-pointer transition-all",
+        "cursor-pointer transition-all",
         isSelected 
           ? "border-black bg-gray-50 shadow-md" 
           : "border-gray-200 hover:border-gray-300 hover:shadow-sm",
@@ -29,46 +30,44 @@ export function ServiceCard({
       )}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-            {isSelected && showSelection && (
-              <CheckCircle className="w-5 h-5 text-black" />
-            )}
-          </div>
-          <p className="text-gray-600 mb-4">{service.description}</p>
-          
-          <div className="flex items-center space-x-6 text-sm text-gray-500">
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1" />
-              {service.duration} min
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1" />
-              Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
-            </div>
-          </div>
-
-          {service.includes && service.includes.length > 0 && (
-            <div className="mt-3">
-              <div className="flex flex-wrap gap-2">
-                {service.includes.map((item, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {item}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">{service.name}</CardTitle>
+          {isSelected && showSelection && (
+            <CheckCircle className="w-5 h-5 text-black" />
           )}
         </div>
-        
-        <div className="text-right ml-6">
-          <div className="text-2xl font-bold text-gray-900">
-            €{service.price}
+        <CardDescription>{service.description}</CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-6 text-sm text-gray-500">
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-1" />
+            {service.duration} min
+          </div>
+          <div className="flex items-center">
+            <Users className="h-4 w-4 mr-1" />
+            Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
           </div>
         </div>
-      </div>
-    </div>
+
+        {service.includes && service.includes.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {service.includes.map((item, index) => (
+              <Badge key={index} variant="outline" className="text-xs">
+                {item}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="pt-0">
+        <div className="text-2xl font-bold text-gray-900 w-full text-right">
+          €{service.price}
+        </div>
+      </CardFooter>
+    </Card>
   )
 }

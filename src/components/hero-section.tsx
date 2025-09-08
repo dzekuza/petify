@@ -10,7 +10,7 @@ import { t } from '@/lib/translations'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { ProvidersGrid } from '@/components/providers-grid'
+import { ListingsGrid } from '@/components/listings-grid'
 import { providerApi } from '@/lib/providers'
 import { ServiceProvider } from '@/types'
 
@@ -158,7 +158,7 @@ export const HeroSection = () => {
 
           {/* Latest Providers Grid */}
           {!loading && latestProviders.length > 0 && (
-            <ProvidersGrid
+            <ListingsGrid
               title="Latest"
               providers={latestProviders}
             />

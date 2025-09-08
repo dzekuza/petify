@@ -44,7 +44,7 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
   }
 
   return (
-    <div className="bg-neutral-50 relative size-full min-h-screen flex flex-col" data-name="Logo and Cover">
+    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Logo and Cover">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
@@ -166,11 +166,12 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
 
       {/* Stepper Component */}
       <OnboardingStepper
-        currentStep={7}
+        currentStep={8}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        nextText="Baigti"
       />
     </div>
   )

@@ -72,7 +72,18 @@ export default function ProfilePage() {
   }
 
   const handleSaveProfile = async () => {
-    // TODO: Implement profile update logic
+    // Update profile via API
+    const response = await fetch('/api/users/update-profile', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(editForm),
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to update profile')
+    }
     console.log('Saving profile:', editForm)
     setEditProfileOpen(false)
   }
@@ -81,8 +92,19 @@ export default function ProfilePage() {
     setNotificationsOpen(true)
   }
 
-  const handleSaveNotifications = () => {
-    // TODO: Implement notifications save logic
+  const handleSaveNotifications = async () => {
+    // Save notifications preferences
+    const response = await fetch('/api/users/update-notifications', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(notifications),
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to update notifications')
+    }
     console.log('Saving notifications:', notifications)
     setNotificationsOpen(false)
   }
@@ -91,8 +113,19 @@ export default function ProfilePage() {
     setPrivacyOpen(true)
   }
 
-  const handleSavePrivacy = () => {
-    // TODO: Implement privacy save logic
+  const handleSavePrivacy = async () => {
+    // Save privacy settings
+    const response = await fetch('/api/users/update-privacy', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(privacy),
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to update privacy settings')
+    }
     console.log('Saving privacy:', privacy)
     setPrivacyOpen(false)
   }

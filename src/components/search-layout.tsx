@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
-import { ProvidersGridStatic } from '@/components/providers-grid-static'
+import { ListingsGrid } from '@/components/listings-grid'
 import { FilterModal } from '@/components/filter-modal'
 import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -143,7 +143,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                   ))}
                 </div>
               ) : (
-                <ProvidersGridStatic
+                <ListingsGrid
                   title=""
                   providers={results.map(result => result.provider)}
                   showViewAll={false}
@@ -171,7 +171,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                     ))}
                   </div>
                 ) : (
-                  <ProvidersGridStatic
+                  <ListingsGrid
                     title={`${results.length} ${t('search.providersFound')}`}
                     providers={results.map(result => result.provider)}
                     showViewAll={false}
@@ -205,7 +205,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                   ))}
                 </div>
               ) : (
-                <ProvidersGridStatic
+                <ListingsGrid
                   title={`${results.length} ${t('search.providersFound')}`}
                   providers={results.map(result => result.provider)}
                   showViewAll={false}

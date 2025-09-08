@@ -46,6 +46,11 @@ export interface ServiceProvider {
       lng: number // ilguma
     }
   }
+  contactInfo?: {
+    phone: string // telefonas
+    email: string // el. paštas
+    website?: string // svetainė
+  }
   rating: number // įvertinimas
   reviewCount: number // atsiliepimų skaičius
   priceRange: {
