@@ -27,7 +27,7 @@ export default function ProviderDetailPage() {
 
   const handleShare = async () => {
     const shareData = {
-      title: provider?.businessName || 'Pet Service Provider',
+      title: provider?.businessName || t('provider.petServiceProvider'),
       text: `Check out ${provider?.businessName} - Professional pet services in ${provider?.location.city}, ${provider?.location.state}`,
       url: window.location.href
     }
@@ -47,10 +47,10 @@ export default function ProviderDetailPage() {
   const fallbackShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
-      alert('Link copied to clipboard!')
+      alert(t('provider.linkCopied'))
     } catch (error) {
       console.log('Failed to copy to clipboard:', error)
-      alert(`${t('provider.share')} this link: ${window.location.href}`)
+      alert(`${t('provider.shareLink')}: ${window.location.href}`)
     }
   }
 

@@ -502,7 +502,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                 router.push('/')
                                 setMobileMenuOpen(false)
                               }}
-                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                              className="flex items-center space-x-3 w-full px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                             >
                               <Settings className="h-5 w-5" />
                               <span>Išeiti iš teikėjo</span>
@@ -513,7 +513,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                 handleSwitchToProvider()
                                 setMobileMenuOpen(false)
                               }}
-                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                              className="flex items-center space-x-3 w-full px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                             >
                               <Settings className="h-5 w-5" />
                               <span>{t('navigation.switchToProvider')}</span>
@@ -526,7 +526,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               <DrawerClose asChild>
                                 <Link
                                   href="/pets"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                  className="flex items-center space-x-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                                 >
                                   <Dog className="h-5 w-5" />
                                   <span>{t('navigation.myPetsMobile')}</span>
@@ -535,7 +535,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               <DrawerClose asChild>
                                 <Link
                                   href="/bookings"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                  className="flex items-center space-x-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                                 >
                                   <Calendar className="h-5 w-5" />
                                   <span>{t('navigation.myBookingsMobile')}</span>
@@ -544,7 +544,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               <DrawerClose asChild>
                                 <Link
                                   href="/favorites"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
+                                  className="flex items-center space-x-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                                 >
                                   <Heart className="h-5 w-5" />
                                   <span>{t('navigation.favoritesMobile')}</span>
@@ -586,9 +586,9 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                             </>
                           )}
                           
-                          <div className="pt-2 border-t border-gray-200">
+                          <div className="pt-4 border-t border-gray-200">
                             <button 
-                              className="flex items-center space-x-3 w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors"
+                              className="flex items-center space-x-3 w-full px-3 py-3 text-base font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               onClick={() => {
                                 handleSignOut()
                                 setMobileMenuOpen(false)

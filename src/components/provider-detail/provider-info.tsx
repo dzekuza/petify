@@ -3,6 +3,7 @@
 import { Star, Clock, Users, PawPrint } from 'lucide-react'
 import { ServiceProvider, Service, Review } from '@/types'
 import { t } from '@/lib/translations'
+import { Button } from '@/components/ui/button'
 
 interface ProviderInfoProps {
   provider: ServiceProvider
@@ -36,7 +37,7 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
         <div className="flex items-center space-x-2 mb-4">
           <Star className="h-4 w-4 text-yellow-400 fill-current" />
           <span className="text-sm font-medium">{provider.rating}</span>
-          <span className="text-sm text-gray-500">({provider.reviewCount} reviews)</span>
+          <span className="text-sm text-gray-500">({provider.reviewCount} {t('provider.reviews')})</span>
         </div>
       </div>
 
@@ -49,9 +50,9 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
             </span>
           </div>
           <div>
-            <h3 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-gray-900`}>
+            <h2 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-gray-900`}>
               {t('provider.hostedBy')} {provider.businessName}
-            </h3>
+            </h2>
             <p className="text-sm text-gray-600">{provider.experience} {t('provider.yearsHosting')}</p>
           </div>
         </div>
@@ -91,11 +92,11 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
                     <div className={`flex items-center space-x-4 text-sm text-gray-500 ${isMobile ? 'mt-2' : ''}`}>
                       <span className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
-                        {service.duration} min
+                        {service.duration} {t('provider.minutes')}
                       </span>
                       <span className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        Up to {service.maxPets} {service.maxPets > 1 ? 'pets' : 'pet'}
+                        {t('provider.upTo')} {service.maxPets} {service.maxPets > 1 ? t('provider.pets') : t('provider.pet')}
                       </span>
                     </div>
                   </div>
@@ -104,12 +105,13 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
                       €{service.price}
                     </div>
                     {isMobile && (
-                      <button
+                      <Button
                         onClick={() => onBookService?.(service.id)}
-                        className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+                        className="mt-2 w-full bg-black hover:bg-gray-800 text-white"
+                        size="sm"
                       >
-                        Book
-                      </button>
+                        {t('provider.bookService')}
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -127,7 +129,7 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
       {/* Reviews */}
       {reviews.length > 0 && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>Reviews ({provider.reviewCount})</h2>
+          <h2 className={`${titleClass} text-gray-900 mb-4`}>{t('provider.reviews')} ({provider.reviewCount})</h2>
           <div className="space-y-4">
             {reviews.slice(0, isMobile ? 2 : 3).map((review) => (
               <div key={review.id} className={`border-b border-gray-100 pb-4 last:border-b-0 ${isMobile ? '' : 'pb-6'}`}>

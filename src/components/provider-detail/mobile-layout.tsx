@@ -42,7 +42,7 @@ export function MobileLayout({
 
       {/* Content Section with top padding to account for fixed gallery */}
       <div className="pt-[50vh] sm:pt-[60vh]">
-        <div className="bg-white rounded-t-3xl shadow-lg relative z-10">
+        <div className="bg-white rounded-t-3xl shadow-lg relative z-[60]">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
@@ -68,7 +68,7 @@ export function MobileLayout({
           </div>
 
           {/* Fixed Bottom Bar */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[60]">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-semibold text-gray-900">
