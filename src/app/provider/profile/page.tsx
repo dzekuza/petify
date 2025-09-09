@@ -113,9 +113,9 @@ export default function ProviderProfilePage() {
       photos: provider.images || [], // Map images to photos
       profilePhoto: provider.avatarUrl || '', // Map avatarUrl to profilePhoto
       services: provider.services || [],
-      serviceType: provider.services?.[0]?.category || 'grooming', // Extract service type from first service
-      // Determine location type based on service areas
-      locationType: provider.serviceAreas && provider.serviceAreas.length > 1 ? 'multiple' : 'single',
+      serviceType: provider.services?.[0] || 'grooming', // Extract service type from first service
+      // Determine location type based on services (assuming multiple services means multiple locations)
+      locationType: provider.services && provider.services.length > 1 ? 'multiple' : 'single',
       // Add cover image if available (first image from images array)
       coverImageUrl: provider.images?.[0] || '',
       // Add logo image if available (avatarUrl)

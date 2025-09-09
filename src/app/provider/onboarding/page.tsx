@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
@@ -30,7 +30,7 @@ const onboardingSteps = [
   { id: 7, title: 'Logo and Cover', component: 'logo-cover' }
 ]
 
-export default function ProviderOnboardingPage() {
+function ProviderOnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [isEditMode, setIsEditMode] = useState(false)
   const [editProviderId, setEditProviderId] = useState<string | null>(null)
@@ -470,3 +470,21 @@ export default function ProviderOnboardingPage() {
     </div>
   )
 }
+
+// Wrapper component with Suspense boundary
+function OnboardingPageWithSuspense() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ProviderOnboardingPage />
+    </Suspense>
+  )
+}
+
+export default OnboardingPageWithSuspense
