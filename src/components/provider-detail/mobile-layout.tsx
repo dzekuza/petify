@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ServiceProvider, Service, Review } from '@/types'
+import { ServiceProvider, Service, Review, PetAd } from '@/types'
 import { t } from '@/lib/translations'
 import { ImageGallery } from './image-gallery'
 import { ProviderInfo } from './provider-info'
@@ -10,6 +10,7 @@ interface MobileLayoutProps {
   provider: ServiceProvider
   services: Service[]
   reviews: Review[]
+  petAd?: PetAd | null
   isFavorite: boolean
   onToggleFavorite: () => void
   onShare: () => void
@@ -21,6 +22,7 @@ export function MobileLayout({
   provider,
   services,
   reviews,
+  petAd,
   isFavorite,
   onToggleFavorite,
   onShare,
@@ -33,6 +35,7 @@ export function MobileLayout({
       <div className="fixed top-0 left-0 right-0 z-40">
         <ImageGallery
           provider={provider}
+          petAd={petAd}
           isFavorite={isFavorite}
           onToggleFavorite={onToggleFavorite}
           onShare={onShare}
@@ -63,6 +66,7 @@ export function MobileLayout({
               provider={provider} 
               services={services} 
               reviews={reviews} 
+              petAd={petAd}
               isMobile={true}
               onBookService={(serviceId) => onBookService(serviceId)}
             />
@@ -73,16 +77,18 @@ export function MobileLayout({
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-semibold text-gray-900">
-                  €{provider.priceRange.min}-€{provider.priceRange.max}
+                  {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
                 </div>
-                <div className="text-sm text-gray-600">{t('common.perService')}</div>
+                <div className="text-sm text-gray-600">
+                  {petAd ? 'Kaina' : t('common.perService')}
+                </div>
               </div>
               <Button 
                 variant="gradient"
                 size="lg"
                 onClick={() => onBookService()}
               >
-                {t('common.book')}
+                {petAd ? 'Teirautis' : t('common.book')}
               </Button>
             </div>
           </div>

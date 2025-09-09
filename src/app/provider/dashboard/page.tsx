@@ -20,6 +20,8 @@ import {
 } from 'lucide-react'
 import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
+import { BusinessTypeHeader, BusinessSpecificWidget } from '@/components/provider-dashboard/business-widgets'
+import { BusinessNavigation, BusinessQuickActions } from '@/components/provider-dashboard/business-navigation'
 
 // Remove duplicate interfaces since they're now imported from dashboard.ts
 
@@ -41,6 +43,8 @@ export default function ProviderDashboard() {
     verification: 'pending',
     availability: 'pending'
   })
+  const [businessType, setBusinessType] = useState<string>('')
+  const [providerData, setProviderData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -58,6 +62,10 @@ export default function ProviderDashboard() {
           setLoading(false)
           return
         }
+
+        // Set business type and provider data
+        setBusinessType(provider.business_type || 'individual')
+        setProviderData(provider)
 
         // Fetch dashboard data in parallel
         const [statsData, recentBookingsData, profileStatusData] = await Promise.all([
@@ -155,6 +163,11 @@ export default function ProviderDashboard() {
     <Layout hideFooter={true}>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50">
+          {/* Business Navigation */}
+          {businessType && (
+            <BusinessNavigation businessType={businessType} />
+          )}
+          
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
@@ -218,6 +231,32 @@ export default function ProviderDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Business Type Header */}
+            {businessType && (
+              <div className="mb-8">
+                <BusinessTypeHeader businessType={businessType} />
+              </div>
+            )}
+
+            {/* Business-Specific Widgets */}
+            {businessType && (
+              <div className="mb-8">
+                <BusinessSpecificWidget 
+                  businessType={businessType} 
+                  stats={stats} 
+                  providerData={providerData} 
+                />
+              </div>
+            )}
+
+            {/* Quick Actions */}
+            {businessType && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                <BusinessQuickActions businessType={businessType} />
+              </div>
+            )}
 
             {/* Recent Bookings */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -101,7 +101,7 @@ export const providerApi = {
         .single()
 
       if (error) {
-        console.error('Error creating provider:', error)
+        // Error creating provider
         throw error
       }
 
@@ -112,13 +112,13 @@ export const providerApi = {
         .eq('id', data.userId)
 
       if (roleError) {
-        console.error('Error updating user role:', roleError)
+        // Error updating user role
         // Don't throw error here as provider was created successfully
       }
 
       return provider
     } catch (error) {
-      console.error('Error in createProvider:', error)
+      // Error in createProvider
       throw error
     }
   },
@@ -133,7 +133,7 @@ export const providerApi = {
         .order('created_at', { ascending: false }) // Get the most recent one first
 
       if (error) {
-        console.error('Error fetching provider:', error)
+        // Error fetching provider
         throw error
       }
 
@@ -161,7 +161,7 @@ export const providerApi = {
         updatedAt: provider.updated_at
       }
     } catch (error) {
-      console.error('Error in getProviderByUserId:', error)
+      // Error in getProviderByUserId
       throw error
     }
   },
@@ -193,7 +193,7 @@ export const providerApi = {
         .single()
 
       if (error) {
-        console.error('Error updating provider:', error)
+        // Error updating provider
         throw error
       }
 
@@ -217,7 +217,7 @@ export const providerApi = {
 
       return provider
     } catch (error) {
-      console.error('Error in updateProvider:', error)
+      // Error in updateProvider
       throw error
     }
   },
@@ -249,7 +249,7 @@ export const providerApi = {
         .single()
 
       if (error) {
-        console.error('Error updating provider by user ID:', error)
+        // Error updating provider by user ID
         throw error
       }
 
@@ -273,7 +273,7 @@ export const providerApi = {
 
       return provider
     } catch (error) {
-      console.error('Error in updateProviderByUserId:', error)
+      // Error in updateProviderByUserId
       throw error
     }
   },
@@ -287,13 +287,13 @@ export const providerApi = {
         .eq('id', userId)
 
       if (error) {
-        console.error('Error updating user role to provider:', error)
+        // Error updating user role to provider
         throw error
       }
 
       return true
     } catch (error) {
-      console.error('Error in updateUserRoleToProvider:', error)
+      // Error in updateUserRoleToProvider
       throw error
     }
   },
@@ -325,7 +325,7 @@ export const providerApi = {
       const { data: providers, error } = await query
 
       if (error) {
-        console.error('Error fetching providers:', error)
+        // Error fetching providers
         throw error
       }
 
@@ -344,7 +344,7 @@ export const providerApi = {
         updatedAt: provider.updated_at
       })) || []
     } catch (error) {
-      console.error('Error in getProviders:', error)
+      // Error in getProviders
       throw error
     }
   },
@@ -358,13 +358,13 @@ export const providerApi = {
         .eq('id', providerId)
 
       if (error) {
-        console.error('Error deleting provider:', error)
+        // Error deleting provider
         throw error
       }
 
       return true
     } catch (error) {
-      console.error('Error in deleteProvider:', error)
+      // Error in deleteProvider
       throw error
     }
   },
@@ -379,13 +379,13 @@ export const providerApi = {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error checking provider status:', error)
+        // Error checking provider status
         throw error
       }
 
       return !!provider
     } catch (error) {
-      console.error('Error in isProvider:', error)
+      // Error in isProvider
       throw error
     }
   },
@@ -400,13 +400,13 @@ export const providerApi = {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error checking provider profile:', error)
+        // Error checking provider profile
         throw error
       }
 
       return !!provider
     } catch (error) {
-      console.error('Error in hasProviderProfile:', error)
+      // Error in hasProviderProfile
       throw error
     }
   },
@@ -456,11 +456,11 @@ export const providerApi = {
 
 
       if (error) {
-        console.error('Error searching providers:', error)
+        // Error searching providers
         throw error
       }
 
-      console.log('Found providers:', providers?.length || 0)
+      // Found providers
 
       // Transform snake_case to camelCase and add services
       const transformedProviders = await Promise.all(
@@ -559,7 +559,7 @@ export const providerApi = {
 
       return transformedProviders
     } catch (error) {
-      console.error('Error in searchProviders:', error)
+      // Error in searchProviders
       throw error
     }
   },
@@ -573,13 +573,13 @@ export const providerApi = {
       })
 
       if (error) {
-        console.error('Error getting provider availability:', error)
+        // Error getting provider availability
         throw error
       }
 
       return data?.[0] || { is_available: false, available_slots: null }
     } catch (error) {
-      console.error('Error in getProviderAvailability:', error)
+      // Error in getProviderAvailability
       throw error
     }
   }

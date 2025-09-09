@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { OnboardingData } from '@/types/onboarding'
+import { OnboardingData, ProviderType } from '@/types/onboarding'
 import { PageLayout, PageContent } from './page-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
@@ -54,7 +54,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId)
-    onUpdate({ providerType: categoryId as any })
+    onUpdate({ providerType: categoryId as ProviderType })
   }
 
   return (

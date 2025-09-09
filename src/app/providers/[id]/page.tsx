@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ServiceProvider, Service, Review, Pet } from '@/types'
+import { ServiceProvider, Service, Review, Pet, PetAd } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
@@ -18,14 +18,19 @@ import { DesktopHeader } from '@/components/provider-detail/desktop-header'
 export default function ProviderDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const { isFavorited, toggleFavorite } = useFavorites()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
   const [userPets, setUserPets] = useState<Pet[]>([])
+  const [petAd, setPetAd] = useState<PetAd | null>(null)
   const [loading, setLoading] = useState(true)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+  
+  // Check if we're viewing a pet ad
+  const petAdId = searchParams.get('petAdId')
 
   const isFavorite = provider ? isFavorited(provider.id) : false
 
@@ -168,6 +173,22 @@ export default function ProviderDetailPage() {
 
         setProvider(transformedProvider)
 
+        // Fetch pet ad data if petAdId is provided
+        if (petAdId) {
+          const { data: petAdData, error: petAdError } = await supabase
+            .from('pet_ads')
+            .select('*')
+            .eq('id', petAdId)
+            .eq('is_active', true)
+            .single()
+
+          if (petAdError) {
+            console.error('Error fetching pet ad:', petAdError)
+          } else {
+            setPetAd(petAdData)
+          }
+        }
+
         // Fetch services for this provider
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
@@ -233,7 +254,7 @@ export default function ProviderDetailPage() {
     if (params.id) {
       fetchProviderData()
     }
-  }, [params.id])
+  }, [params.id, petAdId])
 
   // Fetch user pets when user changes
   useEffect(() => {
@@ -290,6 +311,7 @@ export default function ProviderDetailPage() {
         provider={provider}
         services={services}
         reviews={reviews}
+        petAd={petAd}
         isFavorite={isFavorite}
         onToggleFavorite={handleToggleFavorite}
         onShare={handleShare}
@@ -313,6 +335,7 @@ export default function ProviderDetailPage() {
             <div className="col-span-2 space-y-8">
               <ImageGallery
                 provider={provider}
+                petAd={petAd}
                 isFavorite={isFavorite}
                 onToggleFavorite={handleToggleFavorite}
                 onShare={handleShare}
@@ -324,6 +347,7 @@ export default function ProviderDetailPage() {
                 provider={provider}
                 services={services}
                 reviews={reviews}
+                petAd={petAd}
                 isMobile={false}
               />
             </div>
@@ -334,6 +358,7 @@ export default function ProviderDetailPage() {
                 <BookingWidget
                   provider={provider}
                   services={services}
+                  petAd={petAd}
                   userPets={userPets}
                   onBookService={handleBookService}
                   onPetsUpdate={handlePetsUpdate}

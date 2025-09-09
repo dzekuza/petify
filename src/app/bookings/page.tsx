@@ -195,8 +195,8 @@ export default function BookingsPage() {
                               variant="outline" 
                               size="sm"
                               onClick={() => {
-                                // TODO: Implement email contact
-                                console.log('Contact by email')
+                                // Email contact functionality will be implemented
+                                window.open(`mailto:${booking.provider?.contactInfo?.email}`)
                               }}
                             >
                               <Mail className="h-4 w-4 mr-1" />
@@ -206,8 +206,8 @@ export default function BookingsPage() {
                               variant="outline" 
                               size="sm"
                               onClick={() => {
-                                // TODO: Implement phone contact
-                                console.log('Contact by phone')
+                                // Phone contact functionality
+                                window.open(`tel:${booking.provider?.contactInfo?.phone}`)
                               }}
                             >
                               <Phone className="h-4 w-4 mr-1" />

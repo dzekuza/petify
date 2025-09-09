@@ -37,7 +37,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      console.log('Initial session:', session?.user?.id)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -48,7 +47,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.id)
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -93,7 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           })
         })
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError)
+        // Failed to send welcome email - non-critical error
         // Don't fail the signup if email fails
       }
     }

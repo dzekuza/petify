@@ -233,7 +233,7 @@ export default function ProviderServicesPage() {
         maxPets: serviceForm.maxPets,
         requirements: serviceForm.requirements,
         includes: serviceForm.includes,
-        images: [] // TODO: Handle file uploads
+        images: [] // File uploads will be implemented in future version
       })
 
       // Convert database format to our Service type

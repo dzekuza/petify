@@ -22,7 +22,7 @@ export async function PUT(request: NextRequest) {
     const profileImage = formData.get('profileImage') as File | null
 
     // Update user metadata
-    const updates: any = {
+    const updates: Record<string, string> = {
       business_name: businessName,
       business_type: businessType,
       description: description,

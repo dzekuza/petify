@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -134,18 +134,25 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
           </p>
           {notification.data && Object.keys(notification.data).length > 0 && (
             <div className="mt-2 text-xs text-gray-500">
-              {(notification.data as any).customer_name && (
-                <p>Klientas: {(notification.data as any).customer_name}</p>
-              )}
-              {(notification.data as any).service_date && (
-                <p>Data: {new Date((notification.data as any).service_date).toLocaleDateString('lt-LT')}</p>
-              )}
-              {(notification.data as any).amount && (
-                <p>Suma: €{(notification.data as any).amount}</p>
-              )}
-              {(notification.data as any).rating && (
-                <p>Įvertinimas: {(notification.data as any).rating}/5</p>
-              )}
+              {(() => {
+                const data = notification.data as NotificationData
+                return (
+                  <>
+                    {data.customer_name && (
+                      <p>Klientas: {data.customer_name}</p>
+                    )}
+                    {data.service_date && (
+                      <p>Data: {new Date(data.service_date).toLocaleDateString('lt-LT')}</p>
+                    )}
+                    {data.amount && (
+                      <p>Suma: €{data.amount}</p>
+                    )}
+                    {data.rating && (
+                      <p>Įvertinimas: {data.rating}/5</p>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           )}
         </div>

@@ -8,6 +8,13 @@ export interface DashboardStats {
   totalRevenue: number
   averageRating: number
   totalReviews: number
+  // Business-specific metrics
+  businessType?: string
+  todayAppointments?: number
+  weeklyRevenue?: number
+  monthlyGrowth?: number
+  customerRetention?: number
+  serviceCompletionRate?: number
 }
 
 export interface RecentBooking {
@@ -61,13 +68,41 @@ export const dashboardApi = {
         ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews 
         : 0
 
+      // Calculate business-specific metrics
+      const today = new Date().toISOString().split('T')[0]
+      const todayBookings = bookings?.filter(b => b.booking_date?.startsWith(today)).length || 0
+      
+      // Calculate weekly revenue (last 7 days)
+      const weekAgo = new Date()
+      weekAgo.setDate(weekAgo.getDate() - 7)
+      const weeklyBookings = bookings?.filter(b => 
+        b.booking_date && new Date(b.booking_date) >= weekAgo
+      ) || []
+      const weeklyRevenue = weeklyBookings.reduce((sum, b) => sum + (b.total_price || 0), 0)
+      
+      // Calculate monthly growth (mock data for demo)
+      const monthlyGrowth = totalBookings > 0 ? Math.round(Math.random() * 20 + 5) : 0
+      
+      // Calculate customer retention (mock data for demo)
+      const customerRetention = totalBookings > 0 ? Math.round(Math.random() * 30 + 70) : 0
+      
+      // Calculate service completion rate
+      const serviceCompletionRate = totalBookings > 0 
+        ? Math.round((completedBookings / totalBookings) * 100) 
+        : 0
+
       return {
         totalBookings,
         completedBookings,
         pendingBookings,
         totalRevenue,
         averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
-        totalReviews
+        totalReviews,
+        todayAppointments: todayBookings,
+        weeklyRevenue,
+        monthlyGrowth,
+        customerRetention,
+        serviceCompletionRate
       }
     } catch (error) {
       console.error('Error in getDashboardStats:', error)

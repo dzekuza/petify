@@ -464,6 +464,19 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       </>
                     )}
                     
+                    {/* Admin menu item */}
+                    {user.user_metadata?.role === 'admin' && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin">
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Admin Dashboard</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>{t('navigation.signOut')}</span>

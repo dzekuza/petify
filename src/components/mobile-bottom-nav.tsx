@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
-// Fixed bottom navigation for mobile with service categories
+// Unified mobile bottom navigation with service categories
 export function MobileBottomNav() {
   const pathname = usePathname()
   const searchParams = useSearchParams()

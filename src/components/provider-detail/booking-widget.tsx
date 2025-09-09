@@ -10,7 +10,7 @@ import { BreedSelector } from '@/components/ui/breed-selector'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar as CalendarIcon, PawPrint } from 'lucide-react'
-import { ServiceProvider, Service, Pet } from '@/types'
+import { ServiceProvider, Service, Pet, PetAd } from '@/types'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 interface BookingWidgetProps {
   provider: ServiceProvider
   services: Service[]
+  petAd?: PetAd | null
   userPets: Pet[]
   onBookService: () => void
   onPetsUpdate: (pets: Pet[]) => void
@@ -30,6 +31,7 @@ interface BookingWidgetProps {
 export function BookingWidget({ 
   provider, 
   services, 
+  petAd,
   userPets, 
   onBookService, 
   onPetsUpdate,
@@ -470,9 +472,9 @@ export function BookingWidget({
         size="lg"
         className="w-full mb-4"
         onClick={handleBookService}
-        disabled={!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0}
+        disabled={petAd ? false : (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0)}
       >
-        {t('provider.bookService')}
+        {petAd ? 'Teirautis' : t('provider.bookService')}
       </Button>
       
       <div className="text-center text-sm text-gray-600">

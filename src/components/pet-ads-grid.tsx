@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PawPrint, Euro } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface PetAdsGridProps {
   petAds: PetAd[]
@@ -15,6 +16,8 @@ interface PetAdsGridProps {
 }
 
 export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" }: PetAdsGridProps) => {
+  const router = useRouter()
+  
   const getSpeciesLabel = (species: string) => {
     const labels: Record<string, string> = {
       dog: 'Šuo',
@@ -29,6 +32,12 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
   const getGenderLabel = (gender?: string) => {
     if (!gender) return 'Nepasakyta'
     return gender === 'male' ? 'Patinas' : 'Patelė'
+  }
+
+  const handlePetAdClick = (petAd: PetAd) => {
+    // Navigate to provider detail page with pet ad data
+    // We'll use the providerId as the route parameter and pass pet ad info via state
+    router.push(`/providers/${petAd.providerId}?petAdId=${petAd.id}`)
   }
 
   if (petAds.length === 0) {
@@ -56,7 +65,7 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
       
       <div className={`grid gap-6 ${gridCols}`}>
         {petAds.map((petAd) => (
-          <div key={petAd.id} className="group cursor-pointer">
+          <div key={petAd.id} className="group cursor-pointer" onClick={() => handlePetAdClick(petAd)}>
             <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
               {/* Image Section */}
               <div className="relative overflow-hidden">

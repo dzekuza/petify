@@ -1,7 +1,7 @@
 'use client'
 
-import { Star, Clock, Users, PawPrint } from 'lucide-react'
-import { ServiceProvider, Service, Review } from '@/types'
+import { Star, Clock, Users, PawPrint, Euro } from 'lucide-react'
+import { ServiceProvider, Service, Review, PetAd } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
 
@@ -9,11 +9,12 @@ interface ProviderInfoProps {
   provider: ServiceProvider
   services: Service[]
   reviews: Review[]
+  petAd?: PetAd | null
   isMobile?: boolean
   onBookService?: (serviceId: string) => void
 }
 
-export function ProviderInfo({ provider, services, reviews, isMobile = false, onBookService }: ProviderInfoProps) {
+export function ProviderInfo({ provider, services, reviews, petAd, isMobile = false, onBookService }: ProviderInfoProps) {
   const containerClass = isMobile ? 'space-y-6' : 'space-y-6'
   const titleClass = isMobile ? 'text-lg font-semibold' : 'text-xl font-semibold'
   const descriptionClass = isMobile ? 'text-gray-600 leading-relaxed' : 'text-gray-600 leading-relaxed text-lg'
@@ -73,6 +74,110 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
       <div className="border-t border-gray-200 pt-6 mb-6">
         <p className={descriptionClass}>{provider.description}</p>
       </div>
+
+      {/* Pet Ad Information */}
+      {petAd && (
+        <div className="border-t border-gray-200 pt-6 mb-6">
+          <h2 className={`${titleClass} text-gray-900 mb-4`}>Produktas</h2>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{petAd.name}</h3>
+                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                  <span className="flex items-center">
+                    <PawPrint className="h-4 w-4 mr-1" />
+                    {petAd.species === 'dog' ? 'Šuo' : 
+                     petAd.species === 'cat' ? 'Katė' : 
+                     petAd.species === 'bird' ? 'Paukštis' : 
+                     petAd.species === 'rabbit' ? 'Triušis' : 'Kita'}
+                    {petAd.breed && ` • ${petAd.breed}`}
+                  </span>
+                  {petAd.age && (
+                    <span>{petAd.age} mėn.</span>
+                  )}
+                  {petAd.gender && (
+                    <span>{petAd.gender === 'male' ? 'Patinas' : 'Patelė'}</span>
+                  )}
+                </div>
+                {petAd.description && (
+                  <p className="text-gray-600 text-sm mb-3">{petAd.description}</p>
+                )}
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-gray-900 flex items-center">
+                  <Euro className="h-5 w-5 mr-1" />
+                  {petAd.price}
+                </div>
+                <div className="text-sm text-gray-600">Kaina</div>
+              </div>
+            </div>
+            
+            {/* Pet Details */}
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              {petAd.weight && (
+                <div>
+                  <span className="font-medium text-gray-900">Svoris:</span>
+                  <span className="text-gray-600 ml-2">{petAd.weight} kg</span>
+                </div>
+              )}
+              {petAd.color && (
+                <div>
+                  <span className="font-medium text-gray-900">Spalva:</span>
+                  <span className="text-gray-600 ml-2">{petAd.color}</span>
+                </div>
+              )}
+              {petAd.vaccinationStatus && (
+                <div>
+                  <span className="font-medium text-gray-900">Vakcinacija:</span>
+                  <span className="text-gray-600 ml-2">
+                    {petAd.vaccinationStatus === 'vaccinated' ? 'Vakcinuotas' : 
+                     petAd.vaccinationStatus === 'not_vaccinated' ? 'Nevakcinuotas' : 'Nežinoma'}
+                  </span>
+                </div>
+              )}
+              {petAd.size && (
+                <div>
+                  <span className="font-medium text-gray-900">Dydis:</span>
+                  <span className="text-gray-600 ml-2">
+                    {petAd.size === 'small' ? 'Mažas' : 
+                     petAd.size === 'medium' ? 'Vidutinis' : 'Didelis'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Special Needs */}
+            {petAd.specialNeeds && petAd.specialNeeds.length > 0 && (
+              <div className="mt-4">
+                <span className="font-medium text-gray-900 text-sm">Specialūs poreikiai:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {petAd.specialNeeds.map((need, index) => (
+                    <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                      {need}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Medical Notes */}
+            {petAd.medicalNotes && (
+              <div className="mt-4">
+                <span className="font-medium text-gray-900 text-sm">Medicinos pastabos:</span>
+                <p className="text-gray-600 text-sm mt-1">{petAd.medicalNotes}</p>
+              </div>
+            )}
+
+            {/* Behavioral Notes */}
+            {petAd.behavioralNotes && (
+              <div className="mt-4">
+                <span className="font-medium text-gray-900 text-sm">Elgesio pastabos:</span>
+                <p className="text-gray-600 text-sm mt-1">{petAd.behavioralNotes}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Services */}
       {services.length > 0 && (
