@@ -15,7 +15,7 @@ import { toast } from 'sonner'
 export default function BusinessSettingsPage() {
   const { user } = useAuth()
   const [businessType, setBusinessType] = useState<string>('')
-  const [providerData, setProviderData] = useState<any>(null)
+  const [providerData, setProviderData] = useState<Record<string, any> | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
@@ -42,7 +42,7 @@ export default function BusinessSettingsPage() {
     fetchProviderData()
   }, [user?.id])
 
-  const handleUpdate = async (newSettings: any) => {
+  const handleUpdate = async (newSettings: Record<string, any>) => {
     if (!user?.id) return
 
     try {
@@ -50,7 +50,7 @@ export default function BusinessSettingsPage() {
       
       // Here you would typically save to your API
       // For now, we'll just update the local state
-      setProviderData(prev => ({ ...prev, ...newSettings }))
+      setProviderData((prev: Record<string, any> | null) => ({ ...prev, ...newSettings }))
       setLastSaved(new Date())
       
       toast.success('Settings saved successfully!')
