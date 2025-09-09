@@ -451,15 +451,15 @@ export function BoardingWidget({ stats, providerData }: BusinessWidgetProps) {
 export function BusinessSpecificWidget({ businessType, stats, providerData }: BusinessWidgetProps) {
   switch (businessType) {
     case 'grooming':
-      return <GroomingWidget stats={stats} providerData={providerData} />
+      return <GroomingWidget businessType={businessType} stats={stats} providerData={providerData} />
     case 'veterinary':
-      return <VeterinaryWidget stats={stats} providerData={providerData} />
+      return <VeterinaryWidget businessType={businessType} stats={stats} providerData={providerData} />
     case 'training':
-      return <TrainingWidget stats={stats} providerData={providerData} />
+      return <TrainingWidget businessType={businessType} stats={stats} providerData={providerData} />
     case 'adoption':
-      return <AdoptionWidget stats={stats} providerData={providerData} />
+      return <AdoptionWidget businessType={businessType} stats={stats} providerData={providerData} />
     case 'boarding':
-      return <BoardingWidget stats={stats} providerData={providerData} />
+      return <BoardingWidget businessType={businessType} stats={stats} providerData={providerData} />
     default:
       return (
         <Card>

@@ -39,7 +39,7 @@ export const dashboardApi = {
       // Get total bookings
       const { data: bookings, error: bookingsError } = await supabase
         .from('bookings')
-        .select('status, total_price')
+        .select('status, total_price, date')
         .eq('provider_id', providerId)
 
       if (bookingsError) {
@@ -70,13 +70,13 @@ export const dashboardApi = {
 
       // Calculate business-specific metrics
       const today = new Date().toISOString().split('T')[0]
-      const todayBookings = bookings?.filter(b => b.booking_date?.startsWith(today)).length || 0
+      const todayBookings = bookings?.filter(b => b.date?.startsWith(today)).length || 0
       
       // Calculate weekly revenue (last 7 days)
       const weekAgo = new Date()
       weekAgo.setDate(weekAgo.getDate() - 7)
       const weeklyBookings = bookings?.filter(b => 
-        b.booking_date && new Date(b.booking_date) >= weekAgo
+        b.date && new Date(b.date) >= weekAgo
       ) || []
       const weeklyRevenue = weeklyBookings.reduce((sum, b) => sum + (b.total_price || 0), 0)
       
@@ -117,14 +117,14 @@ export const dashboardApi = {
         .from('bookings')
         .select(`
           id,
-          booking_date,
+          date,
           total_price,
           status,
           services(name),
           users(full_name)
         `)
         .eq('provider_id', providerId)
-        .order('booking_date', { ascending: false })
+        .order('date', { ascending: false })
         .limit(limit)
 
       if (error) {
@@ -136,7 +136,7 @@ export const dashboardApi = {
         id: booking.id,
         customerName: (booking.users as any)?.full_name || 'Unknown Customer',
         service: (booking.services as any)?.name || 'Unknown Service',
-        date: booking.booking_date,
+        date: booking.date,
         status: booking.status as 'pending' | 'confirmed' | 'completed' | 'cancelled',
         amount: booking.total_price || 0
       })) || []

@@ -21,6 +21,18 @@ import {
   Save
 } from 'lucide-react'
 
+interface GroomingPackage {
+  name: string
+  price: number
+  duration: number
+}
+
+interface TrainingProgram {
+  name: string
+  price: number
+  sessions: number
+}
+
 interface BusinessSettingsProps {
   businessType: string
   providerData: any
@@ -99,7 +111,7 @@ export function GroomingSettings({ providerData, onUpdate }: BusinessSettingsPro
           <div>
             <Label>Grooming Packages</Label>
             <div className="space-y-2 mt-2">
-              {settings.groomingPackages.map((pkg, index) => (
+              {settings.groomingPackages.map((pkg: GroomingPackage, index: number) => (
                 <div key={index} className="flex items-center space-x-2 p-2 border rounded">
                   <Input
                     value={pkg.name}
@@ -271,7 +283,7 @@ export function TrainingSettings({ providerData, onUpdate }: BusinessSettingsPro
           <div>
             <Label>Training Programs</Label>
             <div className="space-y-2 mt-2">
-              {settings.trainingPrograms.map((program, index) => (
+              {settings.trainingPrograms.map((program: TrainingProgram, index: number) => (
                 <div key={index} className="flex items-center space-x-2 p-2 border rounded">
                   <Input
                     value={program.name}

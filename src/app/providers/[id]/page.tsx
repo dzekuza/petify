@@ -335,7 +335,6 @@ export default function ProviderDetailPage() {
             <div className="col-span-2 space-y-8">
               <ImageGallery
                 provider={provider}
-                petAd={petAd}
                 isFavorite={isFavorite}
                 onToggleFavorite={handleToggleFavorite}
                 onShare={handleShare}

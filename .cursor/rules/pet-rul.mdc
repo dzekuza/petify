@@ -8,8 +8,43 @@ TailwindCSS, Shadcn, Radix). You are thoughtful, give nuanced answers, and are
 brilliant at reasoning. You carefully provide accurate, factual, thoughtful
 answers, and are a genius at reasoning.
 
-Project: PetServices — an Airbnb-style marketplace for pet service providers
+Project: PetiFy — an Airbnb-style marketplace for pet service providers
 (groomers, veterinary, pairing, training, care, ads).
+
+## Business Types & Service Categories
+
+### Business Types
+
+- **individual**: Independent service providers
+- **grooming**: Pet grooming salons and mobile groomers
+- **veterinary**: Veterinary clinics and mobile vet services
+- **training**: Pet training and behavior specialists
+- **adoption**: Pet adoption centers and rescue organizations
+- **boarding**: Pet boarding and daycare facilities
+
+### Service Categories
+
+- **grooming**: Bathing, brushing, nail trimming, styling
+- **veterinary**: Health checkups, vaccinations, emergency care
+- **boarding**: Overnight stays, daycare, pet sitting
+- **training**: Basic obedience, behavior modification, specialized training
+- **sitting**: In-home pet care, dog walking, feeding
+- **adoption**: Pet adoption listings, rescue services
+
+## User Roles & Authentication
+
+### User Roles
+
+- **customer**: Pet owners seeking services
+- **provider**: Service providers offering pet care
+- **admin**: Platform administrators with full access
+
+### Authentication Flow
+
+- Supabase Auth integration
+- Protected routes with role-based access
+- Email verification and password reset
+- Session management with automatic refresh
 
 Core requirements (always obey):
 
@@ -33,15 +68,106 @@ Core requirements (always obey):
   and tested.
 - Use the project directory structure and file naming conventions in this rule.
 
-Coding Environment:
+## Core Components & Features
 
-- Next.js (App Router)
-- React + TypeScript
-- TailwindCSS
-- shadcn/ui + Radix primitives
-- react-leaflet (or Mapbox/Maplibre alternative)
-- State: React Query (tanstack) or SWR
-- Testing: Vitest + React Testing Library + Playwright for E2E
+### Navigation & Layout
+
+- **Navigation**: Main site navigation with logo, search, and user menu
+- **MobileBottomNav**: Mobile navigation with service categories
+- **Layout**: Main app layout wrapper with header and footer
+- **ProtectedRoute**: Route protection based on user roles
+- **AdminProtectedRoute**: Admin-only route protection
+
+### Provider Onboarding (9-Step Flow)
+
+1. **ProviderTypeStep**: Select business type (individual, grooming, veterinary,
+   etc.)
+2. **BusinessInfoStep**: Business name, description, contact info, pricing
+3. **LocationSelectionStep**: Address selection with map integration
+4. **ServicesStep**: Business-type-specific service selection
+5. **DetailedServiceStep**: Detailed service configuration
+6. **WorkingHoursStep**: Availability and working hours setup
+7. **LogoCoverStep**: Logo and cover image upload
+8. **ReviewStep**: Final review before submission
+9. **Completion**: Onboarding completion and dashboard redirect
+
+### Provider Dashboard (Business-Type-Specific)
+
+- **BusinessWidgets**: Dynamic widgets based on business type
+- **BusinessNavigation**: Customized navigation per business type
+- **BusinessSettings**: Business-type-specific settings forms
+- **Dashboard Pages**: Overview, bookings, services, notifications, settings
+
+### Search & Discovery
+
+- **SearchLayout**: Main search interface with filters
+- **ListingsGrid**: Provider listings with cards
+- **MapView**: Interactive map with provider markers
+- **SearchFilters**: Advanced filtering options
+- **ServiceCategories**: Service category navigation
+
+### Booking System
+
+- **BookingModal**: Service booking interface
+- **AvailabilityCalendar**: Provider availability display
+- **StripePaymentForm**: Payment processing integration
+- **BookingWidget**: Provider booking widget
+
+### Provider Details
+
+- **ProviderCard**: Provider listing card component
+- **ProviderInfo**: Detailed provider information
+- **ImageGallery**: Provider photo gallery
+- **MobileLayout**: Mobile-optimized provider layout
+
+### Pet Ads & Adoption
+
+- **PetAdsGrid**: Pet adoption listings
+- **PetAdsCard**: Individual pet ad cards
+
+### Notifications & Communication
+
+- **Notifications**: Real-time notification system
+- **NotificationsContext**: Global notification state management
+
+### Admin Features
+
+- **AdminDashboard**: Admin overview with statistics
+- **UserManagement**: User role management
+- **SystemStats**: Platform analytics and metrics
+
+## Technical Stack
+
+### Frontend
+
+- **Next.js 15.5.2** (App Router)
+- **React 18** + **TypeScript**
+- **TailwindCSS** for styling
+- **shadcn/ui** + **Radix UI** primitives
+- **Mapbox** for maps and geolocation
+- **React Query (TanStack)** for state management
+- **Zustand** for global state
+- **Sonner** for toast notifications
+
+### Backend & Database
+
+- **Supabase** (Auth + PostgreSQL)
+- **Row Level Security (RLS)** for data protection
+- **Database triggers** for role synchronization
+- **Signed URLs** for image storage
+
+### Payment & Integrations
+
+- **Stripe** for payment processing
+- **Resend** for email notifications
+- **Mapbox** for geocoding and maps
+
+### Development & Testing
+
+- **Vitest** + **React Testing Library** for unit tests
+- **Playwright** for E2E testing
+- **ESLint** + **TypeScript** for code quality
+- **pnpm** for package management
 
 Code Implementation Guidelines (strict):
 
@@ -69,53 +195,396 @@ Commit / PR / Repo rules:
 - Include minimal reproducible demo & tests for each feature.
 - Merge only with at least one approving review (peer review).
 
-API / Data / Integrations:
+## File Structure & Organization
 
-- Use typed REST endpoints (Next.js route handlers) or server actions; provide
-  OpenAPI-like shapes in code comments.
-- For DB & Auth integration prefer Supabase (Auth + Postgres) as default;
-  include mocks for local dev.
-- Use signed URLs for images; all images should be lazy loaded and use
-  `priority` where necessary.
+### App Router Structure
 
-Local Dev:
+```
+src/app/
+├── (auth)/                    # Authentication pages
+│   ├── signin/               # Sign-in page
+│   ├── signup/               # Sign-up page
+│   ├── confirm/              # Email confirmation
+│   └── reset-password/       # Password reset
+├── (provider)/               # Provider-specific pages
+│   ├── onboarding/           # 9-step onboarding flow
+│   ├── dashboard/            # Provider dashboard
+│   │   ├── page.tsx         # Dashboard overview
+│   │   ├── bookings/        # Booking management
+│   │   ├── services/        # Service management
+│   │   ├── notifications/   # Notification center
+│   │   └── settings/        # Business settings
+│   └── pet-ads/             # Pet adoption listings
+├── (customer)/               # Customer pages
+│   ├── bookings/            # Customer bookings
+│   ├── favorites/           # Saved providers
+│   └── profile/             # Customer profile
+├── (admin)/                 # Admin pages
+│   └── admin/               # Admin dashboard
+├── providers/[id]/          # Provider detail pages
+│   ├── page.tsx            # Provider profile
+│   ├── book/               # Booking page
+│   └── payment/            # Payment processing
+├── search/                  # Search and discovery
+└── api/                     # API routes
+    ├── auth/               # Authentication endpoints
+    ├── providers/          # Provider management
+    ├── bookings/           # Booking system
+    ├── payments/           # Payment processing
+    ├── users/              # User management
+    └── admin/              # Admin endpoints
+```
 
-- Use `.env.local` for secrets (do not commit).
-- Provide `pnpm`/`npm` scripts: `dev`, `build`, `start`, `lint`, `test`, `e2e`.
+### Component Organization
 
-Testing:
+```
+src/components/
+├── ui/                      # shadcn/ui components
+├── provider-dashboard/      # Dashboard components
+├── provider-onboarding/     # Onboarding flow components
+├── provider-detail/         # Provider detail components
+├── search/                  # Search-related components
+├── booking/                 # Booking system components
+├── navigation/              # Navigation components
+└── layout/                  # Layout components
+```
 
-- Unit tests for components (Vitest + React Testing Library).
-- E2E tests for core flows (listings search, map-grid sync, booking flow) using
-  Playwright.
-- Automatic test run in CI (GitHub Actions).
+## API Endpoints & Data Flow
 
-Accessibility:
+### Authentication API
 
-- Follow WCAG AA for main flows.
-- Keyboard-only flows must be fully usable (map, cards, booking modal).
+- `POST /api/auth/signin` - User sign-in
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/reset-password` - Password reset
+- `GET /api/auth/me` - Get current user
 
-Performance:
+### Provider API
 
-- Use React Query caching, image optimization (next/image), incremental static
-  regeneration / server components where beneficial.
-- Audit with Lighthouse and fix high-impact issues.
+- `GET /api/providers` - List providers with filters
+- `GET /api/providers/[id]` - Get provider details
+- `POST /api/providers` - Create provider profile
+- `PUT /api/providers/[id]` - Update provider profile
+- `DELETE /api/providers/[id]` - Delete provider
 
-Deliverables per feature:
+### Booking API
 
-- Fully working code (Next.js + TypeScript).
-- Unit + E2E tests.
-- Simple seed data and instructions for running locally.
-- Short README and component-level documentation where non-trivial.
+- `GET /api/bookings` - List user bookings
+- `POST /api/bookings` - Create new booking
+- `PUT /api/bookings/[id]` - Update booking
+- `DELETE /api/bookings/[id]` - Cancel booking
 
-When asked to produce code, adhere to the “Full Implementation” rule:
+### Payment API
 
-- Provide full component/page code with imports, exported default component,
-  props types, and a minimal but complete example of usage.
-- Do not ask clarifying questions if the task is implementable; make best-effort
-  assumptions consistent with the rule and proceed.
+- `POST /api/payments/create-intent` - Create payment intent
+- `POST /api/payments/webhook` - Stripe webhook handler
+- `GET /api/payments/[id]` - Get payment status
 
-If something requires a server key or private token, create a clear placeholder
-in `.env.example` and show how to populate it.
+### Admin API
+
+- `GET /api/admin/users` - List all users
+- `PUT /api/admin/users/[id]/role` - Update user role
+- `GET /api/admin/stats` - Platform statistics
+- `POST /api/admin/promote-to-admin` - Promote user to admin
+
+### Data Models
+
+#### Provider Data Structure
+
+```typescript
+interface Provider {
+  id: string;
+  user_id: string;
+  business_name: string;
+  business_type:
+    | "individual"
+    | "grooming"
+    | "veterinary"
+    | "training"
+    | "adoption"
+    | "boarding";
+  business_description: string;
+  services: string[];
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    coordinates: { lat: number; lng: number };
+  };
+  contact_info: {
+    phone: string;
+    email: string;
+    website?: string;
+  };
+  business_hours: Record<
+    string,
+    { open: string; close: string; closed: boolean }
+  >;
+  price_range: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  availability: boolean;
+  certifications: string[];
+  experience_years: number;
+  rating: number;
+  review_count: number;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+#### Booking Data Structure
+
+```typescript
+interface Booking {
+  id: string;
+  customer_id: string;
+  provider_id: string;
+  service_type: string;
+  booking_date: string;
+  booking_time: string;
+  duration: number;
+  total_price: number;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+  payment_status: "pending" | "paid" | "refunded";
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+## Database Schema
+
+### Core Tables
+
+- **users**: User accounts and authentication
+- **providers**: Service provider profiles
+- **bookings**: Service bookings and appointments
+- **payments**: Payment transactions
+- **notifications**: System notifications
+- **pet_ads**: Pet adoption listings
+- **reviews**: Provider reviews and ratings
+
+### Row Level Security (RLS)
+
+- Users can only access their own data
+- Providers can manage their own profiles and bookings
+- Admins have full access to all data
+- Public access to provider listings and search
+
+## Integration Requirements
+
+### Required Environment Variables
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# Stripe
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Mapbox
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=
+
+# Resend
+RESEND_API_KEY=
+```
+
+### External Services
+
+- **Supabase**: Authentication, database, storage
+- **Stripe**: Payment processing
+- **Mapbox**: Maps and geocoding
+- **Resend**: Email notifications
+- **Vercel**: Deployment and hosting
+
+## Development Guidelines
+
+### Local Development
+
+- Use `.env.local` for secrets (do not commit)
+- Provide `pnpm` scripts: `dev`, `build`, `start`, `lint`, `test`, `e2e`
+- Use Supabase CLI for local database management
+- Hot reload enabled for development
+
+### Testing Strategy
+
+- **Unit Tests**: Vitest + React Testing Library for components
+- **E2E Tests**: Playwright for critical user flows
+  - Provider onboarding flow
+  - Booking process
+  - Search and discovery
+  - Payment processing
+- **Integration Tests**: API endpoint testing
+- **Accessibility Tests**: WCAG AA compliance
+
+### Code Quality Standards
+
+- **TypeScript**: Strict mode enabled, no `any` types
+- **ESLint**: Enforced code style and best practices
+- **Prettier**: Consistent code formatting
+- **Husky**: Pre-commit hooks for quality checks
+- **No Console Logs**: Remove all console.* statements in production
+
+### Performance Optimization
+
+- **Image Optimization**: Use Next.js Image component with proper sizing
+- **Code Splitting**: Dynamic imports for large components
+- **Caching**: React Query for API data, proper cache headers
+- **Bundle Analysis**: Regular bundle size monitoring
+- **Lighthouse**: Performance audits and Core Web Vitals optimization
+
+### Accessibility Requirements
+
+- **WCAG AA Compliance**: All user flows must meet accessibility standards
+- **Keyboard Navigation**: Full keyboard support for all interactive elements
+- **Screen Reader Support**: Proper ARIA labels and semantic HTML
+- **Focus Management**: Visible focus indicators and logical tab order
+- **Color Contrast**: Minimum 4.5:1 contrast ratio for text
+
+### Security Best Practices
+
+- **Authentication**: Supabase Auth with proper session management
+- **Authorization**: Role-based access control with RLS
+- **Input Validation**: Server-side validation for all inputs
+- **CSRF Protection**: Built-in Next.js CSRF protection
+- **Environment Variables**: Secure handling of secrets and API keys
+
+### Deployment & CI/CD
+
+- **Vercel**: Automatic deployments from main branch
+- **Environment Management**: Separate environments for dev/staging/prod
+- **Database Migrations**: Automated migration deployment
+- **Health Checks**: API endpoint monitoring
+- **Error Tracking**: Production error monitoring and alerting
+
+## Business Logic & Features
+
+### Provider Onboarding Flow
+
+1. **Business Type Selection**: Choose from 6 business types
+2. **Business Information**: Name, description, contact details
+3. **Location Setup**: Address with map integration
+4. **Service Configuration**: Business-type-specific services
+5. **Detailed Services**: Custom service configuration
+6. **Working Hours**: Availability and schedule setup
+7. **Media Upload**: Logo and cover image upload
+8. **Review & Submit**: Final review before activation
+9. **Dashboard Access**: Redirect to business-type-specific dashboard
+
+### Business Type Customization
+
+- **Individual**: Basic service provider setup
+- **Grooming**: Grooming-specific services and pricing
+- **Veterinary**: Medical services and certification requirements
+- **Training**: Training programs and behavioral services
+- **Adoption**: Pet listing and adoption process
+- **Boarding**: Facility-based care and overnight services
+
+### Search & Discovery Features
+
+- **Geographic Search**: Location-based provider discovery
+- **Service Filtering**: Filter by service type and category
+- **Price Range**: Filter by pricing options
+- **Availability**: Real-time availability checking
+- **Ratings & Reviews**: Provider rating and review system
+- **Map Integration**: Interactive map with provider locations
+
+### Booking System
+
+- **Availability Calendar**: Real-time availability display
+- **Service Selection**: Choose specific services and duration
+- **Pricing Calculation**: Dynamic pricing based on services
+- **Payment Processing**: Stripe integration for secure payments
+- **Confirmation System**: Email and SMS confirmations
+- **Rescheduling**: Easy booking modification and cancellation
+
+### Admin Features
+
+- **User Management**: User role management and permissions
+- **Provider Verification**: Provider profile verification process
+- **Analytics Dashboard**: Platform usage and performance metrics
+- **Content Moderation**: Review and approve provider content
+- **System Monitoring**: Platform health and performance monitoring
+
+## Component Usage Guidelines
+
+### When to Use Each Component
+
+- **ProviderCard**: Display provider in search results and listings
+- **BookingModal**: Quick booking from provider pages
+- **BusinessWidgets**: Dashboard widgets based on business type
+- **SearchFilters**: Advanced search and filtering options
+- **ImageUpload**: Profile and service image uploads
+- **AvailabilityCalendar**: Provider availability display
+- **NotificationSystem**: Real-time notifications and alerts
+
+### Component Composition
+
+- Use composition over inheritance
+- Prefer props over context when possible
+- Implement proper error boundaries
+- Use React.memo for performance optimization
+- Implement proper loading and error states
+
+### State Management
+
+- **Local State**: useState for component-specific state
+- **Global State**: Zustand for app-wide state
+- **Server State**: React Query for API data
+- **Form State**: React Hook Form for complex forms
+- **URL State**: Next.js router for navigation state
+
+## Error Handling & Edge Cases
+
+### Common Error Scenarios
+
+- **Network Failures**: Graceful degradation and retry logic
+- **Authentication Errors**: Proper session handling and redirects
+- **Payment Failures**: Clear error messages and retry options
+- **Image Upload Failures**: Fallback images and retry mechanisms
+- **Geolocation Errors**: Fallback to manual location input
+
+### User Experience Considerations
+
+- **Loading States**: Skeleton loaders and progress indicators
+- **Empty States**: Helpful empty state messages and actions
+- **Error Messages**: Clear, actionable error messages
+- **Success Feedback**: Confirmation messages and visual feedback
+- **Offline Support**: Basic offline functionality where possible
+
+## Maintenance & Monitoring
+
+### Regular Maintenance Tasks
+
+- **Dependency Updates**: Regular package updates and security patches
+- **Database Optimization**: Query optimization and index management
+- **Performance Monitoring**: Regular performance audits and optimization
+- **Security Audits**: Regular security reviews and vulnerability assessments
+- **User Feedback**: Regular user feedback collection and implementation
+
+### Monitoring & Analytics
+
+- **Error Tracking**: Production error monitoring and alerting
+- **Performance Metrics**: Core Web Vitals and user experience metrics
+- **User Analytics**: User behavior and engagement tracking
+- **Business Metrics**: Booking rates, provider success, revenue tracking
+- **System Health**: API response times, database performance, uptime monitoring
+
+When implementing new features, always:
+
+1. Follow the established patterns and conventions
+2. Implement proper TypeScript types and interfaces
+3. Add appropriate error handling and loading states
+4. Include accessibility features and keyboard navigation
+5. Write tests for critical functionality
+6. Update documentation and component usage guidelines
+7. Consider performance implications and optimization opportunities
 
 End of rule.

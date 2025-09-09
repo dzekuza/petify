@@ -276,3 +276,14 @@ export interface CreatePetAdForm {
   specialNeeds?: string[] // specialūs poreikiai
   images?: File[] // paveikslėliai
 }
+
+// Notification data types
+export interface NotificationData {
+  customer_name?: string // kliento vardas
+  service_date?: string // paslaugos data
+  amount?: number // suma
+  rating?: number // įvertinimas
+  booking_id?: string // užsakymo ID
+  service_name?: string // paslaugos pavadinimas
+  provider_name?: string // paslaugų teikėjo vardas
+}
