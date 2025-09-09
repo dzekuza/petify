@@ -78,6 +78,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       },
     })
+
+    // Send welcome email if signup was successful
+    if (!error) {
+      try {
+        await fetch('/api/auth/welcome-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            userName: fullName
+          })
+        })
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError)
+        // Don't fail the signup if email fails
+      }
+    }
+
     return { error }
   }
 

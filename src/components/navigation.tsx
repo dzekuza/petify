@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { providerApi } from '@/lib/providers'
+import { useDeviceDetection } from '@/lib/device-detection'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,6 +35,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
   DrawerClose,
+  DrawerFooter,
 } from '@/components/ui/drawer'
 
 const serviceTypes = [
@@ -54,6 +56,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { isMobile } = useDeviceDetection()
   const isProviderRoute = pathname?.startsWith('/provider')
     const isSearchPage = pathname === '/search'
   const hasCategory = searchParams?.get('category')
@@ -759,12 +762,17 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
         </div>
       </nav>
 
-      {/* Provider Signup Modal */}
-      <Dialog open={providerSignupOpen} onOpenChange={setProviderSignupOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('auth.signup.joinAsProvider')}</DialogTitle>
-          </DialogHeader>
+      {/* Provider Signup Modal/Drawer */}
+      {isMobile ? (
+        <Drawer open={providerSignupOpen} onOpenChange={setProviderSignupOpen} direction="bottom">
+          <DrawerContent className="h-[90vh]">
+            <DrawerHeader className="pb-2">
+              <DrawerTitle className="text-center text-lg font-semibold">
+                {t('auth.signup.joinAsProvider')}
+              </DrawerTitle>
+            </DrawerHeader>
+            
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
           
           <form onSubmit={handleProviderSignup} className="space-y-6">
             {error && (
@@ -959,8 +967,231 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
               </Button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+            </div>
+            
+            <DrawerFooter className="pt-4">
+              <div className="flex justify-end space-x-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setProviderSignupOpen(false)}
+                  disabled={loading}
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading || !providerForm.fullName || !providerForm.email || !providerForm.serviceType || !providerForm.businessName || !providerForm.phone || !providerForm.address || !providerForm.city || !providerForm.state || !providerForm.zipCode || !providerForm.password || !providerForm.confirmPassword}
+                >
+                  {loading ? t('auth.signup.creatingAccount') : t('auth.signup.createProviderAccount')}
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={providerSignupOpen} onOpenChange={setProviderSignupOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{t('auth.signup.joinAsProvider')}</DialogTitle>
+            </DialogHeader>
+          
+          <form onSubmit={handleProviderSignup} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="fullName">{t('auth.signup.fullName')} *</Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={providerForm.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterFullName')}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">{t('auth.signup.emailAddress')} *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={providerForm.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterEmail')}
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="serviceType">{t('auth.signup.serviceType')} *</Label>
+              <Select 
+                value={providerForm.serviceType} 
+                onValueChange={(value) => handleInputChange('serviceType', value)}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('auth.signup.selectServiceType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {serviceTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="businessName">{t('auth.signup.businessName')} *</Label>
+                <Input
+                  id="businessName"
+                  type="text"
+                  value={providerForm.businessName}
+                  onChange={(e) => handleInputChange('businessName', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterBusinessName')}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="phone">{t('auth.signup.phoneNumber')} *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={providerForm.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+
+            <AddressAutocomplete
+              value={providerForm.address}
+              onChange={(address) => handleInputChange('address', address)}
+              onAddressSelect={(suggestion) => {
+                handleInputChange('address', suggestion.address)
+                handleInputChange('city', suggestion.city)
+                handleInputChange('state', suggestion.state)
+                handleInputChange('zipCode', suggestion.zipCode)
+              }}
+              placeholder={t('auth.signup.enterBusinessAddress')}
+              label={t('auth.signup.businessAddress')}
+              required
+              className="mt-1"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="city">{t('auth.signup.city')} *</Label>
+                <Input
+                  id="city"
+                  type="text"
+                  value={providerForm.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterCity')}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="state">{t('auth.signup.stateRegion')} *</Label>
+                <Input
+                  id="state"
+                  type="text"
+                  value={providerForm.state}
+                  onChange={(e) => handleInputChange('state', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterStateRegion')}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="zipCode">{t('auth.signup.postalCode')} *</Label>
+                <Input
+                  id="zipCode"
+                  type="text"
+                  value={providerForm.zipCode}
+                  onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.enterPostalCode')}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="password">{t('auth.signup.createPassword')} *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={providerForm.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.createPassword')}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  {t('auth.signup.passwordMinLength')}
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword">{t('auth.signup.confirmPassword')} *</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={providerForm.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder={t('auth.signup.confirmYourPassword')}
+                />
+              </div>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">{t('auth.signup.readyToStart')}</h4>
+              <p className="text-sm text-gray-800">
+                {t('auth.signup.readyToStartDesc')}
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setProviderSignupOpen(false)}
+                disabled={loading}
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading || !providerForm.fullName || !providerForm.email || !providerForm.serviceType || !providerForm.businessName || !providerForm.phone || !providerForm.address || !providerForm.city || !providerForm.state || !providerForm.zipCode || !providerForm.password || !providerForm.confirmPassword}
+              >
+                {loading ? t('auth.signup.creatingAccount') : t('auth.signup.createProviderAccount')}
+              </Button>
+            </div>
+          </form>
+          </DialogContent>
+        </Dialog>
+      )}
     </header>
   )
 }

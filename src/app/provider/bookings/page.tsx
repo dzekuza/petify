@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { 
   Calendar, 
   Users, 
@@ -22,10 +23,12 @@ import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
 import { bookingApi } from '@/lib/bookings'
 import { serviceApi } from '@/lib/services'
+import { useDeviceDetection } from '@/lib/device-detection'
 
 export default function ProviderBookings() {
   const { user } = useAuth()
   const { addNotification } = useNotifications()
+  const { isMobile } = useDeviceDetection()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
@@ -228,140 +231,284 @@ export default function ProviderBookings() {
             </div>
 
 
-            {/* Filters and Search */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <input
-                    type="text"
-                    placeholder="Search by pet name or service..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Bookings Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredBookings.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                  <p className="text-gray-600">
-                    {searchTerm || filterStatus !== 'all' 
-                      ? 'Try adjusting your search or filter criteria.'
-                      : 'When customers book your services, they\'ll appear here.'
-                    }
-                  </p>
-                </div>
-              ) : (
-                filteredBookings.map((booking) => (
-                  <Card key={booking.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          {getStatusIcon(booking.status)}
-                          <Badge className={getStatusColor(booking.status)}>
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </Badge>
-                        </div>
-                        <div className="text-lg font-bold text-green-600">
-                          ${booking.totalPrice}
+                {/* Filters and Search */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <input
+                            type="text"
+                            placeholder="Search by pet name or service..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
                         </div>
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">
-                          {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Users className="h-4 w-4 mr-2" />
-                          <span>{booking.pet ? '1 pet' : 'No pets'}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>{services.find(s => s.id === booking.serviceId)?.duration} min</span>
-                        </div>
-                      </div>
-
-                      {booking.notes && (
-                        <div className="bg-yellow-50 p-3 rounded-md">
-                          <p className="text-sm text-yellow-800">
-                            <strong>Notes:</strong> {booking.notes}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="flex space-x-2 pt-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleViewBookingDetails(booking)}
-                          className="flex-1"
+                      <div className="flex gap-2">
+                        <select
+                          value={filterStatus}
+                          onChange={(e) => setFilterStatus(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                          View Details
-                        </Button>
-                        {booking.status === 'pending' && (
-                          <>
+                          <option value="all">All Status</option>
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                    </div>
+
+                {/* Bookings Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredBookings.length === 0 ? (
+                    <div className="col-span-full text-center py-12">
+                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+                      <p className="text-gray-600">
+                        {searchTerm || filterStatus !== 'all' 
+                          ? 'Try adjusting your search or filter criteria.'
+                          : 'When customers book your services, they\'ll appear here.'
+                        }
+                      </p>
+                    </div>
+                  ) : (
+                    filteredBookings.map((booking) => (
+                      <Card key={booking.id} className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              {getStatusIcon(booking.status)}
+                              <Badge className={getStatusColor(booking.status)}>
+                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              </Badge>
+                            </div>
+                            <div className="text-lg font-bold text-green-600">
+                              ${booking.totalPrice}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <h3 className="font-semibold text-gray-900 mb-1">
+                              {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Users className="h-4 w-4 mr-2" />
+                              <span>{booking.pet ? '1 pet' : 'No pets'}</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Clock className="h-4 w-4 mr-2" />
+                              <span>{services.find(s => s.id === booking.serviceId)?.duration} min</span>
+                            </div>
+                          </div>
+
+                          {booking.notes && (
+                            <div className="bg-yellow-50 p-3 rounded-md">
+                              <p className="text-sm text-yellow-800">
+                                <strong>Notes:</strong> {booking.notes}
+                              </p>
+                            </div>
+                          )}
+
+                          <div className="flex space-x-2 pt-2">
                             <Button 
+                              variant="outline" 
                               size="sm"
-                              onClick={() => handleAcceptBooking(booking.id)}
-                              className="bg-green-600 hover:bg-green-700 flex-1"
-                            >
-                              Accept
-                            </Button>
-                            <Button 
-                              variant="destructive" 
-                              size="sm"
-                              onClick={() => handleRejectBooking(booking.id)}
+                              onClick={() => handleViewBookingDetails(booking)}
                               className="flex-1"
                             >
-                              Reject
+                              View Details
                             </Button>
-                          </>
-                        )}
-                        {booking.status === 'confirmed' && (
-                          <Button 
-                            size="sm"
-                            onClick={() => handleCompleteBooking(booking.id)}
-                            className="bg-blue-600 hover:bg-blue-700 flex-1"
-                          >
-                            Complete
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
+                            {booking.status === 'pending' && (
+                              <>
+                                <Button 
+                                  size="sm"
+                                  onClick={() => handleAcceptBooking(booking.id)}
+                                  className="bg-green-600 hover:bg-green-700 flex-1"
+                                >
+                                  Accept
+                                </Button>
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  onClick={() => handleRejectBooking(booking.id)}
+                                  className="flex-1"
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                            {booking.status === 'confirmed' && (
+                              <Button 
+                                size="sm"
+                                onClick={() => handleCompleteBooking(booking.id)}
+                                className="bg-blue-600 hover:bg-blue-700 flex-1"
+                              >
+                                Complete
+                              </Button>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
           </div>
         </div>
 
-        {/* Booking Details Modal */}
+        {/* Booking Details Modal/Drawer */}
+        {isMobile ? (
+          <Drawer open={showBookingModal} onOpenChange={setShowBookingModal} direction="bottom">
+            <DrawerContent className="h-[90vh]">
+              <DrawerHeader className="pb-2">
+                <DrawerTitle className="text-center text-lg font-semibold">
+                  Booking Details
+                </DrawerTitle>
+              </DrawerHeader>
+              
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
+            {selectedBooking && (
+              <div className="space-y-6">
+                {/* Booking Status */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {getStatusIcon(selectedBooking.status)}
+                    <span className="font-medium">Status: </span>
+                    <Badge className={getStatusColor(selectedBooking.status)}>
+                      {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="text-2xl font-bold text-green-600">
+                    ${selectedBooking.totalPrice}
+                  </div>
+                </div>
+
+                {/* Service Information */}
+                <div className="border-t pt-4">
+                  <h3 className="font-semibold text-lg mb-3">Service Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Service</p>
+                      <p className="font-medium">
+                        {services.find(s => s.id === selectedBooking.serviceId)?.name || 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Date & Time</p>
+                      <p className="font-medium">
+                        {new Date(selectedBooking.date).toLocaleDateString()} at {selectedBooking.timeSlot.start} - {selectedBooking.timeSlot.end}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pet Information */}
+                <div className="border-t pt-4">
+                  <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
+                  {selectedBooking.pet ? (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Pet Name</p>
+                          <p className="font-medium">{selectedBooking.pet.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Species</p>
+                          <p className="font-medium">{selectedBooking.pet.species}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Breed</p>
+                          <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Age</p>
+                          <p className="font-medium">{selectedBooking.pet.age} months</p>
+                        </div>
+                      </div>
+                      {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-sm text-gray-600">Special Needs</p>
+                          <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
+                        </div>
+                      )}
+                      {selectedBooking.pet.medicalNotes && (
+                        <div className="mt-3">
+                          <p className="text-sm text-gray-600">Medical Notes</p>
+                          <p className="font-medium">{selectedBooking.pet.medicalNotes}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No pet information available</p>
+                  )}
+                </div>
+
+                {/* Special Instructions */}
+                {selectedBooking.notes && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold text-lg mb-3">Special Instructions</h3>
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <p className="text-gray-700">{selectedBooking.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="border-t pt-4 flex justify-end space-x-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowBookingModal(false)}
+                  >
+                    Close
+                  </Button>
+                  {selectedBooking.status === 'pending' && (
+                    <>
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          handleRejectBooking(selectedBooking.id)
+                          setShowBookingModal(false)
+                        }}
+                      >
+                        Reject Booking
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleAcceptBooking(selectedBooking.id)
+                          setShowBookingModal(false)
+                        }}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Accept Booking
+                      </Button>
+                    </>
+                  )}
+                  {selectedBooking.status === 'confirmed' && (
+                    <Button
+                      onClick={() => {
+                        handleCompleteBooking(selectedBooking.id)
+                        setShowBookingModal(false)
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Mark as Complete
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+              </div>
+            </DrawerContent>
+          </Drawer>
+        ) : (
         <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
@@ -509,6 +656,7 @@ export default function ProviderBookings() {
             )}
           </DialogContent>
         </Dialog>
+        )}
       </ProtectedRoute>
     </Layout>
   )

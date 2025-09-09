@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import { sendBookingConfirmationEmail } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
   try {
@@ -98,6 +99,142 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in bookings API:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const {
+      customer_id,
+      provider_id,
+      service_id,
+      pet_id,
+      booking_date,
+      start_time,
+      end_time,
+      total_price,
+      special_instructions
+    } = body
+
+    // Validate required fields
+    if (!customer_id || !provider_id || !service_id || !pet_id || !booking_date || !start_time || !end_time || !total_price) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const supabaseAdmin = createSupabaseAdmin()
+
+    // Create the booking
+    const { data: booking, error } = await supabaseAdmin
+      .from('bookings')
+      .insert({
+        customer_id,
+        provider_id,
+        service_id,
+        pet_id,
+        booking_date,
+        start_time,
+        end_time,
+        total_price,
+        special_instructions,
+        status: 'pending'
+      })
+      .select(`
+        *,
+        customer:users!customer_id(id, full_name, email, phone),
+        provider:providers(id, business_name, user_id),
+        service:services(id, name, price, description),
+        pet:pets(id, name, species, breed, age)
+      `)
+      .single()
+
+    if (error) {
+      console.error('Error creating booking:', error)
+      return NextResponse.json(
+        { error: 'Failed to create booking' },
+        { status: 500 }
+      )
+    }
+
+    // Send confirmation email to customer
+    if (booking.customer?.email && booking.provider && booking.service && booking.pet) {
+      try {
+        await sendBookingConfirmationEmail(booking.customer.email, {
+          customerName: booking.customer.full_name || 'Valued Customer',
+          providerName: booking.provider.business_name,
+          serviceName: booking.service.name,
+          bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          bookingTime: `${booking.start_time} - ${booking.end_time}`,
+          totalPrice: parseFloat(booking.total_price),
+          petName: booking.pet.name,
+          notes: booking.special_instructions,
+          bookingId: booking.id
+        })
+      } catch (emailError) {
+        console.error('Failed to send booking confirmation email:', emailError)
+        // Don't fail the entire request if email fails
+      }
+    }
+
+    // Create notification for customer
+    if (booking.customer) {
+      await supabaseAdmin
+        .from('notifications')
+        .insert({
+          user_id: booking.customer.id,
+          title: 'Booking Created',
+          message: `Your booking for ${booking.service?.name} has been created and is pending confirmation`,
+          type: 'booking_created',
+          data: {
+            booking_id: booking.id,
+            provider_name: booking.provider?.business_name
+          }
+        })
+    }
+
+    // Transform the response to match frontend expectations
+    const transformedBooking = {
+      id: booking.id,
+      customerId: booking.customer_id,
+      providerId: booking.provider_id,
+      serviceId: booking.service_id,
+      petId: booking.pet_id,
+      date: booking.booking_date,
+      timeSlot: {
+        start: booking.start_time,
+        end: booking.end_time,
+        available: true
+      },
+      status: booking.status,
+      totalPrice: parseFloat(booking.total_price),
+      notes: booking.special_instructions,
+      createdAt: booking.created_at,
+      updatedAt: booking.updated_at,
+      customer: booking.customer,
+      provider: booking.provider,
+      service: booking.service,
+      pet: booking.pet
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      booking: transformedBooking 
+    })
+
+  } catch (error) {
+    console.error('Error in booking creation API:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -9,14 +9,17 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { useDeviceDetection } from '@/lib/device-detection'
 import { User, Mail, Calendar, Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, resetPassword } = useAuth()
+  const { isMobile } = useDeviceDetection()
   const router = useRouter()
   
   // If the user is a provider, route this page into the provider dashboard profile tab
@@ -334,44 +337,89 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Edit Profile Modal */}
-        <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('profile.editProfileTitle')}</DialogTitle>
-              <DialogDescription>
-                {t('profile.editProfileDesc')}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">{t('profile.fullName')}</Label>
-                <Input
-                  id="fullName"
-                  value={editForm.fullName}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, fullName: e.target.value }))}
-                />
+        {/* Edit Profile Modal/Drawer */}
+        {isMobile ? (
+          <Drawer open={editProfileOpen} onOpenChange={setEditProfileOpen} direction="bottom">
+            <DrawerContent className="h-[60vh]">
+              <DrawerHeader className="pb-2">
+                <DrawerTitle className="text-center text-lg font-semibold">
+                  {t('profile.editProfileTitle')}
+                </DrawerTitle>
+              </DrawerHeader>
+              
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="fullName">{t('profile.fullName')}</Label>
+                    <Input
+                      id="fullName"
+                      value={editForm.fullName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, fullName: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">{t('profile.email')}</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="email">{t('profile.email')}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={editForm.email}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                />
+              
+              <DrawerFooter className="pt-4">
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
+                    {t('common.cancel')}
+                  </Button>
+                  <Button onClick={handleSaveProfile}>
+                    {t('profile.saveChanges')}
+                  </Button>
+                </div>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        ) : (
+          <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('profile.editProfileTitle')}</DialogTitle>
+                <DialogDescription>
+                  {t('profile.editProfileDesc')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="fullName">{t('profile.fullName')}</Label>
+                  <Input
+                    id="fullName"
+                    value={editForm.fullName}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, fullName: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">{t('profile.email')}</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
+                    {t('common.cancel')}
+                  </Button>
+                  <Button onClick={handleSaveProfile}>
+                    {t('profile.saveChanges')}
+                  </Button>
+                </div>
               </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
-                  {t('common.cancel')}
-                </Button>
-                <Button onClick={handleSaveProfile}>
-                  {t('profile.saveChanges')}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
 
         {/* Notifications Modal */}
         <Dialog open={notificationsOpen} onOpenChange={setNotificationsOpen}>

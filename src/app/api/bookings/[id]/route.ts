@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import { sendBookingUpdateEmail } from '@/lib/email'
 
 export async function PATCH(
   request: NextRequest,
@@ -59,6 +60,30 @@ export async function PATCH(
             provider_name: booking.provider?.business_name
           }
         })
+
+      // Send email notification to customer
+      if (booking.customer.email && booking.provider && booking.service) {
+        try {
+          await sendBookingUpdateEmail(booking.customer.email, {
+            customerName: booking.customer.full_name || 'Valued Customer',
+            providerName: booking.provider.business_name,
+            serviceName: booking.service.name,
+            bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }),
+            bookingTime: `${booking.start_time} - ${booking.end_time}`,
+            status: status as 'confirmed' | 'cancelled' | 'completed',
+            reason: status === 'cancelled' ? reason : undefined,
+            bookingId: id
+          })
+        } catch (emailError) {
+          console.error('Failed to send booking update email:', emailError)
+          // Don't fail the entire request if email fails
+        }
+      }
     }
 
     return NextResponse.json({ 
