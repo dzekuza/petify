@@ -35,17 +35,31 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/(.*\\.svg)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'image/svg+xml',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
     ];
   },
 
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    }
-  }
+  // Remove turbopack SVG processing to allow static SVG serving
+  // turbopack: {
+  //   rules: {
+  //     '*.svg': {
+  //       loaders: ['@svgr/webpack'],
+  //       as: '*.js',
+  //     },
+  //   }
+  // }
 };
 
 export default nextConfig;
