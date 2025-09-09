@@ -12,6 +12,16 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { useDeviceDetection } from '@/lib/device-detection'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { ListingsGrid } from '@/components/listings-grid'
+import { PetAdsGrid } from '@/components/pet-ads-grid'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -41,6 +51,34 @@ function SearchPageContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFilterModal, setShowFilterModal] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
+
+  // Update filters when URL parameters change
+  useEffect(() => {
+    const newFilters = {
+      category: (searchParams.get('category') as ServiceCategory) || undefined,
+      location: searchParams.get('location') || '',
+      priceRange: { 
+        min: priceFrom ? parseInt(priceFrom) : 0, 
+        max: priceTo ? parseInt(priceTo) : 5000 
+      },
+      rating: 0,
+      distance: 25,
+      date: date || undefined,
+      petId: searchParams.get('petId') || undefined,
+    } as SearchFilters
+    
+    setFilters(newFilters)
+    
+    // Clear selected provider when category changes
+    setSelectedProviderId(undefined)
+    
+    // Auto-open drawer when category changes (on mobile)
+    if (!isDesktop && newFilters.category) {
+      setIsDrawerOpen(true)
+    }
+  }, [searchParams, priceFrom, priceTo, date, isDesktop])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +99,8 @@ function SearchPageContent() {
             rating: filters.rating,
             distance: filters.distance,
             date: filters.date,
-            petId: filters.petId
+            petId: filters.petId,
+            verifiedOnly: false // Include both verified and unverified providers
           })
           setResults(searchResults)
           setPetAds([]) // Clear pet ads results
@@ -87,21 +126,29 @@ function SearchPageContent() {
     setShowFilterModal(!showFilterModal)
   }
 
+  const handleMarkerClick = (result: SearchResult) => {
+    setSelectedProviderId(result.provider.id)
+    // Only open drawer on mobile devices
+    if (!isDesktop) {
+      setIsDrawerOpen(true)
+    }
+  }
+
   // Mobile layout with custom header
   if (!isDesktop) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="h-screen flex flex-col relative overflow-hidden">
         {/* Custom mobile header with back button */}
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.back()}
-          className="lg:hidden absolute top-4 left-4 z-50 h-12 w-12 p-0 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50"
+          onClick={() => router.push('/')}
+          className="lg:hidden absolute top-4 left-4 z-[100] h-12 w-12 p-0 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50"
         >
           <ArrowLeft className="h-6 w-6" />
         </Button>
         
-        <main className="flex-1 pb-16">
+        <main className="flex-1 h-full">
           <SearchLayout
             results={results}
             petAds={petAds}
@@ -112,11 +159,116 @@ function SearchPageContent() {
             onFiltersClick={handleFiltersClick}
             showFilterModal={showFilterModal}
             onFilterModalClose={() => setShowFilterModal(false)}
+            onMarkerClick={handleMarkerClick}
+            selectedProviderId={selectedProviderId}
+            isDrawerOpen={isDrawerOpen}
           />
         </main>
         
         {/* Mobile bottom navigation */}
         <MobileBottomNav />
+
+        {/* Mobile Drawer - shadcn implementation */}
+        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
+          {/* Fixed trigger button - only show when drawer is closed */}
+          {!isDrawerOpen && (
+            <div className="fixed bottom-16 left-0 right-0 h-16 bg-background border-t shadow-lg pointer-events-auto z-[90]">
+              <DrawerTrigger asChild>
+                <button
+                  className="w-full h-full cursor-pointer"
+                  aria-label="Toggle search results"
+                >
+                  <DrawerHeader className="pb-2 h-full flex items-center justify-center">
+                    <div className="text-center">
+                      <DrawerTitle className="text-lg font-semibold text-gray-900">
+                        {loading ? (
+                          <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                        ) : filters.category === 'adoption' ? (
+                          `${petAds.length} Pets Available`
+                        ) : (
+                          t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
+                        )}
+                      </DrawerTitle>
+                      <DrawerDescription className="text-sm text-gray-600 mt-1">
+                        {loading ? (
+                          <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
+                        ) : (
+                          filters.category === 'adoption' ? (
+                            `Showing ${Math.min(petAds.length, 12)} pets`
+                          ) : (
+                            t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())
+                          )
+                        )}
+                      </DrawerDescription>
+                    </div>
+                  </DrawerHeader>
+                </button>
+              </DrawerTrigger>
+            </div>
+          )}
+          
+          <DrawerContent className="max-h-[80vh] h-[80vh]">
+            <DrawerHeader>
+              <DrawerTitle>
+                {loading ? (
+                  <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                ) : filters.category === 'adoption' ? (
+                  `${petAds.length} Pets Available`
+                ) : (
+                  t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
+                )}
+              </DrawerTitle>
+              <DrawerDescription>
+                {loading ? (
+                  <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
+                ) : (
+                  filters.category === 'adoption' ? (
+                    `Showing ${Math.min(petAds.length, 12)} pets`
+                  ) : (
+                    t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())
+                  )
+                )}
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+              {loading ? (
+                <div className="space-y-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : filters.category === 'adoption' ? (
+                petAds.length > 0 ? (
+                  <PetAdsGrid
+                    title=""
+                    petAds={petAds}
+                    showViewAll={false}
+                    gridCols="grid-cols-1"
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600">No pets available at the moment.</p>
+                  </div>
+                )
+              ) : (
+                results.length > 0 ? (
+                  <ListingsGrid
+                    title=""
+                    providers={results.map(result => result.provider)}
+                    showViewAll={false}
+                    gridCols="grid-cols-1"
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600">No providers found in this area.</p>
+                  </div>
+                )
+              )}
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     )
   }

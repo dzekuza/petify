@@ -105,6 +105,17 @@ export const providerApi = {
         throw error
       }
 
+      // Update user role to 'provider' after creating provider profile
+      const { error: roleError } = await supabase
+        .from('users')
+        .update({ role: 'provider' })
+        .eq('id', data.userId)
+
+      if (roleError) {
+        console.error('Error updating user role:', roleError)
+        // Don't throw error here as provider was created successfully
+      }
+
       return provider
     } catch (error) {
       console.error('Error in createProvider:', error)
@@ -263,6 +274,26 @@ export const providerApi = {
       return provider
     } catch (error) {
       console.error('Error in updateProviderByUserId:', error)
+      throw error
+    }
+  },
+
+  // Update user role to provider (for existing providers who completed onboarding)
+  async updateUserRoleToProvider(userId: string) {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ role: 'provider' })
+        .eq('id', userId)
+
+      if (error) {
+        console.error('Error updating user role to provider:', error)
+        throw error
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error in updateUserRoleToProvider:', error)
       throw error
     }
   },
@@ -446,6 +477,7 @@ export const providerApi = {
             id: provider.id,
             userId: provider.user_id,
             businessName: provider.business_name,
+            businessType: provider.business_type,
             description: provider.description,
             services: provider.services || [],
             location: {

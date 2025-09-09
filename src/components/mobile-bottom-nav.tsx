@@ -25,7 +25,7 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 border-t bg-white md:hidden"
+      className="fixed bottom-0 inset-x-0 z-[100] border-t bg-white md:hidden"
       role="navigation"
       aria-label="Service categories"
     >

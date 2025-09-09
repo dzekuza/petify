@@ -33,6 +33,7 @@ export interface ServiceProvider {
   id: string
   userId: string
   businessName: string // verslo pavadinimas
+  businessType?: string // verslo tipas
   description: string // aprašymas
   services: ServiceCategory[] // paslaugos
   location: {

@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { PetAd, PetAdRequest, CreatePetAdForm } from '@/types'
+import { uploadPetAdImage, getPetAdImageUrl } from './storage'
 
 export const petAdsApi = {
   // Get all pet ads for a provider
@@ -89,6 +90,7 @@ export const petAdsApi = {
 
   // Create a new pet ad
   async createPetAd(providerId: string, form: CreatePetAdForm): Promise<PetAd> {
+    // First create the pet ad without images
     const { data, error } = await supabase
       .from('pet_ads')
       .insert({
@@ -107,7 +109,7 @@ export const petAdsApi = {
         medical_notes: form.medicalNotes,
         behavioral_notes: form.behavioralNotes,
         special_needs: form.specialNeeds || [],
-        images: [] // TODO: Handle image upload
+        images: []
       })
       .select()
       .single()
@@ -115,6 +117,39 @@ export const petAdsApi = {
     if (error) {
       console.error('Error creating pet ad:', error)
       throw new Error('Failed to create pet ad')
+    }
+
+    // Upload images if provided
+    let imageUrls: string[] = []
+    if (form.images && form.images.length > 0) {
+      try {
+        const uploadPromises = form.images.map(async (file: File) => {
+          const uploadResult = await uploadPetAdImage(file, data.id)
+          if (uploadResult.data) {
+            return getPetAdImageUrl(data.id, uploadResult.data.path.split('/').pop() || '')
+          }
+          return null
+        })
+
+        const uploadedUrls = await Promise.all(uploadPromises)
+        imageUrls = uploadedUrls.filter((url): url is string => url !== null)
+
+        // Update the pet ad with image URLs
+        if (imageUrls.length > 0) {
+          const { error: updateError } = await supabase
+            .from('pet_ads')
+            .update({ images: imageUrls })
+            .eq('id', data.id)
+
+          if (updateError) {
+            console.error('Error updating pet ad with images:', updateError)
+            // Don't throw error here, the pet ad was created successfully
+          }
+        }
+      } catch (uploadError) {
+        console.error('Error uploading images:', uploadError)
+        // Don't throw error here, the pet ad was created successfully
+      }
     }
 
     return {
@@ -134,7 +169,7 @@ export const petAdsApi = {
       medicalNotes: data.medical_notes,
       behavioralNotes: data.behavioral_notes,
       specialNeeds: data.special_needs || [],
-      images: data.images || [],
+      images: imageUrls,
       isActive: data.is_active,
       createdAt: data.created_at,
       updatedAt: data.updated_at
@@ -143,6 +178,7 @@ export const petAdsApi = {
 
   // Update a pet ad
   async updatePetAd(adId: string, form: Partial<CreatePetAdForm>): Promise<PetAd> {
+    // First update the pet ad without images
     const { data, error } = await supabase
       .from('pet_ads')
       .update({
@@ -171,6 +207,40 @@ export const petAdsApi = {
       throw new Error('Failed to update pet ad')
     }
 
+    // Upload new images if provided
+    let imageUrls: string[] = data.images || []
+    if (form.images && form.images.length > 0) {
+      try {
+        const uploadPromises = form.images.map(async (file: File) => {
+          const uploadResult = await uploadPetAdImage(file, adId)
+          if (uploadResult.data) {
+            return getPetAdImageUrl(adId, uploadResult.data.path.split('/').pop() || '')
+          }
+          return null
+        })
+
+        const uploadedUrls = await Promise.all(uploadPromises)
+        const newImageUrls = uploadedUrls.filter((url): url is string => url !== null)
+        
+        // Combine existing images with new ones
+        imageUrls = [...imageUrls, ...newImageUrls]
+
+        // Update the pet ad with all image URLs
+        const { error: updateError } = await supabase
+          .from('pet_ads')
+          .update({ images: imageUrls })
+          .eq('id', adId)
+
+        if (updateError) {
+          console.error('Error updating pet ad with images:', updateError)
+          // Don't throw error here, the pet ad was updated successfully
+        }
+      } catch (uploadError) {
+        console.error('Error uploading images:', uploadError)
+        // Don't throw error here, the pet ad was updated successfully
+      }
+    }
+
     return {
       id: data.id,
       providerId: data.provider_id,
@@ -188,7 +258,7 @@ export const petAdsApi = {
       medicalNotes: data.medical_notes,
       behavioralNotes: data.behavioral_notes,
       specialNeeds: data.special_needs || [],
-      images: data.images || [],
+      images: imageUrls,
       isActive: data.is_active,
       createdAt: data.created_at,
       updatedAt: data.updated_at

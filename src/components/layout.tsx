@@ -17,7 +17,7 @@ export const Layout = ({ children, hideServiceCategories = false, onFiltersClick
         <Navigation hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
       </Suspense>
       {/* Add bottom padding on mobile to avoid overlap with bottom nav */}
-      <main className="flex-1 pb-16 md:pb-0">
+      <main className="flex-1  md:pb-0">
         {children}
       </main>
       <Suspense fallback={<div className="h-16 bg-white border-t"></div>}>

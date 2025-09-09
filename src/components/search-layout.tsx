@@ -8,17 +8,6 @@ import { FilterModal } from '@/components/filter-modal'
 import { SearchResult, SearchFilters as SearchFiltersType, PetAd } from '@/types'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/translations'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerPortal,
-  DrawerOverlay,
-} from '@/components/ui/drawer'
-import * as DrawerPrimitive from 'vaul'
-import { ChevronUp } from 'lucide-react'
 import { useDeviceDetection } from '@/lib/device-detection'
 
 interface SearchLayoutProps {
@@ -31,23 +20,16 @@ interface SearchLayoutProps {
   onFiltersClick?: () => void
   showFilterModal?: boolean
   onFilterModalClose?: () => void
+  onMarkerClick?: (result: SearchResult) => void
+  selectedProviderId?: string
+  isDrawerOpen?: boolean
 }
 
-export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
+export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose, onMarkerClick, selectedProviderId, isDrawerOpen }: SearchLayoutProps) => {
   const { isDesktop } = useDeviceDetection()
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
-  const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
   const [rating, setRating] = useState(0)
   const [providerType, setProviderType] = useState('any')
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-
-  const handleMarkerClick = (result: SearchResult) => {
-    setSelectedProviderId(result.provider.id)
-    // Only open drawer on mobile devices
-    if (!isDesktop) {
-      setIsDrawerOpen(true)
-    }
-  }
 
   const handleSearchClick = () => {
     console.log('Search clicked')
@@ -80,108 +62,30 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
     )
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Mobile Layout - Map First, Drawer for Listings */}
-      <div className="lg:hidden">
-        {/* Map Section - Full screen when drawer minimized */}
-        <div className={`transition-all duration-300 ${isDrawerOpen ? 'h-[calc(100vh-80vh)]' : 'h-[calc(100vh-12vh)]'}`}>
-          <MapboxMap
-            results={results}
-            onMarkerClick={handleMarkerClick}
-            selectedProviderId={selectedProviderId}
-            onSearchClick={handleSearchClick}
-            onFiltersClick={handleFiltersClick}
-            showControls={false}
-            className="h-full"
-          />
-        </div>
+  // Calculate map height based on drawer state
+  const mapHeight = isDrawerOpen ? 'h-[20vh]' : 'h-[84vh]'
 
-        {/* Drawer for Listings - Only on mobile */}
-        {!isDesktop && (
-          <Drawer 
-            open={isDrawerOpen} 
-            onOpenChange={setIsDrawerOpen} 
-            direction="bottom"
-          >
-            <DrawerPortal>
-              {/* Only show overlay when drawer is open */}
-              {isDrawerOpen && <DrawerOverlay />}
-              <DrawerPrimitive.Content
-                className={`transition-all duration-300 ${isDrawerOpen ? 'h-[80vh] z-50' : 'h-[12vh] max-h-[12vh] z-30'} group/drawer-content bg-background fixed flex h-auto flex-col data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-16 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t`}
-              >
-                <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-                <DrawerHeader 
-                  className="pb-2 cursor-pointer" 
-                  onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-                >
-                  {/* Results Summary */}
-                  <div className="text-center">
-                    <DrawerTitle className="text-lg font-semibold text-gray-900">
-                      {loading ? (
-                        <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
-                      ) : (
-                        t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
-                      )}
-                    </DrawerTitle>
-                    <DrawerDescription className="text-sm text-gray-600 mt-1 flex items-center justify-center">
-                      {loading ? (
-                        <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
-                      ) : (
-                        <>
-                          {t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())}
-                          {!isDrawerOpen && (
-                            <>
-                              <ChevronUp className="w-4 h-4 ml-2" />
-                              <span className="text-xs text-gray-500 ml-1">{t('search.tapToViewListings')}</span>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </DrawerDescription>
-                  </div>
-                </DrawerHeader>
-                
-                {isDrawerOpen && (
-                  <div className="flex-1 overflow-y-auto px-4 pb-4">
-                    {loading ? (
-                      <div className="space-y-4">
-                        {[...Array(6)].map((_, i) => (
-                          <div key={i} className="animate-pulse">
-                            <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : filters.category === 'adoption' ? (
-                      <PetAdsGrid
-                        title=""
-                        petAds={petAds}
-                        showViewAll={false}
-                        gridCols="grid-cols-1"
-                      />
-                    ) : (
-                      <ListingsGrid
-                        title=""
-                        providers={results.map(result => result.provider)}
-                        showViewAll={false}
-                        gridCols="grid-cols-1"
-                      />
-                    )}
-                  </div>
-                )}
-              </DrawerPrimitive.Content>
-            </DrawerPortal>
-          </Drawer>
-        )}
+  return (
+    <div className="h-screen bg-white overflow-hidden">
+      {/* Mobile Layout - Full Screen Map */}
+      <div className="lg:hidden h-full">
+        <MapboxMap
+          results={results}
+          onMarkerClick={onMarkerClick}
+          selectedProviderId={selectedProviderId}
+          onSearchClick={handleSearchClick}
+          onFiltersClick={handleFiltersClick}
+          showControls={false}
+          className={`w-full ${mapHeight}`}
+        />
       </div>
 
       {/* Desktop Layout - Side by Side */}
-      <div className="hidden lg:block">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {viewMode === 'list' ? (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {/* Left: Provider Grid */}
-              <div className="space-y-4">
+      <div className="hidden lg:block mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {viewMode === 'list' ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* Left: Provider Grid */}
+            <div className="space-y-4">
                 {loading ? (
                   <div className="space-y-4">
                     {[...Array(6)].map((_, i) => (
@@ -208,17 +112,15 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
               </div>
 
               {/* Right: Map */}
-              <div className="sticky top-24 h-[calc(100vh-8rem)]">
-                <MapboxMap
-                  results={results}
-                  onMarkerClick={handleMarkerClick}
-                  selectedProviderId={selectedProviderId}
-                  onSearchClick={handleSearchClick}
-                  onFiltersClick={handleFiltersClick}
-                  showControls={false}
-                  className="h-full rounded-lg"
-                />
-              </div>
+              <MapboxMap
+                results={results}
+                onMarkerClick={onMarkerClick}
+                selectedProviderId={selectedProviderId}
+                onSearchClick={handleSearchClick}
+                onFiltersClick={handleFiltersClick}
+                showControls={false}
+                className="sticky top-24 h-[calc(100vh-8rem)] rounded-lg"
+              />
             </div>
           ) : viewMode === 'grid' ? (
             /* Grid Only View */
@@ -241,19 +143,16 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
             </div>
           ) : (
             /* Map Only View */
-            <div className="h-[calc(100vh-8rem)]">
-              <MapboxMap
-                results={results}
-                onMarkerClick={handleMarkerClick}
-                selectedProviderId={selectedProviderId}
-                onSearchClick={handleSearchClick}
-                onFiltersClick={handleFiltersClick}
-                showControls={true}
-                className="h-full rounded-lg"
-              />
-            </div>
+            <MapboxMap
+              results={results}
+              onMarkerClick={onMarkerClick}
+              selectedProviderId={selectedProviderId}
+              onSearchClick={handleSearchClick}
+              onFiltersClick={handleFiltersClick}
+              showControls={true}
+              className="h-[calc(100vh-8rem)] rounded-lg"
+            />
           )}
-        </div>
       </div>
 
       {/* Filter Modal */}

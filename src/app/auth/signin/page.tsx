@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InputWithLabel } from '@/components/ui/input-with-label'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { PawPrint, Eye, EyeOff } from 'lucide-react'
@@ -100,17 +101,15 @@ export default function SignInPage() {
                     </div>
                   )}
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="email">{t('auth.signin.emailAddress')}</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t('auth.signin.enterEmail')}
-                      required
-                    />
-                  </div>
+                  <InputWithLabel
+                    id="email"
+                    label={t('auth.signin.emailAddress')}
+                    type="email"
+                    value={email}
+                    onChange={(value) => setEmail(value)}
+                    placeholder={t('auth.signin.enterEmail')}
+                    required
+                  />
                   
                   <div className="space-y-2">
                     <div className="flex items-center">

@@ -68,8 +68,8 @@ export const HeroSection = () => {
       try {
         setLoading(true)
         
-        // Fetch all providers (latest first)
-        const allResults = await providerApi.searchProviders({})
+        // Fetch all providers (latest first) - include both verified and unverified for hero
+        const allResults = await providerApi.searchProviders({ verifiedOnly: false })
         setLatestProviders(allResults.slice(0, 12).map(result => result.provider)) // Limit to 12 for display
         
       } catch (error) {
@@ -113,7 +113,7 @@ export const HeroSection = () => {
   }
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white pt-20">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 items-center justify-center">
           {/* Main Heading */}

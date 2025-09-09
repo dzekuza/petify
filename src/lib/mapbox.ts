@@ -1,6 +1,6 @@
 export const MAPBOX_CONFIG = {
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '',
-  style: 'mapbox://styles/dzekuza/cm4ujxdlt000301safql0df3b',
+  style: 'mapbox://styles/mapbox/streets-v12',
   defaultCenter: [23.8813, 54.6872], // Vilnius, Lithuania
   defaultZoom: 12,
   maxZoom: 18,

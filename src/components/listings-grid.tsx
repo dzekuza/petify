@@ -62,7 +62,7 @@ export const ListingsGrid = ({
       case 'training':
         return '🎓'
       case 'adoption':
-        return '🏠'
+        return '🐾'
       case 'sitting':
         return '💝'
       default:
@@ -149,7 +149,7 @@ export const ListingsGrid = ({
                   </div>
 
                   {/* Card Content - No top/bottom padding */}
-                  <CardContent className="px-4 py-0">
+                  <CardContent className="px-4 pt-4 pb-0">
                     {/* Business Name */}
                     <CardTitle className="text-sm mb-1">
                       {provider.businessName}
@@ -162,6 +162,7 @@ export const ListingsGrid = ({
                        provider.services[0] === 'boarding' ? 'Prieglauda' :
                        provider.services[0] === 'training' ? 'Dresūra' :
                        provider.services[0] === 'adoption' ? 'Skelbimai' :
+                       provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
                        'Paslaugos'} • {provider.location.city}
                     </CardDescription>
 

@@ -183,6 +183,20 @@ export const uploadPetProfilePicture = async (
 }
 
 /**
+ * Upload a pet ad image
+ */
+export const uploadPetAdImage = async (
+  file: File,
+  petAdId: string
+): Promise<UploadResult> => {
+  return uploadFile(file, {
+    bucket: 'pet-images',
+    folder: `pet-ads/${petAdId}`,
+    fileName: `image-${Date.now()}.${file.name.split('.').pop()}`
+  })
+}
+
+/**
  * Upload a pet gallery image
  */
 export const uploadPetGalleryImage = async (
@@ -219,4 +233,11 @@ export const validateFile = (file: File, maxSizeMB: number = 5): { valid: boolea
   }
   
   return { valid: true }
+}
+
+/**
+ * Get public URL for a pet ad image
+ */
+export const getPetAdImageUrl = (petAdId: string, fileName: string): string => {
+  return getPublicUrl('pet-images', `pet-ads/${petAdId}/${fileName}`)
 }

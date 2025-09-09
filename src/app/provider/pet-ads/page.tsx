@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { useRouter } from 'next/navigation'
 import { 
   Plus, 
@@ -58,6 +60,7 @@ export default function ProviderPetAdsPage() {
     specialNeeds: [],
     images: []
   })
+  const [uploadedImages, setUploadedImages] = useState<File[]>([])
 
   useEffect(() => {
     const loadData = async () => {
@@ -72,7 +75,7 @@ export default function ProviderPetAdsPage() {
             setProvider(providerData)
             
             // Check if provider is adoption type
-            if (providerData.services?.includes('adoption')) {
+            if (providerData.business_type === 'adoption') {
               // Load pet ads
               const providerPetAds = await petAdsApi.getPetAdsByProvider(providerData.id)
               setPetAds(providerPetAds)
@@ -109,8 +112,9 @@ export default function ProviderPetAdsPage() {
         return
       }
 
-      // Create pet ad in database
-      const newPetAd = await petAdsApi.createPetAd(provider.id, petAdForm)
+      // Create pet ad in database with uploaded images
+      const formWithImages = { ...petAdForm, images: uploadedImages }
+      const newPetAd = await petAdsApi.createPetAd(provider.id, formWithImages)
 
       // Update local state
       setPetAds(prev => [...prev, newPetAd])
@@ -133,6 +137,7 @@ export default function ProviderPetAdsPage() {
         specialNeeds: [],
         images: []
       })
+      setUploadedImages([])
       
       // Close modal
       setShowAddPetAdModal(false)
@@ -176,7 +181,8 @@ export default function ProviderPetAdsPage() {
     setPetAdFormLoading(true)
 
     try {
-      const updatedPetAd = await petAdsApi.updatePetAd(editingPetAd.id, petAdForm)
+      const formWithImages = { ...petAdForm, images: uploadedImages }
+      const updatedPetAd = await petAdsApi.updatePetAd(editingPetAd.id, formWithImages)
 
       // Update local state
       setPetAds(prev => prev.map(ad => ad.id === editingPetAd.id ? updatedPetAd : ad))
@@ -184,6 +190,7 @@ export default function ProviderPetAdsPage() {
       // Close modal
       setShowEditPetAdModal(false)
       setEditingPetAd(null)
+      setUploadedImages([])
       
       // Show success notification
       toast.success('Pet ad has been updated successfully!')
@@ -387,172 +394,189 @@ export default function ProviderPetAdsPage() {
             
             <form onSubmit={handleCreatePetAd} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Pet Name *</Label>
-                  <Input
-                    id="name"
-                    value={petAdForm.name}
-                    onChange={(e) => handlePetAdFormChange('name', e.target.value)}
-                    required
-                    placeholder="Enter pet name"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="price">Price (€) *</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={petAdForm.price}
-                    onChange={(e) => handlePetAdFormChange('price', parseFloat(e.target.value) || 0)}
-                    required
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Description *</Label>
-                <Textarea
-                  id="description"
-                  value={petAdForm.description}
-                  onChange={(e) => handlePetAdFormChange('description', e.target.value)}
+                <InputWithLabel
+                  id="name"
+                  label="Pet Name"
+                  value={petAdForm.name}
+                  onChange={(value) => handlePetAdFormChange('name', value)}
                   required
-                  placeholder="Describe the pet, its personality, health status, etc."
-                  rows={3}
+                  placeholder="Enter pet name"
+                />
+                
+                <InputWithLabel
+                  id="price"
+                  label="Price (€)"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={petAdForm.price.toString()}
+                  onChange={(value) => handlePetAdFormChange('price', parseFloat(value) || 0)}
+                  required
+                  placeholder="0.00"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="species">Species *</Label>
-                  <Select value={petAdForm.species} onValueChange={(value) => handlePetAdFormChange('species', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dog">Dog</SelectItem>
-                      <SelectItem value="cat">Cat</SelectItem>
-                      <SelectItem value="bird">Bird</SelectItem>
-                      <SelectItem value="rabbit">Rabbit</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <TextareaWithLabel
+                id="description"
+                label="Description"
+                value={petAdForm.description}
+                onChange={(value) => handlePetAdFormChange('description', value)}
+                required
+                placeholder="Describe the pet, its personality, health status, etc."
+                rows={3}
+              />
 
-                <div>
-                  <Label htmlFor="breed">Breed</Label>
-                  <Input
-                    id="breed"
-                    value={petAdForm.breed}
-                    onChange={(e) => handlePetAdFormChange('breed', e.target.value)}
-                    placeholder="Enter breed"
-                  />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SelectWithLabel
+                  id="species"
+                  label="Species"
+                  value={petAdForm.species}
+                  onValueChange={(value) => handlePetAdFormChange('species', value)}
+                  required
+                  options={[
+                    { value: 'dog', label: 'Dog' },
+                    { value: 'cat', label: 'Cat' },
+                    { value: 'bird', label: 'Bird' },
+                    { value: 'rabbit', label: 'Rabbit' },
+                    { value: 'other', label: 'Other' }
+                  ]}
+                />
+
+                <InputWithLabel
+                  id="breed"
+                  label="Breed"
+                  value={petAdForm.breed || ''}
+                  onChange={(value) => handlePetAdFormChange('breed', value)}
+                  placeholder="Enter breed"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="age">Age (months)</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    min="0"
-                    value={petAdForm.age || ''}
-                    onChange={(e) => handlePetAdFormChange('age', parseInt(e.target.value) || undefined)}
-                    placeholder="Age in months"
-                  />
-                </div>
+                <InputWithLabel
+                  id="age"
+                  label="Age (months)"
+                  type="number"
+                  min="0"
+                  value={petAdForm.age?.toString() || ''}
+                  onChange={(value) => handlePetAdFormChange('age', parseInt(value) || undefined)}
+                  placeholder="Age in months"
+                />
 
-                <div>
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select value={petAdForm.gender || ''} onValueChange={(value) => handlePetAdFormChange('gender', value || undefined)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <SelectWithLabel
+                  id="gender"
+                  label="Gender"
+                  value={petAdForm.gender || ''}
+                  onValueChange={(value) => handlePetAdFormChange('gender', value || undefined)}
+                  placeholder="Select gender"
+                  options={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' }
+                  ]}
+                />
 
-                <div>
-                  <Label htmlFor="size">Size</Label>
-                  <Select value={petAdForm.size || ''} onValueChange={(value) => handlePetAdFormChange('size', value || undefined)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="small">Small</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="large">Large</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <SelectWithLabel
+                  id="size"
+                  label="Size"
+                  value={petAdForm.size || ''}
+                  onValueChange={(value) => handlePetAdFormChange('size', value || undefined)}
+                  placeholder="Select size"
+                  options={[
+                    { value: 'small', label: 'Small' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'large', label: 'Large' }
+                  ]}
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="color">Color</Label>
-                  <Input
-                    id="color"
-                    value={petAdForm.color}
-                    onChange={(e) => handlePetAdFormChange('color', e.target.value)}
-                    placeholder="Enter color"
-                  />
-                </div>
+                <InputWithLabel
+                  id="color"
+                  label="Color"
+                  value={petAdForm.color || ''}
+                  onChange={(value) => handlePetAdFormChange('color', value)}
+                  placeholder="Enter color"
+                />
 
-                <div>
-                  <Label htmlFor="weight">Weight (kg)</Label>
-                  <Input
-                    id="weight"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={petAdForm.weight || ''}
-                    onChange={(e) => handlePetAdFormChange('weight', parseFloat(e.target.value) || undefined)}
-                    placeholder="Weight in kg"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="vaccinationStatus">Vaccination Status</Label>
-                <Select value={petAdForm.vaccinationStatus || ''} onValueChange={(value) => handlePetAdFormChange('vaccinationStatus', value || undefined)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vaccination status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="vaccinated">Vaccinated</SelectItem>
-                    <SelectItem value="not_vaccinated">Not Vaccinated</SelectItem>
-                    <SelectItem value="unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="medicalNotes">Medical Notes</Label>
-                <Textarea
-                  id="medicalNotes"
-                  value={petAdForm.medicalNotes}
-                  onChange={(e) => handlePetAdFormChange('medicalNotes', e.target.value)}
-                  placeholder="Any medical conditions, treatments, etc."
-                  rows={2}
+                <InputWithLabel
+                  id="weight"
+                  label="Weight (kg)"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={petAdForm.weight?.toString() || ''}
+                  onChange={(value) => handlePetAdFormChange('weight', parseFloat(value) || undefined)}
+                  placeholder="Weight in kg"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="behavioralNotes">Behavioral Notes</Label>
-                <Textarea
-                  id="behavioralNotes"
-                  value={petAdForm.behavioralNotes}
-                  onChange={(e) => handlePetAdFormChange('behavioralNotes', e.target.value)}
-                  placeholder="Temperament, training level, etc."
-                  rows={2}
-                />
+              <SelectWithLabel
+                id="vaccinationStatus"
+                label="Vaccination Status"
+                value={petAdForm.vaccinationStatus || ''}
+                onValueChange={(value) => handlePetAdFormChange('vaccinationStatus', value || undefined)}
+                placeholder="Select vaccination status"
+                options={[
+                  { value: 'vaccinated', label: 'Vaccinated' },
+                  { value: 'not_vaccinated', label: 'Not Vaccinated' },
+                  { value: 'unknown', label: 'Unknown' }
+                ]}
+              />
+
+              <TextareaWithLabel
+                id="medicalNotes"
+                label="Medical Notes"
+                value={petAdForm.medicalNotes || ''}
+                onChange={(value) => handlePetAdFormChange('medicalNotes', value)}
+                placeholder="Any medical conditions, treatments, etc."
+                rows={2}
+              />
+
+              <TextareaWithLabel
+                id="behavioralNotes"
+                label="Behavioral Notes"
+                value={petAdForm.behavioralNotes || ''}
+                onChange={(value) => handlePetAdFormChange('behavioralNotes', value)}
+                placeholder="Temperament, training level, etc."
+                rows={2}
+              />
+
+              <div className="space-y-2">
+                <Label htmlFor="images">Pet Images</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {uploadedImages.map((image, index) => (
+                    <div key={index} className="relative">
+                      <ImageUpload
+                        value={image}
+                        onChange={(file) => {
+                          const newImages = [...uploadedImages]
+                          newImages[index] = file || new File([], '')
+                          setUploadedImages(newImages.filter(img => img.size > 0))
+                        }}
+                        placeholder="Upload pet image"
+                        description="PNG, JPG, GIF up to 5MB"
+                        previewClassName="w-full h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  ))}
+                  {uploadedImages.length < 5 && (
+                    <div className="relative">
+                      <ImageUpload
+                        value={null}
+                        onChange={(file) => {
+                          if (file) {
+                            setUploadedImages(prev => [...prev, file])
+                          }
+                        }}
+                        placeholder="Add another image"
+                        description="PNG, JPG, GIF up to 5MB"
+                        previewClassName="w-full h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Upload up to 5 images of your pet. The first image will be used as the main photo.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-3">
@@ -586,48 +610,191 @@ export default function ProviderPetAdsPage() {
             </DialogHeader>
             
             <form onSubmit={handleUpdatePetAd} className="space-y-4">
-              {/* Same form fields as Add Pet Ad Modal */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-name">Pet Name *</Label>
-                  <Input
-                    id="edit-name"
-                    value={petAdForm.name}
-                    onChange={(e) => handlePetAdFormChange('name', e.target.value)}
-                    required
-                    placeholder="Enter pet name"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-price">Price (€) *</Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={petAdForm.price}
-                    onChange={(e) => handlePetAdFormChange('price', parseFloat(e.target.value) || 0)}
-                    required
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="edit-description">Description *</Label>
-                <Textarea
-                  id="edit-description"
-                  value={petAdForm.description}
-                  onChange={(e) => handlePetAdFormChange('description', e.target.value)}
+                <InputWithLabel
+                  id="edit-name"
+                  label="Pet Name"
+                  value={petAdForm.name}
+                  onChange={(value) => handlePetAdFormChange('name', value)}
                   required
-                  placeholder="Describe the pet, its personality, health status, etc."
-                  rows={3}
+                  placeholder="Enter pet name"
+                />
+                
+                <InputWithLabel
+                  id="edit-price"
+                  label="Price (€)"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={petAdForm.price.toString()}
+                  onChange={(value) => handlePetAdFormChange('price', parseFloat(value) || 0)}
+                  required
+                  placeholder="0.00"
                 />
               </div>
 
-              {/* Include all other form fields similar to Add Pet Ad Modal */}
-              {/* For brevity, I'm including the key fields. The full form would include all fields from the Add Pet Ad Modal */}
+              <TextareaWithLabel
+                id="edit-description"
+                label="Description"
+                value={petAdForm.description}
+                onChange={(value) => handlePetAdFormChange('description', value)}
+                required
+                placeholder="Describe the pet, its personality, health status, etc."
+                rows={3}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SelectWithLabel
+                  id="edit-species"
+                  label="Species"
+                  value={petAdForm.species}
+                  onValueChange={(value) => handlePetAdFormChange('species', value)}
+                  required
+                  options={[
+                    { value: 'dog', label: 'Dog' },
+                    { value: 'cat', label: 'Cat' },
+                    { value: 'bird', label: 'Bird' },
+                    { value: 'rabbit', label: 'Rabbit' },
+                    { value: 'other', label: 'Other' }
+                  ]}
+                />
+
+                <InputWithLabel
+                  id="edit-breed"
+                  label="Breed"
+                  value={petAdForm.breed || ''}
+                  onChange={(value) => handlePetAdFormChange('breed', value)}
+                  placeholder="Enter breed"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <InputWithLabel
+                  id="edit-age"
+                  label="Age (months)"
+                  type="number"
+                  min="0"
+                  value={petAdForm.age?.toString() || ''}
+                  onChange={(value) => handlePetAdFormChange('age', parseInt(value) || undefined)}
+                  placeholder="Age in months"
+                />
+
+                <SelectWithLabel
+                  id="edit-gender"
+                  label="Gender"
+                  value={petAdForm.gender || ''}
+                  onValueChange={(value) => handlePetAdFormChange('gender', value || undefined)}
+                  placeholder="Select gender"
+                  options={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' }
+                  ]}
+                />
+
+                <SelectWithLabel
+                  id="edit-size"
+                  label="Size"
+                  value={petAdForm.size || ''}
+                  onValueChange={(value) => handlePetAdFormChange('size', value || undefined)}
+                  placeholder="Select size"
+                  options={[
+                    { value: 'small', label: 'Small' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'large', label: 'Large' }
+                  ]}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputWithLabel
+                  id="edit-color"
+                  label="Color"
+                  value={petAdForm.color || ''}
+                  onChange={(value) => handlePetAdFormChange('color', value)}
+                  placeholder="Enter color"
+                />
+
+                <InputWithLabel
+                  id="edit-weight"
+                  label="Weight (kg)"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={petAdForm.weight?.toString() || ''}
+                  onChange={(value) => handlePetAdFormChange('weight', parseFloat(value) || undefined)}
+                  placeholder="Weight in kg"
+                />
+              </div>
+
+              <SelectWithLabel
+                id="edit-vaccinationStatus"
+                label="Vaccination Status"
+                value={petAdForm.vaccinationStatus || ''}
+                onValueChange={(value) => handlePetAdFormChange('vaccinationStatus', value || undefined)}
+                placeholder="Select vaccination status"
+                options={[
+                  { value: 'vaccinated', label: 'Vaccinated' },
+                  { value: 'not_vaccinated', label: 'Not Vaccinated' },
+                  { value: 'unknown', label: 'Unknown' }
+                ]}
+              />
+
+              <TextareaWithLabel
+                id="edit-medicalNotes"
+                label="Medical Notes"
+                value={petAdForm.medicalNotes || ''}
+                onChange={(value) => handlePetAdFormChange('medicalNotes', value)}
+                placeholder="Any medical conditions, treatments, etc."
+                rows={2}
+              />
+
+              <TextareaWithLabel
+                id="edit-behavioralNotes"
+                label="Behavioral Notes"
+                value={petAdForm.behavioralNotes || ''}
+                onChange={(value) => handlePetAdFormChange('behavioralNotes', value)}
+                placeholder="Temperament, training level, etc."
+                rows={2}
+              />
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-images">Pet Images</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {uploadedImages.map((image, index) => (
+                    <div key={index} className="relative">
+                      <ImageUpload
+                        value={image}
+                        onChange={(file) => {
+                          const newImages = [...uploadedImages]
+                          newImages[index] = file || new File([], '')
+                          setUploadedImages(newImages.filter(img => img.size > 0))
+                        }}
+                        placeholder="Upload pet image"
+                        description="PNG, JPG, GIF up to 5MB"
+                        previewClassName="w-full h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  ))}
+                  {uploadedImages.length < 5 && (
+                    <div className="relative">
+                      <ImageUpload
+                        value={null}
+                        onChange={(file) => {
+                          if (file) {
+                            setUploadedImages(prev => [...prev, file])
+                          }
+                        }}
+                        placeholder="Add another image"
+                        description="PNG, JPG, GIF up to 5MB"
+                        previewClassName="w-full h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Upload up to 5 images of your pet. The first image will be used as the main photo.
+                </p>
+              </div>
 
               <div className="flex justify-end space-x-3">
                 <Button

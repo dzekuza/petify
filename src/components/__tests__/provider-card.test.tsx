@@ -57,7 +57,7 @@ const mockServices: Service[] = [
 
 describe('ProviderCard', () => {
   it('renders provider information correctly', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('Happy Paws Grooming')).toBeInTheDocument()
     expect(screen.getByText('Professional pet grooming with 10+ years of experience.')).toBeInTheDocument()
@@ -69,38 +69,38 @@ describe('ProviderCard', () => {
   })
 
   it('displays service categories', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('✂️ grooming')).toBeInTheDocument()
   })
 
   it('shows availability status', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('Closed')).toBeInTheDocument()
   })
 
   it('displays certifications when available', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('Certified')).toBeInTheDocument()
   })
 
   it('shows experience information', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('10 years experience')).toBeInTheDocument()
   })
 
   it('renders action buttons', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} />)
+    render(<ProviderCard provider={mockProvider} />)
     
     expect(screen.getByText('View Profile')).toBeInTheDocument()
     expect(screen.getByText('Book Now')).toBeInTheDocument()
   })
 
   it('displays distance when provided', () => {
-    render(<ProviderCard provider={mockProvider} services={mockServices} distance={5.2} />)
+    render(<ProviderCard provider={mockProvider} distance={5.2} />)
     
     expect(screen.getByText('5.2 km away')).toBeInTheDocument()
   })

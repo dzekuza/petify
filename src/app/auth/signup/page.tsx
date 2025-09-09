@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InputWithLabel } from '@/components/ui/input-with-label'
 import { useAuth } from '@/contexts/auth-context'
 import { PawPrint, Eye, EyeOff } from 'lucide-react'
 import { t } from '@/lib/translations'
@@ -91,31 +92,25 @@ export default function SignUpPage() {
                 </div>
               )}
 
-              <div>
-                <Label htmlFor="fullName">{t('auth.signup.fullName')}</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  required
-                  className="mt-1"
-                  placeholder={t('auth.signup.enterFullName')}
-                />
-              </div>
+              <InputWithLabel
+                id="fullName"
+                label={t('auth.signup.fullName')}
+                type="text"
+                value={formData.fullName}
+                onChange={(value) => handleInputChange('fullName', value)}
+                required
+                placeholder={t('auth.signup.enterFullName')}
+              />
 
-              <div>
-                <Label htmlFor="email">{t('auth.signup.emailAddress')}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                  className="mt-1"
-                  placeholder={t('auth.signup.enterEmail')}
-                />
-              </div>
+              <InputWithLabel
+                id="email"
+                label={t('auth.signup.emailAddress')}
+                type="email"
+                value={formData.email}
+                onChange={(value) => handleInputChange('email', value)}
+                required
+                placeholder={t('auth.signup.enterEmail')}
+              />
 
 
               <div>
