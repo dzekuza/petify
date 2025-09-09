@@ -6,13 +6,24 @@ import { supabase } from '@/lib/supabase'
 
 export interface Notification {
   id: string
-  type: 'new_booking' | 'upcoming_booking' | 'booking_cancelled' | 'booking_completed' | 'payment_received' | 'review_received' | 'error'
+  type: 'new_booking' | 'upcoming_booking' | 'booking_cancelled' | 'booking_completed' | 'payment_received' | 'review_received' | 'booking_update' | 'error'
   title: string
   message: string
-  data?: Record<string, any>
+  data?: Record<string, unknown>
   read: boolean
   created_at: string
-  provider_id: string
+  user_id: string
+}
+
+interface DatabaseNotification {
+  id: string
+  type: string
+  title: string
+  message: string
+  data?: Record<string, unknown>
+  read?: boolean
+  created_at: string
+  user_id: string
 }
 
 interface NotificationsContextType {
@@ -47,7 +58,7 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('provider_id', user.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50)
 
@@ -70,15 +81,15 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
       setHasTableError(false)
 
       // Transform the data to match our interface
-      const transformedData = (data || []).map((notification: any) => ({
+      const transformedData = (data || []).map((notification: DatabaseNotification) => ({
         id: notification.id,
-        type: notification.type,
+        type: notification.type as Notification['type'],
         title: notification.title,
         message: notification.message,
         data: notification.data || {},
         read: notification.read || false,
         created_at: notification.created_at,
-        provider_id: notification.provider_id
+        user_id: notification.user_id
       }))
 
       setNotifications(transformedData)
@@ -122,7 +133,7 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
       const { error } = await supabase
         .from('notifications')
         .update({ read: true })
-        .eq('provider_id', user.id)
+        .eq('user_id', user.id)
         .eq('read', false)
 
       if (error) {
@@ -161,7 +172,7 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
           data: data.data || {},
           read: data.read || false,
           created_at: data.created_at,
-          provider_id: data.provider_id
+          user_id: data.user_id
         }
         setNotifications(prev => [transformedNotification, ...prev])
       }
@@ -198,19 +209,19 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
-          filter: `provider_id=eq.${user.id}`
+          filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const rawNotification = payload.new as any
+          const rawNotification = payload.new as DatabaseNotification
           const newNotification: Notification = {
             id: rawNotification.id,
-            type: rawNotification.type,
+            type: rawNotification.type as Notification['type'],
             title: rawNotification.title,
             message: rawNotification.message,
             data: rawNotification.data || {},
             read: rawNotification.read || false,
             created_at: rawNotification.created_at,
-            provider_id: rawNotification.provider_id
+            user_id: rawNotification.user_id
           }
           setNotifications(prev => [newNotification, ...prev])
         }
@@ -221,19 +232,19 @@ export const NotificationsProvider = ({ children }: NotificationsProviderProps) 
           event: 'UPDATE',
           schema: 'public',
           table: 'notifications',
-          filter: `provider_id=eq.${user.id}`
+          filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const rawNotification = payload.new as any
+          const rawNotification = payload.new as DatabaseNotification
           const updatedNotification: Notification = {
             id: rawNotification.id,
-            type: rawNotification.type,
+            type: rawNotification.type as Notification['type'],
             title: rawNotification.title,
             message: rawNotification.message,
             data: rawNotification.data || {},
             read: rawNotification.read || false,
             created_at: rawNotification.created_at,
-            provider_id: rawNotification.provider_id
+            user_id: rawNotification.user_id
           }
           setNotifications(prev => 
             prev.map(notification => 

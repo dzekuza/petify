@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import { Booking, ServiceProvider, Service, Pet } from '@/types'
-import { Calendar, Clock, User, MapPin, CreditCard, CheckCircle, ArrowLeft, CalendarPlus, Users } from 'lucide-react'
+import { Calendar, Clock, MapPin, CreditCard, CheckCircle, ArrowLeft, CalendarPlus, Users } from 'lucide-react'
 import { format } from 'date-fns'
 import { t } from '@/lib/translations'
 import Image from 'next/image'
@@ -195,58 +195,6 @@ export default function BookingDetailPage() {
         return 'bg-gray-100 text-gray-800'
     }
   }
-
-  const generateCalendarEvent = () => {
-    if (!booking || !service || !provider) return null
-
-    const startDate = new Date(`${booking.date}T${booking.timeSlot.start}`)
-    const endDate = new Date(`${booking.date}T${booking.timeSlot.end}`)
-    
-    const title = `${service.name} - ${provider.businessName}`
-    const description = `${service.description}\n\nProvider: ${provider.businessName}\nPet: ${pet?.name || 'N/A'}\nLocation: ${provider.location?.address || 'TBD'}`
-    const location = provider.location?.address || ''
-
-    return {
-      title: encodeURIComponent(title),
-      description: encodeURIComponent(description),
-      location: encodeURIComponent(location),
-      startDate: startDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
-      endDate: endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
-    }
-  }
-
-  const addToGoogleCalendar = () => {
-    const event = generateCalendarEvent()
-    if (!event) return
-
-    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${event.startDate}/${event.endDate}&details=${event.description}&location=${event.location}`
-    window.open(googleUrl, '_blank')
-  }
-
-  const addToAppleCalendar = () => {
-    const event = generateCalendarEvent()
-    if (!event) return
-
-    const appleUrl = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:${event.startDate}
-DTEND:${event.endDate}
-SUMMARY:${event.title}
-DESCRIPTION:${event.description}
-LOCATION:${event.location}
-END:VEVENT
-END:VCALENDAR`
-
-    const blob = new Blob([appleUrl], { type: 'text/calendar' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'booking.ics'
-    link.click()
-    window.URL.revokeObjectURL(url)
-  }
-
 
   if (loading) {
     return (

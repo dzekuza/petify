@@ -61,8 +61,8 @@ export const ListingsGrid = ({
         return '🏠'
       case 'training':
         return '🎓'
-      case 'walking':
-        return '🚶'
+      case 'adoption':
+        return '🏠'
       case 'sitting':
         return '💝'
       default:
@@ -161,7 +161,7 @@ export const ListingsGrid = ({
                        provider.services[0] === 'veterinary' ? 'Veterinarija' :
                        provider.services[0] === 'boarding' ? 'Prieglauda' :
                        provider.services[0] === 'training' ? 'Dresūra' :
-                       provider.services[0] === 'walking' ? 'Pasivaikščiojimas' :
+                       provider.services[0] === 'adoption' ? 'Skelbimai' :
                        'Paslaugos'} • {provider.location.city}
                     </CardDescription>
 

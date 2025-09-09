@@ -28,7 +28,7 @@ const providerTypes = [
   { id: 'veterinary', label: 'Veterinarijos gydytojas' },
   { id: 'boarding', label: 'Gyvūnų prieglauda' },
   { id: 'training', label: 'Gyvūnų treneris' },
-  { id: 'walking', label: 'Šunų vedėjas' },
+  { id: 'adoption', label: 'Skelbimai' },
   { id: 'sitting', label: 'Gyvūnų prižiūrėtojas' },
 ]
 

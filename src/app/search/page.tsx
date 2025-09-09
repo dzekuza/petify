@@ -4,8 +4,9 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { SearchLayout } from '@/components/search-layout'
-import { ServiceCategory, SearchFilters, SearchResult } from '@/types'
+import { ServiceCategory, SearchFilters, SearchResult, PetAd } from '@/types'
 import { providerApi } from '@/lib/providers'
+import { petAdsApi } from '@/lib/pet-ads'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -36,36 +37,46 @@ function SearchPageContent() {
   } as SearchFilters)
 
   const [results, setResults] = useState<SearchResult[]>([])
+  const [petAds, setPetAds] = useState<PetAd[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFilterModal, setShowFilterModal] = useState(false)
 
   useEffect(() => {
-    const fetchProviders = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
         
-        const searchResults = await providerApi.searchProviders({
-          category: filters.category,
-          location: filters.location,
-          priceRange: filters.priceRange,
-          rating: filters.rating,
-          distance: filters.distance,
-          date: filters.date,
-          petId: filters.petId
-        })
-        setResults(searchResults)
+        // Check if searching for adoption category (pet ads)
+        if (filters.category === 'adoption') {
+          const petAdsResults = await petAdsApi.getActivePetAds()
+          setPetAds(petAdsResults)
+          setResults([]) // Clear service results
+        } else {
+          const searchResults = await providerApi.searchProviders({
+            category: filters.category,
+            location: filters.location,
+            priceRange: filters.priceRange,
+            rating: filters.rating,
+            distance: filters.distance,
+            date: filters.date,
+            petId: filters.petId
+          })
+          setResults(searchResults)
+          setPetAds([]) // Clear pet ads results
+        }
       } catch (err) {
-        console.error('Error fetching providers:', err)
+        console.error('Error fetching data:', err)
         setError(t('search.errorLoadingProviders'))
         setResults([])
+        setPetAds([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchProviders()
+    fetchData()
   }, [filters])
 
   const handleFiltersChange = (newFilters: typeof filters) => {
@@ -93,6 +104,7 @@ function SearchPageContent() {
         <main className="flex-1 pb-16">
           <SearchLayout
             results={results}
+            petAds={petAds}
             filters={filters}
             onFiltersChange={handleFiltersChange}
             loading={loading}
@@ -114,6 +126,7 @@ function SearchPageContent() {
     <Layout hideServiceCategories={true} onFiltersClick={handleFiltersClick} hideFooter={true}>
       <SearchLayout
         results={results}
+        petAds={petAds}
         filters={filters}
         onFiltersChange={handleFiltersChange}
         loading={loading}

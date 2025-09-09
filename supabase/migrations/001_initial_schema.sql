@@ -101,20 +101,15 @@ CREATE TYPE USER_ROLE AS
                         '🎓',
                         4
                     ), (
-                        'Walking',
-                        'Dog walking and exercise services',
-                        '🚶',
-                        5
-                    ), (
                         'Sitting',
                         'In-home pet sitting and care',
                         '🛋️',
-                        6
+                        5
                     ), (
                         'Adoption',
-                        'Pet adoption and rescue services',
-                        '❤️',
-                        7
+                        'Pet sales and adoption listings',
+                        '🏠',
+                        6
                     );
  
                     -- Create indexes for better performance

@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { PawPrint, Lock } from 'lucide-react'
+import { Lock } from 'lucide-react'
+import { FullScreenLoading } from '@/components/ui/loading'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -28,14 +29,7 @@ export const ProtectedRoute = ({
   }, [user, loading, router])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <PawPrint className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+    return <FullScreenLoading />
   }
 
   if (!user) {

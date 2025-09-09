@@ -60,29 +60,67 @@ export async function PATCH(
             provider_name: booking.provider?.business_name
           }
         })
+    }
 
-      // Send email notification to customer
-      if (booking.customer.email && booking.provider && booking.service) {
-        try {
-          await sendBookingUpdateEmail(booking.customer.email, {
-            customerName: booking.customer.full_name || 'Valued Customer',
-            providerName: booking.provider.business_name,
-            serviceName: booking.service.name,
-            bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            }),
-            bookingTime: `${booking.start_time} - ${booking.end_time}`,
-            status: status as 'confirmed' | 'cancelled' | 'completed',
-            reason: status === 'cancelled' ? reason : undefined,
-            bookingId: id
-          })
-        } catch (emailError) {
-          console.error('Failed to send booking update email:', emailError)
-          // Don't fail the entire request if email fails
-        }
+    // Create notification for provider about status change
+    if (booking.provider?.user_id) {
+      let providerMessage = ''
+      let providerType = 'booking_update'
+      
+      switch (status) {
+        case 'confirmed':
+          providerMessage = `You confirmed the booking for ${booking.service?.name}`
+          providerType = 'booking_completed'
+          break
+        case 'cancelled':
+          providerMessage = `You cancelled the booking for ${booking.service?.name}`
+          providerType = 'booking_cancelled'
+          break
+        case 'completed':
+          providerMessage = `You marked the booking for ${booking.service?.name} as completed`
+          providerType = 'booking_completed'
+          break
+        default:
+          providerMessage = `Booking status updated to ${status}`
+      }
+
+      await supabaseAdmin
+        .from('notifications')
+        .insert({
+          user_id: booking.provider.user_id,
+          title: `Booking ${status}`,
+          message: providerMessage,
+          type: providerType,
+          data: {
+            booking_id: id,
+            status,
+            customer_name: booking.customer?.full_name,
+            service_name: booking.service?.name
+          }
+        })
+    }
+
+    // Send email notification to customer
+    if (booking.customer.email && booking.provider && booking.service) {
+      try {
+        await sendBookingUpdateEmail(booking.customer.email, {
+          customerName: booking.customer.full_name || 'Valued Customer',
+          providerName: booking.provider.business_name,
+          serviceName: booking.service.name,
+          bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          bookingTime: `${booking.start_time} - ${booking.end_time}`,
+          status: status as 'confirmed' | 'cancelled' | 'completed',
+          reason: status === 'cancelled' ? reason : undefined,
+          bookingId: id
+        })
+      } catch (emailError) {
+        console.error('Failed to send booking update email:', emailError)
+        // Don't fail the entire request if email fails
       }
     }
 

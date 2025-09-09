@@ -69,6 +69,14 @@ export const providerApi = {
   // Create a new provider profile
   async createProvider(data: CreateProviderData) {
     try {
+      // First, check if a provider already exists for this user
+      const existingProvider = await this.getProviderByUserId(data.userId)
+      
+      if (existingProvider) {
+        // If provider exists, update it instead of creating a new one
+        return await this.updateProvider(existingProvider.id, data)
+      }
+
       const { data: provider, error } = await supabase
         .from('providers')
         .insert([
@@ -107,36 +115,40 @@ export const providerApi = {
   // Get provider by user ID
   async getProviderByUserId(userId: string) {
     try {
-      const { data: provider, error } = await supabase
+      const { data: providers, error } = await supabase
         .from('providers')
         .select('*')
         .eq('user_id', userId)
-        .single()
+        .order('created_at', { ascending: false }) // Get the most recent one first
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+      if (error) {
         console.error('Error fetching provider:', error)
         throw error
       }
 
-      // Transform snake_case to camelCase for frontend compatibility
-      if (provider) {
-        return {
-          ...provider,
-          businessName: provider.business_name,
-          businessType: provider.business_type,
-          contactInfo: provider.contact_info,
-          businessHours: provider.business_hours,
-          priceRange: provider.price_range,
-          experienceYears: provider.experience_years,
-          isVerified: provider.is_verified,
-          verificationDocuments: provider.verification_documents,
-          avatarUrl: provider.avatar_url,
-          createdAt: provider.created_at,
-          updatedAt: provider.updated_at
-        }
+      // If no providers found, return null
+      if (!providers || providers.length === 0) {
+        return null
       }
 
-      return provider
+      // Return the most recent provider (first in the ordered list)
+      const provider = providers[0]
+
+      // Transform snake_case to camelCase for frontend compatibility
+      return {
+        ...provider,
+        businessName: provider.business_name,
+        businessType: provider.business_type,
+        contactInfo: provider.contact_info,
+        businessHours: provider.business_hours,
+        priceRange: provider.price_range,
+        experienceYears: provider.experience_years,
+        isVerified: provider.is_verified,
+        verificationDocuments: provider.verification_documents,
+        avatarUrl: provider.avatar_url,
+        createdAt: provider.created_at,
+        updatedAt: provider.updated_at
+      }
     } catch (error) {
       console.error('Error in getProviderByUserId:', error)
       throw error

@@ -9,7 +9,7 @@ const footerLinks = {
     { name: t('serviceCategories.veterinary'), href: '/search?category=veterinary' },
     { name: t('serviceCategories.boarding'), href: '/search?category=boarding' },
     { name: t('serviceCategories.training'), href: '/search?category=training' },
-    { name: t('serviceCategories.walking'), href: '/search?category=walking' },
+    { name: t('serviceCategories.adoption'), href: '/search?category=adoption' },
     { name: t('serviceCategories.sitting'), href: '/search?category=sitting' },
   ],
   company: [

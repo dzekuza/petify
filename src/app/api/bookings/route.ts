@@ -209,10 +209,29 @@ export async function POST(request: NextRequest) {
           user_id: booking.customer.id,
           title: 'Booking Created',
           message: `Your booking for ${booking.service?.name} has been created and is pending confirmation`,
-          type: 'booking_created',
+          type: 'booking_update',
           data: {
             booking_id: booking.id,
             provider_name: booking.provider?.business_name
+          }
+        })
+    }
+
+    // Create notification for provider
+    if (booking.provider?.user_id) {
+      await supabaseAdmin
+        .from('notifications')
+        .insert({
+          user_id: booking.provider.user_id,
+          title: 'New Booking Received',
+          message: `You have received a new booking for ${booking.service?.name} from ${booking.customer?.full_name || 'a customer'}`,
+          type: 'new_booking',
+          data: {
+            booking_id: booking.id,
+            customer_name: booking.customer?.full_name,
+            service_name: booking.service?.name,
+            booking_date: booking.booking_date,
+            booking_time: `${booking.start_time} - ${booking.end_time}`
           }
         })
     }

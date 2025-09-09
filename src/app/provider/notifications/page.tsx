@@ -19,7 +19,6 @@ import {
   CheckCheck
 } from 'lucide-react'
 import { useNotifications, Notification } from '@/contexts/notifications-context'
-import { useAuth } from '@/contexts/auth-context'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { cn } from '@/lib/utils'
@@ -135,17 +134,17 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
           </p>
           {notification.data && Object.keys(notification.data).length > 0 && (
             <div className="mt-2 text-xs text-gray-500">
-              {notification.data.customer_name && (
-                <p>Klientas: {notification.data.customer_name}</p>
+              {(notification.data as any).customer_name && (
+                <p>Klientas: {(notification.data as any).customer_name}</p>
               )}
-              {notification.data.service_date && (
-                <p>Data: {new Date(notification.data.service_date).toLocaleDateString('lt-LT')}</p>
+              {(notification.data as any).service_date && (
+                <p>Data: {new Date((notification.data as any).service_date).toLocaleDateString('lt-LT')}</p>
               )}
-              {notification.data.amount && (
-                <p>Suma: €{notification.data.amount}</p>
+              {(notification.data as any).amount && (
+                <p>Suma: €{(notification.data as any).amount}</p>
               )}
-              {notification.data.rating && (
-                <p>Įvertinimas: {notification.data.rating}/5</p>
+              {(notification.data as any).rating && (
+                <p>Įvertinimas: {(notification.data as any).rating}/5</p>
               )}
             </div>
           )}
@@ -157,7 +156,6 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
 
 export default function ProviderNotificationsPage() {
   const router = useRouter()
-  const { user } = useAuth()
   const { 
     notifications, 
     unreadCount, 

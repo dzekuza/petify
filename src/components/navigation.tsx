@@ -44,7 +44,7 @@ const serviceTypes = [
   { value: 'veterinary', label: 'Veterinarijos gydytojas' },
   { value: 'boarding', label: 'Gyvūnų prieglauda' },
   { value: 'training', label: 'Gyvūnų treneris' },
-  { value: 'walking', label: 'Šunų vedėjas' },
+  { value: 'adoption', label: 'Skelbimai' },
   { value: 'sitting', label: 'Gyvūnų prižiūrėtojas' },
 ]
 
@@ -96,8 +96,8 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
       shortName: 'Veterinarijos'
     },
     { 
-      name: t('landing.hero.categories.walking'), 
-      href: '/search?category=walking',
+      name: t('landing.hero.categories.adoption'), 
+      href: '/search?category=adoption',
       icon: '/Pet_Ads_Icon Background Removed.png',
       shortName: 'Skelbimai'
     },
@@ -120,7 +120,27 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [provider, setProvider] = useState<any>(null)
   const { user, signOut, signUp } = useAuth()
+
+  // Load provider data when in provider mode
+  useEffect(() => {
+    const loadProviderData = async () => {
+      if (user?.id && isProviderRoute) {
+        try {
+          const providerData = await providerApi.getProviderByUserId(user.id)
+          console.log('Provider data loaded:', providerData)
+          console.log('Provider services:', providerData?.services)
+          console.log('Is adoption provider:', providerData?.services?.includes('adoption'))
+          setProvider(providerData)
+        } catch (error) {
+          console.error('Error loading provider data:', error)
+        }
+      }
+    }
+
+    loadProviderData()
+  }, [user?.id, isProviderRoute])
 
   const handleSignOut = async () => {
     await signOut()
@@ -280,7 +300,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       onClick={() => router.push('/provider/dashboard')}
                     >
                       <Settings className="mr-2 h-4 w-4" />
-                      Dashboard
+                      {t('navigation.dashboard')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -294,7 +314,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       onClick={() => router.push('/provider/bookings')}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
-                      Bookings
+                      {t('navigation.bookings')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -305,10 +325,16 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                           ? "bg-accent text-accent-foreground" 
                           : "hover:bg-accent hover:text-accent-foreground"
                       )}
-                      onClick={() => router.push('/provider/services')}
+                      onClick={() => router.push(provider?.services?.includes('adoption') ? '/provider/pet-ads' : '/provider/services')}
                     >
                       <Star className="mr-2 h-4 w-4" />
-                      Services
+                      {(() => {
+                        const isAdoption = provider?.services?.includes('adoption')
+                        console.log('Navigation render - provider:', provider)
+                        console.log('Navigation render - services:', provider?.services)
+                        console.log('Navigation render - isAdoption:', isAdoption)
+                        return isAdoption ? 'Skelbimai' : t('navigation.services')
+                      })()}
                     </Button>
                     <Button
                       variant="ghost"
@@ -322,7 +348,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       onClick={() => router.push('/provider/profile')}
                     >
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t('navigation.profile')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -336,7 +362,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       onClick={() => router.push('/provider/availability')}
                     >
                       <Clock className="mr-2 h-4 w-4" />
-                      Calendar
+                      {t('navigation.calendar')}
                     </Button>
                   </>
                 )}
@@ -386,7 +412,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     {isProviderRoute ? (
                       <DropdownMenuItem onClick={() => router.push('/')}>
                         <Settings className="mr-2 h-4 w-4" />
-                        <span>Išeiti iš teikėjo</span>
+                        <span>{t('navigation.exitProvider')}</span>
                       </DropdownMenuItem>
                     ) : (
                       <DropdownMenuItem onClick={handleSwitchToProvider}>
@@ -609,7 +635,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               className="flex items-center space-x-3 w-full px-3 py-3 text-base font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                             >
                               <Settings className="h-5 w-5" />
-                              <span>Išeiti iš teikėjo</span>
+                              <span>{t('navigation.exitProvider')}</span>
                             </button>
                           ) : (
                             <button
@@ -666,7 +692,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Settings className="h-5 w-5" />
-                                  <span>Dashboard</span>
+                                  <span>{t('navigation.dashboard')}</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
@@ -675,16 +701,22 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Calendar className="h-5 w-5" />
-                                  <span>Bookings</span>
+                                  <span>{t('navigation.bookings')}</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/services"
+                                  href={provider?.services?.includes('adoption') ? '/provider/pet-ads' : '/provider/services'}
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Star className="h-5 w-5" />
-                                  <span>Services</span>
+                                  <span>{(() => {
+                                    const isAdoption = provider?.services?.includes('adoption')
+                                    console.log('Mobile navigation render - provider:', provider)
+                                    console.log('Mobile navigation render - services:', provider?.services)
+                                    console.log('Mobile navigation render - isAdoption:', isAdoption)
+                                    return isAdoption ? 'Skelbimai' : t('navigation.services')
+                                  })()}</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
@@ -693,7 +725,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <User className="h-5 w-5" />
-                                  <span>Profile</span>
+                                  <span>{t('navigation.profile')}</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>
@@ -702,16 +734,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Clock className="h-5 w-5" />
-                                  <span>Calendar</span>
-                                </Link>
-                              </DrawerClose>
-                              <DrawerClose asChild>
-                                <Link
-                                  href="/provider/availability"
-                                  className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                  <Clock className="h-5 w-5" />
-                                  <span>Prieinamumas</span>
+                                  <span>{t('navigation.calendar')}</span>
                                 </Link>
                               </DrawerClose>
                             </>

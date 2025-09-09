@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -21,7 +21,6 @@ import {
 } from 'lucide-react'
 import { Service, Booking } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
-import { useNotifications } from '@/contexts/notifications-context'
 import { toast } from 'sonner'
 import { bookingApi } from '@/lib/bookings'
 import { serviceApi } from '@/lib/services'
@@ -29,7 +28,6 @@ import { useDeviceDetection } from '@/lib/device-detection'
 
 export default function ProviderBookings() {
   const { user } = useAuth()
-  const { addNotification } = useNotifications()
   const { isMobile } = useDeviceDetection()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [services, setServices] = useState<Service[]>([])

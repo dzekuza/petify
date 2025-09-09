@@ -6,7 +6,8 @@ import {
   Stethoscope, 
   Home, 
   GraduationCap, 
-  Heart
+  Heart,
+  MapPin
 } from 'lucide-react'
 import { ServiceCategory } from '@/types'
 import { t } from '@/lib/translations'
@@ -52,11 +53,11 @@ export const ServiceCategories = () => {
     {
       id: 'adoption' as ServiceCategory,
       name: 'Skelbimai',
-      description: 'Gyvūnų įvaikinimo ir pardavimo skelbimai',
+      description: 'Gyvūnų pardavimo ir įvaikinimo skelbimai',
       icon: Home,
       color: 'bg-green-100 text-green-600',
       href: '/search?category=adoption',
-      popular: false,
+      popular: true,
     },
   ]
   return (

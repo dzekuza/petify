@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -27,11 +26,9 @@ import { useAuth } from '@/contexts/auth-context'
 import { toast } from 'sonner'
 import { providerApi } from '@/lib/providers'
 import { serviceApi } from '@/lib/services'
-import { useDeviceDetection } from '@/lib/device-detection'
 
 export default function ProviderServicesPage() {
   const { user } = useAuth()
-  const { isMobile } = useDeviceDetection()
   const router = useRouter()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
@@ -62,6 +59,12 @@ export default function ProviderServicesPage() {
           const providerData = await providerApi.getProviderByUserId(user.id)
           
           if (providerData) {
+            // Check if provider is adoption type - redirect to pet ads page
+            if (providerData.services?.includes('adoption')) {
+              router.push('/provider/pet-ads')
+              return
+            }
+
             const serviceProvider: ServiceProvider = {
               id: providerData.id,
               userId: providerData.user_id,
@@ -115,7 +118,7 @@ export default function ProviderServicesPage() {
     }
 
     loadData()
-  }, [user])
+  }, [user, router])
 
   const handleServiceFormChange = (field: keyof CreateServiceForm, value: string | number | string[]) => {
     setServiceForm(prev => ({ ...prev, [field]: value }))

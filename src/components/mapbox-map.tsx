@@ -211,8 +211,8 @@ export const MapboxMap = ({
         return '🏠'
       case 'training':
         return '🎓'
-      case 'walking':
-        return '🚶'
+      case 'adoption':
+        return '🏠'
       case 'sitting':
         return '💝'
       default:
@@ -230,8 +230,8 @@ export const MapboxMap = ({
         return 'Prieglauda'
       case 'training':
         return 'Dresūra'
-      case 'walking':
-        return 'Šunų vedimas'
+      case 'adoption':
+        return 'Skelbimai'
       case 'sitting':
         return 'Prižiūrėjimas'
       default:

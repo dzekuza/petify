@@ -1,4 +1,4 @@
-export type ProviderType = 'grooming' | 'training' | 'veterinary' | 'ads'
+export type ProviderType = 'grooming' | 'training' | 'veterinary' | 'boarding' | 'adoption' | 'sitting'
 
 export interface OnboardingData {
   // Step 0: Provider Type

@@ -19,13 +19,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has a provider profile
-    const { data: existingProvider } = await supabase
+    const { data: existingProviders } = await supabase
       .from('providers')
       .select('id')
       .eq('user_id', user.id)
-      .single()
 
-    if (existingProvider) {
+    if (existingProviders && existingProviders.length > 0) {
       return NextResponse.json({ error: 'Provider profile already exists' }, { status: 400 })
     }
 
@@ -80,19 +79,23 @@ export async function GET(request: NextRequest) {
     }
 
     // Get provider profile
-    const { data: provider, error: fetchError } = await supabase
+    const { data: providers, error: fetchError } = await supabase
       .from('providers')
       .select('*')
       .eq('user_id', user.id)
-      .single()
+      .order('created_at', { ascending: false })
 
     if (fetchError) {
-      if (fetchError.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Provider profile not found' }, { status: 404 })
-      }
       console.error('Error fetching provider:', fetchError)
       return NextResponse.json({ error: 'Failed to fetch provider profile' }, { status: 500 })
     }
+
+    if (!providers || providers.length === 0) {
+      return NextResponse.json({ error: 'Provider profile not found' }, { status: 404 })
+    }
+
+    // Return the most recent provider
+    const provider = providers[0]
 
     return NextResponse.json({ provider })
   } catch (error) {

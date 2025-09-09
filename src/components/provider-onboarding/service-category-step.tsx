@@ -42,9 +42,9 @@ const serviceCategories = [
     icon: '/Pets_Pairing_Icon Background Removed.png'
   },
   {
-    id: 'walking',
-    name: 'Šunų vedimas',
-    description: 'Kasdienės mankštos ir lauko nuotykiai',
+    id: 'adoption',
+    name: 'Skelbimai',
+    description: 'Gyvūnų pardavimo ir įvaikinimo skelbimai',
     icon: '/Pet_Ads_Icon Background Removed.png'
   }
 ]

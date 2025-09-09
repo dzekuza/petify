@@ -6,10 +6,7 @@ import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { ServiceCard } from '@/components/ui/service-card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { 
   Drawer,
   DrawerContent,
@@ -24,14 +21,9 @@ import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { BreedSelector } from '@/components/ui/breed-selector'
 import Image from 'next/image'
 import { 
-  Clock, 
-  Users, 
-  ArrowLeft, 
-  Calendar as CalendarIcon,
-  CheckCircle
+  Users
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
 import { ServiceProvider, Service, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
@@ -54,8 +46,7 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('')
   const [currentStep, setCurrentStep] = useState(1)
-  const [availabilityData, setAvailabilityData] = useState<any>(null)
-  const [loadingAvailability, setLoadingAvailability] = useState(false)
+  const [availabilityData, setAvailabilityData] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [petsLoading, setPetsLoading] = useState(false)
   
@@ -170,7 +161,6 @@ export default function BookingPage() {
   const fetchAvailabilityData = async (date: Date) => {
     if (!provider?.id) return
     
-    setLoadingAvailability(true)
     try {
       const dateString = date.toISOString().split('T')[0]
       const availability = await providerApi.getProviderAvailability(provider.id, dateString)
@@ -178,8 +168,6 @@ export default function BookingPage() {
     } catch (error) {
       console.error('Error fetching availability:', error)
       setAvailabilityData(null)
-    } finally {
-      setLoadingAvailability(false)
     }
   }
 

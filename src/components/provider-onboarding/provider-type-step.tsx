@@ -56,15 +56,39 @@ const providerTypes = [
     ]
   },
   {
-    id: 'ads',
+    id: 'boarding',
+    name: 'Prieglauda',
+    description: 'Pet boarding and accommodation services',
+    icon: '/image (8).png',
+    features: [
+      'Overnight pet care',
+      'Pet accommodation',
+      'Boarding facilities',
+      'Pet sitting services'
+    ]
+  },
+  {
+    id: 'adoption',
     name: 'Skelbimai',
-    description: 'Pet advertising and sales services',
+    description: 'Pet sales and adoption services',
     icon: '/image (8).png',
     features: [
       'Pet adoption listings',
       'Pet sales advertisements',
       'Breeding announcements',
       'Pet rehoming services'
+    ]
+  },
+  {
+    id: 'sitting',
+    name: 'Prižiūrėjimas',
+    description: 'In-home pet care services',
+    icon: '/image (8).png',
+    features: [
+      'In-home pet sitting',
+      'Pet care services',
+      'Daily pet visits',
+      'Pet companionship'
     ]
   }
 ]
@@ -94,7 +118,7 @@ export default function ProviderTypeStep({ data, onUpdate, onNext, onPrevious, i
             </h1>
             
             <div className="space-y-6 w-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {providerTypes.map((type) => (
                   <Card 
                     key={type.id}

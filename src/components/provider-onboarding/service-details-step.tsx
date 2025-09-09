@@ -7,6 +7,7 @@ import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { InputField } from '@/components/ui/input-field'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
@@ -68,6 +69,12 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
   }
 
   const isFormValid = () => {
+    // For adoption/ads providers, only require experience
+    if (data.providerType === 'adoption') {
+      return data.experience
+    }
+    
+    // For other providers, require experience and pricing
     return data.experience && data.basePrice > 0
   }
 
@@ -105,31 +112,36 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
                 </Select>
               </div>
 
-              {/* Base Price */}
-              <InputField
-                id="basePrice"
-                label="Bazinė kaina (€)"
-                type="number"
-                value={data.basePrice || ''}
-                onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
-                placeholder="Įveskite bazinę kainą"
-                min="0"
-                step="0.01"
-                required
-              />
+              {/* Pricing - Only show for non-adoption providers */}
+              {data.providerType !== 'adoption' && (
+                <>
+                  {/* Base Price */}
+                  <InputField
+                    id="basePrice"
+                    label="Bazinė kaina (€)"
+                    type="number"
+                    value={data.basePrice || ''}
+                    onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
+                    placeholder="Įveskite bazinę kainą"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
 
-              {/* Price Per Hour */}
-              <InputField
-                id="pricePerHour"
-                label="Kaina už valandą (€)"
-                type="number"
-                value={data.pricePerHour || ''}
-                onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
-                placeholder="Įveskite kainą už valandą"
-                min="0"
-                step="0.01"
-                required
-              />
+                  {/* Price Per Hour */}
+                  <InputField
+                    id="pricePerHour"
+                    label="Kaina už valandą (€)"
+                    type="number"
+                    value={data.pricePerHour || ''}
+                    onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
+                    placeholder="Įveskite kainą už valandą"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </>
+              )}
 
               {/* Certifications */}
               <div className="w-full">

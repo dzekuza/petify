@@ -17,7 +17,7 @@ const serviceCategories: { value: ServiceCategory; label: string }[] = [
   { value: 'veterinary', label: 'Veterinarijos paslaugos' },
   { value: 'boarding', label: 'Gyvūnų prieglauda' },
   { value: 'training', label: 'Gyvūnų treniruotės' },
-  { value: 'walking', label: 'Šunų vedimas' },
+  { value: 'adoption', label: 'Skelbimai' },
   { value: 'sitting', label: 'Gyvūnų prižiūrėjimas' },
 ]
 

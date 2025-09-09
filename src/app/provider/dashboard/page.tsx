@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/contexts/auth-context'
+import { useNotifications } from '@/contexts/notifications-context'
 import { useRouter } from 'next/navigation'
 import { 
   Calendar, 
@@ -14,7 +15,8 @@ import {
   Star, 
   DollarSign, 
   Clock,
-  Settings
+  Settings,
+  Bell
 } from 'lucide-react'
 import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
@@ -23,6 +25,7 @@ import { t } from '@/lib/translations'
 
 export default function ProviderDashboard() {
   const { user } = useAuth()
+  const { notifications, unreadCount } = useNotifications()
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     totalBookings: 0,
@@ -276,6 +279,56 @@ export default function ProviderDashboard() {
 
               {/* Quick Actions */}
               <div className="space-y-6">
+                {/* Recent Notifications */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>Notifications</span>
+                      {unreadCount > 0 && (
+                        <Badge variant="destructive" className="ml-2">
+                          {unreadCount}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {notifications.slice(0, 5).length > 0 ? (
+                        notifications.slice(0, 5).map((notification) => (
+                          <div key={notification.id} className={`p-3 rounded-lg border ${!notification.read ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+                            <div className="flex items-start space-x-3">
+                              <Bell className={`h-4 w-4 mt-0.5 ${!notification.read ? 'text-blue-500' : 'text-gray-400'}`} />
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${!notification.read ? 'text-blue-900' : 'text-gray-900'}`}>
+                                  {notification.title}
+                                </p>
+                                <p className={`text-xs ${!notification.read ? 'text-blue-700' : 'text-gray-600'}`}>
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {new Date(notification.created_at).toLocaleDateString('lt-LT')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4">
+                          <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500">No notifications yet</p>
+                        </div>
+                      )}
+                    </div>
+                    {notifications.length > 5 && (
+                      <div className="mt-4">
+                        <Button variant="outline" size="sm" className="w-full">
+                          View All Notifications
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <Card>
                   <CardHeader>
                     <CardTitle>{t('providerDashboard.quickActions')}</CardTitle>

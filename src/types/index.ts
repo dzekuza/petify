@@ -5,9 +5,8 @@ export type ServiceCategory =
   | 'veterinary' // veterinarija
   | 'boarding' // prieglauda
   | 'training' // treniruotės
-  | 'walking' // pasivaikščiojimas
   | 'sitting' // prižiūrėjimas
-  | 'adoption' // įvaikinimas
+  | 'adoption' // skelbimai
 
 export type ServiceStatus = 'active' | 'inactive' | 'pending' // aktyvus | neaktyvus | laukiama
 
@@ -219,5 +218,60 @@ export interface CreateServiceForm {
   maxPets: number // maksimalus gyvūnų skaičius
   requirements?: string[] // reikalavimai
   includes?: string[] // įskaičiuota
+  images?: File[] // paveikslėliai
+}
+
+// Pet Ads types
+export interface PetAd {
+  id: string
+  providerId: string
+  name: string // gyvūno vardas
+  description: string // aprašymas
+  price: number // kaina
+  species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other' // rūšis
+  breed?: string // veislė
+  age?: number // amžius (mėnesiai)
+  gender?: 'male' | 'female' // lytis
+  size?: 'small' | 'medium' | 'large' // dydis
+  color?: string // spalva
+  weight?: number // svoris (kg)
+  vaccinationStatus?: 'vaccinated' | 'not_vaccinated' | 'unknown' // vakcinacijos būsena
+  medicalNotes?: string // medicinos pastabos
+  behavioralNotes?: string // elgesio pastabos
+  specialNeeds?: string[] // specialūs poreikiai
+  images: string[] // paveikslėliai
+  isActive: boolean // ar aktyvus
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
+}
+
+export interface PetAdRequest {
+  id: string
+  petAdId: string
+  customerId: string
+  message?: string // žinutė
+  status: 'pending' | 'approved' | 'rejected' | 'completed' // būsena
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
+  // Užpildyti laukai
+  petAd?: PetAd // skelbimas
+  customer?: User // klientas
+}
+
+export interface CreatePetAdForm {
+  name: string // gyvūno vardas
+  description: string // aprašymas
+  price: number // kaina
+  species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other' // rūšis
+  breed?: string // veislė
+  age?: number // amžius
+  gender?: 'male' | 'female' // lytis
+  size?: 'small' | 'medium' | 'large' // dydis
+  color?: string // spalva
+  weight?: number // svoris
+  vaccinationStatus?: 'vaccinated' | 'not_vaccinated' | 'unknown' // vakcinacijos būsena
+  medicalNotes?: string // medicinos pastabos
+  behavioralNotes?: string // elgesio pastabos
+  specialNeeds?: string[] // specialūs poreikiai
   images?: File[] // paveikslėliai
 }

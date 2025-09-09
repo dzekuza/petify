@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
+import Image from 'next/image'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
 import ServiceCategoryStep from '@/components/provider-onboarding/service-category-step'
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
@@ -219,7 +220,14 @@ export default function NewProviderOnboardingPage() {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Image
+            src="/PetiFy.svg"
+            alt="PetiFy"
+            width={120}
+            height={40}
+            className="mx-auto mb-4 animate-pulse"
+            priority
+          />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>

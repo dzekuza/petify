@@ -125,7 +125,7 @@ export const translations = {
     veterinary: 'Veterinarijos paslaugos',
     boarding: 'Gyvūnų prieglauda',
     training: 'Gyvūnų treniruotės',
-    walking: 'Šunų vedimas',
+    adoption: 'Skelbimai',
     sitting: 'Gyvūnų prižiūrėjimas'
   },
 
@@ -304,9 +304,6 @@ export const translations = {
       createProviderAccount: 'Sukurti teikėjo paskyrą',
       passwordsDoNotMatch: 'Slaptažodžiai nesutampa',
       passwordTooShort: 'Slaptažodis turi būti bent 6 simbolių',
-      checkYourEmail: 'Patikrinkite savo el. paštą',
-      confirmationLinkSent: 'Išsiuntėme jums patvirtinimo nuorodą į',
-      checkEmailInstructions: 'Patikrinkite savo el. paštą ir paspauskite nuorodą, kad patvirtintumėte paskyrą.',
       joinAsPetOwner: 'Prisijunkite prie Petify kaip gyvūnų savininkas ir raskite patikimą priežiūrą savo augintiniams',
       signUpAsPetOwner: 'Registruotis kaip gyvūnų savininkas',
       createAccountDescription: 'Sukurkite paskyrą, kad rastumėte patikimas gyvūnų priežiūros paslaugas',
@@ -391,7 +388,14 @@ export const translations = {
     serviceProvider: 'Paslaugų teikėjas',
     switchToProvider: 'Perjungti į teikėją',
     toggleMobileMenu: 'Perjungti mobiliąjį meniu',
-    serviceCategories: 'Paslaugų kategorijos'
+    serviceCategories: 'Paslaugų kategorijos',
+    // Provider navigation items
+    dashboard: 'Valdymo skydas',
+    bookings: 'Užsakymai',
+    services: 'Paslaugos',
+    calendar: 'Kalendorius',
+    notifications: 'Pranešimai',
+    exitProvider: 'Išeiti iš teikėjo'
   },
 
   // Provider Dashboard
@@ -521,7 +525,7 @@ export const translations = {
         training: 'Dresūra',
         boarding: 'Poravimas',
         veterinary: 'Veterinarijos',
-        walking: 'Skelbimai'
+        adoption: 'Skelbimai'
       },
       providersGrid: {
         popularGrooming: 'Populiarios kirpyklos Palangoje',
@@ -549,10 +553,6 @@ export const translations = {
       training: {
         name: 'Gyvūnų treniruotės',
         description: 'Profesionalūs treniruotės ir elgesio modifikavimas'
-      },
-      walking: {
-        name: 'Šunų vedimas',
-        description: 'Kasdienės mankštos ir lauko nuotykiai'
       },
       sitting: {
         name: 'Gyvūnų prižiūrėjimas',

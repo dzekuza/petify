@@ -24,7 +24,7 @@ const serviceCategories = [
   { value: 'veterinary', label: 'Veterinary Care' },
   { value: 'boarding', label: 'Pet Boarding' },
   { value: 'training', label: 'Pet Training' },
-  { value: 'walking', label: 'Dog Walking' },
+  { value: 'adoption', label: 'Pet Sales & Adoption' },
   { value: 'sitting', label: 'Pet Sitting' },
 ]
 

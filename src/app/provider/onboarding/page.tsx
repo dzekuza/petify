@@ -6,12 +6,12 @@ import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
 import { toast } from 'sonner'
+import Image from 'next/image'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
 import ServiceCategoryStep from '@/components/provider-onboarding/service-category-step'
 import LocationSelectionStep from '@/components/provider-onboarding/location-selection-step'
 import AddressInputStep from '@/components/provider-onboarding/address-input-step'
 import ServicesStep from '@/components/provider-onboarding/services-step'
-import DetailedServiceStep from '@/components/provider-onboarding/detailed-service-step'
 import WorkingHoursStep from '@/components/provider-onboarding/working-hours-step'
 import LogoCoverStep from '@/components/provider-onboarding/logo-cover-step'
 import ProviderTypeStep from '@/components/provider-onboarding/provider-type-step'
@@ -162,9 +162,9 @@ function ProviderOnboardingPage() {
     
     let nextStep = currentStep + 1
     
-    // Skip Services step if provider type is "Skelbimai" (ads)
-    if (currentStep === 5 && onboardingData.providerType === 'ads') {
-      // Skip Services step for ads provider
+    // Skip Services step if provider type is "Skelbimai" (adoption)
+    if (currentStep === 5 && onboardingData.providerType === 'adoption') {
+      // Skip Services step for adoption provider
       nextStep = currentStep + 2 // Skip services (5) step, go to working-hours (6)
     }
     
@@ -182,9 +182,9 @@ function ProviderOnboardingPage() {
     
     let prevStep = currentStep - 1
     
-    // Skip Services step if provider type is "Skelbimai" (ads) when going back
-    if (currentStep === 6 && onboardingData.providerType === 'ads') {
-      // Skip Services step when going back for ads provider
+    // Skip Services step if provider type is "Skelbimai" (adoption) when going back
+    if (currentStep === 6 && onboardingData.providerType === 'adoption') {
+      // Skip Services step when going back for adoption provider
       prevStep = currentStep - 2 // Skip services (5) step, go to business-info (4)
     }
     
@@ -445,7 +445,14 @@ function ProviderOnboardingPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Image
+            src="/PetiFy.svg"
+            alt="PetiFy"
+            width={120}
+            height={40}
+            className="mx-auto mb-4 animate-pulse"
+            priority
+          />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -457,7 +464,14 @@ function ProviderOnboardingPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Image
+            src="/PetiFy.svg"
+            alt="PetiFy"
+            width={120}
+            height={40}
+            className="mx-auto mb-4 animate-pulse"
+            priority
+          />
           <p className="text-gray-600">Redirecting to sign in...</p>
         </div>
       </div>

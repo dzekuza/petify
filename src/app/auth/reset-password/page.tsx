@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { PawPrint, Eye, EyeOff, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, XCircle, Loader2, PawPrint } from 'lucide-react'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import Image from 'next/image'
 
 function ResetPasswordContent() {
   const [formData, setFormData] = useState({
@@ -25,7 +26,6 @@ function ResetPasswordContent() {
   const [checkingSession, setCheckingSession] = useState(true)
   
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     const checkSession = async () => {
@@ -38,7 +38,7 @@ function ResetPasswordContent() {
         } else {
           setIsValidSession(true)
         }
-      } catch (err) {
+      } catch {
         setError(t('auth.resetPassword.sessionError'))
         setIsValidSession(false)
       } finally {
@@ -85,7 +85,7 @@ function ResetPasswordContent() {
           router.push('/')
         }, 3000)
       }
-    } catch (err) {
+    } catch {
       setError(t('auth.resetPassword.updateError'))
     }
     
@@ -305,7 +305,14 @@ export default function ResetPasswordPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mx-auto mb-4" />
+                <Image
+                  src="/PetiFy.svg"
+                  alt="PetiFy"
+                  width={120}
+                  height={40}
+                  className="mx-auto mb-4 animate-pulse"
+                  priority
+                />
                 <p className="text-gray-600">Loading...</p>
               </div>
             </CardContent>

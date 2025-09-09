@@ -4,9 +4,10 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { PawPrint, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { CheckCircle, XCircle, Loader2, PawPrint } from 'lucide-react'
 import { t } from '@/lib/translations'
 import Link from 'next/link'
+import Image from 'next/image'
 
 function EmailConfirmContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'expired'>('loading')
@@ -40,7 +41,7 @@ function EmailConfirmContent() {
           setStatus('error')
           setError(t('auth.confirm.invalidType'))
         }
-      } catch (err) {
+      } catch {
         setStatus('error')
         setError(t('auth.confirm.verificationFailed'))
       }
@@ -196,7 +197,14 @@ export default function EmailConfirmPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mx-auto mb-4" />
+                <Image
+                  src="/PetiFy.svg"
+                  alt="PetiFy"
+                  width={120}
+                  height={40}
+                  className="mx-auto mb-4 animate-pulse"
+                  priority
+                />
                 <p className="text-gray-600">Loading...</p>
               </div>
             </CardContent>

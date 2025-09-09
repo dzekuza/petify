@@ -22,7 +22,6 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
   
   const { signUp } = useAuth()
   const router = useRouter()
@@ -54,38 +53,13 @@ export default function SignUpPage() {
     if (error) {
       setError(error.message)
     } else {
-      setSuccess(true)
-      // Redirect to home page for customers
-      setTimeout(() => {
-        router.push('/')
-      }, 2000)
+      // Redirect to home page for customers immediately
+      router.push('/')
     }
     
     setLoading(false)
   }
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <PawPrint className="h-12 w-12 text-green-600" />
-            </div>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
-              {t('auth.signup.checkYourEmail')}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              {t('auth.signup.confirmationLinkSent')} {formData.email}
-            </p>
-            <p className="mt-4 text-sm text-gray-500">
-              {t('auth.signup.checkEmailInstructions')}
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">

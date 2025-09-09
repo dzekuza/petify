@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { MapboxMap } from '@/components/mapbox-map'
 import { ListingsGrid } from '@/components/listings-grid'
+import { PetAdsGrid } from '@/components/pet-ads-grid'
 import { FilterModal } from '@/components/filter-modal'
-import { SearchResult, SearchFilters as SearchFiltersType } from '@/types'
+import { SearchResult, SearchFilters as SearchFiltersType, PetAd } from '@/types'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/translations'
 import {
@@ -22,6 +23,7 @@ import { useDeviceDetection } from '@/lib/device-detection'
 
 interface SearchLayoutProps {
   results: SearchResult[]
+  petAds?: PetAd[]
   filters: SearchFiltersType
   onFiltersChange: (filters: SearchFiltersType) => void
   loading: boolean
@@ -31,7 +33,7 @@ interface SearchLayoutProps {
   onFilterModalClose?: () => void
 }
 
-export const SearchLayout = ({ results, filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
+export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose }: SearchLayoutProps) => {
   const { isDesktop } = useDeviceDetection()
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
@@ -150,6 +152,13 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                           </div>
                         ))}
                       </div>
+                    ) : filters.category === 'adoption' ? (
+                      <PetAdsGrid
+                        title=""
+                        petAds={petAds}
+                        showViewAll={false}
+                        gridCols="grid-cols-1"
+                      />
                     ) : (
                       <ListingsGrid
                         title=""
@@ -181,6 +190,13 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
                       </div>
                     ))}
                   </div>
+                ) : filters.category === 'adoption' ? (
+                  <PetAdsGrid
+                    title={`${petAds.length} Pets Available`}
+                    petAds={petAds}
+                    showViewAll={false}
+                    gridCols="grid-cols-1 md:grid-cols-2"
+                  />
                 ) : (
                   <ListingsGrid
                     title={`${results.length} ${t('search.providersFound')}`}
