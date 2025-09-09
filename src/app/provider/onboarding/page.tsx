@@ -27,7 +27,8 @@ const onboardingSteps = [
   { id: 4, title: 'Business Info', component: 'business-info' },
   { id: 5, title: 'Services', component: 'services' },
   { id: 6, title: 'Working Hours', component: 'working-hours' },
-  { id: 7, title: 'Logo and Cover', component: 'logo-cover' }
+  { id: 7, title: 'Logo and Cover', component: 'logo-cover' },
+  { id: 8, title: 'Review', component: 'review' }
 ]
 
 function ProviderOnboardingPage() {
@@ -245,8 +246,8 @@ function ProviderOnboardingPage() {
           sunday: { start: onboardingData.workingHours?.sunday?.startTime || '09:00', end: onboardingData.workingHours?.sunday?.endTime || '17:00', available: onboardingData.workingHours?.sunday?.enabled || false }
         },
         priceRange: {
-          min: onboardingData.basePrice || 0,
-          max: onboardingData.pricePerHour || 0,
+          min: Math.min(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
+          max: Math.max(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
           currency: onboardingData.currency || 'EUR'
         },
         availability: onboardingData.availability || {},
@@ -286,7 +287,7 @@ function ProviderOnboardingPage() {
           city: onboardingData.addresses?.[0]?.city || onboardingData.city || '',
           state: onboardingData.state || '',
           zip: onboardingData.addresses?.[0]?.zipCode || onboardingData.zipCode || '',
-          coordinates: { lat: 0, lng: 0 }
+          coordinates: onboardingData.coordinates || { lat: 0, lng: 0 }
         },
         serviceAreas: onboardingData.addresses?.map(addr => ({
           address: addr.address,
@@ -308,8 +309,8 @@ function ProviderOnboardingPage() {
           sunday: { start: onboardingData.workingHours?.sunday?.startTime || '09:00', end: onboardingData.workingHours?.sunday?.endTime || '17:00', available: onboardingData.workingHours?.sunday?.enabled || false }
         },
         priceRange: {
-          min: onboardingData.basePrice || 0,
-          max: onboardingData.pricePerHour || 0,
+          min: Math.min(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
+          max: Math.max(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
           currency: onboardingData.currency || 'EUR'
         },
         availability: onboardingData.availability || {},

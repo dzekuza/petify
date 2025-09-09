@@ -203,7 +203,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
       {/* Bottom Navigation */}
       <BottomNavigation
         currentStep={7}
-        totalSteps={8}
+        totalSteps={9}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}

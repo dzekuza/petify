@@ -182,7 +182,7 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious, isEd
       {/* Bottom Navigation */}
       <BottomNavigation
         currentStep={8}
-        totalSteps={8}
+        totalSteps={9}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}

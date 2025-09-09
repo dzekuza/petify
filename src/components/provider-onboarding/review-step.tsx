@@ -197,8 +197,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
 
       {/* Bottom Navigation */}
       <BottomNavigation
-        currentStep={11}
-        totalSteps={12}
+        currentStep={9}
+        totalSteps={9}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={false}
