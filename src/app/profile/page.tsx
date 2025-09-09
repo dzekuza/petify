@@ -17,6 +17,7 @@ import { ImageUpload } from '@/components/ui/image-upload'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { useDeviceDetection } from '@/lib/device-detection'
+import { supabase } from '@/lib/supabase'
 import { User, Mail, Calendar, Shield, Eye, EyeOff, MapPin, Phone } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -73,6 +74,14 @@ export default function ProfilePage() {
 
   if (!user) return null
 
+  // Debug: Log user data to see what we have
+  console.log('Current user data:', {
+    id: user.id,
+    email: user.email,
+    user_metadata: user.user_metadata,
+    avatar_url: user.user_metadata?.avatar_url
+  })
+
   // Handler functions
   const handleEditProfile = () => {
     setEditProfileOpen(true)
@@ -88,22 +97,45 @@ export default function ProfilePage() {
         formData.append('profileImage', profileImage)
       }
 
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('No active session found')
+      }
+
       // Update profile via API
       const response = await fetch('/api/users/update-profile', {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: formData,
       })
       
       if (!response.ok) {
-        throw new Error('Failed to update profile')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to update profile`)
       }
       
-      console.log('Saving profile:', editForm)
+      const result = await response.json()
+      console.log('Profile updated successfully:', result)
+      
+      // Refresh user data to show updated profile
+      const { data: { user: updatedUser } } = await supabase.auth.getUser()
+      if (updatedUser) {
+        // Trigger auth state change to refresh the UI
+        await supabase.auth.refreshSession()
+      }
+      
       setEditProfileOpen(false)
       setProfileImage(null)
+      
+      // Show success message
+      alert('Profile updated successfully!')
     } catch (error) {
       console.error('Error updating profile:', error)
-      alert('Failed to update profile. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile. Please try again.'
+      alert(errorMessage)
     }
   }
 
@@ -219,7 +251,17 @@ export default function ProfilePage() {
                   <CardContent className="space-y-6">
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-20 w-20">
-                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name || 'User'} />
+                        <AvatarImage 
+                          src={user.user_metadata?.avatar_url} 
+                          alt={user.user_metadata?.full_name || 'User'} 
+                          onError={(e) => {
+                            console.log('Avatar image failed to load:', user.user_metadata?.avatar_url)
+                            e.currentTarget.style.display = 'none'
+                          }}
+                          onLoad={() => {
+                            console.log('Avatar image loaded successfully:', user.user_metadata?.avatar_url)
+                          }}
+                        />
                         <AvatarFallback className="text-lg">
                           {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || <User className="h-8 w-8" />}
                         </AvatarFallback>

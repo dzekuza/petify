@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { InputField } from '@/components/ui/input-field'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { X, Plus } from 'lucide-react'
@@ -16,6 +17,9 @@ interface ServiceDetailsStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
 const experienceOptions = [
@@ -37,7 +41,7 @@ const commonCertifications = [
   'Gyvūnų fizioterapija'
 ]
 
-export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious }: ServiceDetailsStepProps) {
+export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: ServiceDetailsStepProps) {
   const [newCertification, setNewCertification] = useState('')
   const [customCertifications, setCustomCertifications] = useState<string[]>(data.certifications || [])
 
@@ -68,16 +72,18 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious 
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Service Details">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-[522px]">
-            <div className="flex flex-col gap-6 items-start justify-start">
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-black w-full">
-                Paslaugų detalės
-              </h1>
+      <PageContent>
+        <div className="w-full max-w-[522px]">
+          <div className="flex flex-col gap-6 items-start justify-start">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-black w-full">
+              Paslaugų detalės
+            </h1>
               
               {/* Experience */}
               <div className="w-full">
@@ -100,32 +106,30 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious 
               </div>
 
               {/* Base Price */}
-              <div className="w-full">
-                <Label htmlFor="basePrice">Bazinė kaina (€)</Label>
-                <Input
-                  id="basePrice"
-                  type="number"
-                  value={data.basePrice || ''}
-                  onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
-                  placeholder="Įveskite bazinę kainą"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+              <InputField
+                id="basePrice"
+                label="Bazinė kaina (€)"
+                type="number"
+                value={data.basePrice || ''}
+                onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
+                placeholder="Įveskite bazinę kainą"
+                min="0"
+                step="0.01"
+                required
+              />
 
               {/* Price Per Hour */}
-              <div className="w-full">
-                <Label htmlFor="pricePerHour">Kaina už valandą (€)</Label>
-                <Input
-                  id="pricePerHour"
-                  type="number"
-                  value={data.pricePerHour || ''}
-                  onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
-                  placeholder="Įveskite kainą už valandą"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+              <InputField
+                id="pricePerHour"
+                label="Kaina už valandą (€)"
+                type="number"
+                value={data.pricePerHour || ''}
+                onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
+                placeholder="Įveskite kainą už valandą"
+                min="0"
+                step="0.01"
+                required
+              />
 
               {/* Certifications */}
               <div className="w-full">
@@ -201,17 +205,18 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious 
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={9}
         totalSteps={12}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

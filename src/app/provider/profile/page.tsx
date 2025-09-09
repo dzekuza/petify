@@ -207,7 +207,7 @@ export default function ProviderProfilePage() {
                 {providers.map((provider) => (
                   <Card key={provider.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     {/* Cover Image Section */}
-                    <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
+                    <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 -mt-6">
                       {provider.images && provider.images.length > 0 ? (
                         <Image 
                           src={provider.images[0]} 

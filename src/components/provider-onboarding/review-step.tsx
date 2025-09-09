@@ -1,7 +1,9 @@
 'use client'
 
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Phone, Globe, Clock, Star, Euro } from 'lucide-react'
@@ -11,9 +13,12 @@ interface ReviewStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
-export default function ReviewStep({ data, onUpdate, onNext, onPrevious }: ReviewStepProps) {
+export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: ReviewStepProps) {
   const formatAddress = () => {
     const parts = [data.address, data.city, data.state, data.zipCode].filter(Boolean)
     return parts.join(', ')
@@ -33,16 +38,18 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious }: Revie
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Review">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-[522px]">
-            <div className="flex flex-col gap-6 items-start justify-start">
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-black w-full">
-                Peržiūrėti informaciją
-              </h1>
+      <PageContent>
+        <div className="w-full max-w-[522px]">
+          <div className="flex flex-col gap-6 items-start justify-start">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-black w-full">
+              Peržiūrėti informaciją
+            </h1>
               
               <p className="text-gray-600 mb-6">
                 Peržiūrėkite savo informaciją prieš baigiant registraciją
@@ -186,18 +193,19 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious }: Revie
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={11}
         totalSteps={12}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={false}
         nextText="Baigti registraciją"
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

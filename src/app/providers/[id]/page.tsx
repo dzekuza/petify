@@ -76,18 +76,14 @@ export default function ProviderDetailPage() {
   }
 
   const handleBookService = (serviceId?: string) => {
-    const isMobile = window.innerWidth < 1024
     const queryParams = new URLSearchParams()
     
     if (serviceId) {
       queryParams.set('service', serviceId)
     }
     
-    if (isMobile) {
-      router.push(`/providers/${params.id}/book?${queryParams.toString()}`)
-    } else {
-      router.push(`/providers/${params.id}/payment?${queryParams.toString()}`)
-    }
+    // Navigate to booking page for both mobile and desktop
+    router.push(`/providers/${params.id}/book?${queryParams.toString()}`)
   }
 
   const handlePetsUpdate = (pets: Pet[]) => {

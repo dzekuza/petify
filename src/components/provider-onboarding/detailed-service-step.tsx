@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { InputField, TextareaField } from '@/components/ui/input-field'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface DetailedServiceStepProps {
@@ -14,6 +15,9 @@ interface DetailedServiceStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
 interface DetailedService {
@@ -37,7 +41,7 @@ const serviceDurations = [
   { value: '480', label: '8 val.' }
 ]
 
-export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious }: DetailedServiceStepProps) {
+export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: DetailedServiceStepProps) {
   const [services, setServices] = useState<DetailedService[]>(
     data.detailedServices && data.detailedServices.length > 0 
       ? data.detailedServices 
@@ -98,16 +102,18 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Detailed Service">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-[522px]">
-            <div className="flex flex-col gap-6 items-start justify-start">
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-black w-full">
-                Pridėkite paslaugą
-              </h1>
+      <PageContent>
+        <div className="w-full max-w-[522px]">
+          <div className="flex flex-col gap-6 items-start justify-start">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-black w-full">
+              Pridėkite paslaugą
+            </h1>
               
               {/* Services Forms */}
               <div className="flex flex-col gap-6 w-full">
@@ -128,25 +134,25 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
                     )}
                     
                     {/* Service Name */}
-                    <div>
-                      <Input
-                        id={`serviceName-${index}`}
-                        value={service.name}
-                        onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
-                        placeholder="Paslaugos pavadinimas"
-                      />
-                    </div>
+                    <InputField
+                      id={`serviceName-${index}`}
+                      label="Paslaugos pavadinimas"
+                      value={service.name}
+                      onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
+                      placeholder="Įveskite paslaugos pavadinimą"
+                      required
+                    />
                     
                     {/* Service Description */}
-                    <div>
-                      <Textarea
-                        id={`serviceDescription-${index}`}
-                        value={service.description}
-                        onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
-                        placeholder="Paslaugos aprašymas"
-                        rows={3}
-                      />
-                    </div>
+                    <TextareaField
+                      id={`serviceDescription-${index}`}
+                      label="Paslaugos aprašymas"
+                      value={service.description}
+                      onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
+                      placeholder="Aprašykite paslaugą..."
+                      rows={3}
+                      required
+                    />
                     
                     {/* Duration and Price */}
                     <div className="flex gap-2">
@@ -168,14 +174,16 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
                         </Select>
                       </div>
                       <div className="flex-1">
-                        <Input
+                        <InputField
                           id={`servicePrice-${index}`}
+                          label="Kaina (€)"
                           type="number"
                           value={service.price}
                           onChange={(e) => handleServiceChange(index, 'price', e.target.value)}
-                          placeholder="Kaina (€)"
+                          placeholder="20.00"
                           min="0"
                           step="0.01"
+                          required
                         />
                       </div>
                     </div>
@@ -246,17 +254,18 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={5}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

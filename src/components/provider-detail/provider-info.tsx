@@ -104,15 +104,13 @@ export function ProviderInfo({ provider, services, reviews, isMobile = false, on
                     <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900`}>
                       €{service.price}
                     </div>
-                    {isMobile && (
-                      <Button
-                        onClick={() => onBookService?.(service.id)}
-                        className="mt-2 w-full bg-black hover:bg-gray-800 text-white"
-                        size="sm"
-                      >
-                        {t('provider.bookService')}
-                      </Button>
-                    )}
+                    <Button
+                      onClick={() => onBookService?.(service.id)}
+                      className={`mt-2 bg-black hover:bg-gray-800 text-white ${isMobile ? 'w-full' : 'w-auto px-4'}`}
+                      size="sm"
+                    >
+                      {t('provider.bookService')}
+                    </Button>
                   </div>
                 </div>
               </div>

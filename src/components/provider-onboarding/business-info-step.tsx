@@ -6,9 +6,8 @@ import { PageLayout, PageContent } from './page-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { InputField, TextareaField } from '@/components/ui/input-field'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 
 interface BusinessInfoStepProps {
@@ -66,76 +65,72 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious, i
               </h1>
               
               {/* Business Name */}
-              <div className="w-full">
-                <Label htmlFor="businessName">Verslo pavadinimas *</Label>
-                <Input
-                  id="businessName"
-                  value={data.businessName}
-                  onChange={(e) => onUpdate({ businessName: e.target.value })}
-                  placeholder="Įveskite verslo pavadinimą"
-                />
-              </div>
+              <InputField
+                id="businessName"
+                label="Verslo pavadinimas"
+                value={data.businessName}
+                onChange={(e) => onUpdate({ businessName: e.target.value })}
+                placeholder="Įveskite verslo pavadinimą"
+                required
+              />
 
               {/* Business Description */}
-              <div className="w-full">
-                <Label htmlFor="businessDescription">Verslo aprašymas *</Label>
-                <Textarea
-                  id="businessDescription"
-                  value={data.businessDescription}
-                  onChange={(e) => onUpdate({ businessDescription: e.target.value })}
-                  placeholder="Aprašykite savo verslą ir paslaugas..."
-                  rows={4}
-                />
-              </div>
+              <TextareaField
+                id="businessDescription"
+                label="Verslo aprašymas"
+                value={data.businessDescription}
+                onChange={(e) => onUpdate({ businessDescription: e.target.value })}
+                placeholder="Aprašykite savo verslą ir paslaugas..."
+                rows={4}
+                required
+              />
 
               {/* Phone */}
-              <div className="w-full">
-                <Label htmlFor="phone">Telefono numeris *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={data.phone}
-                  onChange={(e) => onUpdate({ phone: e.target.value })}
-                  placeholder="+370 600 00000"
-                />
-              </div>
+              <InputField
+                id="phone"
+                label="Telefono numeris"
+                type="tel"
+                value={data.phone}
+                onChange={(e) => onUpdate({ phone: e.target.value })}
+                placeholder="+370 600 00000"
+                required
+              />
 
               {/* Website */}
-              <div className="w-full">
-                <Label htmlFor="website">Svetainė (neprivaloma)</Label>
-                <Input
-                  id="website"
-                  type="url"
-                  value={data.website}
-                  onChange={(e) => onUpdate({ website: e.target.value })}
-                  placeholder="https://www.example.com"
-                />
-              </div>
+              <InputField
+                id="website"
+                label="Svetainė"
+                type="url"
+                value={data.website}
+                onChange={(e) => onUpdate({ website: e.target.value })}
+                placeholder="https://www.example.com"
+                helperText="Neprivaloma"
+              />
 
               {/* Pricing */}
-              <div className="w-full grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="basePrice">Minimali kaina (€) *</Label>
-                  <Input
+              <div className="w-full space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField
                     id="basePrice"
+                    label="Minimali kaina (€)"
                     type="number"
                     value={data.basePrice || ''}
                     onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
                     placeholder="20"
                     min="0"
                     step="0.01"
+                    required
                   />
-                </div>
-                <div>
-                  <Label htmlFor="pricePerHour">Maksimali kaina (€) *</Label>
-                  <Input
+                  <InputField
                     id="pricePerHour"
+                    label="Maksimali kaina (€)"
                     type="number"
                     value={data.pricePerHour || ''}
                     onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
                     placeholder="50"
                     min="0"
                     step="0.01"
+                    required
                   />
                 </div>
               </div>

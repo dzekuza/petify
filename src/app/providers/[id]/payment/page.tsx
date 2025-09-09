@@ -203,14 +203,21 @@ export default function PaymentPage() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create payment intent')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Payment intent creation failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        })
+        throw new Error(errorData.error || `Failed to create payment intent (${response.status})`)
       }
 
       const data = await response.json()
       setClientSecret(data.clientSecret)
     } catch (error) {
       console.error('Error creating payment intent:', error)
-      toast.error(t('payment.failedToInitialize'))
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      toast.error(`${t('payment.failedToInitialize')}: ${errorMessage}`)
     } finally {
       setIsCreatingPayment(false)
     }
@@ -324,7 +331,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button

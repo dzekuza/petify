@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -13,6 +15,9 @@ interface WorkingHoursStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
 interface DayHours {
@@ -51,7 +56,7 @@ const dayNames = [
   { key: 'sunday', label: 'Sekmadienis' }
 ]
 
-export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }: WorkingHoursStepProps) {
+export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: WorkingHoursStepProps) {
   const [workingHours, setWorkingHours] = useState<WorkingHours>(
     data.workingHours || defaultWorkingHours
   )
@@ -85,16 +90,18 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Working Hours">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-2xl">
-            <div className="flex flex-col gap-8 items-center justify-center">
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-black text-center">
-                Darbo valandos
-              </h1>
+      <PageContent>
+        <div className="w-full max-w-2xl">
+          <div className="flex flex-col gap-8 items-center justify-center">
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-black text-center">
+              Darbo valandos
+            </h1>
               
               {/* Description */}
               <p className="text-base text-gray-600 text-center max-w-md">
@@ -191,17 +198,18 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious }:
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={7}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

@@ -21,6 +21,14 @@ export const createPaymentIntent = async (
   data: PaymentIntentData
 ): Promise<CreatePaymentIntentResponse> => {
   try {
+    console.log('Creating payment intent with data:', {
+      amount: data.amount,
+      currency: data.currency,
+      formattedAmount: formatAmountForStripe(data.amount, data.currency),
+      bookingId: data.bookingId,
+      customerEmail: data.customerEmail
+    })
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: formatAmountForStripe(data.amount, data.currency),
       currency: data.currency,
@@ -33,6 +41,8 @@ export const createPaymentIntent = async (
       },
       receipt_email: data.customerEmail,
     })
+
+    console.log('Stripe payment intent created:', paymentIntent.id)
 
     return {
       clientSecret: paymentIntent.client_secret!,

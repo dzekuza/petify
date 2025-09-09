@@ -6,7 +6,7 @@ import { PageLayout, PageContent } from './page-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { InputField } from '@/components/ui/input-field'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import Map, { Marker } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -140,7 +140,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
       {/* Main Content */}
       <PageContent>
         <div className="w-full max-w-6xl">
-            <div className="flex flex-col lg:flex-row gap-8 items-start justify-start">
+            <div className="flex flex-col lg:flex-row gap-8 items-center justify-start">
               {/* Left Side - Address Forms */}
               <div className="flex-1 max-w-[522px]">
                 <div className="flex flex-col gap-6 items-start justify-start">
@@ -200,19 +200,23 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                             {/* City and Zip Code */}
                             <div className="flex gap-2">
                               <div className="flex-1">
-                                <Input
+                                <InputField
                                   id={`zipCode-${index}`}
+                                  label="Pašto kodas"
                                   value={address.zipCode}
                                   onChange={(e) => handleAddressChange(index, 'zipCode', e.target.value)}
-                                  placeholder="Pašto kodas"
+                                  placeholder="03106"
+                                  required
                                 />
                               </div>
                               <div className="flex-1">
-                                <Input
+                                <InputField
                                   id={`city-${index}`}
+                                  label="Miestas"
                                   value={address.city}
                                   onChange={(e) => handleAddressChange(index, 'city', e.target.value)}
-                                  placeholder="Miestas"
+                                  placeholder="Vilnius"
+                                  required
                                 />
                               </div>
                             </div>

@@ -21,9 +21,22 @@ export async function GET(request: NextRequest) {
       `)
       .order('created_at', { ascending: false })
 
-    // Filter by provider
+    // Filter by provider - if providerId is actually a user_id, we need to join with providers table
     if (providerId) {
-      query = query.eq('provider_id', providerId)
+      // First check if this is a user_id by looking for a provider with this user_id
+      const { data: providerData } = await supabaseAdmin
+        .from('providers')
+        .select('id')
+        .eq('user_id', providerId)
+        .single()
+      
+      if (providerData) {
+        // It's a user_id, use the provider's actual ID
+        query = query.eq('provider_id', providerData.id)
+      } else {
+        // It's already a provider_id, use it directly
+        query = query.eq('provider_id', providerId)
+      }
     }
 
     // Filter by customer

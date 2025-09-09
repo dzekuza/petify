@@ -518,5 +518,25 @@ export const providerApi = {
       console.error('Error in searchProviders:', error)
       throw error
     }
+  },
+
+  // Get provider availability for a specific date
+  async getProviderAvailability(providerId: string, date: string) {
+    try {
+      const { data, error } = await supabase.rpc('get_provider_availability', {
+        provider_uuid: providerId,
+        check_date: date
+      })
+
+      if (error) {
+        console.error('Error getting provider availability:', error)
+        throw error
+      }
+
+      return data?.[0] || { is_available: false, available_slots: null }
+    } catch (error) {
+      console.error('Error in getProviderAvailability:', error)
+      throw error
+    }
   }
 }

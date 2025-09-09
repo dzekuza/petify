@@ -19,6 +19,8 @@ import {
   DrawerFooter
 } from '@/components/ui/drawer'
 import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import BottomNavigation from '@/components/provider-onboarding/bottom-navigation'
+import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { BreedSelector } from '@/components/ui/breed-selector'
 import Image from 'next/image'
 import { 
@@ -33,6 +35,7 @@ import { cn } from '@/lib/utils'
 import { ServiceProvider, Service, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
+import { providerApi } from '@/lib/providers'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { toast } from 'sonner'
@@ -51,6 +54,8 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('')
   const [currentStep, setCurrentStep] = useState(1)
+  const [availabilityData, setAvailabilityData] = useState<any>(null)
+  const [loadingAvailability, setLoadingAvailability] = useState(false)
   const [loading, setLoading] = useState(true)
   const [petsLoading, setPetsLoading] = useState(false)
   
@@ -142,20 +147,54 @@ export default function BookingPage() {
 
   const handleNext = () => {
     if (currentStep < 4) {
-      setCurrentStep(currentStep + 1)
+      // If we have a pre-selected service and date, skip step 3 (date selection)
+      if (currentStep === 2 && selectedService && selectedDate) {
+        setCurrentStep(4) // Skip directly to confirmation
+      } else {
+        setCurrentStep(currentStep + 1)
+      }
     }
   }
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
+      // If we're on step 4 and have a pre-selected service and date, go back to step 2
+      if (currentStep === 4 && selectedService && selectedDate) {
+        setCurrentStep(2)
+      } else {
+        setCurrentStep(currentStep - 1)
+      }
+    }
+  }
+
+  const fetchAvailabilityData = async (date: Date) => {
+    if (!provider?.id) return
+    
+    setLoadingAvailability(true)
+    try {
+      const dateString = date.toISOString().split('T')[0]
+      const availability = await providerApi.getProviderAvailability(provider.id, dateString)
+      setAvailabilityData(availability)
+    } catch (error) {
+      console.error('Error fetching availability:', error)
+      setAvailabilityData(null)
+    } finally {
+      setLoadingAvailability(false)
     }
   }
 
   const getAvailableTimeSlots = (): string[] => {
     if (!selectedDate || !provider) return []
     
-    // Get day name from selected date
+    // If we have availability data from API, use it
+    if (availabilityData?.available_slots) {
+      if (Array.isArray(availabilityData.available_slots)) {
+        return availabilityData.available_slots
+      }
+      return []
+    }
+    
+    // Fallback to provider availability data
     const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     
     // Check availability from provider data
@@ -189,11 +228,25 @@ export default function BookingPage() {
   }
 
   const canProceed = () => {
+    const hasPreSelected = selectedService && selectedDate
+    
     switch (currentStep) {
       case 1:
-        return selectedService !== null
+        if (hasPreSelected) {
+          // Step 1 is pet selection when service and date are pre-selected
+          return pets.length > 0 && selectedPets.length > 0 && selectedPets.length <= (selectedService?.maxPets || 0)
+        } else {
+          // Normal service selection
+          return selectedService !== null
+        }
       case 2:
-        return pets.length > 0 && selectedPets.length > 0 && selectedPets.length <= (selectedService?.maxPets || 0)
+        if (hasPreSelected) {
+          // Step 2 is confirmation when service and date are pre-selected
+          return selectedService && selectedDate && selectedTimeSlot && selectedPets.length > 0
+        } else {
+          // Normal pet selection
+          return pets.length > 0 && selectedPets.length > 0 && selectedPets.length <= (selectedService?.maxPets || 0)
+        }
       case 3:
         return selectedDate && selectedTimeSlot
       case 4:
@@ -304,7 +357,17 @@ export default function BookingPage() {
             const preSelectedService = transformedServices.find(s => s.id === preSelectedServiceId)
             if (preSelectedService) {
               setSelectedService(preSelectedService)
-              setCurrentStep(2) // Skip service selection step
+              // For desktop users coming from "Book Service" button, skip to pet selection (step 2)
+              // and also pre-select a default date (today or tomorrow) to skip date selection
+              setCurrentStep(2)
+              
+              // Pre-select tomorrow's date to skip date selection step
+              const tomorrow = new Date()
+              tomorrow.setDate(tomorrow.getDate() + 1)
+              setSelectedDate(tomorrow)
+              
+              // Fetch availability for the pre-selected date
+              fetchAvailabilityData(tomorrow)
             }
           }
         }
@@ -368,147 +431,197 @@ export default function BookingPage() {
     )
   }
 
+  const renderPetSelectionStep = () => (
+    <div className="space-y-6 py-4">
+      {/* Show selected service if pre-selected */}
+      {selectedService && (
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">{t('provider.selectService')}</h2>
+          <ServiceCard
+            service={selectedService}
+            isSelected={true}
+            showSelection={false}
+          />
+        </div>
+      )}
+      
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('provider.selectPets')}</h2>
+        <p className="text-gray-600 mb-4">
+          {t('provider.selectPetsDescription', `Select which pets will receive the ${selectedService?.name} service`)}
+        </p>
+        
+        {petsLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-32"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : pets.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-gray-500 mb-4">
+              <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+              <p className="text-lg font-medium">{t('provider.noPetsFound')}</p>
+              <p className="text-sm">{t('provider.addPetsFirst')}</p>
+            </div>
+            <Button 
+              onClick={() => setAddPetDrawerOpen(true)}
+              className="bg-black hover:bg-gray-800 text-white"
+            >
+              {t('provider.addFirstPet')}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {pets.map((pet) => (
+              <div 
+                key={pet.id} 
+                className={`cursor-pointer transition-all rounded-lg border ${
+                  selectedPets.includes(pet.id) 
+                    ? 'border-black bg-gray-50 shadow-md' 
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                }`}
+                onClick={() => handlePetSelect(pet.id)}
+              >
+                <div className="flex items-center space-x-3 p-4">
+                  <Checkbox
+                    checked={selectedPets.includes(pet.id)}
+                    onCheckedChange={() => handlePetSelect(pet.id)}
+                    className="w-5 h-5"
+                  />
+                  
+                  {/* Pet Image */}
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                    {pet.profilePicture ? (
+                      <Image
+                        src={pet.profilePicture}
+                        alt={pet.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <Users className="w-6 h-6 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Pet Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">{pet.name}</h3>
+                    <p className="text-xs text-gray-500 truncate">
+                      {pet.breed ? `${pet.breed}, ` : ''}{pet.age} {t('common.yearsOld')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <Button
+              variant="outline"
+              onClick={() => setAddPetDrawerOpen(true)}
+              className="w-full border-dashed border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800"
+            >
+              + Add another pet
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const renderConfirmationStep = () => (
+    <div className="space-y-6 py-4">
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.confirmYourBooking')}</h2>
+        
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="px-6 pt-6 pb-4">
+            <h3 className="font-semibold text-lg text-gray-900">{selectedService?.name}</h3>
+            <p className="text-sm text-gray-600 mt-1">{selectedService?.description}</p>
+          </div>
+          <div className="px-6 space-y-4 pb-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">{t('bookings.confirmation.provider')}</span>
+              <span className="font-medium">{provider.businessName}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">{t('bookings.confirmation.dateAndTime')}</span>
+              <span className="font-medium">
+                {selectedDate && format(selectedDate, "MMMM d, yyyy")} {selectedTimeSlot}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">{t('bookings.confirmation.pets')}</span>
+              <span className="font-medium">
+                {selectedPets.map(petId => {
+                  const pet = pets.find(p => p.id === petId)
+                  return pet?.name
+                }).filter(Boolean).join(', ')}
+              </span>
+            </div>
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between text-lg font-semibold">
+                <span>{t('bookings.confirmation.total')}</span>
+                <span>€{calculateTotal()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
   const renderStepContent = () => {
+    // If we have pre-selected service and date, map steps differently
+    const hasPreSelected = selectedService && selectedDate
+    
     switch (currentStep) {
       case 1:
-        return (
-          <div className="space-y-6 py-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectService')}</h2>
-              <div className="space-y-3">
-                {services.map((service) => (
-                  <ServiceCard
-                    key={service.id}
-                    service={service}
-                    isSelected={selectedService?.id === service.id}
-                    onClick={() => handleServiceSelect(service)}
-                    showSelection={true}
-                  />
-                ))}
+        if (hasPreSelected) {
+          // Step 1 becomes pet selection when service and date are pre-selected
+          return renderPetSelectionStep()
+        } else {
+          // Normal service selection step
+          return (
+            <div className="space-y-6 py-4">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectService')}</h2>
+                <div className="space-y-3">
+                  {services.map((service) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      isSelected={selectedService?.id === service.id}
+                      onClick={() => handleServiceSelect(service)}
+                      showSelection={true}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )
+          )
+        }
 
       case 2:
-        return (
-          <div className="space-y-6 py-4">
-            {/* Show selected service if pre-selected */}
-            {selectedService && (
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">{t('provider.selectService')}</h2>
-                <ServiceCard
-                  service={selectedService}
-                  isSelected={true}
-                  showSelection={false}
-                />
-              </div>
-            )}
-            
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('provider.selectPets')}</h2>
-              <p className="text-gray-600 mb-4">
-                {t('provider.selectPetsDescription', `Select which pets will receive the ${selectedService?.name} service`)}
-              </p>
-              
-              {petsLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gray-200 rounded"></div>
-                          <div className="flex-1">
-                            <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded w-32"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : pets.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="text-gray-500 mb-4">
-                    <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                    <p className="text-lg font-medium">{t('provider.noPetsFound')}</p>
-                    <p className="text-sm">{t('provider.addPetsFirst')}</p>
-                  </div>
-                  <Button 
-                    onClick={() => setAddPetDrawerOpen(true)}
-                    className="bg-black hover:bg-gray-800 text-white"
-                  >
-                    {t('provider.addFirstPet')}
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {pets.map((pet) => (
-                    <div 
-                      key={pet.id} 
-                      className={`cursor-pointer transition-all rounded-lg border ${
-                        selectedPets.includes(pet.id) 
-                          ? 'border-black bg-gray-50 shadow-md' 
-                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                      }`}
-                      onClick={() => handlePetSelect(pet.id)}
-                    >
-                      <div className="flex items-center space-x-3 p-4">
-                        <Checkbox
-                          checked={selectedPets.includes(pet.id)}
-                          onCheckedChange={() => handlePetSelect(pet.id)}
-                          className="w-5 h-5"
-                        />
-                        
-                        {/* Pet Image */}
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                          {pet.profilePicture ? (
-                            <Image
-                              src={pet.profilePicture}
-                              alt={pet.name}
-                              width={48}
-                              height={48}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                              <span className="text-gray-500 text-lg font-medium">
-                                {pet.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">{pet.name}</h4>
-                          <p className="text-sm text-gray-600">
-                            {pet.breed && `${pet.breed} • `}{pet.age} years{pet.weight && ` • ${pet.weight}kg`}
-                          </p>
-                          {pet.specialNeeds && pet.specialNeeds.length > 0 && (
-                            <div className="mt-1">
-                              <Badge variant="outline" className="text-xs">
-                                Special needs
-                              </Badge>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {/* Add another pet button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setAddPetDrawerOpen(true)}
-                    className="w-full border-dashed border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800"
-                  >
-                    + Add another pet
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        )
+        if (hasPreSelected) {
+          // Step 2 becomes confirmation when service and date are pre-selected
+          return renderConfirmationStep()
+        } else {
+          // Normal pet selection step
+          return renderPetSelectionStep()
+        }
 
       case 3:
         return (
@@ -516,59 +629,22 @@ export default function BookingPage() {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectDateAndTime')}</h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">{t('provider.chooseDate')}</h3>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !selectedDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">{t('provider.chooseTime')}</h3>
-                  <div className="space-y-2">
-                    {getAvailableTimeSlots().length > 0 ? (
-                      getAvailableTimeSlots().map((slot, index) => (
-                        <button
-                          key={index}
-                          className={`w-full px-4 py-2 text-sm font-medium rounded-md border transition-colors ${
-                            selectedTimeSlot === slot 
-                              ? 'bg-black text-white border-black' 
-                              : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
-                          }`}
-                          onClick={() => setSelectedTimeSlot(slot)}
-                        >
-                          {slot}
-                        </button>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">
-                        {selectedDate ? t('provider.noAvailableTimeSlots') : t('provider.selectDateFirst')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <DateTimePicker
+                selectedDate={selectedDate}
+                onDateSelect={(date) => {
+                  setSelectedDate(date)
+                  if (date) {
+                    fetchAvailabilityData(date)
+                  }
+                }}
+                selectedTime={selectedTimeSlot}
+                onTimeSelect={setSelectedTimeSlot}
+                timeSlots={getAvailableTimeSlots().map(time => ({
+                  time,
+                  available: true
+                }))}
+                disabled={(date) => date < new Date()}
+              />
             </div>
           </div>
         )
@@ -634,72 +710,47 @@ export default function BookingPage() {
             </div>
           </div>
           
-          {/* Progress Steps */}
-          <div className="flex items-center space-x-2">
-            {[1, 2, 3, 4].map((step) => (
-              <div
-                key={step}
-                className={`w-2 h-2 rounded-full ${
-                  currentStep >= step ? 'bg-black' : 'bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="text-gray-600 hover:text-gray-800 border-gray-300 hover:border-gray-400"
+          >
+            Atšaukti pirkimą
+          </Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-6 py-6 pb-24">
+      <div className="px-6 py-6 pb-20">
         {renderStepContent()}
       </div>
 
-      {/* Fixed Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="flex items-center justify-between mx-auto">
-          <div>
-            {currentStep === 4 && (
-              <div className="text-lg font-semibold text-gray-900">
-                €{calculateTotal()}
-              </div>
-            )}
-          </div>
-          <div className="flex space-x-3">
-            {currentStep > 1 && (
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                className="px-6"
-              >
-{t('provider.back')}
-              </Button>
-            )}
-            <Button
-              variant="gradient"
-              size="lg"
-              onClick={currentStep === 4 ? () => {
-                // Redirect to payment page with booking parameters
-                const bookingParams = new URLSearchParams()
-                if (selectedDate) {
-                  bookingParams.set('date', selectedDate.toISOString().split('T')[0])
-                }
-                if (selectedTimeSlot) {
-                  bookingParams.set('time', selectedTimeSlot)
-                }
-                if (selectedPets.length > 0) {
-                  bookingParams.set('pets', selectedPets.join(','))
-                }
-                if (selectedService) {
-                  bookingParams.set('service', selectedService.id)
-                }
-                router.push(`/providers/${params.id}/payment?${bookingParams.toString()}`)
-              } : handleNext}
-              disabled={!canProceed()}
-            >
-              {currentStep === 4 ? t('provider.confirmBookingButton') : t('provider.continue')}
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Bottom Navigation */}
+      <BottomNavigation
+        currentStep={selectedService && selectedDate ? (currentStep === 1 ? 1 : currentStep === 2 ? 2 : 3) : currentStep}
+        totalSteps={selectedService && selectedDate ? 3 : 4}
+        onPrevious={handleBack}
+        onNext={(currentStep === 4 || (currentStep === 2 && selectedService && selectedDate)) ? () => {
+          // Redirect to payment page with booking parameters
+          const bookingParams = new URLSearchParams()
+          if (selectedDate) {
+            bookingParams.set('date', selectedDate.toISOString().split('T')[0])
+          }
+          if (selectedTimeSlot) {
+            bookingParams.set('time', selectedTimeSlot)
+          }
+          if (selectedPets.length > 0) {
+            bookingParams.set('pets', selectedPets.join(','))
+          }
+          if (selectedService) {
+            bookingParams.set('service', selectedService.id)
+          }
+          router.push(`/providers/${params.id}/payment?${bookingParams.toString()}`)
+        } : handleNext}
+        isNextDisabled={!canProceed()}
+        previousText={t('provider.back')}
+        nextText={(currentStep === 4 || (currentStep === 2 && selectedService && selectedDate)) ? t('provider.confirmBookingButton') : t('provider.continue')}
+      />
 
       {/* Add Pet Drawer */}
       <Drawer open={addPetDrawerOpen} onOpenChange={setAddPetDrawerOpen} direction="bottom">
