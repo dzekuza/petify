@@ -80,6 +80,11 @@ export interface OnboardingData {
   photos: string[] // Changed to string array for image URLs
   profilePhoto?: string // Changed to string for image URL
   
+  // Additional fields for edit mode
+  coordinates?: { lat: number; lng: number } // Location coordinates
+  coverImageUrl?: string // Cover image URL for edit mode
+  logoImageUrl?: string // Logo image URL for edit mode
+  
   // Step 5: Review
   termsAccepted: boolean
   privacyAccepted: boolean

@@ -6,7 +6,7 @@ import { Clock, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ServiceProvider } from '@/types'
-import { useNotifications } from '@/contexts/notifications-context'
+import { toast } from 'sonner'
 
 interface TimeSlot {
   start: string
@@ -33,7 +33,6 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   provider, 
   onAvailabilityUpdate 
 }) => {
-  const { addNotification } = useNotifications()
   const [showTimeModal, setShowTimeModal] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string>('')
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
@@ -193,11 +192,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     onAvailabilityUpdate?.(updatedAvailability)
     setShowTimeModal(false)
     
-    addNotification({
-      type: 'success',
-      title: 'Prieinamumas atnaujintas',
-      message: `${selectedDay} prieinamumas sėkmingai atnaujintas.`
-    })
+    toast.success(`${selectedDay} prieinamumas sėkmingai atnaujintas.`)
   }
 
   // Removed direct day toggle and working-hours editor UI; availability is managed via calendar slots

@@ -149,7 +149,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                     }}
                     onFocus={() => setShowLocationSuggestions(location.length > 0)}
                     onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
                   />
                   
                   {/* Location Suggestions */}
@@ -191,7 +191,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                     }}
                     onFocus={() => setShowProviderSuggestions(providerName.length > 0)}
                     onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 200)}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
                   />
                   
                   {/* Provider Suggestions */}

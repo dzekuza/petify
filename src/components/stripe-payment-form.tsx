@@ -115,17 +115,17 @@ export const StripePaymentForm = ({
   }
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      {/* Header */}
-      <div className="space-y-1.5">
-        <h3 className="leading-none font-semibold flex items-center gap-2">
-          <CreditCard className="h-5 w-5" />
-          {t('payment.paymentDetails')}
-        </h3>
-        <p className="text-muted-foreground text-sm">
-          {t('payment.completePaymentSecurely')}
-        </p>
-      </div>
+    <div className="w-full mx-auto space-y-6 relative">
+        {/* Header */}
+        <div className="space-y-1.5">
+          <h3 className="leading-none font-semibold flex items-center gap-2">
+            <CreditCard className="h-5 w-5" />
+            {t('payment.paymentDetails')}
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            {t('payment.completePaymentSecurely')}
+          </p>
+        </div>
 
       {/* Booking Summary */}
       {bookingDetails && (
@@ -148,16 +148,28 @@ export const StripePaymentForm = ({
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <LinkAuthenticationElement
-          onChange={(e) => setEmail(e.value.email)}
-        />
-        <PaymentElement />
-        
+        <div className="relative z-10">
+          <LinkAuthenticationElement
+            onChange={(e) => setEmail(e.value.email)}
+            options={{
+              defaultValues: {
+                email: email,
+              },
+            }}
+          />
+        </div>
+        <div className="relative z-10">
+          <PaymentElement 
+            options={{
+              layout: 'tabs',
+            }}
+          />
+        </div>
 
         <Button
           type="submit"
           disabled={isLoading || !stripe || !elements}
-          className="w-full"
+          className="w-full relative z-10"
         >
           {isLoading ? (
             <>

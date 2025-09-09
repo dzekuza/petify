@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { PawPrint, Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import { t } from '@/lib/translations'
 
 const footerLinks = {
@@ -33,9 +34,15 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <PawPrint className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold">Petify</span>
+            <div className="flex items-center mb-4">
+              <Image
+                src="/PetiFy.svg"
+                alt="PetiFy"
+                width={86}
+                height={29}
+                className="h-8 w-auto"
+                priority
+              />
             </div>
             <p className="text-gray-600 mb-4">
               {t('landing.featuredProviders.subtitle')}

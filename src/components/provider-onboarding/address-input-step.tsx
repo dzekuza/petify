@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import AddressAutocomplete from '@/components/address-autocomplete'
@@ -14,6 +16,9 @@ interface AddressInputStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
 interface Address {
@@ -24,12 +29,23 @@ interface Address {
   coordinates?: { lat: number; lng: number }
 }
 
-export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }: AddressInputStepProps) {
-  const [addresses, setAddresses] = useState<Address[]>(
-    data.addresses && data.addresses.length > 0 
+export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: AddressInputStepProps) {
+  const [addresses, setAddresses] = useState<Address[]>(() => {
+    // In edit mode, use existing address data
+    if (isEditMode && data.address && data.city && data.zipCode) {
+      return [{
+        id: '1',
+        address: data.address,
+        city: data.city,
+        zipCode: data.zipCode,
+        coordinates: data.coordinates
+      }]
+    }
+    // Otherwise use addresses array or default
+    return data.addresses && data.addresses.length > 0 
       ? data.addresses 
       : [{ id: '1', address: '', city: '', zipCode: '' }]
-  )
+  })
   const [currentAddressIndex, setCurrentAddressIndex] = useState(0)
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null)
 
@@ -117,11 +133,13 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }:
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Address Input">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-6xl">
+      <PageContent>
+        <div className="w-full max-w-6xl">
             <div className="flex flex-col lg:flex-row gap-8 items-start justify-start">
               {/* Left Side - Address Forms */}
               <div className="flex-1 max-w-[522px]">
@@ -247,17 +265,18 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious }:
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={4}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

@@ -24,14 +24,13 @@ import {
 } from 'lucide-react'
 import { ServiceProvider, Service, CreateServiceForm, ServiceCategory } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
-import { useNotifications } from '@/contexts/notifications-context'
+import { toast } from 'sonner'
 import { providerApi } from '@/lib/providers'
 import { serviceApi } from '@/lib/services'
 import { useDeviceDetection } from '@/lib/device-detection'
 
 export default function ProviderServicesPage() {
   const { user } = useAuth()
-  const { addNotification } = useNotifications()
   const { isMobile } = useDeviceDetection()
   const router = useRouter()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
@@ -109,18 +108,14 @@ export default function ProviderServicesPage() {
         
       } catch (error) {
         console.error('Error loading data:', error)
-        addNotification({
-          type: 'error',
-          title: 'Error',
-          message: 'Failed to load services data. Please try again.'
-        })
+        toast.error('Failed to load services data. Please try again.')
       } finally {
         setLoading(false)
       }
     }
 
     loadData()
-  }, [user, addNotification])
+  }, [user])
 
   const handleServiceFormChange = (field: keyof CreateServiceForm, value: string | number | string[]) => {
     setServiceForm(prev => ({ ...prev, [field]: value }))
@@ -132,11 +127,7 @@ export default function ProviderServicesPage() {
 
     try {
       if (!provider?.id) {
-        addNotification({
-          type: 'error',
-          title: 'Error',
-          message: 'Provider profile not found'
-        })
+        toast.error('Provider profile not found')
         return
       }
 
@@ -195,18 +186,10 @@ export default function ProviderServicesPage() {
       setShowAddServiceModal(false)
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Service Created',
-        message: 'Your service has been created successfully!'
-      })
+      toast.success('Your service has been created successfully!')
     } catch (error) {
       console.error('Error creating service:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to create service. Please try again.'
-      })
+      toast.error('Failed to create service. Please try again.')
     } finally {
       setServiceFormLoading(false)
     }
@@ -234,11 +217,7 @@ export default function ProviderServicesPage() {
 
     try {
       if (!editingService) {
-        addNotification({
-          type: 'error',
-          title: 'Error',
-          message: 'No service selected for editing'
-        })
+        toast.error('No service selected for editing')
         return
       }
 
@@ -291,18 +270,10 @@ export default function ProviderServicesPage() {
       })
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Service Updated',
-        message: 'Your service has been updated successfully!'
-      })
+      toast.success('Your service has been updated successfully!')
     } catch (error) {
       console.error('Error updating service:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to update service. Please try again.'
-      })
+      toast.error('Failed to update service. Please try again.')
     } finally {
       setServiceFormLoading(false)
     }
@@ -320,18 +291,10 @@ export default function ProviderServicesPage() {
       setServices(prev => prev.filter(s => s.id !== serviceId))
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Service Deleted',
-        message: 'Your service has been deleted successfully.'
-      })
+      toast.success('Your service has been deleted successfully.')
     } catch (error) {
       console.error('Error deleting service:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to delete service. Please try again.'
-      })
+      toast.error('Failed to delete service. Please try again.')
     }
   }
 
@@ -378,7 +341,7 @@ export default function ProviderServicesPage() {
   }
 
   return (
-    <Layout hideServiceCategories={true}>
+    <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">

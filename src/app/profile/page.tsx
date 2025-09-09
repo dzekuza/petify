@@ -12,10 +12,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { useDeviceDetection } from '@/lib/device-detection'
-import { User, Mail, Calendar, Shield, Eye, EyeOff } from 'lucide-react'
+import { User, Mail, Calendar, Shield, Eye, EyeOff, MapPin, Phone } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, resetPassword } = useAuth()
@@ -42,6 +44,8 @@ export default function ProfilePage() {
     fullName: user?.user_metadata?.full_name || '',
     email: user?.email || ''
   })
+  
+  const [profileImage, setProfileImage] = useState<File | null>(null)
   
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -75,20 +79,32 @@ export default function ProfilePage() {
   }
 
   const handleSaveProfile = async () => {
-    // Update profile via API
-    const response = await fetch('/api/users/update-profile', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(editForm),
-    })
-    
-    if (!response.ok) {
-      throw new Error('Failed to update profile')
+    try {
+      const formData = new FormData()
+      formData.append('fullName', editForm.fullName)
+      formData.append('email', editForm.email)
+      
+      if (profileImage) {
+        formData.append('profileImage', profileImage)
+      }
+
+      // Update profile via API
+      const response = await fetch('/api/users/update-profile', {
+        method: 'PUT',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to update profile')
+      }
+      
+      console.log('Saving profile:', editForm)
+      setEditProfileOpen(false)
+      setProfileImage(null)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      alert('Failed to update profile. Please try again.')
     }
-    console.log('Saving profile:', editForm)
-    setEditProfileOpen(false)
   }
 
   const handleConfigureNotifications = () => {
@@ -180,9 +196,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -334,6 +350,22 @@ export default function ProfilePage() {
                 </Card>
               </div>
             </div>
+
+            {/* Location and Contact Information */}
+            <div className="mt-8">
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>V. Mykolaičio-Putino G., Vilnius 03106, Lietuva</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4" />
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -349,6 +381,17 @@ export default function ProfilePage() {
               
               <div className="flex-1 overflow-y-auto px-4 pb-4">
                 <div className="space-y-4">
+                  <div>
+                    <Label>{t('profile.profileImage')}</Label>
+                    <ImageUpload
+                      value={profileImage}
+                      onChange={setProfileImage}
+                      placeholder="Click or drag and drop profile image here"
+                      description="PNG, JPG, GIF up to 5MB"
+                      previewClassName="w-20 h-20 object-cover rounded-full"
+                      maxSize={5}
+                    />
+                  </div>
                   <div>
                     <Label htmlFor="fullName">{t('profile.fullName')}</Label>
                     <Input
@@ -391,6 +434,17 @@ export default function ProfilePage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
+                <div>
+                  <Label>{t('profile.profileImage')}</Label>
+                  <ImageUpload
+                    value={profileImage}
+                    onChange={setProfileImage}
+                    placeholder="Click or drag and drop profile image here"
+                    description="PNG, JPG, GIF up to 5MB"
+                    previewClassName="w-20 h-20 object-cover rounded-full"
+                    maxSize={5}
+                  />
+                </div>
                 <div>
                   <Label htmlFor="fullName">{t('profile.fullName')}</Label>
                   <Input
@@ -436,11 +490,9 @@ export default function ProfilePage() {
                   <p className="font-medium">{t('profile.bookingUpdates')}</p>
                   <p className="text-sm text-gray-600">{t('profile.bookingUpdatesDesc')}</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={notifications.bookingUpdates}
-                  onChange={(e) => setNotifications(prev => ({ ...prev, bookingUpdates: e.target.checked }))}
-                  className="h-4 w-4"
+                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, bookingUpdates: checked as boolean }))}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -448,11 +500,9 @@ export default function ProfilePage() {
                   <p className="font-medium">{t('profile.serviceUpdates')}</p>
                   <p className="text-sm text-gray-600">{t('profile.serviceUpdatesDesc')}</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={notifications.serviceUpdates}
-                  onChange={(e) => setNotifications(prev => ({ ...prev, serviceUpdates: e.target.checked }))}
-                  className="h-4 w-4"
+                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, serviceUpdates: checked as boolean }))}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -460,11 +510,9 @@ export default function ProfilePage() {
                   <p className="font-medium">{t('profile.marketing')}</p>
                   <p className="text-sm text-gray-600">{t('profile.marketingDesc')}</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={notifications.marketing}
-                  onChange={(e) => setNotifications(prev => ({ ...prev, marketing: e.target.checked }))}
-                  className="h-4 w-4"
+                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, marketing: checked as boolean }))}
                 />
               </div>
               <div className="flex justify-end space-x-2">
@@ -507,11 +555,9 @@ export default function ProfilePage() {
                   <p className="font-medium">{t('profile.showEmail')}</p>
                   <p className="text-sm text-gray-600">{t('profile.showEmailDesc')}</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={privacy.showEmail}
-                  onChange={(e) => setPrivacy(prev => ({ ...prev, showEmail: e.target.checked }))}
-                  className="h-4 w-4"
+                  onCheckedChange={(checked) => setPrivacy(prev => ({ ...prev, showEmail: checked as boolean }))}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -519,11 +565,9 @@ export default function ProfilePage() {
                   <p className="font-medium">{t('profile.showPhone')}</p>
                   <p className="text-sm text-gray-600">{t('profile.showPhoneDesc')}</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={privacy.showPhone}
-                  onChange={(e) => setPrivacy(prev => ({ ...prev, showPhone: e.target.checked }))}
-                  className="h-4 w-4"
+                  onCheckedChange={(checked) => setPrivacy(prev => ({ ...prev, showPhone: checked as boolean }))}
                 />
               </div>
               <div className="flex justify-end space-x-2">

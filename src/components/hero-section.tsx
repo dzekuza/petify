@@ -128,7 +128,7 @@ export const HeroSection = () => {
           <div className="bg-white md:rounded-full rounded-lg shadow-lg md:p-2 p-6 w-full max-w-4xl">
             <div className="flex flex-col md:flex-row items-center w-full md:space-y-0 space-y-4">
               {/* Location */}
-              <div className="flex-1 px-6 py-4 hover:bg-gray-50 md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
+              <div className="flex-1 px-4 py-4 hover:bg-gray-50 md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
                 <Label htmlFor="address-input" className="text-sm font-semibold text-gray-900 mb-2 block">
                   {t('landing.hero.search.where')}
                 </Label>
@@ -145,7 +145,7 @@ export const HeroSection = () => {
                     }}
                     onFocus={() => setShowLocationSuggestions(location.length > 0)}
                     onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
                   />
                   
                   {/* Location Suggestions */}
@@ -171,7 +171,7 @@ export const HeroSection = () => {
               </div>
 
               {/* Provider Name */}
-              <div className="flex-1 px-6 py-4 hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative">
+              <div className="flex-1 px-4 py-4  hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative">
                 <Label htmlFor="provider-input" className="text-sm font-semibold text-gray-900 mb-2 block">
                   {t('landing.hero.search.provider')}
                 </Label>
@@ -188,7 +188,7 @@ export const HeroSection = () => {
                     onFocus={() => setShowProviderSuggestions(providerName.length > 0)}
                     onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 200)}
                     onKeyPress={handleKeyPress}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
                   />
                   
                   {/* Provider Suggestions */}
@@ -214,7 +214,7 @@ export const HeroSection = () => {
               </div>
 
               {/* Date */}
-              <div className="flex-1 px-6 py-4 hover:bg-gray-50 md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
+              <div className="flex-1 px-4 py-4  hover:bg-gray-50 md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
                 <Label htmlFor="date-input" className="text-sm font-semibold text-gray-900 mb-2 block">
                   {t('landing.hero.search.date')}
                 </Label>
@@ -273,7 +273,7 @@ export const HeroSection = () => {
               </div>
 
               {/* Search Button */}
-              <div className="px-2 w-full md:w-auto">
+              <div className="w-full md:w-auto">
                 <button
                   className="flex items-center justify-center w-full md:w-12 h-12 md:rounded-full rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
                   onClick={handleSearch}

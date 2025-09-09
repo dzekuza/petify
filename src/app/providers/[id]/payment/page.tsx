@@ -345,6 +345,7 @@ export default function PaymentPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Payment Form */}
+          <div className="relative z-0">
           {isCreatingPayment ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
@@ -360,13 +361,45 @@ export default function PaymentPage() {
                 appearance: {
                   theme: 'stripe',
                   variables: {
-                    colorPrimary: '#3b82f6',
+                    colorPrimary: '#000000',
                     colorBackground: '#ffffff',
                     colorText: '#1f2937',
                     colorDanger: '#ef4444',
                     fontFamily: 'system-ui, sans-serif',
                     spacingUnit: '4px',
                     borderRadius: '8px',
+                    colorIcon: '#6b7280',
+                  },
+                  rules: {
+                    '.Input': {
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      fontSize: '16px',
+                      lineHeight: '1.5',
+                    },
+                    '.Input:focus': {
+                      border: '1px solid #000000',
+                      boxShadow: '0 0 0 1px #000000',
+                    },
+                    '.Label': {
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151',
+                      marginBottom: '6px',
+                    },
+                    '.Tab': {
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      padding: '12px',
+                    },
+                    '.Tab:hover': {
+                      backgroundColor: '#f9fafb',
+                    },
+                    '.Tab--selected': {
+                      border: '1px solid #000000',
+                      backgroundColor: '#ffffff',
+                    },
                   },
                 },
               }}
@@ -396,6 +429,7 @@ export default function PaymentPage() {
               </Button>
             </div>
           )}
+          </div>
 
           {/* Right Column - Booking Summary */}
           <div>

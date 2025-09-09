@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { 
@@ -21,6 +22,7 @@ import {
 import { Service, Booking } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
 import { useNotifications } from '@/contexts/notifications-context'
+import { toast } from 'sonner'
 import { bookingApi } from '@/lib/bookings'
 import { serviceApi } from '@/lib/services'
 import { useDeviceDetection } from '@/lib/device-detection'
@@ -57,18 +59,14 @@ export default function ProviderBookings() {
         
       } catch (error) {
         console.error('Error loading bookings data:', error)
-        addNotification({
-          type: 'error',
-          title: 'Error',
-          message: 'Failed to load bookings data. Please try again.'
-        })
+        toast.error('Failed to load bookings data. Please try again.')
       } finally {
         setLoading(false)
       }
     }
 
     loadBookingsData()
-  }, [user, addNotification])
+  }, [user])
 
   const handleViewBookingDetails = (booking: Booking) => {
     setSelectedBooking(booking)
@@ -87,18 +85,10 @@ export default function ProviderBookings() {
       ))
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Booking Accepted',
-        message: 'The booking has been successfully accepted.'
-      })
+      toast.success('The booking has been successfully accepted.')
     } catch (error) {
       console.error('Error accepting booking:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to accept booking. Please try again.'
-      })
+      toast.error('Failed to accept booking. Please try again.')
     }
   }
 
@@ -113,18 +103,10 @@ export default function ProviderBookings() {
       ))
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Booking Rejected',
-        message: 'The booking has been rejected.'
-      })
+      toast.success('The booking has been rejected.')
     } catch (error) {
       console.error('Error rejecting booking:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to reject booking. Please try again.'
-      })
+      toast.error('Failed to reject booking. Please try again.')
     }
   }
 
@@ -139,18 +121,10 @@ export default function ProviderBookings() {
       ))
       
       // Show success notification
-      addNotification({
-        type: 'success',
-        title: 'Booking Completed',
-        message: 'The booking has been marked as completed.'
-      })
+      toast.success('The booking has been marked as completed.')
     } catch (error) {
       console.error('Error completing booking:', error)
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to complete booking. Please try again.'
-      })
+      toast.error('Failed to complete booking. Please try again.')
     }
   }
 
@@ -216,7 +190,7 @@ export default function ProviderBookings() {
   }
 
   return (
-    <Layout hideServiceCategories={true}>
+    <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute requiredRole="provider">
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -236,12 +210,12 @@ export default function ProviderBookings() {
                       <div className="flex-1">
                         <div className="relative">
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                          <input
+                          <Input
                             type="text"
                             placeholder="Search by pet name or service..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="pl-10"
                           />
                         </div>
                       </div>

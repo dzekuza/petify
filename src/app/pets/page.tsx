@@ -241,9 +241,9 @@ export default function PetsPage() {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
@@ -298,17 +298,15 @@ export default function PetsPage() {
                         </Avatar>
                         
                         <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                                {pet.name}
-                              </h3>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <span className="capitalize">{pet.species}</span>
-                                {pet.breed && <span>{pet.breed}</span>}
-                                <span>{getAgeText(pet.age)}</span>
-                                {pet.weight && <span>{pet.weight} kg</span>}
-                              </div>
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                              {pet.name}
+                            </h3>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                              <span className="capitalize">{pet.species}</span>
+                              {pet.breed && <span>{pet.breed}</span>}
+                              <span>{getAgeText(pet.age)}</span>
+                              {pet.weight && <span>{pet.weight} kg</span>}
                             </div>
                             
                             <div className="flex space-x-2">

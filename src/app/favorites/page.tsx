@@ -5,57 +5,25 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
+import { useFavorites } from '@/contexts/favorites-context'
 import { Heart, Star, MapPin, Phone } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-
-type Favorite = {
-  id: string
-  provider_id: string
-  provider: {
-    id: string
-    business_name: string
-    services: string[] | null
-    rating: number | null
-    review_count: number | null
-    location: { address?: string } | null
-    contact_info: { phone?: string } | null
-  } | null
-}
 
 export default function FavoritesPage() {
   const { user } = useAuth()
-  const [loading, setLoading] = useState(true)
-  const [favorites, setFavorites] = useState<Favorite[]>([])
+  const { favorites, loading, removeFromFavorites } = useFavorites()
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!user?.id) return
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('id, provider_id, provider:providers(id, business_name, services, rating, review_count, location, contact_info)')
-        .eq('user_id', user.id)
-
-      if (!error && data) setFavorites(data as unknown as Favorite[])
-      setLoading(false)
-    }
-    fetchFavorites()
-  }, [user?.id])
-
-  const handleRemove = async (favoriteId: string) => {
-    if (!favoriteId) return
-    const { error } = await supabase.from('favorites').delete().eq('id', favoriteId)
-    if (!error) setFavorites(prev => prev.filter(f => f.id !== favoriteId))
+  const handleRemove = async (providerId: string) => {
+    if (!providerId) return
+    await removeFromFavorites(providerId)
   }
 
   if (!user) return null
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -64,24 +32,24 @@ export default function FavoritesPage() {
             </div>
 
             {/* Favorites List */}
-            <div className="space-y-4">
-              {loading ? (
-                <Card>
-                  <CardContent className="text-center py-8">Loading...</CardContent>
-                </Card>
-              ) : favorites.length === 0 ? (
-                <Card>
-                  <CardContent className="text-center py-8">
-                    <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
-                    <p className="text-gray-600 mb-4">Start by adding providers to your favorites</p>
-                    <Button onClick={() => window.location.href = '/'}>
-                      Find Services
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                favorites.map((fav) => (
+            {loading ? (
+              <Card>
+                <CardContent className="text-center py-8">Loading...</CardContent>
+              </Card>
+            ) : favorites.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-8">
+                  <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
+                  <p className="text-gray-600 mb-4">Start by adding providers to your favorites</p>
+                  <Button onClick={() => window.location.href = '/'}>
+                    Find Services
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {favorites.map((fav) => (
                   <Card key={fav.id}>
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
@@ -112,7 +80,7 @@ export default function FavoritesPage() {
                                   View Profile
                                 </Button>
                               </Link>
-                              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700" onClick={() => handleRemove(fav.id)}>
+                              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700" onClick={() => handleRemove(fav.provider_id)}>
                                 Remove
                               </Button>
                             </div>
@@ -134,9 +102,9 @@ export default function FavoritesPage() {
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </ProtectedRoute>

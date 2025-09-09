@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog, DollarSign, Clock } from 'lucide-react'
+import { NotificationsDropdown } from '@/components/notifications'
 import Image from 'next/image'
 import { NavigationSearch } from '@/components/navigation-search'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -57,8 +58,15 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   const searchParams = useSearchParams()
   const router = useRouter()
   const { isMobile } = useDeviceDetection()
-  const isProviderRoute = pathname?.startsWith('/provider')
-    const isSearchPage = pathname === '/search'
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+  
+  // Ensure consistent rendering between server and client
+  const isProviderRoute = typeof pathname === 'string' && pathname.startsWith('/provider')
+  const isSearchPage = pathname === '/search'
   const hasCategory = searchParams?.get('category')
   const showSearchBar = isSearchPage || hasCategory
 
@@ -202,15 +210,21 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
         <div className={cn("flex items-center justify-between", showSearchBar ? "h-20" : "h-16")}>
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <PawPrint className="h-8 w-8 text-black" />
-              <span className="text-xl font-bold text-gray-900">Petify</span>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/PetiFy.svg"
+                alt="PetiFy"
+                width={86}
+                height={29}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
           </div>
 
 
           {/* Desktop Navigation */}
-          {!hideServiceCategories && !isProviderRoute && (
+          {!hideServiceCategories && isMounted && !isProviderRoute && (
             <div className="hidden md:flex md:items-center md:space-x-6">
               {navigation.map((item) => (
                 <Link
@@ -238,7 +252,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
             {user ? (
               <>
                 {/* Customer-specific actions */}
-                {!isProviderRoute && (
+                {isMounted && !isProviderRoute && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -252,7 +266,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                 )}
 
                 {/* Provider-specific navigation items */}
-                {isProviderRoute && (
+                {isMounted && isProviderRoute && (
                   <>
                     <Button
                       variant="ghost"
@@ -327,6 +341,11 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                   </>
                 )}
                 
+                {/* Provider Notifications - positioned before avatar */}
+                {isMounted && isProviderRoute && (
+                  <NotificationsDropdown />
+                )}
+                
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -348,7 +367,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
                         </p>
-                        {isProviderRoute && (
+                        {isMounted && isProviderRoute && (
                           <Badge variant="secondary" className="w-fit text-xs">
                             {t('navigation.serviceProvider')}
                           </Badge>
@@ -379,7 +398,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     <DropdownMenuSeparator />
                     
                     {/* Customer-specific menu items (shown in customer environment) */}
-                    {!isProviderRoute && (
+                    {isMounted && !isProviderRoute && (
                       <>
                         <DropdownMenuItem asChild>
                           <Link href="/pets">
@@ -402,7 +421,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                     )}
                     
                     {/* Provider-specific menu items (shown in provider environment) */}
-                    {isProviderRoute && (
+                    {isMounted && isProviderRoute && (
                       <>
                         <DropdownMenuItem asChild>
                           <Link href="/provider/dashboard">
@@ -497,9 +516,15 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
               <DrawerContent className="h-full w-80 max-w-sm bg-white">
                 <DrawerHeader className="border-b bg-white">
                   <div className="flex items-center justify-between">
-                    <DrawerTitle className="flex items-center space-x-2">
-                      <PawPrint className="h-6 w-6 text-primary" />
-                      <span className="text-lg font-bold text-gray-900">Petify</span>
+                    <DrawerTitle className="flex items-center">
+                      <Image
+                        src="/PetiFy.svg"
+                        alt="PetiFy"
+                        width={86}
+                        height={29}
+                        className="h-6 w-auto"
+                        priority
+                      />
                     </DrawerTitle>
                     <DrawerClose asChild>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -600,7 +625,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                           )}
 
                           {/* Customer-specific mobile menu items (customer environment) */}
-                          {!isProviderRoute && (
+                          {isMounted && !isProviderRoute && (
                             <>
                               <DrawerClose asChild>
                                 <Link
@@ -633,7 +658,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                           )}
                           
                           {/* Provider-specific mobile menu items (provider environment) */}
-                          {isProviderRoute && (
+                          {isMounted && isProviderRoute && (
                             <>
                               <DrawerClose asChild>
                                 <Link

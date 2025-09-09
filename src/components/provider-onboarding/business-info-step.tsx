@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,9 +16,12 @@ interface BusinessInfoStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
-export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }: BusinessInfoStepProps) {
+export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: BusinessInfoStepProps) {
   const [termsAccepted, setTermsAccepted] = useState(data.termsAccepted || false)
   const [privacyAccepted, setPrivacyAccepted] = useState(data.privacyAccepted || false)
 
@@ -31,22 +36,30 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
   }
 
   const isFormValid = () => {
-    return data.businessName && 
+    const basicValidation = data.businessName && 
            data.businessDescription && 
            data.phone && 
            data.basePrice > 0 &&
-           data.pricePerHour > 0 &&
-           termsAccepted && 
-           privacyAccepted
+           data.pricePerHour > 0
+    
+    // In edit mode, don't require terms and privacy acceptance
+    if (isEditMode) {
+      return basicValidation
+    }
+    
+    // In new onboarding mode, require terms and privacy acceptance
+    return basicValidation && termsAccepted && privacyAccepted
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Business Info">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-[522px]">
-            <div className="flex flex-col gap-6 items-start justify-start">
+      <PageContent>
+        <div className="w-full max-w-[522px]">
+          <div className="flex flex-col gap-6 items-start justify-start">
               {/* Title */}
               <h1 className="text-3xl font-bold text-black w-full">
                 Verslo informacija
@@ -127,37 +140,39 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
                 </div>
               </div>
 
-              {/* Terms and Privacy */}
-              <div className="w-full space-y-4">
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="terms"
-                    checked={termsAccepted}
-                    onCheckedChange={handleTermsChange}
-                  />
-                  <Label htmlFor="terms" className="text-sm leading-relaxed">
-                    Sutinku su{' '}
-                    <a href="/terms" className="text-blue-600 hover:underline" target="_blank">
-                      naudojimo sąlygomis
-                    </a>
-                    {' '}ir{' '}
-                    <a href="/privacy" className="text-blue-600 hover:underline" target="_blank">
-                      privatumo politika
-                    </a>
-                  </Label>
-                </div>
+              {/* Terms and Privacy - Only show in new onboarding, not in edit mode */}
+              {!isEditMode && (
+                <div className="w-full space-y-4">
+                  <div className="flex items-start space-x-2">
+                    <Checkbox
+                      id="terms"
+                      checked={termsAccepted}
+                      onCheckedChange={handleTermsChange}
+                    />
+                    <Label htmlFor="terms" className="text-sm leading-relaxed">
+                      Sutinku su{' '}
+                      <a href="/terms" className="text-blue-600 hover:underline" target="_blank">
+                        naudojimo sąlygomis
+                      </a>
+                      {' '}ir{' '}
+                      <a href="/privacy" className="text-blue-600 hover:underline" target="_blank">
+                        privatumo politika
+                      </a>
+                    </Label>
+                  </div>
 
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="privacy"
-                    checked={privacyAccepted}
-                    onCheckedChange={handlePrivacyChange}
-                  />
-                  <Label htmlFor="privacy" className="text-sm leading-relaxed">
-                    Sutinku, kad mano duomenys būtų naudojami paslaugų teikimui ir klientų aptarnavimui
-                  </Label>
+                  <div className="flex items-start space-x-2">
+                    <Checkbox
+                      id="privacy"
+                      checked={privacyAccepted}
+                      onCheckedChange={handlePrivacyChange}
+                    />
+                    <Label htmlFor="privacy" className="text-sm leading-relaxed">
+                      Sutinku, kad mano duomenys būtų naudojami paslaugų teikimui ir klientų aptarnavimui
+                    </Label>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Info Box */}
               <div className="w-full bg-blue-50 p-4 rounded-lg">
@@ -169,17 +184,18 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious }:
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={5}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

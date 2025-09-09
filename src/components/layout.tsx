@@ -7,9 +7,10 @@ interface LayoutProps {
   children: React.ReactNode
   hideServiceCategories?: boolean
   onFiltersClick?: () => void
+  hideFooter?: boolean
 }
 
-export const Layout = ({ children, hideServiceCategories = false, onFiltersClick }: LayoutProps) => {
+export const Layout = ({ children, hideServiceCategories = false, onFiltersClick, hideFooter = false }: LayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Suspense fallback={<div className="px-4 py-2 text-sm text-gray-500">Loading...</div>}>
@@ -22,7 +23,7 @@ export const Layout = ({ children, hideServiceCategories = false, onFiltersClick
       <Suspense fallback={<div className="h-16 bg-white border-t"></div>}>
         <MobileBottomNav />
       </Suspense>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   )
 }

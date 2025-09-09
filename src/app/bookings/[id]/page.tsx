@@ -10,9 +10,10 @@ import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/contexts/auth-context'
 import { supabase } from '@/lib/supabase'
 import { Booking, ServiceProvider, Service, Pet } from '@/types'
-import { Calendar, Clock, User, MapPin, CreditCard, CheckCircle, ArrowLeft, CalendarPlus } from 'lucide-react'
+import { Calendar, Clock, User, MapPin, CreditCard, CheckCircle, ArrowLeft, CalendarPlus, Users } from 'lucide-react'
 import { format } from 'date-fns'
 import { t } from '@/lib/translations'
+import Image from 'next/image'
 
 export default function BookingDetailPage() {
   const params = useParams()
@@ -253,14 +254,25 @@ END:VCALENDAR`
     return (
       <Layout>
         <ProtectedRoute>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-gray-50 ">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-              <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-                <div className="space-y-6">
-                  <div className="h-32 bg-gray-200 rounded"></div>
-                  <div className="h-64 bg-gray-200 rounded"></div>
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="animate-pulse">
+                  <Image
+                    src="/PetiFy.svg"
+                    alt="PetiFy"
+                    width={120}
+                    height={40}
+                    className="mb-8"
+                  />
+                </div>
+                <div className="animate-pulse space-y-4 w-full">
+                  <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                  <div className="space-y-6 mt-8">
+                    <div className="h-32 bg-gray-200 rounded"></div>
+                    <div className="h-64 bg-gray-200 rounded"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -274,7 +286,7 @@ END:VCALENDAR`
     return (
       <Layout>
         <ProtectedRoute>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-gray-50">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('bookings.confirmation.bookingNotFound')}</h1>
@@ -294,7 +306,7 @@ END:VCALENDAR`
   return (
     <Layout>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-gray-50">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -324,8 +336,8 @@ END:VCALENDAR`
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Booking Details */}
-                <Card>
-                  <CardHeader>
+                <Card className="py-0">
+                  <CardHeader className="pb-4">
                     <CardTitle className="flex items-center">
                       <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
                       {t('bookings.confirmation.bookingDetails')}
@@ -334,35 +346,42 @@ END:VCALENDAR`
                       {t('bookings.confirmation.bookingDetailsDesc')}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                         <Calendar className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.date')}</p>
-                          <p className="font-medium">{format(new Date(booking.date), 'EEEE, MMMM d, yyyy')}</p>
+                          <p className="text-sm text-gray-600">{t('bookings.confirmation.provider')}</p>
+                          <p className="font-medium">{provider?.businessName || t('bookings.confirmation.myBusiness')}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                         <Clock className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.time')}</p>
-                          <p className="font-medium">{booking.timeSlot.start} - {booking.timeSlot.end}</p>
+                          <p className="text-sm text-gray-600">{t('bookings.confirmation.dateAndTime')}</p>
+                          <p className="font-medium">{format(new Date(booking.date), 'MMMM d, yyyy')} {booking.timeSlot.start}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <User className="h-5 w-5 text-gray-500" />
+                        <Users className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.service')}</p>
-                          <p className="font-medium">{service?.name || t('bookings.confirmation.service')}</p>
+                          <p className="text-sm text-gray-600">{t('bookings.confirmation.pets')}</p>
+                          <p className="font-medium">1 {t('bookings.confirmation.pet')}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                         <CreditCard className="h-5 w-5 text-gray-500" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.totalPaid')}</p>
-                          <p className="font-medium">€{booking.totalPrice}</p>
+                          <p className="text-sm text-gray-600">{t('bookings.confirmation.servicePrice')}</p>
+                          <p className="font-medium">€{service?.price || 0} × 1</p>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-200 pt-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-semibold text-gray-900">{t('bookings.confirmation.total')}</span>
+                        <span className="text-xl font-bold text-gray-900">€{booking.totalPrice}</span>
                       </div>
                     </div>
 
@@ -398,11 +417,11 @@ END:VCALENDAR`
               <div className="space-y-6">
                 {/* Provider Information */}
                 {provider && (
-                  <Card>
-                    <CardHeader>
+                  <Card className="py-0">
+                    <CardHeader className="pb-4">
                       <CardTitle>{t('bookings.confirmation.provider')}</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">

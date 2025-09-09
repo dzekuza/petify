@@ -9,6 +9,7 @@ interface ServiceCategoryStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
 }
 
 const serviceCategories = [
@@ -16,35 +17,35 @@ const serviceCategories = [
     id: 'training',
     name: 'Dresūra',
     description: 'Profesionalūs treniruotės ir elgesio modifikavimas',
-    icon: '/image (8).png'
+    icon: '/Pet_Training_Icon Background Removed.png'
   },
   {
     id: 'grooming',
     name: 'Kirpyklos',
     description: 'Profesionalūs šukavimo paslaugos jūsų kailuotų draugų',
-    icon: '/image (8).png'
+    icon: '/Animal_Care_Icon Background Removed.png'
   },
   {
     id: 'veterinary',
     name: 'Veterinarijos',
     description: 'Ekspertinė medicinos priežiūra ir sveikatos patikrinimai',
-    icon: '/image (8).png'
+    icon: '/Pet_Veterinary_Icon Background Removed.png'
   },
   {
     id: 'boarding',
     name: 'Prieglauda',
     description: 'Saugūs ir patogūs nakvynės',
-    icon: '/image (8).png'
+    icon: '/Pets_Pairing_Icon Background Removed.png'
   },
   {
     id: 'walking',
     name: 'Šunų vedimas',
     description: 'Kasdienės mankštos ir lauko nuotykiai',
-    icon: '/image (8).png'
+    icon: '/Pet_Ads_Icon Background Removed.png'
   }
 ]
 
-export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious }: ServiceCategoryStepProps) {
+export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious, isEditMode }: ServiceCategoryStepProps) {
   const [selectedCategory, setSelectedCategory] = useState(data.providerType || '')
 
   const handleCategorySelect = (categoryId: string) => {
@@ -61,7 +62,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
             <div className="flex flex-col gap-8 items-center justify-center">
               {/* Title */}
               <h1 className="text-3xl font-bold text-black text-center">
-                Pasirinkite teikiamos paslaugos tipą
+                {isEditMode ? 'Redaguoti paslaugos tipą' : 'Pasirinkite teikiamos paslaugos tipą'}
               </h1>
               
               {/* Service Categories Grid - 2x1 */}

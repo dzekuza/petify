@@ -7,6 +7,7 @@ import { ServiceProvider, Service, Review, Pet } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
+import { useFavorites } from '@/contexts/favorites-context'
 import { t } from '@/lib/translations'
 import { ImageGallery } from '@/components/provider-detail/image-gallery'
 import { ProviderInfo } from '@/components/provider-detail/provider-info'
@@ -18,12 +19,32 @@ export default function ProviderDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
+  const { isFavorited, toggleFavorite } = useFavorites()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
   const [userPets, setUserPets] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+
+  const isFavorite = provider ? isFavorited(provider.id) : false
+
+  const handleToggleFavorite = async () => {
+    if (!provider || !user) {
+      // Redirect to login if not authenticated
+      window.location.href = '/auth/signin'
+      return
+    }
+
+    setIsTogglingFavorite(true)
+    try {
+      await toggleFavorite(provider.id)
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    } finally {
+      setIsTogglingFavorite(false)
+    }
+  }
 
   const handleShare = async () => {
     const shareData = {
@@ -274,7 +295,7 @@ export default function ProviderDetailPage() {
         services={services}
         reviews={reviews}
         isFavorite={isFavorite}
-        onToggleFavorite={() => setIsFavorite(!isFavorite)}
+        onToggleFavorite={handleToggleFavorite}
         onShare={handleShare}
         onBack={() => router.back()}
         onBookService={handleBookService}
@@ -287,7 +308,7 @@ export default function ProviderDetailPage() {
             onBack={() => router.back()}
             onShare={handleShare}
             isFavorite={isFavorite}
-            onToggleFavorite={() => setIsFavorite(!isFavorite)}
+            onToggleFavorite={handleToggleFavorite}
           />
 
           {/* Main content grid */}
@@ -297,7 +318,7 @@ export default function ProviderDetailPage() {
               <ImageGallery
                 provider={provider}
                 isFavorite={isFavorite}
-                onToggleFavorite={() => setIsFavorite(!isFavorite)}
+                onToggleFavorite={handleToggleFavorite}
                 onShare={handleShare}
                 onBack={() => router.back()}
                 isMobile={false}

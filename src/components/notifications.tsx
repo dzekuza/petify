@@ -1,66 +1,204 @@
 'use client'
 
 import React from 'react'
-import { useNotifications } from '@/contexts/notifications-context'
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
+import { Bell, Calendar, DollarSign, Star, X, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { useNotifications, Notification } from '@/contexts/notifications-context'
+import { cn } from '@/lib/utils'
+import { formatDistanceToNow } from 'date-fns'
+import { lt } from 'date-fns/locale'
 
-const iconMap = {
-  success: CheckCircle,
-  error: AlertCircle,
-  info: Info,
-  warning: AlertTriangle,
+const getNotificationIcon = (type: Notification['type']) => {
+  switch (type) {
+    case 'new_booking':
+      return <Calendar className="h-4 w-4 text-blue-500" />
+    case 'upcoming_booking':
+      return <Clock className="h-4 w-4 text-orange-500" />
+    case 'booking_cancelled':
+      return <X className="h-4 w-4 text-red-500" />
+    case 'booking_completed':
+      return <CheckCircle className="h-4 w-4 text-green-500" />
+    case 'payment_received':
+      return <DollarSign className="h-4 w-4 text-green-600" />
+    case 'review_received':
+      return <Star className="h-4 w-4 text-yellow-500" />
+    default:
+      return <Bell className="h-4 w-4 text-gray-500" />
+  }
 }
 
-const colorMap = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+const getNotificationColor = (type: Notification['type']) => {
+  switch (type) {
+    case 'new_booking':
+      return 'bg-blue-50 border-blue-200'
+    case 'upcoming_booking':
+      return 'bg-orange-50 border-orange-200'
+    case 'booking_cancelled':
+      return 'bg-red-50 border-red-200'
+    case 'booking_completed':
+      return 'bg-green-50 border-green-200'
+    case 'payment_received':
+      return 'bg-green-50 border-green-200'
+    case 'review_received':
+      return 'bg-yellow-50 border-yellow-200'
+    default:
+      return 'bg-gray-50 border-gray-200'
+  }
 }
 
-export function Notifications() {
-  const { notifications, removeNotification } = useNotifications()
+interface NotificationItemProps {
+  notification: Notification
+  onMarkAsRead: (id: string) => void
+}
 
-  if (notifications.length === 0) {
-    return null
+const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps) => {
+  const handleClick = () => {
+    if (!notification.read) {
+      onMarkAsRead(notification.id)
+    }
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => {
-        const Icon = iconMap[notification.type]
-        const colorClass = colorMap[notification.type]
+    <div
+      className={cn(
+        "p-3 border-l-4 cursor-pointer transition-colors hover:bg-gray-50",
+        getNotificationColor(notification.type),
+        !notification.read && "bg-blue-50/50"
+      )}
+      onClick={handleClick}
+    >
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0 mt-0.5">
+          {getNotificationIcon(notification.type)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <p className={cn(
+              "text-sm font-medium",
+              !notification.read ? "text-gray-900" : "text-gray-700"
+            )}>
+              {notification.title}
+            </p>
+            {!notification.read && (
+              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
+            )}
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            {notification.message}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            {formatDistanceToNow(new Date(notification.created_at), { 
+              addSuffix: true, 
+              locale: lt 
+            })}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-        return (
-          <div
-            key={notification.id}
-            className={`max-w-sm w-full border rounded-lg p-4 shadow-lg ${colorClass}`}
-          >
-            <div className="flex items-start">
-              <Icon className="h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm">
-                  {notification.title}
-                </h4>
-                {notification.message && (
-                  <p className="text-sm mt-1 opacity-90">
-                    {notification.message}
-                  </p>
-                )}
-              </div>
+export const NotificationsDropdown = () => {
+  const { 
+    notifications, 
+    unreadCount, 
+    isLoading, 
+    markAsRead, 
+    markAllAsRead 
+  } = useNotifications()
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    await markAsRead(notificationId)
+  }
+
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead()
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="relative h-8 w-8 p-0"
+          aria-label="Notifications"
+        >
+          <Bell className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <Badge 
+              variant="destructive" 
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80 p-0" align="end">
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Pranešimai</h3>
+            {unreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => removeNotification(notification.id)}
-                className="ml-2 h-6 w-6 p-0 hover:bg-black/10"
+                onClick={handleMarkAllAsRead}
+                className="text-xs text-blue-600 hover:text-blue-700"
               >
-                <X className="h-4 w-4" />
+                Pažymėti visus kaip skaitytus
               </Button>
-            </div>
+            )}
           </div>
-        )
-      })}
-    </div>
+        </div>
+        
+        <ScrollArea className="h-96">
+          {isLoading ? (
+            <div className="p-4 text-center text-gray-500">
+              Kraunama...
+            </div>
+          ) : notifications.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+              <p>Nėra pranešimų</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {notifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  notification={notification}
+                  onMarkAsRead={handleMarkAsRead}
+                />
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+        
+        {notifications.length > 0 && (
+          <div className="p-3 border-t bg-gray-50">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-sm text-gray-600 hover:text-gray-900"
+              onClick={() => {
+                // Navigate to full notifications page
+                window.location.href = '/provider/notifications'
+              }}
+            >
+              Peržiūrėti visus pranešimus
+            </Button>
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

@@ -59,7 +59,7 @@ export function MobileDrawer({
 
         {/* Fixed Bottom Bar */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
-          <div className="flex items-center justify-between max-w-md mx-auto">
+          <div className="flex items-center justify-between mx-auto">
             <div>
               <div className="text-lg font-semibold text-gray-900">
                 €{provider.priceRange.min}-€{provider.priceRange.max}

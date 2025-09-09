@@ -6,27 +6,17 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { bookingApi } from '@/lib/bookings'
 import { Booking, BookingStatus } from '@/types'
 import { t } from '@/lib/translations'
-import { Calendar, Clock, User, Edit, X, Loader2 } from 'lucide-react'
+import { Calendar, Clock, User, X, Loader2, Mail, Phone } from 'lucide-react'
 
 export default function BookingsPage() {
   const { user } = useAuth()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [editingBooking, setEditingBooking] = useState<Booking | null>(null)
-  const [editForm, setEditForm] = useState({
-    date: '',
-    time: '',
-    notes: ''
-  })
   const [cancellingBooking, setCancellingBooking] = useState<string | null>(null)
 
   const fetchBookings = useCallback(async () => {
@@ -70,42 +60,6 @@ export default function BookingsPage() {
     return t(`bookings.status.${status}`, status.charAt(0).toUpperCase() + status.slice(1))
   }
 
-  const handleEditBooking = (booking: Booking) => {
-    setEditingBooking(booking)
-    setEditForm({
-      date: booking.date,
-      time: booking.timeSlot.start,
-      notes: booking.notes || ''
-    })
-  }
-
-  const handleSaveEdit = async () => {
-    if (!editingBooking) return
-
-    try {
-      // Update booking via API
-      const response = await fetch(`/api/bookings/${editingBooking.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editForm),
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to update booking')
-      }
-      console.log('Updating booking:', editingBooking.id, editForm)
-      
-      // For now, just close the modal
-      setEditingBooking(null)
-      // Refresh bookings
-      await fetchBookings()
-    } catch (err) {
-      console.error('Error updating booking:', err)
-      alert(t('bookings.updateError', 'Failed to update booking'))
-    }
-  }
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
@@ -126,9 +80,9 @@ export default function BookingsPage() {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -137,23 +91,23 @@ export default function BookingsPage() {
             </div>
 
             {/* Bookings List */}
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {loading ? (
-                <Card>
+                <Card className="lg:col-span-2">
                   <CardContent className="text-center py-8">
                     <Loader2 className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
                     <p className="text-gray-600">{t('bookings.loadingBookings')}</p>
                   </CardContent>
                 </Card>
               ) : error ? (
-                <Card>
+                <Card className="lg:col-span-2">
                   <CardContent className="text-center py-8">
                     <p className="text-red-600 mb-4">{error}</p>
                     <Button onClick={fetchBookings}>{t('bookings.tryAgain')}</Button>
                   </CardContent>
                 </Card>
               ) : bookings.length === 0 ? (
-                <Card>
+                <Card className="lg:col-span-2">
                   <CardContent className="text-center py-8">
                     <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">{t('bookings.noBookings')}</h3>
@@ -234,15 +188,34 @@ export default function BookingsPage() {
                         )}
                         
                         {/* Action buttons */}
-                        <div className="flex space-x-2 pt-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEditBooking(booking)}
-                          >
-                            <Edit className='h-4 w-4 mr-1' />
-                            {t('bookings.edit')}
-                          </Button>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {/* Contact Provider Buttons */}
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implement email contact
+                                console.log('Contact by email')
+                              }}
+                            >
+                              <Mail className="h-4 w-4 mr-1" />
+                              El. paštas
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implement phone contact
+                                console.log('Contact by phone')
+                              }}
+                            >
+                              <Phone className="h-4 w-4 mr-1" />
+                              Telefonas
+                            </Button>
+                          </div>
+                          
+                          {/* Cancel Button */}
                           {(booking.status === 'pending' || booking.status === 'confirmed') && (
                             <Button 
                               variant="outline" 
@@ -269,54 +242,6 @@ export default function BookingsPage() {
           </div>
         </div>
 
-        {/* Edit Booking Modal */}
-        <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('bookings.editBooking')}</DialogTitle>
-              <DialogDescription>
-                {t('bookings.editBookingDesc')}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="editDate">{t('bookings.editDate')}</Label>
-                <Input
-                  id="editDate"
-                  type="date"
-                  value={editForm.date}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, date: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="editTime">{t('bookings.editTime')}</Label>
-                <Input
-                  id="editTime"
-                  type="time"
-                  value={editForm.time}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, time: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="editNotes">{t('bookings.editNotes')}</Label>
-                <Textarea
-                  id="editNotes"
-                  value={editForm.notes}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder={t('bookings.editNotesPlaceholder')}
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setEditingBooking(null)}>
-                  {t('common.cancel')}
-                </Button>
-                <Button onClick={handleSaveEdit}>
-                  {t('bookings.saveChanges')}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </ProtectedRoute>
     </Layout>
   )

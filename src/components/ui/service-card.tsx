@@ -30,7 +30,7 @@ export function ServiceCard({
       )}
       onClick={onClick}
     >
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{service.name}</CardTitle>
           {isSelected && showSelection && (
@@ -40,7 +40,7 @@ export function ServiceCard({
         <CardDescription>{service.description}</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-2">
         <div className="flex items-center space-x-6 text-sm text-gray-500">
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />

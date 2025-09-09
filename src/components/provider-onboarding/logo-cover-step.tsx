@@ -2,18 +2,25 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { OnboardingStepper } from './onboarding-stepper'
+import { PageLayout, PageContent } from './page-layout'
+import BottomNavigation from './bottom-navigation'
+import ExitButton from './exit-button'
 
 interface LogoCoverStepProps {
   data: OnboardingData
   onUpdate: (data: Partial<OnboardingData>) => void
   onNext: () => void
   onPrevious: () => void
+  isEditMode?: boolean
+  onSave?: () => void
+  onExitEdit?: () => void
 }
 
-export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: LogoCoverStepProps) {
+export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: LogoCoverStepProps) {
   const [coverImage, setCoverImage] = useState<File | null>(data.coverImage || null)
   const [logoImage, setLogoImage] = useState<File | null>(data.logoImage || null)
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(data.coverImageUrl || '')
+  const [logoImageUrl, setLogoImageUrl] = useState<string>(data.logoImageUrl || '')
 
   const handleCoverUpload = (files: FileList | null) => {
     if (files && files[0]) {
@@ -31,24 +38,33 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
 
   const removeCoverImage = () => {
     setCoverImage(null)
-    onUpdate({ coverImage: null })
+    setCoverImageUrl('')
+    onUpdate({ coverImage: null, coverImageUrl: '' })
   }
 
   const removeLogoImage = () => {
     setLogoImage(null)
-    onUpdate({ logoImage: null })
+    setLogoImageUrl('')
+    onUpdate({ logoImage: null, logoImageUrl: '' })
   }
 
   const isFormValid = () => {
+    // In edit mode, allow existing URLs or new files
+    if (isEditMode) {
+      return (coverImage || coverImageUrl) && (logoImage || logoImageUrl)
+    }
+    // In new mode, require files
     return coverImage && logoImage
   }
 
   return (
-    <div className="bg-white relative size-full min-h-screen flex flex-col" data-name="Logo and Cover">
+    <PageLayout>
+      {/* Exit Button */}
+      <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
+      
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col items-center justify-center min-h-full px-4 py-8 pb-20">
-          <div className="w-full max-w-[522px]">
+      <PageContent>
+        <div className="w-full max-w-[522px]">
             <div className="flex flex-col gap-6 items-start justify-start">
               {/* Title */}
               <h1 className="text-3xl font-bold text-black w-full">
@@ -71,10 +87,10 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
                       htmlFor="cover-upload"
                       className="cursor-pointer block"
                     >
-                      {coverImage ? (
+                      {(coverImage || coverImageUrl) ? (
                         <div className="relative">
                           <img
-                            src={URL.createObjectURL(coverImage)}
+                            src={coverImage ? URL.createObjectURL(coverImage) : coverImageUrl}
                             alt="Cover preview"
                             className="w-full h-32 object-cover rounded-lg"
                           />
@@ -122,10 +138,10 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
                       htmlFor="logo-upload"
                       className="cursor-pointer block"
                     >
-                      {logoImage ? (
+                      {(logoImage || logoImageUrl) ? (
                         <div className="relative">
                           <img
-                            src={URL.createObjectURL(logoImage)}
+                            src={logoImage ? URL.createObjectURL(logoImage) : logoImageUrl}
                             alt="Logo preview"
                             className="w-24 h-24 object-contain rounded-lg mx-auto"
                           />
@@ -161,18 +177,19 @@ export default function LogoCoverStep({ data, onUpdate, onNext, onPrevious }: Lo
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      </PageContent>
 
-      {/* Stepper Component */}
-      <OnboardingStepper
+      {/* Bottom Navigation */}
+      <BottomNavigation
         currentStep={8}
         totalSteps={8}
         onNext={onNext}
         onPrevious={onPrevious}
         isNextDisabled={!isFormValid()}
         nextText="Baigti"
+        isEditMode={isEditMode}
+        onSave={onSave}
       />
-    </div>
+    </PageLayout>
   )
 }

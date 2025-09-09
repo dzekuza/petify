@@ -341,3 +341,33 @@
     --breakpoint-grid_columns: 2;
   }
 }
+
+/* Stripe Elements Fixes */
+.StripeElement {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.StripeElement iframe {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.__PrivateStripeElement {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.__PrivateStripeElement iframe {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Ensure Stripe elements are clickable */
+.StripeElement * {
+  pointer-events: auto !important;
+}
+
+.__PrivateStripeElement * {
+  pointer-events: auto !important;
+}

@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/drawer'
 import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
 import { BreedSelector } from '@/components/ui/breed-selector'
+import Image from 'next/image'
 import { 
   Clock, 
   Users, 
@@ -157,14 +158,17 @@ export default function BookingPage() {
     // Get day name from selected date
     const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
     
-    // Use hardcoded time slots for now (same as desktop)
     // Check availability from provider data
     if (provider.availability && provider.availability[dayName]) {
       const dayAvailability = provider.availability[dayName]
-      // dayAvailability is TimeSlot[], so we need to extract time slots differently
-      return dayAvailability.map(slot => slot.start) || []
+      
+      // Ensure dayAvailability is an array before calling map
+      if (Array.isArray(dayAvailability)) {
+        return dayAvailability.map(slot => slot.start) || []
+      }
     }
-    return []
+    
+    // Fallback to hardcoded time slots
     return [
       "09:00",
       "10:00", 
@@ -371,7 +375,7 @@ export default function BookingPage() {
           <div className="space-y-6 py-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectService')}</h2>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {services.map((service) => (
                   <ServiceCard
                     key={service.id}
@@ -391,8 +395,8 @@ export default function BookingPage() {
           <div className="space-y-6 py-4">
             {/* Show selected service if pre-selected */}
             {selectedService && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Selected Service</h2>
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-3">{t('provider.selectService')}</h2>
                 <ServiceCard
                   service={selectedService}
                   isSelected={true}
@@ -455,6 +459,26 @@ export default function BookingPage() {
                           onCheckedChange={() => handlePetSelect(pet.id)}
                           className="w-5 h-5"
                         />
+                        
+                        {/* Pet Image */}
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                          {pet.profilePicture ? (
+                            <Image
+                              src={pet.profilePicture}
+                              alt={pet.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                              <span className="text-gray-500 text-lg font-medium">
+                                {pet.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">{pet.name}</h4>
                           <p className="text-sm text-gray-600">
@@ -562,28 +586,28 @@ export default function BookingPage() {
                 </div>
                 <div className="px-6 space-y-4 pb-6">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Provider</span>
+                    <span className="text-gray-600">{t('bookings.confirmation.provider')}</span>
                     <span className="font-medium">{provider.businessName}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Date & Time</span>
+                    <span className="text-gray-600">{t('bookings.confirmation.dateAndTime')}</span>
                     <span className="font-medium">
-                      {selectedDate && format(selectedDate, "PPP")} {selectedTimeSlot}
+                      {selectedDate && format(selectedDate, "MMMM d, yyyy")} {selectedTimeSlot}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Pets</span>
+                    <span className="text-gray-600">{t('bookings.confirmation.pets')}</span>
                     <span className="font-medium">
-                      {selectedPets.length} {selectedPets.length === 1 ? 'pet' : 'pets'}
+                      {selectedPets.length} {selectedPets.length === 1 ? t('bookings.confirmation.pet') : t('bookings.confirmation.petsPlural')}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Service price</span>
+                    <span className="text-gray-600">{t('bookings.confirmation.servicePrice')}</span>
                     <span className="font-medium">€{selectedService?.price} × {selectedPets.length}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-lg font-semibold text-gray-900">{t('bookings.confirmation.total')}</span>
                       <span className="text-xl font-bold text-gray-900">€{calculateTotal()}</span>
                     </div>
                   </div>
@@ -631,7 +655,7 @@ export default function BookingPage() {
 
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="flex items-center justify-between max-w-md mx-auto">
+        <div className="flex items-center justify-between mx-auto">
           <div>
             {currentStep === 4 && (
               <div className="text-lg font-semibold text-gray-900">

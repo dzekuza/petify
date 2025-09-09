@@ -8,6 +8,8 @@ import { t } from '@/lib/translations'
 import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useFavorites } from '@/contexts/favorites-context'
+import { useAuth } from '@/contexts/auth-context'
 
 interface ListingsGridProps {
   title: string
@@ -24,18 +26,29 @@ export const ListingsGrid = ({
   className,
   gridCols = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
 }: ListingsGridProps) => {
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const { user } = useAuth()
+  const { isFavorited, toggleFavorite } = useFavorites()
+  const [togglingFavorites, setTogglingFavorites] = useState<Set<string>>(new Set())
 
-  const toggleFavorite = (providerId: string) => {
-    setFavorites(prev => {
-      const newFavorites = new Set(prev)
-      if (newFavorites.has(providerId)) {
-        newFavorites.delete(providerId)
-      } else {
-        newFavorites.add(providerId)
-      }
-      return newFavorites
-    })
+  const handleToggleFavorite = async (providerId: string) => {
+    if (!user) {
+      // Redirect to login
+      window.location.href = '/auth/signin'
+      return
+    }
+
+    setTogglingFavorites(prev => new Set([...prev, providerId]))
+    try {
+      await toggleFavorite(providerId)
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    } finally {
+      setTogglingFavorites(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(providerId)
+        return newSet
+      })
+    }
   }
 
   const getServiceCategoryIcon = (category: string) => {
@@ -79,7 +92,8 @@ export const ListingsGrid = ({
       {/* Listings Grid */}
       <div className={cn("grid gap-6", gridCols)}>
         {providers.map((provider) => {
-          const isFavorite = favorites.has(provider.id)
+          const isFavorite = isFavorited(provider.id)
+          const isToggling = togglingFavorites.has(provider.id)
           
           return (
             <div
@@ -117,15 +131,17 @@ export const ListingsGrid = ({
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        toggleFavorite(provider.id)
+                        handleToggleFavorite(provider.id)
                       }}
-                      className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+                      disabled={isToggling}
+                      className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
                       aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
                     >
                       <Heart 
                         className={cn(
                           "h-4 w-4",
-                          isFavorite ? "text-red-500 fill-current" : "text-gray-400"
+                          isFavorite ? "text-red-500 fill-current" : "text-gray-400",
+                          isToggling && "animate-pulse"
                         )} 
                       />
                     </button>

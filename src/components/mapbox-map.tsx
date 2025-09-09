@@ -31,16 +31,32 @@ const popupStyles = `
   /* Force responsive canvas on mobile */
   @media (max-width: 1024px) {
     .mapboxgl-map {
-      width: 100% !important;
-      height: 100% !important;
+      width: 100vw !important;
+      height: 100vh !important;
       max-width: none !important;
       max-height: none !important;
     }
     
     /* Ensure map container takes full space */
     .mapboxgl-map-container {
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    
+    /* Apply custom canvas styling for mobile */
+    .mapboxgl-canvas {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+    }
+  }
+  
+  /* Apply custom canvas styling for desktop */
+  @media (min-width: 1025px) {
+    .mapboxgl-canvas {
       width: 100% !important;
       height: 100% !important;
+      object-fit: cover !important;
     }
   }
 `
@@ -247,7 +263,11 @@ export const MapboxMap = ({
         mapStyle={MAPBOX_CONFIG.style}
         attributionControl={false}
         logoPosition="bottom-right"
-        style={{ width: '100%', height: '100%' }}
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          minHeight: '100%'
+        }}
         interactiveLayerIds={[]}
       >
 
@@ -263,7 +283,7 @@ export const MapboxMap = ({
             <div
               className="cursor-pointer flex items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-110 border-2 border-white"
               style={{
-                backgroundColor: selectedProviderId === result.provider.id ? '#FF5A5F' : '#000000',
+                backgroundColor: selectedProviderId === result.provider.id ? '#000000' : '#000000',
                 color: 'white',
                 fontSize: '12px',
                 fontWeight: '600',

@@ -114,7 +114,7 @@ export default function ProviderAvailabilityPage() {
   }
 
   return (
-    <Layout hideServiceCategories={true}>
+    <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50 py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">

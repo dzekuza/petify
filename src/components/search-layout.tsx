@@ -13,7 +13,10 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
+  DrawerPortal,
+  DrawerOverlay,
 } from '@/components/ui/drawer'
+import * as DrawerPrimitive from 'vaul'
 import { ChevronUp } from 'lucide-react'
 import { useDeviceDetection } from '@/lib/device-detection'
 
@@ -34,7 +37,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
   const [rating, setRating] = useState(0)
   const [providerType, setProviderType] = useState('any')
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const handleMarkerClick = (result: SearchResult) => {
     setSelectedProviderId(result.provider.id)
@@ -80,7 +83,7 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
       {/* Mobile Layout - Map First, Drawer for Listings */}
       <div className="lg:hidden">
         {/* Map Section - Full screen when drawer minimized */}
-        <div className={`transition-all duration-300 ${isDrawerOpen ? 'h-[calc(100vh-320px)]' : 'h-screen'}`}>
+        <div className={`transition-all duration-300 ${isDrawerOpen ? 'h-[calc(100vh-80vh)]' : 'h-[calc(100vh-12vh)]'}`}>
           <MapboxMap
             results={results}
             onMarkerClick={handleMarkerClick}
@@ -92,67 +95,75 @@ export const SearchLayout = ({ results, filters, onFiltersChange, loading, error
           />
         </div>
 
-        {/* Drawer Preview when closed - Overlay on map */}
-        {!isDrawerOpen && !isDesktop && (
-          <div 
-            className="absolute bottom-4 left-4 right-4 h-16 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg z-10 flex items-center justify-center cursor-pointer hover:bg-white transition-colors shadow-lg"
-            onClick={() => !isDesktop && setIsDrawerOpen(true)}
-          >
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-900">
-                {results.length} providers found
-              </div>
-              <div className="text-xs text-gray-500 mt-1 flex items-center justify-center">
-                <ChevronUp className="w-4 h-4 mr-1" />
-                Tap to view listings
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Drawer for Listings - Only on mobile */}
-        <Drawer open={isDrawerOpen && !isDesktop} onOpenChange={(open) => !isDesktop && setIsDrawerOpen(open)} direction="bottom">
-          <DrawerContent className="h-[80vh]">
-            <DrawerHeader className="pb-2">
-              {/* Results Summary */}
-              <div className="text-center">
-                <DrawerTitle className="text-lg font-semibold text-gray-900">
-                  {loading ? (
-                    <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
-                  ) : (
-                    `Over ${results.length} providers`
-                  )}
-                </DrawerTitle>
-                <DrawerDescription className="text-sm text-gray-600 mt-1">
-                  {loading ? (
-                    <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
-                  ) : (
-                    `Showing ${Math.min(results.length, 12)} providers`
-                  )}
-                </DrawerDescription>
-              </div>
-            </DrawerHeader>
-            
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
-              {loading ? (
-                <div className="space-y-4">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <ListingsGrid
-                  title=""
-                  providers={results.map(result => result.provider)}
-                  showViewAll={false}
-                  gridCols="grid-cols-1"
-                />
-              )}
-            </div>
-          </DrawerContent>
-        </Drawer>
+        {!isDesktop && (
+          <Drawer 
+            open={isDrawerOpen} 
+            onOpenChange={setIsDrawerOpen} 
+            direction="bottom"
+          >
+            <DrawerPortal>
+              {/* Only show overlay when drawer is open */}
+              {isDrawerOpen && <DrawerOverlay />}
+              <DrawerPrimitive.Content
+                className={`transition-all duration-300 ${isDrawerOpen ? 'h-[80vh] z-50' : 'h-[12vh] max-h-[12vh] z-30'} group/drawer-content bg-background fixed flex h-auto flex-col data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-16 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t`}
+              >
+                <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+                <DrawerHeader 
+                  className="pb-2 cursor-pointer" 
+                  onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+                >
+                  {/* Results Summary */}
+                  <div className="text-center">
+                    <DrawerTitle className="text-lg font-semibold text-gray-900">
+                      {loading ? (
+                        <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                      ) : (
+                        t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
+                      )}
+                    </DrawerTitle>
+                    <DrawerDescription className="text-sm text-gray-600 mt-1 flex items-center justify-center">
+                      {loading ? (
+                        <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
+                      ) : (
+                        <>
+                          {t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())}
+                          {!isDrawerOpen && (
+                            <>
+                              <ChevronUp className="w-4 h-4 ml-2" />
+                              <span className="text-xs text-gray-500 ml-1">{t('search.tapToViewListings')}</span>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </DrawerDescription>
+                  </div>
+                </DrawerHeader>
+                
+                {isDrawerOpen && (
+                  <div className="flex-1 overflow-y-auto px-4 pb-4">
+                    {loading ? (
+                      <div className="space-y-4">
+                        {[...Array(6)].map((_, i) => (
+                          <div key={i} className="animate-pulse">
+                            <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ListingsGrid
+                        title=""
+                        providers={results.map(result => result.provider)}
+                        showViewAll={false}
+                        gridCols="grid-cols-1"
+                      />
+                    )}
+                  </div>
+                )}
+              </DrawerPrimitive.Content>
+            </DrawerPortal>
+          </Drawer>
+        )}
       </div>
 
       {/* Desktop Layout - Side by Side */}

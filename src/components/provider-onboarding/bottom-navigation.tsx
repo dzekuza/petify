@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 
-interface OnboardingStepperProps {
+interface BottomNavigationProps {
   currentStep: number
   totalSteps: number
   onPrevious: () => void
@@ -15,7 +15,7 @@ interface OnboardingStepperProps {
   isSaveDisabled?: boolean
 }
 
-export function OnboardingStepper({
+export default function BottomNavigation({
   currentStep,
   totalSteps,
   onPrevious,
@@ -26,7 +26,7 @@ export function OnboardingStepper({
   isEditMode = false,
   onSave,
   isSaveDisabled = false
-}: OnboardingStepperProps) {
+}: BottomNavigationProps) {
   return (
     <div className="fixed bottom-0 h-20 left-0 right-0 bg-white">
       {/* Progress Bar */}

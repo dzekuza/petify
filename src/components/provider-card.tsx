@@ -11,6 +11,8 @@ import Image from 'next/image'
 import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
+import { useFavorites } from '@/contexts/favorites-context'
+import { useAuth } from '@/contexts/auth-context'
 
 interface ProviderCardProps {
   provider: ServiceProvider
@@ -25,11 +27,28 @@ export const ProviderCard = ({
   showActions = true,
   className 
 }: ProviderCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const { user } = useAuth()
+  const { isFavorited, toggleFavorite } = useFavorites()
   const [imageError, setImageError] = useState(false)
+  const [isToggling, setIsToggling] = useState(false)
 
-  const handleToggleFavorite = () => {
-    setIsFavorite(!isFavorite)
+  const isFavorite = isFavorited(provider.id)
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      // Redirect to login or show login modal
+      window.location.href = '/auth/signin'
+      return
+    }
+
+    setIsToggling(true)
+    try {
+      await toggleFavorite(provider.id)
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    } finally {
+      setIsToggling(false)
+    }
   }
 
   const handleImageError = () => {
@@ -153,13 +172,15 @@ export const ProviderCard = ({
         {/* Favorite Button */}
         <button
           onClick={handleToggleFavorite}
-          className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+          disabled={isToggling}
+          className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
           aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
         >
           <Heart 
             className={cn(
               "h-4 w-4",
-              isFavorite ? "text-red-500 fill-current" : "text-gray-400"
+              isFavorite ? "text-red-500 fill-current" : "text-gray-400",
+              isToggling && "animate-pulse"
             )} 
           />
         </button>

@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { ServiceProvider, Service, Pet, CreateBookingForm, TimeSlot } from '@/types'
+import Image from 'next/image'
 
 interface BookingModalProps {
   isOpen: boolean
@@ -34,6 +35,7 @@ const mockPets: Pet[] = [
     weight: 30,
     specialNeeds: ['Anxiety medication'],
     medicalNotes: 'Allergic to certain shampoos',
+    profilePicture: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&h=150&fit=crop&crop=face',
     galleryImages: [],
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01'
@@ -48,6 +50,7 @@ const mockPets: Pet[] = [
     weight: 4,
     specialNeeds: [],
     medicalNotes: 'Very calm and friendly',
+    profilePicture: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=150&h=150&fit=crop&crop=face',
     galleryImages: [],
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01'
@@ -231,6 +234,26 @@ export const BookingModal = ({ isOpen, onClose, provider, service }: BookingModa
                             </svg>
                           )}
                         </div>
+                        
+                        {/* Pet Image */}
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                          {pet.profilePicture ? (
+                            <Image
+                              src={pet.profilePicture}
+                              alt={pet.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                              <span className="text-gray-500 text-lg font-medium">
+                                {pet.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{pet.name}</h4>
                           <p className="text-sm text-gray-600">

@@ -24,7 +24,10 @@ export const translations = {
     certified: 'Sertifikuota',
     reviews: 'atsiliepimai',
     addToFavorites: 'Pridėti prie mėgstamų',
-    removeFromFavorites: 'Pašalinti iš mėgstamų'
+    removeFromFavorites: 'Pašalinti iš mėgstamų',
+    overProviders: 'Daugiau nei {count} teikėjų',
+    showingProviders: 'Rodoma {count} teikėjų',
+    tapToViewListings: 'Paspauskite, kad peržiūrėtumėte sąrašą'
   },
 
   // Provider Details
@@ -136,6 +139,7 @@ export const translations = {
     memberSince: 'Narystė nuo',
     accountType: 'Paskyros tipas',
     editProfile: 'Redaguoti profilį',
+    profileImage: 'Profilio nuotrauka',
     accountSettings: 'Paskyros nustatymai',
     accountSettingsDesc: 'Tvarkykite savo paskyros nuostatas',
     emailNotifications: 'El. pašto pranešimai',
@@ -220,7 +224,7 @@ export const translations = {
     },
     // Booking Confirmation Page
     confirmation: {
-      title: 'Užsakymo patvirtinimas',
+      title: 'Patvirtinkite savo užsakymą',
       subtitle: 'Jūsų užsakymas sėkmingai patvirtintas!',
       backToBookings: 'Atgal į užsakymus',
       bookingNotFound: 'Užsakymas nerastas',
@@ -239,7 +243,14 @@ export const translations = {
       getDirections: 'Gauti maršrutą',
       addToCalendar: 'Pridėti į kalendorių',
       addToGoogleCalendar: 'Pridėti į Google kalendorių',
-      addToAppleCalendar: 'Pridėti į Apple kalendorių'
+      addToAppleCalendar: 'Pridėti į Apple kalendorių',
+      myBusiness: 'Mano verslas',
+      dateAndTime: 'Data ir laikas',
+      pets: 'Gyvūnai',
+      servicePrice: 'Paslaugos kaina',
+      total: 'Iš viso',
+      pet: 'gyvūnas',
+      petsPlural: 'gyvūnai'
     }
   },
 
@@ -495,7 +506,7 @@ export const translations = {
   // Landing Page
   landing: {
     hero: {
-      title: 'Pasirinkite iš 400+ paslaugų teikėjų<br/>savo gyvūnui aplink jus',
+      title: 'Pasirinkite iš 400+ paslaugų teikėjų savo gyvūnui aplink jus',
       search: {
         where: 'Kur',
         wherePlaceholder: 'Pridėkite miestą ar rajoną',

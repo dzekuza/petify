@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
+import { toast } from 'sonner'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
 import ServiceCategoryStep from '@/components/provider-onboarding/service-category-step'
 import LocationSelectionStep from '@/components/provider-onboarding/location-selection-step'
@@ -31,6 +32,8 @@ const onboardingSteps = [
 
 export default function ProviderOnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editProviderId, setEditProviderId] = useState<string | null>(null)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     providerType: '',
     locationType: '',
@@ -80,8 +83,9 @@ export default function ProviderOnboardingPage() {
   
   const { user, loading } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
-  // Handle navigation based on user state
+  // Handle navigation based on user state and edit mode
   useEffect(() => {
     const checkUserStatus = async () => {
       if (loading) return
@@ -91,6 +95,54 @@ export default function ProviderOnboardingPage() {
         return
       }
 
+      // Check if we're in edit mode
+      const editParam = searchParams.get('edit')
+      if (editParam === 'true') {
+        setIsEditMode(true)
+        
+        // Load existing provider data from sessionStorage
+        const editData = sessionStorage.getItem('editProviderData')
+        const providerId = sessionStorage.getItem('editProviderId')
+        
+        if (editData && providerId) {
+          setEditProviderId(providerId)
+          const parsedData = JSON.parse(editData)
+          
+          // Pre-fill the onboarding data with existing provider data
+          setOnboardingData(prev => ({
+            ...prev,
+            providerType: parsedData.serviceType || parsedData.services?.[0]?.category || 'grooming', // Set provider type from edit data
+            locationType: parsedData.locationType || 'single', // Set location type from edit data
+            businessName: parsedData.businessName || '',
+            businessDescription: parsedData.businessDescription || parsedData.description || '',
+            phone: parsedData.phone || '',
+            email: parsedData.email || '',
+            website: parsedData.website || '',
+            address: parsedData.address || '',
+            city: parsedData.city || '',
+            state: parsedData.state || '',
+            zipCode: parsedData.zipCode || '',
+            coordinates: parsedData.coordinates || { lat: 0, lng: 0 }, // Include coordinates
+            experience: parsedData.experience || '',
+            basePrice: parsedData.basePrice || parseFloat(parsedData.priceRange?.min || '0'),
+            pricePerHour: parsedData.pricePerHour || parseFloat(parsedData.priceRange?.max || '0'),
+            availability: parsedData.availability || prev.availability,
+            certifications: parsedData.certifications || [],
+            services: parsedData.services || [],
+            photos: parsedData.photos || parsedData.images || [],
+            profilePhoto: parsedData.profilePhoto || parsedData.avatarUrl || '',
+            // Pre-fill cover and logo images if available
+            coverImageUrl: parsedData.coverImageUrl || '',
+            logoImageUrl: parsedData.logoImageUrl || ''
+          }))
+          
+          // Skip to business info step (step 4) in edit mode
+          setCurrentStep(4)
+        }
+        return
+      }
+
+      // For new onboarding, check if user already has a profile
       try {
         const hasProfile = await providerApi.hasProviderProfile(user.id)
         if (hasProfile) {
@@ -103,7 +155,7 @@ export default function ProviderOnboardingPage() {
     }
 
     checkUserStatus()
-  }, [user, loading, router])
+  }, [user, loading, router, searchParams])
 
   const handleNext = () => {
     // Navigate to next step
@@ -146,11 +198,20 @@ export default function ProviderOnboardingPage() {
     setOnboardingData(prev => ({ ...prev, ...stepData }))
   }
 
-  const handleOnboardingComplete = async () => {
+  const handleExitEdit = () => {
+    // Clear session storage
+    sessionStorage.removeItem('editProviderData')
+    sessionStorage.removeItem('editProviderId')
+    
+    // Redirect back to provider profile
+    router.push('/provider/profile')
+  }
+
+  const handleSave = async () => {
+    if (!user?.id) return
+    
     try {
-      // Onboarding completed successfully
-      
-      // Save the onboarding data to create a provider profile
+      // Prepare the provider data (same as in handleOnboardingComplete)
       const providerData = {
         userId: user?.id || '',
         businessName: onboardingData.businessName || '',
@@ -158,10 +219,73 @@ export default function ProviderOnboardingPage() {
         description: onboardingData.businessDescription || '',
         services: onboardingData.services || [],
         location: {
-          address: onboardingData.addresses?.[0]?.address || '',
-          city: onboardingData.addresses?.[0]?.city || '',
-          state: '',
-          zip: onboardingData.addresses?.[0]?.zipCode || '',
+          address: onboardingData.addresses?.[0]?.address || onboardingData.address || '',
+          city: onboardingData.addresses?.[0]?.city || onboardingData.city || '',
+          state: onboardingData.state || '',
+          zip: onboardingData.addresses?.[0]?.zipCode || onboardingData.zipCode || '',
+          coordinates: onboardingData.coordinates || { lat: 0, lng: 0 }
+        },
+        serviceAreas: onboardingData.addresses?.map(addr => ({
+          address: addr.address,
+          city: addr.city,
+          zipCode: addr.zipCode
+        })) || [],
+        contactInfo: {
+          phone: onboardingData.phone || '',
+          email: user?.email || '',
+          website: onboardingData.website || ''
+        },
+        businessHours: {
+          monday: { start: onboardingData.workingHours?.monday?.startTime || '09:00', end: onboardingData.workingHours?.monday?.endTime || '17:00', available: onboardingData.workingHours?.monday?.enabled || false },
+          tuesday: { start: onboardingData.workingHours?.tuesday?.startTime || '09:00', end: onboardingData.workingHours?.tuesday?.endTime || '17:00', available: onboardingData.workingHours?.tuesday?.enabled || false },
+          wednesday: { start: onboardingData.workingHours?.wednesday?.startTime || '09:00', end: onboardingData.workingHours?.wednesday?.endTime || '17:00', available: onboardingData.workingHours?.wednesday?.enabled || false },
+          thursday: { start: onboardingData.workingHours?.thursday?.startTime || '09:00', end: onboardingData.workingHours?.thursday?.endTime || '17:00', available: onboardingData.workingHours?.thursday?.enabled || false },
+          friday: { start: onboardingData.workingHours?.friday?.startTime || '09:00', end: onboardingData.workingHours?.friday?.endTime || '17:00', available: onboardingData.workingHours?.friday?.enabled || false },
+          saturday: { start: onboardingData.workingHours?.saturday?.startTime || '09:00', end: onboardingData.workingHours?.saturday?.endTime || '17:00', available: onboardingData.workingHours?.saturday?.enabled || false },
+          sunday: { start: onboardingData.workingHours?.sunday?.startTime || '09:00', end: onboardingData.workingHours?.sunday?.endTime || '17:00', available: onboardingData.workingHours?.sunday?.enabled || false }
+        },
+        priceRange: {
+          min: onboardingData.basePrice || 0,
+          max: onboardingData.pricePerHour || 0,
+          currency: onboardingData.currency || 'EUR'
+        },
+        availability: onboardingData.availability || {},
+        certifications: onboardingData.certifications || [],
+        experienceYears: parseInt(onboardingData.experience) || 0,
+        images: onboardingData.photos || [],
+        avatarUrl: onboardingData.profilePhoto || ''
+      }
+      
+      if (isEditMode && editProviderId) {
+        // Update existing provider
+        await providerApi.updateProvider(editProviderId, providerData)
+        
+        // Clear session storage
+        sessionStorage.removeItem('editProviderData')
+        sessionStorage.removeItem('editProviderId')
+        
+        toast.success('Provider profile updated successfully!')
+      }
+    } catch (error) {
+      console.error('Error saving provider:', error)
+      toast.error('Failed to save provider profile. Please try again.')
+    }
+  }
+
+  const handleOnboardingComplete = async () => {
+    try {
+      // Prepare the provider data
+      const providerData = {
+        userId: user?.id || '',
+        businessName: onboardingData.businessName || '',
+        businessType: onboardingData.providerType || 'individual',
+        description: onboardingData.businessDescription || '',
+        services: onboardingData.services || [],
+        location: {
+          address: onboardingData.addresses?.[0]?.address || onboardingData.address || '',
+          city: onboardingData.addresses?.[0]?.city || onboardingData.city || '',
+          state: onboardingData.state || '',
+          zip: onboardingData.addresses?.[0]?.zipCode || onboardingData.zipCode || '',
           coordinates: { lat: 0, lng: 0 }
         },
         serviceAreas: onboardingData.addresses?.map(addr => ({
@@ -190,15 +314,29 @@ export default function ProviderOnboardingPage() {
         },
         availability: onboardingData.availability || {},
         certifications: onboardingData.certifications || [],
-        experienceYears: parseInt(onboardingData.experience) || 0
+        experienceYears: parseInt(onboardingData.experience) || 0,
+        images: onboardingData.photos || [],
+        avatarUrl: onboardingData.profilePhoto || ''
       }
       
-      const newProvider = await providerApi.createProvider(providerData)
-      // Provider profile created successfully
-      router.push('/provider/dashboard')
+      if (isEditMode && editProviderId) {
+        // Update existing provider
+        await providerApi.updateProvider(editProviderId, providerData)
+        
+        // Clear session storage
+        sessionStorage.removeItem('editProviderData')
+        sessionStorage.removeItem('editProviderId')
+        
+        // Redirect to profile page
+        router.push('/provider/profile')
+      } else {
+        // Create new provider
+        await providerApi.createProvider(providerData)
+        router.push('/provider/dashboard')
+      }
       
     } catch (error) {
-      console.error('Error creating provider profile:', error)
+      console.error('Error saving provider profile:', error)
       router.push('/provider/dashboard')
     }
   }
@@ -206,113 +344,82 @@ export default function ProviderOnboardingPage() {
   const renderStep = () => {
     const currentStepData = onboardingSteps[currentStep]
     
+    // Common props for all steps
+    const commonProps = {
+      data: onboardingData,
+      onUpdate: handleDataUpdate,
+      onNext: handleNext,
+      onPrevious: handlePrevious,
+      isEditMode,
+      onSave: handleSave,
+      onExitEdit: handleExitEdit
+    }
+    
     switch (currentStepData.component) {
       case 'welcome':
         return (
           <WelcomeStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'service-category':
         return (
           <ServiceCategoryStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'location-selection':
         return (
           <LocationSelectionStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'address-input':
         return (
           <AddressInputStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'business-info':
         return (
           <BusinessInfoStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'services':
         return (
           <ServicesStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'working-hours':
         return (
           <WorkingHoursStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'logo-cover':
         return (
           <LogoCoverStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'provider-type':
         return (
           <ProviderTypeStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'service-details':
         return (
           <ServiceDetailsStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 'business-info':
-        return (
-          <BusinessInfoStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       case 'review':
         return (
           <ReviewStep
-            data={onboardingData}
-            onUpdate={handleDataUpdate}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
+            {...commonProps}
           />
         )
       default:
