@@ -73,15 +73,6 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
   // Update form data and previews when providerData changes
   useEffect(() => {
     if (providerData) {
-      console.log('GeneralBusinessInfo received providerData:', {
-        logo_url: providerData.logo_url,
-        cover_image_url: providerData.cover_image_url,
-        gallery_images: providerData.gallery_images,
-        images: providerData.images,
-        avatar_url: providerData.avatar_url,
-        contact_info: providerData.contact_info,
-        location: providerData.location
-      })
       
       // Update form data with existing provider data
       setFormData({
@@ -98,20 +89,8 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       })
       
       // Update business hours
-      console.log('Business hours from providerData:', providerData.business_hours)
       if (Array.isArray(providerData.business_hours) && providerData.business_hours.length > 0) {
-        console.log('Setting business hours from provider data')
         setBusinessHours(providerData.business_hours)
-      } else {
-        console.log('Setting default business hours')
-        // Set default business hours if no data
-        const defaultHours = DAYS_OF_WEEK.map(day => ({
-          day: day.value,
-          open: '09:00',
-          close: '17:00',
-          closed: false
-        }))
-        setBusinessHours(defaultHours)
       }
       
       // Update media previews
@@ -415,7 +394,6 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {console.log('Rendering business hours:', businessHours, 'Array check:', Array.isArray(businessHours), 'Length:', businessHours.length)}
           {businessHours.map((hour, index) => (
               <div key={hour.day} className="flex items-center space-x-4 p-4 border rounded-lg">
                 <div className="w-24">
@@ -462,13 +440,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                   <Badge variant="secondary">Closed</Badge>
                 )}
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <p>Loading business hours...</p>
-            </div>
-          )}
+            ))}
         </CardContent>
       </Card>
 
