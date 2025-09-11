@@ -510,20 +510,20 @@ export const providerApi = {
 
       // Apply category filter
       if (filters?.category && filters.category !== 'all') {
-        // For training category, we need to check the services table
-        if (filters.category === 'training') {
-          // Get providers that have training services
-          const { data: trainingProviders } = await supabase
+        // For training and adoption categories, we need to check the services table
+        if (filters.category === 'training' || filters.category === 'adoption') {
+          // Get providers that have services in this category
+          const { data: categoryProviders } = await supabase
             .from('services')
             .select('provider_id')
-            .eq('category', 'training')
+            .eq('category', filters.category)
             .eq('is_active', true)
           
-          if (trainingProviders && trainingProviders.length > 0) {
-            const providerIds = trainingProviders.map(p => p.provider_id)
+          if (categoryProviders && categoryProviders.length > 0) {
+            const providerIds = categoryProviders.map(p => p.provider_id)
             query = query.in('id', providerIds)
           } else {
-            // No training providers found, return empty result
+            // No providers found for this category, return empty result
             query = query.eq('id', '00000000-0000-0000-0000-000000000000')
           }
         } else {

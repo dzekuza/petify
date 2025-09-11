@@ -96,6 +96,20 @@ export interface Service {
   status: ServiceStatus // būsena
   createdAt: string // sukurtas
   updatedAt: string // atnaujintas
+  // Breeding-specific fields
+  maleCount?: number // patinų skaičius
+  femaleCount?: number // patelių skaičius
+  breed?: string // veislė
+  generation?: string // kartos tipas
+  ageWeeks?: number // amžius savaitėmis
+  ageDays?: number // amžius dienomis
+  readyToLeave?: string // paruošti išvežti
+  microchipped?: boolean // mikročipas
+  vaccinated?: boolean // vakcinuotas
+  wormed?: boolean // išvaryti parazitai
+  healthChecked?: boolean // sveikatos patikra
+  parentsTested?: boolean // tėvai patikrinti
+  kcRegistered?: boolean // KC registruotas
 }
 
 export interface Booking {

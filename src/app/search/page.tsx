@@ -91,25 +91,19 @@ function SearchPageContent() {
         setLoading(true)
         setError(null)
         
-        // Check if searching for adoption category (pet ads)
-        if (debouncedFilters.category === 'adoption') {
-          const petAdsResults = await petAdsApi.getActivePetAds()
-          setPetAds(petAdsResults)
-          setResults([]) // Clear service results
-        } else {
-          const searchResults = await providerApi.searchProviders({
-            category: debouncedFilters.category,
-            location: debouncedFilters.location,
-            priceRange: debouncedFilters.priceRange,
-            rating: debouncedFilters.rating,
-            distance: debouncedFilters.distance,
-            date: debouncedFilters.date,
-            petId: debouncedFilters.petId,
-            verifiedOnly: false // Include both verified and unverified providers
-          })
-          setResults(searchResults)
-          setPetAds([]) // Clear pet ads results
-        }
+        // For adoption category, show breeders as providers (not pet ads)
+        const searchResults = await providerApi.searchProviders({
+          category: debouncedFilters.category,
+          location: debouncedFilters.location,
+          priceRange: debouncedFilters.priceRange,
+          rating: debouncedFilters.rating,
+          distance: debouncedFilters.distance,
+          date: debouncedFilters.date,
+          petId: debouncedFilters.petId,
+          verifiedOnly: false // Include both verified and unverified providers
+        })
+        setResults(searchResults)
+        setPetAds([]) // Clear pet ads results
       } catch (err) {
         console.error('Error fetching data:', err)
         setError(t('search.errorLoadingProviders'))

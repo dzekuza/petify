@@ -19,6 +19,295 @@ import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { ClaimBusinessWidget } from './claim-business-widget'
 
+// Breeder Request Widget Component
+function BreederRequestWidget({ 
+  provider, 
+  services, 
+  userPets, 
+  onPetsUpdate,
+  isMobile = false 
+}: {
+  provider: ServiceProvider
+  services: Service[]
+  userPets: Pet[]
+  onPetsUpdate: (pets: Pet[]) => void
+  isMobile?: boolean
+}) {
+  const { user } = useAuth()
+  const [selectedPet, setSelectedPet] = useState<string>('')
+  const [requestMessage, setRequestMessage] = useState('')
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false)
+  const [addPetDialogOpen, setAddPetDialogOpen] = useState(false)
+  const [addPetForm, setAddPetForm] = useState({
+    name: '',
+    species: 'dog' as 'dog' | 'cat' | 'bird' | 'rabbit' | 'other',
+    breed: '',
+    age: '',
+    weight: '',
+    specialNeeds: '',
+    medicalNotes: ''
+  })
+  const [addPetLoading, setAddPetLoading] = useState(false)
+
+  const handleAddPet = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+
+    setAddPetLoading(true)
+    try {
+      const petData = {
+        name: addPetForm.name,
+        species: addPetForm.species,
+        breed: addPetForm.breed || undefined,
+        age: parseInt(addPetForm.age),
+        weight: addPetForm.weight ? parseFloat(addPetForm.weight) : undefined,
+        specialNeeds: addPetForm.specialNeeds ? addPetForm.specialNeeds.split(',').map(s => s.trim()) : undefined,
+        medicalNotes: addPetForm.medicalNotes || undefined,
+        profilePicture: '',
+        galleryImages: []
+      }
+
+      const newPet = await petsApi.createPet(petData, user.id)
+      onPetsUpdate([...userPets, newPet])
+      
+      setAddPetForm({
+        name: '',
+        species: 'dog',
+        breed: '',
+        age: '',
+        weight: '',
+        specialNeeds: '',
+        medicalNotes: ''
+      })
+      setAddPetDialogOpen(false)
+      toast.success('Pet added successfully!')
+    } catch (error) {
+      console.error('Error adding pet:', error)
+      toast.error('Failed to add pet')
+    } finally {
+      setAddPetLoading(false)
+    }
+  }
+
+  const handleSendRequest = () => {
+    if (!selectedPet) {
+      toast.error('Please select a pet')
+      return
+    }
+    setRequestDialogOpen(true)
+  }
+
+  const handleSubmitRequest = () => {
+    // Here you would implement the request submission logic
+    toast.success('Request sent successfully!')
+    setRequestDialogOpen(false)
+    setRequestMessage('')
+    setSelectedPet('')
+  }
+
+  const AddPetDialog = () => (
+    <Dialog open={addPetDialogOpen} onOpenChange={setAddPetDialogOpen}>
+      <DialogTrigger asChild>
+        <button className="w-full text-sm text-black hover:text-gray-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors">
+          {userPets.length > 0 ? 'Add another pet' : 'Add your first pet'}
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add Your Pet</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleAddPet} className="space-y-4">
+          <InputWithLabel
+            id="petName"
+            label="Pet Name"
+            value={addPetForm.name}
+            onChange={(value) => setAddPetForm(prev => ({ ...prev, name: value }))}
+            placeholder="Enter pet name"
+            required
+          />
+          <SelectWithLabel
+            id="petSpecies"
+            label="Species"
+            value={addPetForm.species}
+            onValueChange={(value) => setAddPetForm(prev => ({ ...prev, species: value as any }))}
+            required
+            options={[
+              { value: "dog", label: "Dog" },
+              { value: "cat", label: "Cat" },
+              { value: "bird", label: "Bird" },
+              { value: "rabbit", label: "Rabbit" },
+              { value: "other", label: "Other" }
+            ]}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
+            <BreedSelector
+              value={addPetForm.breed}
+              onValueChange={(value) => setAddPetForm(prev => ({ ...prev, breed: value }))}
+              species={addPetForm.species}
+              placeholder="Select breed (optional)"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <InputWithLabel
+              id="petAge"
+              label="Age (years)"
+              type="number"
+              value={addPetForm.age}
+              onChange={(value) => setAddPetForm(prev => ({ ...prev, age: value }))}
+              placeholder="0"
+              required
+              min={0}
+              max={30}
+            />
+            <InputWithLabel
+              id="petWeight"
+              label="Weight (kg)"
+              type="number"
+              value={addPetForm.weight}
+              onChange={(value) => setAddPetForm(prev => ({ ...prev, weight: value }))}
+              placeholder="0.0"
+              min={0}
+              step={0.1}
+            />
+          </div>
+          <InputWithLabel
+            id="specialNeeds"
+            label="Special Needs"
+            value={addPetForm.specialNeeds}
+            onChange={(value) => setAddPetForm(prev => ({ ...prev, specialNeeds: value }))}
+            placeholder="Comma-separated list (optional)"
+          />
+          <TextareaWithLabel
+            id="medicalNotes"
+            label="Medical Notes"
+            value={addPetForm.medicalNotes}
+            onChange={(value) => setAddPetForm(prev => ({ ...prev, medicalNotes: value }))}
+            placeholder="Any medical conditions or notes (optional)"
+            rows={3}
+          />
+          <div className="flex space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setAddPetDialogOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={addPetLoading}
+              className="flex-1"
+            >
+              {addPetLoading ? 'Adding...' : 'Add Pet'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+
+  const RequestDialog = () => (
+    <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Send Request</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+            <textarea
+              value={requestMessage}
+              onChange={(e) => setRequestMessage(e.target.value)}
+              placeholder="Tell the breeder about your interest in their pets..."
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              rows={4}
+            />
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setRequestDialogOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitRequest}
+              className="flex-1"
+            >
+              Send Request
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div className="text-2xl font-bold text-gray-900 mb-2">
+        Šiuo metu prieinama
+      </div>
+      <div className="text-gray-600 mb-6">Pasirinkite gyvūną ir siųskite užklausą</div>
+      
+      <div className="space-y-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Pasirinkti gyvūnus</label>
+          {userPets.length > 0 ? (
+            <div className="space-y-2">
+              <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+                {userPets.map((pet) => (
+                  <div key={pet.id} className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      id={`pet-${pet.id}`}
+                      name="selectedPet"
+                      value={pet.id}
+                      checked={selectedPet === pet.id}
+                      onChange={(e) => setSelectedPet(e.target.value)}
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+                    />
+                    <label
+                      htmlFor={`pet-${pet.id}`}
+                      className="flex items-center space-x-2 cursor-pointer flex-1"
+                    >
+                      <PawPrint className="h-4 w-4" />
+                      <span className="text-sm text-gray-900">{pet.name}</span>
+                      <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <AddPetDialog />
+            </div>
+          ) : (
+            <div className="border border-gray-300 rounded-md p-3 text-center">
+              <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+              <AddPetDialog />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Button 
+        variant="gradient"
+        size="lg"
+        className="w-full mb-4"
+        onClick={handleSendRequest}
+        disabled={!selectedPet}
+      >
+        Siųsti užklausą
+      </Button>
+      
+      <AddPetDialog />
+      <RequestDialog />
+    </div>
+  )
+}
+
 interface BookingWidgetProps {
   provider: ServiceProvider
   services: Service[]
@@ -213,6 +502,11 @@ export function BookingWidget({
   // If it's a scraped provider, show claim business widget instead
   if (isScrapedProvider) {
     return <ClaimBusinessWidget provider={provider} isMobile={isMobile} />
+  }
+
+  // If it's a breeder (adoption business type), show different interface
+  if (provider.businessType === 'adoption') {
+    return <BreederRequestWidget provider={provider} services={services} userPets={userPets} onPetsUpdate={onPetsUpdate} isMobile={isMobile} />
   }
 
   const AddPetDialog = () => (

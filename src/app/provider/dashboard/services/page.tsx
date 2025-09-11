@@ -131,18 +131,28 @@ export default function ProviderServicesPage() {
       <>
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Services</h1>
-            <p className="text-gray-600 text-sm">Create and manage the services you offer</p>
+            <h1 className="text-2xl font-bold">
+              {businessType === 'adoption' ? 'Gyvūnų tipai' : 'Paslaugos'}
+            </h1>
+            <p className="text-gray-600 text-sm">
+              {businessType === 'adoption' 
+                ? 'Kurkite ir tvarkykite gyvūnų tipus, kuriuos parduodate' 
+                : 'Kurkite ir tvarkykite paslaugas, kurias teikiate'
+              }
+            </p>
           </div>
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2">
-                <Plus className="h-4 w-4" /> Add Service
+                <Plus className="h-4 w-4" /> 
+                {businessType === 'adoption' ? 'Pridėti gyvūnų tipą' : 'Pridėti paslaugą'}
               </Button>
             </DialogTrigger>
             <DialogContent aria-describedby="add-service-desc">
               <DialogHeader>
-                <DialogTitle>Add New Service</DialogTitle>
+                <DialogTitle>
+                  {businessType === 'adoption' ? 'Pridėti naują gyvūnų tipą' : 'Pridėti naują paslaugą'}
+                </DialogTitle>
               </DialogHeader>
               <p id="add-service-desc" className="sr-only">Fill in service details and save to add it to your offerings.</p>
               <div className="grid gap-4 py-2">
@@ -194,8 +204,15 @@ export default function ProviderServicesPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Your Services</CardTitle>
-            <CardDescription>Services visible to customers when booking</CardDescription>
+            <CardTitle>
+              {businessType === 'adoption' ? 'Jūsų gyvūnų tipai' : 'Jūsų paslaugos'}
+            </CardTitle>
+            <CardDescription>
+              {businessType === 'adoption' 
+                ? 'Gyvūnų tipai, matomi klientams ieškant' 
+                : 'Paslaugos, matomos klientams rezervuojant'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -205,10 +222,18 @@ export default function ProviderServicesPage() {
             ) : services.length === 0 ? (
               <div className="text-center py-10">
                 <Scissors className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600">No services yet</p>
-                <p className="text-sm text-gray-500">Create your first service to start receiving bookings.</p>
+                <p className="text-gray-600">
+                  {businessType === 'adoption' ? 'Dar nėra gyvūnų tipų' : 'Dar nėra paslaugų'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {businessType === 'adoption' 
+                    ? 'Sukurkite pirmąjį gyvūnų tipą, kad pradėtumėte gauti užklausas.' 
+                    : 'Sukurkite pirmąją paslaugą, kad pradėtumėte gauti rezervacijas.'
+                  }
+                </p>
                 <Button onClick={() => setIsAddOpen(true)} className="mt-4 gap-2">
-                  <Plus className="h-4 w-4" /> Add Service
+                  <Plus className="h-4 w-4" /> 
+                  {businessType === 'adoption' ? 'Pridėti gyvūnų tipą' : 'Pridėti paslaugą'}
                 </Button>
               </div>
             ) : (

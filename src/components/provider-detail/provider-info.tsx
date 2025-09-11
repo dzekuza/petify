@@ -354,7 +354,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
                   <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900`}>
                     €{service.price}
                   </div>
-                  {!isScrapedProvider && (
+                  {!isScrapedProvider && provider.businessType !== 'adoption' && (
                     <Button
                       onClick={() => handleServiceBooking(service)}
                       className="bg-black hover:bg-gray-800 text-white w-auto px-4"
@@ -362,6 +362,11 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
                     >
                       {t('provider.bookService')}
                     </Button>
+                  )}
+                  {provider.businessType === 'adoption' && (
+                    <div className="text-sm text-gray-600 font-medium">
+                      Šiuo metu prieinama
+                    </div>
                   )}
                 </div>
               </div>
@@ -371,6 +376,139 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
                 +{services.length - 3} {t('provider.moreServices')}
               </p>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Pet Listings for Breeders */}
+      {provider.businessType === 'adoption' && services.length > 0 && (
+        <div className="border-t border-gray-200 pt-6 mb-6">
+          <h2 className={`${titleClass} text-gray-900 mb-4`}>Gyvūnų sąrašas</h2>
+          <div className="space-y-4">
+            {services.map((service) => (
+              <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 mb-2`}>
+                      {service.name}
+                    </h4>
+                    <p className={`text-sm text-gray-600 mb-3`}>
+                      {service.description}
+                    </p>
+                    
+                    {/* Pet Details */}
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                      {service.breed && (
+                        <div>
+                          <span className="font-medium text-gray-900">Veislė:</span>
+                          <span className="text-gray-600 ml-2">{service.breed}</span>
+                        </div>
+                      )}
+                      {service.generation && (
+                        <div>
+                          <span className="font-medium text-gray-900">Kartos tipas:</span>
+                          <span className="text-gray-600 ml-2">{service.generation}</span>
+                        </div>
+                      )}
+                      {service.ageWeeks && (
+                        <div>
+                          <span className="font-medium text-gray-900">Amžius:</span>
+                          <span className="text-gray-600 ml-2">
+                            {service.ageWeeks} sav. {service.ageDays ? `, ${service.ageDays} d.` : ''}
+                          </span>
+                        </div>
+                      )}
+                      {service.readyToLeave && (
+                        <div>
+                          <span className="font-medium text-gray-900">Paruošti išvežti:</span>
+                          <span className="text-gray-600 ml-2">
+                            {new Date(service.readyToLeave).toLocaleDateString('lt-LT')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Health & Documentation */}
+                    <div className="mb-3">
+                      <span className="font-medium text-gray-900 text-sm">Sveikata ir dokumentai:</span>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {service.microchipped && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            Mikročipas
+                          </span>
+                        )}
+                        {service.vaccinated && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            Vakcinuotas
+                          </span>
+                        )}
+                        {service.wormed && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            Išvaryti parazitai
+                          </span>
+                        )}
+                        {service.healthChecked && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            Sveikatos patikra
+                          </span>
+                        )}
+                        {service.parentsTested && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            Tėvai patikrinti
+                          </span>
+                        )}
+                        {service.kcRegistered && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            KC registruotas
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Litter Information */}
+                    {(service.maleCount || service.femaleCount) && (
+                      <div className="mb-3">
+                        <span className="font-medium text-gray-900 text-sm">Vados informacija:</span>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {service.maleCount && `${service.maleCount} patinų`}
+                          {service.maleCount && service.femaleCount && ', '}
+                          {service.femaleCount && `${service.femaleCount} patelių`}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="text-right ml-4">
+                    <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900 mb-2`}>
+                      €{service.price}
+                    </div>
+                    <div className="text-sm text-gray-600">Kaina</div>
+                  </div>
+                </div>
+
+                {/* Service Images */}
+                {service.images && service.images.length > 0 && (
+                  <div className="mt-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      {service.images.slice(0, 3).map((image, index) => (
+                        <div key={index} className="aspect-square rounded-lg overflow-hidden">
+                          <img
+                            src={image}
+                            alt={`${service.name} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                      {service.images.length > 3 && (
+                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                          <span className="text-sm text-gray-500">+{service.images.length - 3}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

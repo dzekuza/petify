@@ -102,13 +102,6 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
                       </div>
                     ))}
                   </div>
-                ) : filters.category === 'adoption' ? (
-                  <PetAdsGrid
-                    title={`${petAds.length} Pets Available`}
-                    petAds={petAds}
-                    showViewAll={false}
-                    gridCols="grid-cols-1 md:grid-cols-2"
-                  />
                 ) : (
                   <ListingsGrid
                     title={`${results.length} ${t('search.providersFound')}`}

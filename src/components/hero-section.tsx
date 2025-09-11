@@ -312,7 +312,8 @@ export const HeroSection = () => {
               { title: "Jūsų šuniui", category: "boarding" },
               { title: "Veterinarija", category: "veterinary" },
               { title: "Dresūra", category: "training" },
-              { title: "Prižiūrėjimas", category: "sitting" }
+              { title: "Prižiūrėjimas", category: "sitting" },
+              { title: "Veislynai", category: "adoption" }
             ].map((section) => (
               <CategorySection
                 key={section.category}

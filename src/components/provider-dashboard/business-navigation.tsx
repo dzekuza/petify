@@ -70,17 +70,17 @@ const getBusinessNavigation = (businessType: string) => {
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
         { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
       ]
-    case 'adoption':
-      return [
-        { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
-        { href: '/provider/pet-ads', label: 'Pet Listings', icon: Heart },
-        { href: '/provider/applications', label: 'Applications', icon: FileText },
-        { href: '/provider/adoption-process', label: 'Breeding Process', icon: Users },
-        { href: '/provider/dashboard/services', label: 'Services', icon: Settings },
-        { href: '/provider/notifications', label: 'Notifications', icon: Bell },
-        { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
-        { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
-      ]
+      case 'adoption':
+        return [
+          { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
+          { href: '/provider/pet-ads', label: 'Pet Listings', icon: Heart },
+          { href: '/provider/applications', label: 'Applications', icon: FileText },
+          { href: '/provider/adoption-process', label: 'Breeding Process', icon: Users },
+          { href: '/provider/dashboard/services', label: 'Pet Types', icon: Settings },
+          { href: '/provider/notifications', label: 'Notifications', icon: Bell },
+          { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
+          { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
+        ]
     case 'boarding':
       return [
         { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
