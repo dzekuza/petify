@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -162,246 +161,327 @@ export default function ProviderProfilePage() {
 
   if (loading) {
     return (
-      <Layout>
-        <ProtectedRoute requiredRole="provider">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Kraunama...</p>
-            </div>
+      <ProtectedRoute requiredRole="provider">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Kraunama...</p>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   if (error) {
     return (
-      <Layout>
-        <ProtectedRoute requiredRole="provider">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="text-red-600 text-xl mb-4">⚠️</div>
-              <p className="text-gray-600">{error}</p>
-              <Button 
-                onClick={() => window.location.reload()} 
-                className="mt-4"
-                variant="outline"
-              >
-                Bandyti dar kartą
-              </Button>
-            </div>
+      <ProtectedRoute requiredRole="provider">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="text-red-600 text-xl mb-4">⚠️</div>
+            <p className="text-gray-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+              variant="outline"
+            >
+              Bandyti dar kartą
+            </Button>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   if (!profile) {
     return (
-      <Layout>
-        <ProtectedRoute requiredRole="provider">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="text-gray-600 text-xl mb-4">👤</div>
-              <p className="text-gray-600">Profilis nerastas</p>
-              <Button 
-                onClick={() => router.push('/provider/onboarding')} 
-                className="mt-4"
-              >
-                Sukurti profilį
-              </Button>
-            </div>
+      <ProtectedRoute requiredRole="provider">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="text-gray-600 text-xl mb-4">👤</div>
+            <p className="text-gray-600">Profilis nerastas</p>
+            <Button 
+              onClick={() => router.push('/provider/onboarding')} 
+              className="mt-4"
+            >
+              Sukurti profilį
+            </Button>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <Layout hideFooter={true}>
-      <ProtectedRoute requiredRole="provider">
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Profilis</h1>
-                  <p className="text-gray-600">Tvarkykite savo verslo profilio informaciją</p>
-                </div>
-                <Button onClick={handleEditProfile}>
-                  Redaguoti profilį
-                </Button>
+    <ProtectedRoute requiredRole="provider">
+      <>
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Profilis</h1>
+                <p className="text-gray-600">Tvarkykite savo verslo profilio informaciją</p>
               </div>
+              <Button onClick={handleEditProfile}>Redaguoti profilį</Button>
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Profile Info */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Verslo informacija</CardTitle>
-                    <CardDescription>
-                      Jūsų verslo pagrindinė informacija
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-20 w-20">
-                        <AvatarImage src={profile.avatarUrl} alt={profile.businessName} />
-                        <AvatarFallback className="text-lg">
-                          {profile.businessName?.charAt(0) || <Building className="h-8 w-8" />}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">
-                          {profile.businessName}
-                        </h3>
-                        <p className="text-gray-600">{profile.businessType}</p>
-                        <div className="flex items-center space-x-2 mt-2">
-                          <Badge className={getVerificationStatusColor(profile.verificationStatus)}>
-                            {getVerificationStatusText(profile.verificationStatus)}
-                          </Badge>
-                          {profile.profileComplete && (
-                            <Badge variant="secondary">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Pilnas profilis
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {profile.description && (
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Aprašymas</h4>
-                        <p className="text-gray-600">{profile.description}</p>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">El. paštas</p>
-                          <p className="text-sm text-gray-600">{profile.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Phone className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Telefonas</p>
-                          <p className="text-sm text-gray-600">{profile.phone || 'Nenurodyta'}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <MapPin className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Adresas</p>
-                          <p className="text-sm text-gray-600">{profile.address || 'Nenurodyta'}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Calendar className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Narystė nuo</p>
-                          <p className="text-sm text-gray-600">
-                            {new Date(profile.joinedDate).toLocaleDateString('lt-LT')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Business Stats */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Verslo statistika</CardTitle>
-                    <CardDescription>
-                      Jūsų verslo veiklos rodikliai
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3">
-                        <Star className="h-5 w-5 text-yellow-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Vidutinis įvertinimas</p>
-                          <p className="text-sm text-gray-600">{profile.rating.toFixed(1)} / 5.0</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <User className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Atsiliepimai</p>
-                          <p className="text-sm text-gray-600">{profile.totalReviews} atsiliepimų</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Profile Status */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profilio būsena</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Profilio užbaigimas</span>
-                        <Badge className={profile.profileComplete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                          {profile.profileComplete ? 'Pilnas' : 'Nepilnas'}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Verifikacija</span>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Info */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Verslo informacija</CardTitle>
+                  <CardDescription>
+                    Jūsų verslo pagrindinė informacija
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-20 w-20">
+                      <AvatarImage src={profile.avatarUrl} alt={profile.businessName} />
+                      <AvatarFallback className="text-lg">
+                        {profile.businessName?.charAt(0) || <Building className="h-8 w-8" />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {profile.businessName}
+                      </h3>
+                      <p className="text-gray-600">{profile.businessType}</p>
+                      <div className="flex items-center space-x-2 mt-2">
                         <Badge className={getVerificationStatusColor(profile.verificationStatus)}>
                           {getVerificationStatusText(profile.verificationStatus)}
                         </Badge>
+                        {profile.profileComplete && (
+                          <Badge variant="secondary">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Pilnas profilis
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
 
-                {/* Quick Actions */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Greiti veiksmai</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/services')}>
-                      Mano paslaugos
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/bookings')}>
-                      Užsakymai
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/availability')}>
-                      Prieinamumas
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+                  {profile.description && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">Aprašymas</h4>
+                      <p className="text-gray-600">{profile.description}</p>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">El. paštas</p>
+                        <p className="text-sm text-gray-600">{profile.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Telefonas</p>
+                        <p className="text-sm text-gray-600">{profile.phone || 'Nenurodyta'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Adresas</p>
+                        <p className="text-sm text-gray-600">{profile.address || 'Nenurodyta'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Narystė nuo</p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(profile.joinedDate).toLocaleDateString('lt-LT')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Business Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Verslo statistika</CardTitle>
+                  <CardDescription>
+                    Jūsų verslo veiklos rodikliai
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <Star className="h-5 w-5 text-yellow-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Vidutinis įvertinimas</p>
+                        <p className="text-sm text-gray-600">{profile.rating.toFixed(1)} / 5.0</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <User className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Atsiliepimai</p>
+                        <p className="text-sm text-gray-600">{profile.totalReviews} atsiliepimų</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Profile Status */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profilio būsena</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Profilio užbaigimas</span>
+                      <Badge className={profile.profileComplete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                        {profile.profileComplete ? 'Pilnas' : 'Nepilnas'}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Verifikacija</span>
+                      <Badge className={getVerificationStatusColor(profile.verificationStatus)}>
+                        {getVerificationStatusText(profile.verificationStatus)}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Greiti veiksmai</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/dashboard/services')}>
+                    Mano paslaugos
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/dashboard/bookings')}>
+                    Užsakymai
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/availability')}>
+                    Prieinamumas
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </div>
 
-        {/* Edit Profile Modal/Drawer */}
-        {isMobile ? (
-          <Drawer open={editProfileOpen} onOpenChange={setEditProfileOpen} direction="bottom">
-            <DrawerContent className="h-[80vh]">
-              <DrawerHeader className="pb-2">
-                <DrawerTitle className="text-center text-lg font-semibold">
-                  Redaguoti profilį
-                </DrawerTitle>
-              </DrawerHeader>
-              
-              <div className="flex-1 overflow-y-auto px-4 pb-4">
+          {/* Edit Profile Modal/Drawer */}
+          {isMobile ? (
+            <Drawer open={editProfileOpen} onOpenChange={setEditProfileOpen} direction="bottom">
+              <DrawerContent className="h-[80vh]">
+                <DrawerHeader className="pb-2">
+                  <DrawerTitle className="text-center text-lg font-semibold">
+                    Redaguoti profilį
+                  </DrawerTitle>
+                </DrawerHeader>
+                
+                <div className="flex-1 overflow-y-auto px-4 pb-4">
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Profilio nuotrauka</Label>
+                      <ImageUpload
+                        value={profileImage}
+                        onChange={setProfileImage}
+                        placeholder="Click or drag and drop profile image here"
+                        description="PNG, JPG, GIF up to 5MB"
+                        previewClassName="w-20 h-20 object-cover rounded-full"
+                        maxSize={5}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessName">Verslo pavadinimas</Label>
+                      <Input
+                        id="businessName"
+                        value={editForm.businessName}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessType">Verslo tipas</Label>
+                      <Input
+                        id="businessType"
+                        value={editForm.businessType}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, businessType: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="description">Aprašymas</Label>
+                      <Input
+                        id="description"
+                        value={editForm.description}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Adresas</Label>
+                      <Input
+                        id="address"
+                        value={editForm.address}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Telefonas</Label>
+                      <Input
+                        id="phone"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">El. paštas</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={editForm.email}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="website">Svetainė</Label>
+                      <Input
+                        id="website"
+                        value={editForm.website}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, website: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <DrawerFooter className="pt-4">
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
+                      Atšaukti
+                    </Button>
+                    <Button onClick={handleSaveProfile}>
+                      Išsaugoti pakeitimus
+                    </Button>
+                  </div>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          ) : (
+            <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Redaguoti profilį</DialogTitle>
+                  <DialogDescription>
+                    Atnaujinkite savo verslo profilio informaciją
+                  </DialogDescription>
+                </DialogHeader>
                 <div className="space-y-4">
                   <div>
                     <Label>Profilio nuotrauka</Label>
@@ -414,21 +494,23 @@ export default function ProviderProfilePage() {
                       maxSize={5}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="businessName">Verslo pavadinimas</Label>
-                    <Input
-                      id="businessName"
-                      value={editForm.businessName}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="businessType">Verslo tipas</Label>
-                    <Input
-                      id="businessType"
-                      value={editForm.businessType}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, businessType: e.target.value }))}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="businessName">Verslo pavadinimas</Label>
+                      <Input
+                        id="businessName"
+                        value={editForm.businessName}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessType">Verslo tipas</Label>
+                      <Input
+                        id="businessType"
+                        value={editForm.businessType}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, businessType: e.target.value }))}
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label htmlFor="description">Aprašymas</Label>
@@ -446,22 +528,24 @@ export default function ProviderProfilePage() {
                       onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="phone">Telefonas</Label>
-                    <Input
-                      id="phone"
-                      value={editForm.phone}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">El. paštas</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={editForm.email}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="phone">Telefonas</Label>
+                      <Input
+                        id="phone"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">El. paštas</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={editForm.email}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label htmlFor="website">Svetainė</Label>
@@ -471,116 +555,19 @@ export default function ProviderProfilePage() {
                       onChange={(e) => setEditForm(prev => ({ ...prev, website: e.target.value }))}
                     />
                   </div>
-                </div>
-              </div>
-              
-              <DrawerFooter className="pt-4">
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
-                    Atšaukti
-                  </Button>
-                  <Button onClick={handleSaveProfile}>
-                    Išsaugoti pakeitimus
-                  </Button>
-                </div>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-        ) : (
-          <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Redaguoti profilį</DialogTitle>
-                <DialogDescription>
-                  Atnaujinkite savo verslo profilio informaciją
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label>Profilio nuotrauka</Label>
-                  <ImageUpload
-                    value={profileImage}
-                    onChange={setProfileImage}
-                    placeholder="Click or drag and drop profile image here"
-                    description="PNG, JPG, GIF up to 5MB"
-                    previewClassName="w-20 h-20 object-cover rounded-full"
-                    maxSize={5}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="businessName">Verslo pavadinimas</Label>
-                    <Input
-                      id="businessName"
-                      value={editForm.businessName}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="businessType">Verslo tipas</Label>
-                    <Input
-                      id="businessType"
-                      value={editForm.businessType}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, businessType: e.target.value }))}
-                    />
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
+                      Atšaukti
+                    </Button>
+                    <Button onClick={handleSaveProfile}>
+                      Išsaugoti pakeitimus
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="description">Aprašymas</Label>
-                  <Input
-                    id="description"
-                    value={editForm.description}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="address">Adresas</Label>
-                  <Input
-                    id="address"
-                    value={editForm.address}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="phone">Telefonas</Label>
-                    <Input
-                      id="phone"
-                      value={editForm.phone}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">El. paštas</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={editForm.email}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="website">Svetainė</Label>
-                  <Input
-                    id="website"
-                    value={editForm.website}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, website: e.target.value }))}
-                  />
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setEditProfileOpen(false)}>
-                    Atšaukti
-                  </Button>
-                  <Button onClick={handleSaveProfile}>
-                    Išsaugoti pakeitimus
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </ProtectedRoute>
-    </Layout>
+              </DialogContent>
+            </Dialog>
+          )}
+        </>
+    </ProtectedRoute>
   )
 }

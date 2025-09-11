@@ -41,6 +41,7 @@ interface Provider {
 export default function AdminProvidersPage() {
   const [providers, setProviders] = useState<Provider[]>([])
   const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -60,6 +61,28 @@ export default function AdminProvidersPage() {
     }
     fetchProviders()
   }, [])
+
+  const handleDelete = async (id: string) => {
+    const ok = window.confirm('Delete this provider? Related services, bookings, and reviews may be removed.')
+    if (!ok) return
+    try {
+      setDeletingId(id)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) return
+      const res = await fetch(`/api/admin/providers/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        alert(j.error || 'Failed to delete provider')
+        return
+      }
+      setProviders(prev => prev.filter(p => p.id !== id))
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   if (loading) return <div className="px-4 py-6">Loading...</div>
 
@@ -110,7 +133,9 @@ export default function AdminProvidersPage() {
                         <div className="flex gap-2">
                           <Button size="sm" variant="outline" onClick={() => window.open(`/providers/${provider.id}`, '_blank')}>View Profile</Button>
                           <Button size="sm" variant="outline"><Edit className="h-4 w-4 mr-1" /> Edit</Button>
-                          <Button size="sm" variant="destructive"><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(provider.id)} disabled={deletingId === provider.id}>
+                            <Trash2 className="h-4 w-4 mr-1" /> {deletingId === provider.id ? 'Deleting…' : 'Delete'}
+                          </Button>
                         </div>
                       </div>
                     ))

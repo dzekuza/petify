@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent } from '@/components/ui/card'
@@ -22,58 +22,36 @@ export const ProtectedRoute = ({
   const { user, loading } = useAuth()
   const router = useRouter()
 
+  // Stable memoized checks to avoid changing hook order
+  const roleMismatch = useMemo(() => {
+    if (!requiredRole) return false
+    if (!user) return false
+    // Demo bypass: allow provider pages even if user role is not 'provider'
+    if (requiredRole === 'provider') return false
+    return user.user_metadata?.role !== requiredRole
+  }, [requiredRole, user])
+
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/signin')
+    if (loading) return
+
+    if (!user) {
+      router.replace('/auth/signin')
+      return
     }
-  }, [user, loading, router])
+
+    if (roleMismatch) {
+      const target = requiredRole === 'provider' ? '/provider/onboarding' : '/'
+      router.replace(target)
+    }
+  }, [loading, user, roleMismatch, requiredRole, router])
 
   if (loading) {
     return <FullScreenLoading />
   }
 
-  if (!user) {
-    return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <Lock className="h-12 w-12 text-gray-400" />
-            </div>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
-              Access Required
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              You need to sign in to access this page
-            </p>
-          </div>
-
-          <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-gray-600 mb-4">
-                Please sign in to your account to continue
-              </p>
-              <div className="space-y-2">
-                <Button asChild className="w-full">
-                  <a href="/auth/signin">Sign In</a>
-                </Button>
-                <Button variant="outline" asChild className="w-full">
-                  <a href="/auth/signup">Create Account</a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  // For demo purposes, allow access if user is authenticated
-  // In production, you would check the actual role from the database
-  if (requiredRole && user.user_metadata?.role !== requiredRole) {
-    // Allow access for demo - in production, you'd check the role from your database
-    // This ensures immediate access after provider signup
-    console.log('Role check bypassed for demo - user role:', user.user_metadata?.role, 'required:', requiredRole)
+  // During redirects, render nothing to prevent UI flicker and hook churn
+  if (!user || roleMismatch) {
+    return fallback ? <>{fallback}</> : null
   }
 
   return <>{children}</>

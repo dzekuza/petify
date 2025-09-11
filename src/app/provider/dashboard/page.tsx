@@ -374,7 +374,7 @@ export default function ProviderDashboard() {
                     <Button 
                       className="w-full justify-start" 
                       variant="outline"
-                      onClick={() => router.push('/provider/bookings')}
+                      onClick={() => router.push('/provider/dashboard/bookings')}
                     >
                       <Users className="h-4 w-4 mr-2" />
                       {t('providerDashboard.viewBookings')}

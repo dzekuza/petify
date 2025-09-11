@@ -81,7 +81,7 @@ export default function ProviderPetAdsPage() {
               setPetAds(providerPetAds)
             } else {
               // Redirect to services page if not adoption provider
-              router.push('/provider/services')
+              router.push('/provider/dashboard/services')
               return
             }
           }

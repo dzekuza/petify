@@ -305,11 +305,11 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       size="sm"
                       className={cn(
                         "h-8 px-3 text-sm font-medium transition-colors",
-                        pathname === '/provider/bookings' 
+                        pathname === '/provider/dashboard/bookings' 
                           ? "bg-accent text-accent-foreground" 
                           : "hover:bg-accent hover:text-accent-foreground"
                       )}
-                      onClick={() => router.push('/provider/bookings')}
+                      onClick={() => router.push('/provider/dashboard/bookings')}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
                       {t('navigation.bookings')}
@@ -319,11 +319,11 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       size="sm"
                       className={cn(
                         "h-8 px-3 text-sm font-medium transition-colors",
-                        pathname === '/provider/services' 
+                        pathname === '/provider/dashboard/services' 
                           ? "bg-accent text-accent-foreground" 
                           : "hover:bg-accent hover:text-accent-foreground"
                       )}
-                      onClick={() => router.push(provider?.business_type === 'adoption' ? '/provider/pet-ads' : '/provider/services')}
+                      onClick={() => router.push(provider?.business_type === 'adoption' ? '/provider/pet-ads' : '/provider/dashboard/services')}
                     >
                       <Star className="mr-2 h-4 w-4" />
                       {provider?.business_type === 'adoption' ? 'Skelbimai' : t('navigation.services')}
@@ -450,13 +450,13 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/provider/bookings">
+                          <Link href="/provider/dashboard/bookings">
                             <Calendar className="mr-2 h-4 w-4" />
                             <span>{t('navigation.manageBookings')}</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/provider/services">
+                          <Link href="/provider/dashboard/services">
                             <Star className="mr-2 h-4 w-4" />
                             <span>{t('navigation.myServices')}</span>
                           </Link>
@@ -704,7 +704,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href="/provider/bookings"
+                                  href="/provider/dashboard/bookings"
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Calendar className="h-5 w-5" />
@@ -713,7 +713,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                               </DrawerClose>
                               <DrawerClose asChild>
                                 <Link
-                                  href={provider?.business_type === 'adoption' ? '/provider/pet-ads' : '/provider/services'}
+                                  href={provider?.business_type === 'adoption' ? '/provider/pet-ads' : '/provider/dashboard/services'}
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Star className="h-5 w-5" />

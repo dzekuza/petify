@@ -28,18 +28,18 @@ interface BusinessNavigationProps {
 const getBusinessNavigation = (businessType: string) => {
   const baseItems = [
     { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
-    { href: '/provider/bookings', label: 'Bookings', icon: Calendar },
+    { href: '/provider/dashboard/bookings', label: 'Bookings', icon: Calendar },
     { href: '/provider/notifications', label: 'Notifications', icon: Bell },
     { href: '/provider/dashboard/profile', label: 'Profile', icon: User },
-    { href: '/provider/services', label: 'Services', icon: Settings }
+    { href: '/provider/dashboard/services', label: 'Services', icon: Settings }
   ]
 
   switch (businessType) {
     case 'grooming':
       return [
         { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
-        { href: '/provider/bookings', label: 'Appointments', icon: Calendar },
-        { href: '/provider/services', label: 'Grooming Services', icon: Scissors },
+        { href: '/provider/dashboard/bookings', label: 'Appointments', icon: Calendar },
+        { href: '/provider/dashboard/services', label: 'Grooming Services', icon: Scissors },
         { href: '/provider/dashboard/calendar', label: 'Schedule', icon: Calendar },
         { href: '/provider/equipment', label: 'Equipment', icon: Settings },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
@@ -50,10 +50,10 @@ const getBusinessNavigation = (businessType: string) => {
       return [
         { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
         { href: '/provider/patients', label: 'Patients', icon: Users },
-        { href: '/provider/bookings', label: 'Appointments', icon: Calendar },
+        { href: '/provider/dashboard/bookings', label: 'Appointments', icon: Calendar },
         { href: '/provider/medical-records', label: 'Medical Records', icon: FileText },
         { href: '/provider/prescriptions', label: 'Prescriptions', icon: FileText },
-        { href: '/provider/services', label: 'Services', icon: Stethoscope },
+        { href: '/provider/dashboard/services', label: 'Services', icon: Stethoscope },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
         { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
@@ -65,7 +65,7 @@ const getBusinessNavigation = (businessType: string) => {
         { href: '/provider/programs', label: 'Training Programs', icon: GraduationCap },
         { href: '/provider/progress', label: 'Progress Reports', icon: FileText },
         { href: '/provider/clients', label: 'Clients', icon: Users },
-        { href: '/provider/services', label: 'Services', icon: Settings },
+        { href: '/provider/dashboard/services', label: 'Services', icon: Settings },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
         { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
@@ -76,7 +76,7 @@ const getBusinessNavigation = (businessType: string) => {
         { href: '/provider/pet-ads', label: 'Pet Listings', icon: Heart },
         { href: '/provider/applications', label: 'Applications', icon: FileText },
         { href: '/provider/adoption-process', label: 'Adoption Process', icon: Users },
-        { href: '/provider/services', label: 'Services', icon: Settings },
+        { href: '/provider/dashboard/services', label: 'Services', icon: Settings },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
         { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
@@ -85,9 +85,9 @@ const getBusinessNavigation = (businessType: string) => {
       return [
         { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
         { href: '/provider/guests', label: 'Current Guests', icon: Users },
-        { href: '/provider/bookings', label: 'Reservations', icon: Calendar },
+        { href: '/provider/dashboard/bookings', label: 'Reservations', icon: Calendar },
         { href: '/provider/facilities', label: 'Facilities', icon: Settings },
-        { href: '/provider/services', label: 'Services', icon: Settings },
+        { href: '/provider/dashboard/services', label: 'Services', icon: Settings },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
         { href: '/provider/dashboard/profile', label: 'Profile', icon: User }
@@ -175,7 +175,7 @@ export function BusinessQuickActions({ businessType }: BusinessNavigationProps) 
       case 'grooming':
         return [
           { href: '/provider/dashboard/calendar', label: 'Schedule Appointment', icon: Calendar },
-          { href: '/provider/services', label: 'Add Service', icon: Scissors },
+          { href: '/provider/dashboard/services', label: 'Add Service', icon: Scissors },
           { href: '/provider/equipment', label: 'Manage Equipment', icon: Settings }
         ]
       case 'veterinary':
@@ -204,8 +204,8 @@ export function BusinessQuickActions({ businessType }: BusinessNavigationProps) 
         ]
       default:
         return [
-          { href: '/provider/services', label: 'Manage Services', icon: Settings },
-          { href: '/provider/bookings', label: 'View Bookings', icon: Calendar }
+          { href: '/provider/dashboard/services', label: 'Manage Services', icon: Settings },
+          { href: '/provider/dashboard/bookings', label: 'View Bookings', icon: Calendar }
         ]
     }
   }

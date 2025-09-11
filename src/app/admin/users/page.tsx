@@ -24,6 +24,7 @@ interface User {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,6 +44,28 @@ export default function AdminUsersPage() {
     }
     fetchUsers()
   }, [])
+
+  const handleDelete = async (id: string) => {
+    const ok = window.confirm('Delete this user? This action cannot be undone.')
+    if (!ok) return
+    try {
+      setDeletingId(id)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) return
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        alert(j.error || 'Failed to delete user')
+        return
+      }
+      setUsers(prev => prev.filter(u => u.id !== id))
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   if (loading) {
     return <div className="px-4 py-6">Loading...</div>
@@ -90,8 +113,8 @@ export default function AdminUsersPage() {
                           <Key className="h-4 w-4 mr-1" /> Password
                         </Button>
                         {user.role !== 'admin' && (
-                          <Button size="sm" variant="destructive">
-                            <Trash2 className="h-4 w-4 mr-1" /> Delete
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(user.id)} disabled={deletingId === user.id}>
+                            <Trash2 className="h-4 w-4 mr-1" /> {deletingId === user.id ? 'Deleting…' : 'Delete'}
                           </Button>
                         )}
                       </div>

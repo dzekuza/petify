@@ -165,7 +165,7 @@ export function GroomingWidget({ stats, providerData }: BusinessWidgetProps) {
             </div>
           </div>
           <Button size="sm" variant="outline" className="w-full mt-4" asChild>
-            <Link href="/provider/services">
+            <Link href="/provider/dashboard/services">
               <Plus className="h-4 w-4 mr-2" />
               Manage Services
             </Link>
@@ -301,7 +301,7 @@ export function TrainingWidget({ stats, providerData }: BusinessWidgetProps) {
             </div>
           </div>
           <Button size="sm" variant="outline" className="w-full mt-4" asChild>
-            <Link href="/provider/services">
+            <Link href="/provider/dashboard/services">
               <Plus className="h-4 w-4 mr-2" />
               Manage Programs
             </Link>
@@ -437,7 +437,7 @@ export function BoardingWidget({ stats, providerData }: BusinessWidgetProps) {
             </div>
           </div>
           <Button size="sm" variant="outline" className="w-full mt-4" asChild>
-            <Link href="/provider/services">
+            <Link href="/provider/dashboard/services">
               <Plus className="h-4 w-4 mr-2" />
               Manage Services
             </Link>
@@ -469,7 +469,7 @@ export function BusinessSpecificWidget({ businessType, stats, providerData }: Bu
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <Link href="/provider/services">
+              <Link href="/provider/dashboard/services">
                 <Plus className="h-4 w-4 mr-2" />
                 Manage Services
               </Link>

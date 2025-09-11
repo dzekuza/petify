@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/auth-context"
 import { providerApi } from "@/lib/providers"
+import { t } from "@/lib/translations"
 
 const data = {
   navMain: [
@@ -171,13 +172,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const servicesLabel = (() => {
     switch (businessType) {
-      case 'grooming': return 'Grooming Services'
-      case 'training': return 'Training Services'
-      case 'veterinary': return 'Medical Services'
-      case 'boarding': return 'Boarding Services'
-      case 'adoption': return 'Pet Ads'
-      case 'sitting': return 'Sitting Services'
-      default: return 'Services'
+      case 'grooming': return 'Gyvūnų šukavimo paslaugos'
+      case 'training': return 'Gyvūnų treniruočių paslaugos'
+      case 'veterinary': return t('serviceCategories.veterinary')
+      case 'boarding': return 'Prieglaudos paslaugos'
+      case 'adoption': return t('serviceCategories.adoption')
+      case 'sitting': return 'Gyvūnų prižiūrėjimo paslaugos'
+      default: return t('navigation.services')
     }
   })()
 
@@ -208,7 +209,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard">
                     <SquareTerminal />
-                    <span>Dashboard</span>
+                    <span>{t('navigation.dashboard')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -216,7 +217,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard/bookings">
                     <Bot />
-                    <span>Appointments</span>
+                    <span>{t('navigation.bookings')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -232,7 +233,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard/calendar">
                     <BookOpen />
-                    <span>Schedule</span>
+                    <span>{t('navigation.calendar')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -240,7 +241,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard/analytics">
                     <PieChart />
-                    <span>Analytics</span>
+                    <span>{t('providerDashboard.analytics')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -248,7 +249,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard/settings">
                     <Settings2 />
-                    <span>Settings</span>
+                    <span>{t('navigation.settings', 'Nustatymai')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -256,7 +257,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link href="/provider/dashboard/profile">
                     <Settings2 />
-                    <span>Profile</span>
+                    <span>{t('navigation.profile')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
