@@ -21,8 +21,9 @@ interface ProviderSliderProps {
 export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({ providers, className, showNavigation = true }, ref) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerView, setItemsPerView] = useState(4)
+  const [isMobile, setIsMobile] = useState(false)
   const internalSliderRef = useRef<HTMLDivElement>(null)
-  const sliderRef = ref || internalSliderRef
+  const sliderRef = (ref as React.RefObject<HTMLDivElement>) || internalSliderRef
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
   const { user } = useAuth()
@@ -32,11 +33,13 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
   // Calculate items per view based on screen size
   useEffect(() => {
     const updateItemsPerView = () => {
-      if (window.innerWidth < 640) {
+      const width = window.innerWidth
+      setIsMobile(width < 640)
+      if (width < 640) {
         setItemsPerView(1)
-      } else if (window.innerWidth < 768) {
+      } else if (width < 768) {
         setItemsPerView(2)
-      } else if (window.innerWidth < 1024) {
+      } else if (width < 1024) {
         setItemsPerView(3)
       } else {
         setItemsPerView(4)
@@ -180,7 +183,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
         ref={sliderRef as React.RefObject<HTMLDivElement>}
         onScroll={handleScroll}
         className={cn(
-          "flex gap-6 scrollbar-hide scroll-smooth",
+          "flex gap-4 scrollbar-hide scroll-smooth",
           providers.length > itemsPerView ? "overflow-x-auto" : "overflow-x-visible"
         )}
         style={{
@@ -196,7 +199,11 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
             <div
               key={provider.id}
               className="flex-shrink-0 group cursor-pointer"
-              style={{ width: `calc((100% - ${(itemsPerView - 1) * 1.5}rem) / ${itemsPerView})` }}
+              style={{ 
+                width: isMobile 
+                  ? 'calc(100% - 1rem)' 
+                  : `calc((60% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
+              }}
             >
               <Link href={`/providers/${provider.id}`}>
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">

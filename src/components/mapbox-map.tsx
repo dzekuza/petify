@@ -101,16 +101,26 @@ export const MapboxMap = ({
     const centerLat = (minLat + maxLat) / 2
     const centerLng = (minLng + maxLng) / 2
     
-    // Calculate zoom level based on bounds
+    // Calculate zoom level based on bounds with padding
     const latDiff = maxLat - minLat
     const lngDiff = maxLng - minLng
     const maxDiff = Math.max(latDiff, lngDiff)
     
-    let zoom = MAPBOX_CONFIG.defaultZoom
-    if (maxDiff > 0.1) zoom = 10
-    else if (maxDiff > 0.05) zoom = 12
-    else if (maxDiff > 0.02) zoom = 14
-    else zoom = 16
+    // Add padding to ensure all markers are visible
+    const padding = 0.02 // Add 0.02 degrees padding
+    const paddedDiff = maxDiff + padding
+    
+    let zoom = MAPBOX_CONFIG.minZoom // Start with minimum zoom
+    if (paddedDiff > 0.5) zoom = 8   // Very wide area
+    else if (paddedDiff > 0.2) zoom = 9
+    else if (paddedDiff > 0.1) zoom = 10
+    else if (paddedDiff > 0.05) zoom = 11
+    else if (paddedDiff > 0.02) zoom = 12
+    else if (paddedDiff > 0.01) zoom = 13
+    else zoom = 14 // Maximum zoom for tight clusters
+    
+    // Ensure zoom is within bounds
+    zoom = Math.max(MAPBOX_CONFIG.minZoom, Math.min(zoom, MAPBOX_CONFIG.maxZoom))
     
     return {
       longitude: centerLng,
@@ -133,14 +143,38 @@ export const MapboxMap = ({
 
   // Update map center when results change
   useEffect(() => {
-    const center = calculateMapCenter()
-    setViewState(prev => ({
-      ...prev,
-      longitude: center.longitude,
-      latitude: center.latitude,
-      zoom: center.zoom
-    }))
-  }, [calculateMapCenter])
+    if (results.length > 0 && mapRef.current) {
+      // Calculate bounds of all markers
+      const lats = results.map(r => r.provider.location.coordinates.lat)
+      const lngs = results.map(r => r.provider.location.coordinates.lng)
+      
+      const bounds = {
+        north: Math.max(...lats),
+        south: Math.min(...lats),
+        east: Math.max(...lngs),
+        west: Math.min(...lngs)
+      }
+      
+      // Use fitBounds to ensure all markers are visible with padding
+      mapRef.current.fitBounds(
+        [[bounds.west, bounds.south], [bounds.east, bounds.north]],
+        {
+          padding: { top: 50, bottom: 50, left: 50, right: 50 },
+          maxZoom: 15, // Limit maximum zoom to prevent over-zooming
+          duration: 1000 // Smooth animation
+        }
+      )
+    } else {
+      // Fallback to calculated center for empty results
+      const center = calculateMapCenter()
+      setViewState(prev => ({
+        ...prev,
+        longitude: center.longitude,
+        latitude: center.latitude,
+        zoom: center.zoom
+      }))
+    }
+  }, [results, calculateMapCenter])
   
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)

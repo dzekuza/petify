@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { SearchLayout } from '@/components/search-layout'
@@ -23,6 +23,7 @@ import {
 import { ListingsGrid } from '@/components/listings-grid'
 import { PetAdsGrid } from '@/components/pet-ads-grid'
 import { SearchFilters as SearchFiltersComponent } from '@/components/search-filters'
+import { useDebounce } from '@/hooks/use-debounce'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -54,6 +55,9 @@ function SearchPageContent() {
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
+
+  // Debounce filters to prevent excessive API calls
+  const debouncedFilters = useDebounce(filters, 300)
 
   // Update filters when URL parameters change
   useEffect(() => {
@@ -88,19 +92,19 @@ function SearchPageContent() {
         setError(null)
         
         // Check if searching for adoption category (pet ads)
-        if (filters.category === 'adoption') {
+        if (debouncedFilters.category === 'adoption') {
           const petAdsResults = await petAdsApi.getActivePetAds()
           setPetAds(petAdsResults)
           setResults([]) // Clear service results
         } else {
           const searchResults = await providerApi.searchProviders({
-            category: filters.category,
-            location: filters.location,
-            priceRange: filters.priceRange,
-            rating: filters.rating,
-            distance: filters.distance,
-            date: filters.date,
-            petId: filters.petId,
+            category: debouncedFilters.category,
+            location: debouncedFilters.location,
+            priceRange: debouncedFilters.priceRange,
+            rating: debouncedFilters.rating,
+            distance: debouncedFilters.distance,
+            date: debouncedFilters.date,
+            petId: debouncedFilters.petId,
             verifiedOnly: false // Include both verified and unverified providers
           })
           setResults(searchResults)
@@ -117,7 +121,7 @@ function SearchPageContent() {
     }
 
     fetchData()
-  }, [filters])
+  }, [debouncedFilters])
 
   const handleFiltersChange = (newFilters: typeof filters) => {
     setFilters(newFilters)
@@ -173,7 +177,7 @@ function SearchPageContent() {
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
           {/* Fixed trigger button - only show when drawer is closed */}
           {!isDrawerOpen && (
-            <div className="fixed bottom-24 left-0 right-0 h-16 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
+            <div className="fixed bottom-24 left-0 right-0 h-24 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
               <DrawerTrigger asChild>
                 <button
                   className="w-full h-full cursor-pointer"
@@ -214,7 +218,8 @@ function SearchPageContent() {
             <div className="px-4 pb-4">
               <SearchFiltersComponent 
                 filters={filters} 
-                onFiltersChange={handleFiltersChange} 
+                onFiltersChange={handleFiltersChange}
+                isMobile={true}
               />
             </div>
             

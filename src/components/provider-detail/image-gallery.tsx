@@ -64,16 +64,16 @@ export function ImageGallery({
 
   if (!provider.images || provider.images.length === 0) {
     return (
-      <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center rounded-2xl">
+      <div className={`${isMobile ? 'aspect-square' : 'aspect-video'} bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center ${isMobile ? '' : 'rounded-2xl'}`}>
         <span className="text-6xl">✂️</span>
       </div>
     )
   }
 
-  // If only one image, show as cover image with 16:9 aspect ratio
+  // If only one image, show as cover image with 1:1 aspect ratio on mobile, 16:9 on desktop
   if (provider.images.length === 1) {
     return (
-      <div className={`${isMobile ? 'aspect-video' : 'aspect-video'} relative overflow-hidden rounded-2xl`}>
+      <div className={`${isMobile ? 'aspect-square' : 'aspect-video'} relative overflow-hidden ${isMobile ? '' : 'rounded-2xl'}`}>
         <Image
           src={provider.images[0]}
           alt={`${provider.businessName} - Cover Image`}
@@ -124,7 +124,7 @@ export function ImageGallery({
 
   if (isMobile) {
     return (
-      <div className="relative aspect-video overflow-hidden">
+        <div className="relative aspect-square overflow-hidden">
         <div className="relative w-full h-full">
           {provider.images.map((image, index) => (
             <div

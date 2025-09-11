@@ -510,8 +510,26 @@ export const providerApi = {
 
       // Apply category filter
       if (filters?.category && filters.category !== 'all') {
-        // Use overlaps to check if any service in the array matches the category
-        query = query.overlaps('services', [filters.category])
+        // For training category, we need to check the services table
+        if (filters.category === 'training') {
+          // Get providers that have training services
+          const { data: trainingProviders } = await supabase
+            .from('services')
+            .select('provider_id')
+            .eq('category', 'training')
+            .eq('is_active', true)
+          
+          if (trainingProviders && trainingProviders.length > 0) {
+            const providerIds = trainingProviders.map(p => p.provider_id)
+            query = query.in('id', providerIds)
+          } else {
+            // No training providers found, return empty result
+            query = query.eq('id', '00000000-0000-0000-0000-000000000000')
+          }
+        } else {
+          // Use overlaps to check if any service in the array matches the category
+          query = query.overlaps('services', [filters.category])
+        }
       }
 
       // Apply rating filter

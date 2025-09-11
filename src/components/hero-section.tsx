@@ -1,38 +1,39 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar } from '@/components/ui/calendar'
 import { Search } from 'lucide-react'
 import { t } from '@/lib/translations'
 import { format } from 'date-fns'
-import { ListingsGrid } from '@/components/listings-grid'
 import { CategorySection } from '@/components/category-section'
-import { providerApi } from '@/lib/providers'
-import { ServiceProvider } from '@/types'
 
 export const HeroSection = () => {
   const [location, setLocation] = useState('')
-  const [providerName, setProviderName] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [latestProviders, setLatestProviders] = useState<ServiceProvider[]>([])
-  const [loading, setLoading] = useState(true)
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
-  const [showProviderSuggestions, setShowProviderSuggestions] = useState(false)
   const [showDateSuggestions, setShowDateSuggestions] = useState(false)
+
+  // Business types/categories for dropdown
+  const businessTypes = [
+    { value: 'grooming', label: 'Kirpyklos' },
+    { value: 'veterinary', label: 'Veterinarija' },
+    { value: 'boarding', label: 'Prieglauda' },
+    { value: 'training', label: 'Dresūra' },
+    { value: 'sitting', label: 'Prižiūrėjimas' },
+    { value: 'adoption', label: 'Skelbimai' },
+  ]
 
   // Mock data for suggestions
   const citySuggestions = [
     'Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena'
   ]
 
-  const providerSuggestions = [
-    'Pet Care Vilnius', 'Kaunas Vet Clinic', 'Dog Training Center', 'Cat Grooming Studio', 'Pet Hotel Klaipėda',
-    'Veterinary Clinic', 'Pet Spa & Wellness', 'Animal Hospital', 'Pet Services', 'Dog Walking Service'
-  ]
 
   const dateSuggestions = [
     { label: 'Šiandien', value: new Date() },
@@ -63,27 +64,6 @@ export const HeroSection = () => {
     return nextMonth
   }
 
-  // Fetch all providers for hero section
-  useEffect(() => {
-    const fetchProviders = async () => {
-      try {
-        setLoading(true)
-        
-        // Fetch all providers (latest first) - include both verified and unverified for hero
-        const allResults = await providerApi.searchProviders({ verifiedOnly: false })
-        setLatestProviders(allResults.slice(0, 12).map(result => result.provider)) // Limit to 12 for display
-        
-      } catch (error) {
-        console.error('Error fetching providers for hero:', error)
-        // Fallback to empty array if there's an error
-        setLatestProviders([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProviders()
-  }, [])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -93,9 +73,9 @@ export const HeroSection = () => {
       params.set('location', location.trim())
     }
     
-    // Add provider name if provided
-    if (providerName.trim()) {
-      params.set('provider', providerName.trim())
+    // Add category if provided
+    if (selectedCategory) {
+      params.set('category', selectedCategory)
     }
     
     // Add date if provided
@@ -171,46 +151,24 @@ export const HeroSection = () => {
                 </div>
               </div>
 
-              {/* Provider Name */}
-              <div className="flex-1 px-4 py-4  hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="provider-input" className="text-sm font-semibold text-gray-900 mb-2 block">
-                  {t('landing.hero.search.provider')}
+              {/* Service Category */}
+              <div className="flex-1 px-4 py-4 hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative">
+                <Label htmlFor="category-select" className="text-sm font-semibold text-gray-900 mb-2 block">
+                  Paslaugos
                 </Label>
                 <div className="relative">
-                  <Input
-                    type="text"
-                    id="provider-input"
-                    placeholder={t('landing.hero.search.providerPlaceholder')}
-                    value={providerName}
-                    onChange={(e) => {
-                      setProviderName(e.target.value)
-                      setShowProviderSuggestions(e.target.value.length > 0)
-                    }}
-                    onFocus={() => setShowProviderSuggestions(providerName.length > 0)}
-                    onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 200)}
-                    onKeyPress={handleKeyPress}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
-                  />
-                  
-                  {/* Provider Suggestions */}
-                  {showProviderSuggestions && (
-                    <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-48 overflow-y-auto">
-                      {providerSuggestions
-                        .filter(provider => provider.toLowerCase().includes(providerName.toLowerCase()))
-                        .map((provider, index) => (
-                          <button
-                            key={index}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
-                            onClick={() => {
-                              setProviderName(provider)
-                              setShowProviderSuggestions(false)
-                            }}
-                          >
-                            {provider}
-                          </button>
-                        ))}
-                    </div>
-                  )}
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0 h-auto py-0">
+                      <SelectValue placeholder="Pasirinkite paslaugą" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {businessTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -286,13 +244,6 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* Latest Providers Grid */}
-          {!loading && latestProviders.length > 0 && (
-            <ListingsGrid
-              title="Latest"
-              providers={latestProviders}
-            />
-          )}
 
           {/* Category Sections */}
           <div className="w-full space-y-12">

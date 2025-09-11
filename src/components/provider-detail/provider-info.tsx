@@ -10,6 +10,27 @@ import Map, { Marker } from 'react-map-gl/mapbox'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
+// Function to calculate time since joining
+const getTimeSinceJoining = (createdAt: string): string => {
+  const now = new Date()
+  const joinDate = new Date(createdAt)
+  const diffInMs = now.getTime() - joinDate.getTime()
+  
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+  const diffInMonths = Math.floor(diffInDays / 30)
+  const diffInYears = Math.floor(diffInMonths / 12)
+  
+  if (diffInYears > 0) {
+    return `Prisijungė prieš ${diffInYears} ${diffInYears === 1 ? 'metus' : 'metus'}`
+  } else if (diffInMonths > 0) {
+    return `Prisijungė prieš ${diffInMonths} ${diffInMonths === 1 ? 'mėnesį' : 'mėnesius'}`
+  } else if (diffInDays > 0) {
+    return `Prisijungė prieš ${diffInDays} ${diffInDays === 1 ? 'dieną' : 'dienas'}`
+  } else {
+    return 'Prisijungė šiandien'
+  }
+}
+
 interface ProviderInfoProps {
   provider: ServiceProvider
   services: Service[]
@@ -59,6 +80,9 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
             <p className="text-gray-600 mb-2">
               {t('provider.petServiceIn')} {provider.location.city}, {provider.location.state}
             </p>
+            <p className="text-gray-600 leading-relaxed mb-2">
+              {provider.description}
+            </p>
             <p className="text-gray-600 text-sm">
               {services.length > 0 ? `${services.length} ${t('provider.servicesAvailable')}` : t('provider.servicesAvailable')} • {provider.experience} {t('provider.yearsExperience')}
             </p>
@@ -91,9 +115,9 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
           )}
           <div>
             <h2 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-gray-900`}>
-              {t('provider.hostedBy')} {provider.businessName}
+              {provider.businessName}
             </h2>
-            <p className="text-sm text-gray-600">{provider.experience} {t('provider.yearsHosting')}</p>
+            <p className="text-sm text-gray-600">{getTimeSinceJoining(provider.createdAt)}</p>
           </div>
         </div>
       </div>
@@ -177,21 +201,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
         </div>
       )}
 
-      {/* Pet Policy */}
-      <div className="border-t border-gray-200 pt-6 mb-6">
-        <div className="flex items-start space-x-3">
-          <PawPrint className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-gray-600 mt-0.5`} />
-          <div>
-            <h3 className={`${titleClass} text-gray-900`}>{t('provider.petFriendlyServices')}</h3>
-            <p className="text-sm text-gray-600">{t('provider.professionalCare')}</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Description */}
-      <div className="border-t border-gray-200 pt-6 mb-6">
-        <p className={descriptionClass}>{provider.description}</p>
-      </div>
 
       {/* Pet Ad Information */}
       {petAd && (
@@ -304,37 +314,35 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
           <div className="space-y-4">
             {services.slice(0, isMobile ? 3 : services.length).map((service) => (
               <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 ${isMobile ? '' : 'mb-2'}`}>
-                      {service.name}
-                    </h4>
-                    <p className={`text-sm text-gray-600 ${isMobile ? 'mt-1' : 'mb-3'}`}>
-                      {service.description}
-                    </p>
-                    <div className={`flex items-center space-x-4 text-sm text-gray-500 ${isMobile ? 'mt-2' : ''}`}>
-                      <span className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {service.duration} {t('provider.minutes')}
-                      </span>
-                      <span className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {t('provider.upTo')} {service.maxPets} {service.maxPets > 1 ? t('provider.pets') : t('provider.pet')}
-                      </span>
-                    </div>
+                <div>
+                  <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 ${isMobile ? '' : 'mb-2'}`}>
+                    {service.name}
+                  </h4>
+                  <p className={`text-sm text-gray-600 ${isMobile ? 'mt-1' : 'mb-3'}`}>
+                    {service.description}
+                  </p>
+                  <div className={`flex items-center space-x-4 text-sm text-gray-500 ${isMobile ? 'mt-2' : ''}`}>
+                    <span className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {service.duration} {t('provider.minutes')}
+                    </span>
+                    <span className="flex items-center">
+                      <Users className="h-4 w-4 mr-1" />
+                      {t('provider.upTo')} {service.maxPets} {service.maxPets > 1 ? t('provider.pets') : t('provider.pet')}
+                    </span>
                   </div>
-                  <div className={`text-right ${isMobile ? 'ml-4' : 'ml-6'}`}>
-                    <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900`}>
-                      €{service.price}
-                    </div>
-                    <Button
-                      onClick={() => handleServiceBooking(service)}
-                      className={`mt-2 bg-black hover:bg-gray-800 text-white ${isMobile ? 'w-full' : 'w-auto px-4'}`}
-                      size="sm"
-                    >
-                      {t('provider.bookService')}
-                    </Button>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900`}>
+                    €{service.price}
                   </div>
+                  <Button
+                    onClick={() => handleServiceBooking(service)}
+                    className="bg-black hover:bg-gray-800 text-white w-auto px-4"
+                    size="sm"
+                  >
+                    {t('provider.bookService')}
+                  </Button>
                 </div>
               </div>
             ))}

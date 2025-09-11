@@ -48,7 +48,7 @@ export function MobileLayout({
       </div>
 
       {/* Content Section with top padding to account for fixed gallery */}
-      <div className="pt-[50vh] sm:pt-[60vh]">
+      <div className="pt-[40vh] sm:pt-[60vh]">
         <div className="bg-white rounded-t-3xl shadow-lg relative z-[60]">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">

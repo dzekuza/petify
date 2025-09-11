@@ -163,8 +163,8 @@ export const CategorySection = ({
     <div className={cn("w-full max-w-full", className)}>
       {/* Header */}
       <div className="flex items-center justify-between w-full mb-6">
-        <div className="flex items-center space-x-6">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+        <div className="flex items-center space-x-6 flex-1">
+          <h2 className="text-2xl font-bold text-gray-900 flex-1">{title}</h2>
           {/* Navigation Buttons - Only show if there are more items than can fit */}
           {providers.length > itemsPerView && (
             <div className="flex items-center space-x-2">
@@ -190,8 +190,6 @@ export const CategorySection = ({
             </div>
           )}
         </div>
-        {/* Empty div to push content to the left and ensure full width */}
-        <div></div>
       </div>
 
       {/* Provider Slider */}

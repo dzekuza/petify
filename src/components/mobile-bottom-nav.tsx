@@ -1,37 +1,35 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { Search, Heart, Calendar, User } from 'lucide-react'
 
-// Unified mobile bottom navigation with service categories
+// Mobile bottom navigation with main app sections
 export function MobileBottomNav() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const activeCategory = searchParams?.get('category')
 
   // Hide on provider routes and certain flows where bottom nav is undesirable
   const isProviderRoute = pathname?.startsWith('/provider')
   if (isProviderRoute) return null
 
   const items = [
-    { id: 'grooming', name: 'Kirpyklos', href: '/search?category=grooming', icon: '/Animal_Care_Icon Background Removed.png' },
-    { id: 'training', name: 'Dresūra', href: '/search?category=training', icon: '/Pet_Training_Icon Background Removed.png' },
-    { id: 'boarding', name: 'Poravimas', href: '/search?category=boarding', icon: '/Pets_Pairing_Icon Background Removed.png' },
-    { id: 'veterinary', name: 'Veterinarijos', href: '/search?category=veterinary', icon: '/Pet_Veterinary_Icon Background Removed.png' },
-    { id: 'adoption', name: 'Skelbimai', href: '/search?category=adoption', icon: '/Pet_Ads_Icon Background Removed.png' },
+    { id: 'search', name: 'Paieška', href: '/search', icon: Search },
+    { id: 'favorites', name: 'Mėgstami', href: '/favorites', icon: Heart },
+    { id: 'bookings', name: 'Rezervacijos', href: '/bookings', icon: Calendar },
+    { id: 'profile', name: 'Profilis', href: '/profile', icon: User },
   ]
 
   return (
     <nav
       className="fixed bottom-0 inset-x-0 z-[100] border-t bg-white md:hidden"
       role="navigation"
-      aria-label="Service categories"
+      aria-label="Main navigation"
     >
-      <ul className="grid grid-cols-5 items-stretch px-4 py-2">
+      <ul className="grid grid-cols-4 items-stretch px-4 py-2">
         {items.map(item => {
-          const isActive = activeCategory === item.id
+          const isActive = pathname === item.href || (item.id === 'search' && pathname?.startsWith('/search'))
+          const IconComponent = item.icon
           return (
             <li key={item.id} className="min-w-0">
               <Link
@@ -42,9 +40,7 @@ export function MobileBottomNav() {
                 )}
                 aria-label={item.name}
               >
-                <span className={cn('relative h-10 w-10', isActive ? '' : 'opacity-80')}>
-                  <Image src={item.icon} alt={item.name} fill sizes="24px" className="object-contain" />
-                </span>
+                <IconComponent className={cn('h-6 w-6', isActive ? '' : 'opacity-80')} />
                 <span className={cn('truncate', isActive ? 'font-semibold' : 'font-medium')}>{item.name}</span>
               </Link>
             </li>

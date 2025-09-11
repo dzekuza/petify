@@ -114,6 +114,36 @@ export default function ProviderDetailPage() {
     setUserPets(pets)
   }
 
+  const fetchReviews = async (providerId: string) => {
+    try {
+      const { data: reviewsData, error: reviewsError } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('provider_id', providerId)
+        .order('created_at', { ascending: false })
+
+      if (reviewsError) {
+        console.error('Error fetching reviews:', reviewsError)
+      } else {
+        // Transform reviews data
+        const transformedReviews: Review[] = (reviewsData || []).map(review => ({
+          id: review.id,
+          bookingId: review.booking_id,
+          customerId: review.customer_id,
+          providerId: review.provider_id,
+          rating: review.rating,
+          comment: review.comment,
+          images: review.images || [],
+          createdAt: review.created_at,
+          updatedAt: review.updated_at
+        }))
+        setReviews(transformedReviews)
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error)
+    }
+  }
+
   const handleReviewSubmitted = () => {
     // Refresh reviews after submission
     if (provider) {
@@ -259,29 +289,7 @@ export default function ProviderDetailPage() {
         }
 
         // Fetch reviews for this provider
-        const { data: reviewsData, error: reviewsError } = await supabase
-          .from('reviews')
-          .select('*')
-          .eq('provider_id', params.id)
-          .order('created_at', { ascending: false })
-
-        if (reviewsError) {
-          console.error('Error fetching reviews:', reviewsError)
-        } else {
-          // Transform reviews data
-          const transformedReviews: Review[] = (reviewsData || []).map(review => ({
-            id: review.id,
-            bookingId: review.booking_id,
-            customerId: review.customer_id,
-            providerId: review.provider_id,
-            rating: review.rating,
-            comment: review.comment,
-            images: review.images || [],
-            createdAt: review.created_at,
-            updatedAt: review.updated_at
-          }))
-          setReviews(transformedReviews)
-        }
+        await fetchReviews(params.id as string)
 
       } catch (error) {
         console.error('Error fetching provider data:', error)
