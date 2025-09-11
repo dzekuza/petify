@@ -10,6 +10,7 @@ import { Search } from 'lucide-react'
 import { t } from '@/lib/translations'
 import { format } from 'date-fns'
 import { ListingsGrid } from '@/components/listings-grid'
+import { CategorySection } from '@/components/category-section'
 import { providerApi } from '@/lib/providers'
 import { ServiceProvider } from '@/types'
 
@@ -292,6 +293,39 @@ export const HeroSection = () => {
               providers={latestProviders}
             />
           )}
+
+          {/* Category Sections */}
+          <div className="w-full space-y-12">
+            <CategorySection
+              title="Kirpyklos"
+              category="grooming"
+              limit={8}
+            />
+            
+            <CategorySection
+              title="Jūsų šuniui"
+              category="boarding"
+              limit={8}
+            />
+            
+            <CategorySection
+              title="Veterinarija"
+              category="veterinary"
+              limit={8}
+            />
+            
+            <CategorySection
+              title="Dresūra"
+              category="training"
+              limit={8}
+            />
+            
+            <CategorySection
+              title="Prižiūrėjimas"
+              category="sitting"
+              limit={8}
+            />
+          </div>
         </div>
       </div>
     </section>

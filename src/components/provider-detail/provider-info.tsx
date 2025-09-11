@@ -1,11 +1,14 @@
 'use client'
 
-import { Star, Clock, Users, PawPrint, Euro } from 'lucide-react'
+import { Star, Clock, Users, PawPrint, Euro, Phone, Mail, Globe, MapPin } from 'lucide-react'
 import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
 import { QuickBookingDialog } from './quick-booking-dialog'
 import { useState } from 'react'
+import Map, { Marker } from 'react-map-gl/mapbox'
+import { MAPBOX_CONFIG } from '@/lib/mapbox'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 interface ProviderInfoProps {
   provider: ServiceProvider
@@ -73,11 +76,19 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
       {/* Host Information */}
       <div className="border-t border-gray-200 pt-6 mb-6">
         <div className="flex items-center space-x-3">
-          <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} bg-gray-300 rounded-full flex items-center justify-center`}>
-            <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600`}>
-              {provider.businessName.charAt(0)}
-            </span>
-          </div>
+          {provider.avatarUrl ? (
+            <img 
+              src={provider.avatarUrl} 
+              alt={provider.businessName}
+              className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full object-cover`}
+            />
+          ) : (
+            <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} bg-gray-300 rounded-full flex items-center justify-center`}>
+              <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600`}>
+                {provider.businessName.charAt(0)}
+              </span>
+            </div>
+          )}
           <div>
             <h2 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-gray-900`}>
               {t('provider.hostedBy')} {provider.businessName}
@@ -86,6 +97,85 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
           </div>
         </div>
       </div>
+
+      {/* Contact Information */}
+      {(provider.contactInfo?.phone || provider.contactInfo?.email || provider.contactInfo?.website) && (
+        <div className="border-t border-gray-200 pt-6 mb-6">
+          <h3 className={`${titleClass} text-gray-900 mb-4`}>Kontaktinė informacija</h3>
+          <div className="flex flex-wrap items-center gap-6">
+            {provider.contactInfo?.phone && (
+              <div className="flex items-center space-x-2">
+                <Phone className="h-4 w-4 text-gray-600" />
+                <a 
+                  href={`tel:${provider.contactInfo.phone}`}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  {provider.contactInfo.phone}
+                </a>
+              </div>
+            )}
+            {provider.contactInfo?.email && (
+              <div className="flex items-center space-x-2">
+                <Mail className="h-4 w-4 text-gray-600" />
+                <a 
+                  href={`mailto:${provider.contactInfo.email}`}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  {provider.contactInfo.email}
+                </a>
+              </div>
+            )}
+            {provider.contactInfo?.website && (
+              <div className="flex items-center space-x-2">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <a 
+                  href={provider.contactInfo.website.startsWith('http') ? provider.contactInfo.website : `https://${provider.contactInfo.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  {provider.contactInfo.website}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Location */}
+      {provider.location.address && (
+        <div className="border-t border-gray-200 pt-6 mb-6">
+          <h3 className={`${titleClass} text-gray-900 mb-4`}>Vieta</h3>
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3">
+              <MapPin className="h-4 w-4 text-gray-600 mt-0.5" />
+              <div className="text-sm text-gray-600">
+                <div>{provider.location.address}, {provider.location.city}, {provider.location.state} {provider.location.zipCode}</div>
+              </div>
+            </div>
+            
+            {/* Mapbox Map */}
+            <div className="h-64 w-full rounded-lg overflow-hidden border border-gray-200">
+              <Map
+                mapboxAccessToken={MAPBOX_CONFIG.accessToken}
+                initialViewState={{
+                  longitude: provider.location.coordinates.lng,
+                  latitude: provider.location.coordinates.lat,
+                  zoom: 15
+                }}
+                style={{ width: '100%', height: '100%' }}
+                mapStyle={MAPBOX_CONFIG.style}
+              >
+                <Marker
+                  longitude={provider.location.coordinates.lng}
+                  latitude={provider.location.coordinates.lat}
+                  color="#ef4444"
+                />
+              </Map>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pet Policy */}
       <div className="border-t border-gray-200 pt-6 mb-6">
@@ -257,6 +347,18 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
         </div>
       )}
 
+      {/* Quick Booking Dialog */}
+      {selectedServiceForBooking && (
+        <QuickBookingDialog
+          open={quickBookingDialogOpen}
+          onOpenChange={setQuickBookingDialogOpen}
+          service={selectedServiceForBooking}
+          userPets={userPets}
+          onPetsUpdate={onPetsUpdate}
+          onBook={handleQuickBook}
+        />
+      )}
+
       {/* Reviews */}
       {reviews.length > 0 && (
         <div className="border-t border-gray-200 pt-6 mb-6">
@@ -284,18 +386,6 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
             ))}
           </div>
         </div>
-      )}
-
-      {/* Quick Booking Dialog */}
-      {selectedServiceForBooking && (
-        <QuickBookingDialog
-          open={quickBookingDialogOpen}
-          onOpenChange={setQuickBookingDialogOpen}
-          service={selectedServiceForBooking}
-          userPets={userPets}
-          onPetsUpdate={onPetsUpdate}
-          onBook={handleQuickBook}
-        />
       )}
     </div>
   )

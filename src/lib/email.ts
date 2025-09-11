@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { jsPDF } from 'jspdf'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -7,6 +8,11 @@ export interface EmailTemplate {
   subject: string
   html: string
   from?: string
+  attachments?: {
+    filename: string
+    content: Buffer
+    contentType: string
+  }[]
 }
 
 export interface BookingEmailData {
@@ -81,6 +87,7 @@ export interface PaymentConfirmationEmailData {
   customerName: string
   serviceName: string
   providerName: string
+  providerId: string
   bookingDate: string
   bookingTime: string
   totalAmount: number
@@ -91,6 +98,77 @@ export interface PaymentConfirmationEmailData {
 }
 
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@petify.lt'
+
+/**
+ * Generate PDF invoice for a booking
+ */
+export const generateInvoicePDF = (data: PaymentConfirmationEmailData): Buffer => {
+  const doc = new jsPDF()
+  
+  // Header
+  doc.setFontSize(24)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Petify', 20, 30)
+  
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text('Invoice', 20, 40)
+  doc.text(`Invoice #: INV-${data.bookingId.slice(-8).toUpperCase()}`, 20, 50)
+  doc.text(`Date: ${new Date().toLocaleDateString('en-US')}`, 20, 60)
+  
+  // Customer Information
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Bill To:', 20, 80)
+  
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text(data.customerName, 20, 90)
+  
+  // Service Provider Information
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Service Provider:', 20, 110)
+  
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text(data.providerName, 20, 120)
+  
+  // Service Details
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Service Details:', 20, 140)
+  
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Service: ${data.serviceName}`, 20, 150)
+  doc.text(`Pet: ${data.petName}`, 20, 160)
+  doc.text(`Date: ${data.bookingDate}`, 20, 170)
+  doc.text(`Time: ${data.bookingTime}`, 20, 180)
+  
+  // Payment Information
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Payment Information:', 20, 200)
+  
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Payment Method: ${data.paymentMethod}`, 20, 210)
+  doc.text(`Transaction ID: ${data.transactionId}`, 20, 220)
+  
+  // Total Amount
+  doc.setFontSize(16)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`Total Amount: €${data.totalAmount.toFixed(2)}`, 20, 240)
+  
+  // Footer
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text('Thank you for choosing Petify!', 20, 260)
+  doc.text('For support, contact us at support@petify.lt', 20, 270)
+  
+  return Buffer.from(doc.output('arraybuffer'))
+}
 
 export const emailTemplates = {
   welcome: (data: WelcomeEmailData) => ({
@@ -1222,6 +1300,25 @@ export const emailTemplates = {
                 <li>Contact the provider directly if you need to make any changes</li>
               </ul>
               
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://petify.lt'}/providers/${data.providerId}?review=true&bookingId=${data.bookingId}" 
+                   style="background: #16a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+                  ⭐ Leave a Review
+                </a>
+              </div>
+              
+              <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0ea5e9;">
+                <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #1a1a1a;">📄 Invoice</h3>
+                <p style="margin: 8px 0; font-size: 16px; color: #4a5568;">
+                  Your detailed invoice is attached to this email as a PDF document. 
+                  Please keep this for your records and tax purposes.
+                </p>
+                <p style="margin: 8px 0; font-size: 14px; color: #6b7280;">
+                  <strong>Invoice Number:</strong> INV-${data.bookingId.slice(-8).toUpperCase()}<br>
+                  <strong>Issue Date:</strong> ${new Date().toLocaleDateString('en-US')}
+                </p>
+              </div>
+              
               <p>Thank you for choosing Petify! We hope you and ${data.petName} have a wonderful experience.</p>
               
               <p>Best regards,<br><strong>The Petify Team</strong></p>
@@ -1239,12 +1336,23 @@ export const emailTemplates = {
 
 export const sendEmail = async (template: EmailTemplate): Promise<{ success: boolean; error?: string }> => {
   try {
-    const { data, error } = await resend.emails.send({
+    const emailData: any = {
       from: template.from || fromEmail,
       to: template.to,
       subject: template.subject,
       html: template.html
-    })
+    }
+
+    // Add attachments if provided
+    if (template.attachments && template.attachments.length > 0) {
+      emailData.attachments = template.attachments.map(attachment => ({
+        filename: attachment.filename,
+        content: attachment.content.toString('base64'),
+        content_type: attachment.contentType
+      }))
+    }
+
+    const { data, error } = await resend.emails.send(emailData)
 
     if (error) {
       console.error('Resend error:', error)
@@ -1304,8 +1412,19 @@ export const sendProviderNotificationEmail = async (email: string, data: Provide
 
 export const sendPaymentConfirmationEmail = async (email: string, data: PaymentConfirmationEmailData) => {
   const template = emailTemplates.paymentConfirmation(data)
+  
+  // Generate PDF invoice
+  const invoicePDF = generateInvoicePDF(data)
+  
   return sendEmail({
     to: email,
-    ...template
+    ...template,
+    attachments: [
+      {
+        filename: `invoice-${data.bookingId.slice(-8)}.pdf`,
+        content: invoicePDF,
+        contentType: 'application/pdf'
+      }
+    ]
   })
 }

@@ -14,6 +14,7 @@ import { ProviderInfo } from '@/components/provider-detail/provider-info'
 import { BookingWidget } from '@/components/provider-detail/booking-widget'
 import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
+import { ReviewDialog } from '@/components/review-dialog'
 import { toast } from 'sonner'
 
 export default function ProviderDetailPage() {
@@ -29,9 +30,14 @@ export default function ProviderDetailPage() {
   const [petAd, setPetAd] = useState<PetAd | null>(null)
   const [loading, setLoading] = useState(true)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
   
   // Check if we're viewing a pet ad
   const petAdId = searchParams.get('petAdId')
+  
+  // Check if we should open review dialog
+  const shouldOpenReview = searchParams.get('review') === 'true'
+  const reviewBookingId = searchParams.get('bookingId')
 
   const isFavorite = provider ? isFavorited(provider.id) : false
 
@@ -108,6 +114,20 @@ export default function ProviderDetailPage() {
     setUserPets(pets)
   }
 
+  const handleReviewSubmitted = () => {
+    // Refresh reviews after submission
+    if (provider) {
+      fetchReviews(provider.id)
+    }
+  }
+
+  // Open review dialog if URL parameters indicate it
+  useEffect(() => {
+    if (shouldOpenReview && provider && !loading) {
+      setReviewDialogOpen(true)
+    }
+  }, [shouldOpenReview, provider, loading])
+
   // Fetch user pets
   const fetchUserPets = async () => {
     if (!user) return
@@ -176,7 +196,13 @@ export default function ProviderDetailPage() {
             saturday: [],
             sunday: []
           },
+          contactInfo: {
+            phone: providerData.contact_info?.phone || '',
+            email: providerData.contact_info?.email || '',
+            website: providerData.contact_info?.website || ''
+          },
           images: providerData.images || [],
+          avatarUrl: providerData.avatar_url || null,
           certifications: providerData.certifications || [],
           experience: providerData.experience_years || 0,
           status: providerData.status || 'active',
@@ -385,6 +411,18 @@ export default function ProviderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Review Dialog */}
+      {provider && (
+        <ReviewDialog
+          isOpen={reviewDialogOpen}
+          onClose={() => setReviewDialogOpen(false)}
+          providerId={provider.id}
+          providerName={provider.businessName}
+          bookingId={reviewBookingId || undefined}
+          onReviewSubmitted={handleReviewSubmitted}
+        />
+      )}
     </div>
   )
 }

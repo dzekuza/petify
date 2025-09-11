@@ -440,21 +440,6 @@ export function BusinessSettings({ businessType, providerData, onUpdate }: Busin
     case 'adoption':
       return <AdoptionSettings providerData={providerData} onUpdate={onUpdate} businessType={businessType} />
     default:
-      return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Settings className="h-5 w-5 mr-2" />
-              General Settings
-            </CardTitle>
-            <CardDescription>
-              Configure your service settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-500">No specific settings available for this business type.</p>
-          </CardContent>
-        </Card>
-      )
+      return null
   }
 }

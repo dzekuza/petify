@@ -191,6 +191,7 @@ export const handlePaymentSucceeded = async (paymentIntent: { id: string; status
           customerName: booking.customer.full_name || 'Valued Customer',
           serviceName: booking.service.name,
           providerName: booking.provider.business_name,
+          providerId: booking.provider.id,
           bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
