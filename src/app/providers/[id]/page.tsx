@@ -14,6 +14,7 @@ import { ProviderInfo } from '@/components/provider-detail/provider-info'
 import { BookingWidget } from '@/components/provider-detail/booking-widget'
 import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
+import { toast } from 'sonner'
 
 export default function ProviderDetailPage() {
   const params = useParams()
@@ -81,14 +82,26 @@ export default function ProviderDetailPage() {
   }
 
   const handleBookService = (serviceId?: string) => {
-    const queryParams = new URLSearchParams()
-    
-    if (serviceId) {
-      queryParams.set('service', serviceId)
+    try {
+      if (!provider) {
+        toast.error('Provider not loaded')
+        return
+      }
+      if ((services || []).length === 0) {
+        toast.error('No services available for this provider')
+        return
+      }
+
+      const queryParams = new URLSearchParams()
+      if (serviceId) {
+        queryParams.set('service', serviceId)
+      }
+
+      router.push(`/providers/${params.id}/book?${queryParams.toString()}`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to start booking'
+      toast.error(message)
     }
-    
-    // Navigate to booking page for both mobile and desktop
-    router.push(`/providers/${params.id}/book?${queryParams.toString()}`)
   }
 
   const handlePetsUpdate = (pets: Pet[]) => {

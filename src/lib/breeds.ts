@@ -43,7 +43,7 @@ export const BREEDS: Breed[] = [
   { name: 'Oriental Shorthair', species: 'cat', popularity: 40 },
   { name: 'Devon Rex', species: 'cat', popularity: 35 },
   { name: 'Cornish Rex', species: 'cat', popularity: 30 },
-  { name: 'Himalayan', species: 'cat', popularity: 25 },
+  { name: 'Himalayan Cat', species: 'cat', popularity: 25 },
   { name: 'Exotic Shorthair', species: 'cat', popularity: 20 },
   { name: 'Norwegian Forest Cat', species: 'cat', popularity: 15 },
   { name: 'Manx', species: 'cat', popularity: 10 },
@@ -71,7 +71,7 @@ export const BREEDS: Breed[] = [
   { name: 'French Lop', species: 'rabbit', popularity: 70 },
   { name: 'Mini Lop', species: 'rabbit', popularity: 65 },
   { name: 'American Fuzzy Lop', species: 'rabbit', popularity: 60 },
-  { name: 'Himalayan', species: 'rabbit', popularity: 55 },
+  { name: 'Himalayan Rabbit', species: 'rabbit', popularity: 55 },
 
   // Other
   { name: 'Mixed Breed', species: 'other', popularity: 100 },

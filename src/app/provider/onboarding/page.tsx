@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
+import { serviceApi } from '@/lib/services'
+import { uploadServiceImage, getPublicUrl } from '@/lib/storage'
 import { toast } from 'sonner'
 import Image from 'next/image'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
@@ -260,6 +262,39 @@ function ProviderOnboardingPage() {
       if (isEditMode && editProviderId) {
         // Update existing provider
         await providerApi.updateProvider(editProviderId, providerData)
+
+        // Persist service details (create new services if needed)
+        if (onboardingData.serviceDetails && onboardingData.serviceDetails.length > 0) {
+          for (const detail of onboardingData.serviceDetails) {
+            try {
+              const created = await serviceApi.createService({
+                providerId: editProviderId,
+                category: (onboardingData.providerType as any),
+                name: detail.name,
+                description: detail.description || '',
+                price: parseFloat(detail.price || '0') || 0,
+                duration: 60,
+                maxPets: 1,
+                images: [],
+                serviceLocation: detail.locationId ? (onboardingData.addresses || []).find(a => a.id === detail.locationId) : undefined
+              })
+
+              // Upload gallery images and attach URLs
+              const imageUrls: string[] = []
+              for (const file of (detail.gallery || [])) {
+                const { data, error } = await uploadServiceImage(file, created.id)
+                if (!error && data) {
+                  imageUrls.push(getPublicUrl('service-images', data.path))
+                }
+              }
+              if (imageUrls.length > 0) {
+                await serviceApi.updateService(created.id, { images: imageUrls })
+              }
+            } catch (e) {
+              // Non-blocking service creation failure
+            }
+          }
+        }
         
         // Clear session storage
         sessionStorage.removeItem('editProviderData')
@@ -332,7 +367,39 @@ function ProviderOnboardingPage() {
         router.push('/provider/profile')
       } else {
         // Create new provider
-        await providerApi.createProvider(providerData)
+        const provider = await providerApi.createProvider(providerData)
+
+        // Persist service details for new provider
+        if (provider?.id && onboardingData.serviceDetails && onboardingData.serviceDetails.length > 0) {
+          for (const detail of onboardingData.serviceDetails) {
+            try {
+              const created = await serviceApi.createService({
+                providerId: provider.id,
+                category: (onboardingData.providerType as any),
+                name: detail.name,
+                description: detail.description || '',
+                price: parseFloat(detail.price || '0') || 0,
+                duration: 60,
+                maxPets: 1,
+                images: [],
+                serviceLocation: detail.locationId ? (onboardingData.addresses || []).find(a => a.id === detail.locationId) : undefined
+              })
+
+              const imageUrls: string[] = []
+              for (const file of (detail.gallery || [])) {
+                const { data, error } = await uploadServiceImage(file, created.id)
+                if (!error && data) {
+                  imageUrls.push(getPublicUrl('service-images', data.path))
+                }
+              }
+              if (imageUrls.length > 0) {
+                await serviceApi.updateService(created.id, { images: imageUrls })
+              }
+            } catch (e) {
+              // Ignore single service failures to not block onboarding
+            }
+          }
+        }
         router.push('/provider/dashboard')
       }
       

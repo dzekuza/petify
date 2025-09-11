@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Layout } from '@/components/layout'
+// Removed global Layout wrapper to use dashboard layout shell
 import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ import {
 import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
 import { BusinessTypeHeader, BusinessSpecificWidget } from '@/components/provider-dashboard/business-widgets'
-import { BusinessNavigation, BusinessQuickActions } from '@/components/provider-dashboard/business-navigation'
+import { BusinessQuickActions } from '@/components/provider-dashboard/business-navigation'
 
 // Remove duplicate interfaces since they're now imported from dashboard.ts
 
@@ -124,58 +124,48 @@ export default function ProviderDashboard() {
 
   if (loading) {
     return (
-      <Layout>
-        <ProtectedRoute requiredRole="provider">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">{t('providerDashboard.loadingDashboard')}</p>
-            </div>
+      <ProtectedRoute requiredRole="provider">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">{t('providerDashboard.loadingDashboard')}</p>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   if (error) {
     return (
-      <Layout>
-        <ProtectedRoute requiredRole="provider">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="text-red-600 text-xl mb-4">⚠️</div>
-              <p className="text-gray-600">{error}</p>
-              <Button 
-                onClick={() => window.location.reload()} 
-                className="mt-4"
-                variant="outline"
-              >
-                {t('common.tryAgain', 'Bandyti dar kartą')}
-              </Button>
-            </div>
+      <ProtectedRoute requiredRole="provider">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="text-red-600 text-xl mb-4">⚠️</div>
+            <p className="text-gray-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+              variant="outline"
+            >
+              {t('common.tryAgain', 'Bandyti dar kartą')}
+            </Button>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </div>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <Layout hideFooter={true}>
-      <ProtectedRoute requiredRole="provider">
-        <div className="min-h-screen bg-gray-50">
-          {/* Business Navigation */}
-          {businessType && (
-            <BusinessNavigation businessType={businessType} />
-          )}
+    <ProtectedRoute requiredRole="provider">
+        <>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">{t('providerDashboard.title')}</h1>
-              <p className="mt-2 text-gray-600">
-                {t('providerDashboard.welcomeBack')}, {user?.user_metadata?.full_name || 'Provider'}!
-              </p>
-            </div>
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">{t('providerDashboard.title')}</h1>
+            <p className="mt-2 text-gray-600">
+              {t('providerDashboard.welcomeBack')}, {user?.user_metadata?.full_name || 'Provider'}!
+            </p>
+          </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -429,9 +419,7 @@ export default function ProviderDashboard() {
                 </Card>
               </div>
             </div>
-          </div>
-        </div>
+        </>
       </ProtectedRoute>
-    </Layout>
   )
 }

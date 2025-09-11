@@ -16,6 +16,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 import { Pet } from '@/types'
 import { uploadPetProfilePicture, uploadPetGalleryImage, validateFile, getPublicUrl } from '@/lib/storage'
+import { getBreedsBySpecies } from '@/lib/breeds'
+import { translations } from '@/lib/translations'
 import { Dog, Plus, Edit, Trash2, Loader2, X, Camera, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
@@ -149,6 +151,23 @@ export default function PetsPage() {
     }
   }
 
+  const getTranslatedBreedName = (breedName: string) => {
+    const breedsMap = (translations as unknown as { provider?: { breeds?: Record<string, string> } }).provider?.breeds || {}
+    return breedsMap[breedName] || breedName
+  }
+
+  const getAvailableBreeds = () => {
+    return getBreedsBySpecies(petForm.species)
+  }
+
+  const handleSpeciesChange = (species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other') => {
+    setPetForm(prev => ({ 
+      ...prev, 
+      species,
+      breed: '' // Reset breed when species changes
+    }))
+  }
+
   const getAgeText = (ageInYears: number) => {
     if (ageInYears < 1) {
       const months = Math.round(ageInYears * 12)
@@ -212,12 +231,15 @@ export default function PetsPage() {
           const publicUrl = getPublicUrl('pet-images', result.data!.path)
           newImages.push(publicUrl)
         } else {
-          // Store files for later upload
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            newImages.push(e.target?.result as string)
-          }
-          reader.readAsDataURL(file)
+          // Read files as data URLs and wait for all to finish
+          const readAsDataUrl = (f: File) => new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = (e) => resolve(e.target?.result as string)
+            reader.onerror = () => reject(new Error('Failed to read file'))
+            reader.readAsDataURL(f)
+          })
+          const dataUrl = await readAsDataUrl(file)
+          newImages.push(dataUrl)
         }
       }
       
@@ -304,7 +326,7 @@ export default function PetsPage() {
                             </h3>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                               <span className="capitalize">{pet.species}</span>
-                              {pet.breed && <span>{pet.breed}</span>}
+                              {pet.breed && <span>{getTranslatedBreedName(pet.breed)}</span>}
                               <span>{getAgeText(pet.age)}</span>
                               {pet.weight && <span>{pet.weight} kg</span>}
                             </div>
@@ -434,9 +456,7 @@ export default function PetsPage() {
                   <Label htmlFor="petSpecies" className="text-base font-medium">Rūšis *</Label>
                   <Select
                     value={petForm.species}
-                    onValueChange={(value: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other') => 
-                      setPetForm(prev => ({ ...prev, species: value }))
-                    }
+                    onValueChange={handleSpeciesChange}
                   >
                     <SelectTrigger className="mt-2">
                       <SelectValue />
@@ -455,13 +475,21 @@ export default function PetsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="petBreed" className="text-base font-medium">Veislė</Label>
-                  <Input
-                    id="petBreed"
-                    value={petForm.breed}
-                    onChange={(e) => setPetForm(prev => ({ ...prev, breed: e.target.value }))}
-                    placeholder="Įveskite veislę"
-                    className="mt-2"
-                  />
+                  <Select
+                    value={petForm.breed || undefined}
+                    onValueChange={(value) => setPetForm(prev => ({ ...prev, breed: value }))}
+                  >
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Pasirinkti veislę (neprivaloma)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableBreeds().map((breed) => (
+                        <SelectItem key={breed.name} value={breed.name}>
+                          {getTranslatedBreedName(breed.name)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="petAge" className="text-base font-medium">Amžius (metai) *</Label>

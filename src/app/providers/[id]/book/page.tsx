@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
@@ -20,6 +20,7 @@ import BottomNavigation from '@/components/provider-onboarding/bottom-navigation
 import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { BreedSelector } from '@/components/ui/breed-selector'
 import Image from 'next/image'
+import { Image as ImageIcon } from 'lucide-react'
 import { 
   Users
 } from 'lucide-react'
@@ -59,8 +60,13 @@ export default function BookingPage() {
     age: '',
     weight: '',
     specialNeeds: '',
-    medicalNotes: ''
+    medicalNotes: '',
+    profilePicture: '',
+    galleryImages: [] as string[]
   })
+  const addPetProfileInputRef = useRef<HTMLInputElement>(null)
+  const addPetGalleryInputRef = useRef<HTMLInputElement>(null)
+  const [addPetUploadingImages, setAddPetUploadingImages] = useState(false)
   const [addPetLoading, setAddPetLoading] = useState(false)
 
   const fetchPets = useCallback(async () => {
@@ -104,7 +110,9 @@ export default function BookingPage() {
         age: parseInt(addPetForm.age),
         weight: addPetForm.weight ? parseFloat(addPetForm.weight) : undefined,
         specialNeeds: addPetForm.specialNeeds ? addPetForm.specialNeeds.split(',').map(s => s.trim()) : undefined,
-        medicalNotes: addPetForm.medicalNotes || undefined
+        medicalNotes: addPetForm.medicalNotes || undefined,
+        profilePicture: addPetForm.profilePicture || undefined,
+        galleryImages: addPetForm.galleryImages
       }
 
       const newPet = await petsApi.createPet(petData, user.id)
@@ -121,7 +129,9 @@ export default function BookingPage() {
         age: '',
         weight: '',
         specialNeeds: '',
-        medicalNotes: ''
+        medicalNotes: '',
+        profilePicture: '',
+        galleryImages: []
       })
       setAddPetDrawerOpen(false)
     } catch (error) {
@@ -162,12 +172,14 @@ export default function BookingPage() {
     if (!provider?.id) return
     
     try {
-      const dateString = date.toISOString().split('T')[0]
+      const dateString = format(date, 'yyyy-MM-dd')
       const availability = await providerApi.getProviderAvailability(provider.id, dateString)
       setAvailabilityData(availability)
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = (error as any)?.message || 'Failed to fetch availability'
+      toast.error(message)
       console.error('Error fetching availability:', error)
-      setAvailabilityData(null)
+      setAvailabilityData({ is_available: false, available_slots: [] })
     }
   }
 
@@ -377,6 +389,41 @@ export default function BookingPage() {
       fetchPets()
     }
   }, [user, fetchPets])
+
+  // Preselect from URL once data is available
+  useEffect(() => {
+    const serviceId = searchParams.get('service')
+    const dateStr = searchParams.get('date') // YYYY-MM-DD
+    const timeStr = searchParams.get('time')
+    const petsCsv = searchParams.get('pets')
+
+    // Preselect service if not already set and services loaded
+    if (!selectedService && serviceId && services.length > 0) {
+      const svc = services.find(s => s.id === serviceId)
+      if (svc) setSelectedService(svc)
+    }
+
+    // Preselect pets when user pets are loaded
+    if (petsCsv && pets.length > 0 && selectedPets.length === 0) {
+      const ids = petsCsv.split(',').map(s => s.trim()).filter(Boolean)
+      const valid = ids.filter(id => pets.some(p => p.id === id))
+      if (valid.length) setSelectedPets(valid)
+    }
+
+    // Preselect date/time
+    if (!selectedDate && dateStr) {
+      const parsed = new Date(dateStr)
+      if (!isNaN(parsed.getTime())) setSelectedDate(parsed)
+    }
+    if (!selectedTimeSlot && timeStr) {
+      setSelectedTimeSlot(timeStr)
+    }
+
+    // If we have both service and date, skip service/date step automatically
+    if ((selectedService || serviceId) && (selectedDate || dateStr)) {
+      setCurrentStep(2)
+    }
+  }, [searchParams, services, pets])
 
   if (loading) {
     return (
@@ -613,7 +660,7 @@ export default function BookingPage() {
 
       case 3:
         return (
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-4 min-h-[75vh]">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('provider.selectDateAndTime')}</h2>
               
@@ -686,6 +733,44 @@ export default function BookingPage() {
     }
   }
 
+  const handleAddPetGalleryUpload = async (files: FileList) => {
+    setAddPetUploadingImages(true)
+    try {
+      const readAsDataUrl = (f: File) => new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = e => resolve(e.target?.result as string)
+        reader.onerror = () => reject(new Error('Failed to read file'))
+        reader.readAsDataURL(f)
+      })
+      const dataUrls = await Promise.all(Array.from(files).map(readAsDataUrl))
+      setAddPetForm(prev => ({ ...prev, galleryImages: [...prev.galleryImages, ...dataUrls] }))
+    } finally {
+      setAddPetUploadingImages(false)
+    }
+  }
+
+  const handleAddPetProfileUpload = async (file: File) => {
+    setAddPetUploadingImages(true)
+    try {
+      const reader = new FileReader()
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        reader.onload = e => resolve(e.target?.result as string)
+        reader.onerror = () => reject(new Error('Failed to read file'))
+        reader.readAsDataURL(file)
+      })
+      setAddPetForm(prev => ({ ...prev, profilePicture: dataUrl }))
+    } finally {
+      setAddPetUploadingImages(false)
+    }
+  }
+
+  const removeAddPetGalleryImage = (index: number) => {
+    setAddPetForm(prev => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, i) => i !== index)
+    }))
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -722,7 +807,7 @@ export default function BookingPage() {
           // Redirect to payment page with booking parameters
           const bookingParams = new URLSearchParams()
           if (selectedDate) {
-            bookingParams.set('date', selectedDate.toISOString().split('T')[0])
+            bookingParams.set('date', format(selectedDate, 'yyyy-MM-dd'))
           }
           if (selectedTimeSlot) {
             bookingParams.set('time', selectedTimeSlot)
@@ -752,6 +837,38 @@ export default function BookingPage() {
           
           <div className="flex-1 overflow-y-auto px-4">
             <form onSubmit={handleAddPet} className="space-y-4 pb-4">
+              {/* Profile picture */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Profilio nuotrauka</label>
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                    {addPetForm.profilePicture ? (
+                      <Image src={addPetForm.profilePicture} alt="Pet avatar" width={48} height={48} className="h-12 w-12 object-cover" />
+                    ) : (
+                      <span className="text-xl">🐾</span>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addPetProfileInputRef.current?.click()}
+                    disabled={addPetUploadingImages}
+                  >
+                    Pridėti nuotrauką
+                  </Button>
+                  <input
+                    ref={addPetProfileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleAddPetProfileUpload(file)
+                    }}
+                  />
+                </div>
+              </div>
+
               <InputWithLabel
                 id="petName"
                 label={t('provider.petName')}
@@ -826,6 +943,54 @@ export default function BookingPage() {
                 placeholder="Any medical information (optional)"
                 rows={3}
               />
+
+              {/* Gallery Images */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Galerijos paveikslėliai</label>
+                <div className="mt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addPetGalleryInputRef.current?.click()}
+                    disabled={addPetUploadingImages}
+                    className="mb-4"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    Pridėti galerijos paveikslėlius
+                  </Button>
+                  <input
+                    ref={addPetGalleryInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = e.target.files
+                      if (files) handleAddPetGalleryUpload(files)
+                    }}
+                  />
+
+                  {addPetForm.galleryImages.length > 0 && (
+                    <div className="grid grid-cols-2 gap-4">
+                      {addPetForm.galleryImages.map((img, idx) => (
+                        <div key={idx} className="relative group">
+                          <Image src={img} alt={`Gallery ${idx + 1}`} width={96} height={96} className="w-full h-24 object-cover rounded-lg" />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => removeAddPetGalleryImage(idx)}
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label="Remove image"
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </form>
           </div>
 

@@ -21,6 +21,8 @@ export interface OnboardingData {
     name: string
     description: string
     price: string
+    locationId?: string
+    gallery?: File[]
   }>
   
   // Step 4: Detailed Services (only for non-ads providers)

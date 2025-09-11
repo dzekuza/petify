@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
 import { bookingApi } from '@/lib/bookings'
 import { Booking, BookingStatus } from '@/types'
@@ -18,6 +19,8 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [cancellingBooking, setCancellingBooking] = useState<string | null>(null)
+  const [selectedPetId, setSelectedPetId] = useState<string>('all')
+  const [timeFilter, setTimeFilter] = useState<'all' | 'past' | 'future'>('all')
 
   const fetchBookings = useCallback(async () => {
     if (!user) return
@@ -60,6 +63,33 @@ export default function BookingsPage() {
     return t(`bookings.status.${status}`, status.charAt(0).toUpperCase() + status.slice(1))
   }
 
+  const toBookingDateTime = (b: Booking) => {
+    try {
+      const [h, m] = b.timeSlot.start.split(':').map(Number)
+      const d = new Date(b.date)
+      d.setHours(h || 0, m || 0, 0, 0)
+      return d
+    } catch {
+      return new Date(b.date)
+    }
+  }
+
+  const filteredBookings = bookings.filter(b => {
+    if (selectedPetId !== 'all' && b.petId !== selectedPetId) return false
+    if (timeFilter === 'all') return true
+    const now = new Date()
+    const dt = toBookingDateTime(b)
+    return timeFilter === 'past' ? dt < now : dt >= now
+  })
+
+  const uniquePets = Array.from(
+    new Map(
+      bookings
+        .filter(b => !!b.petId && !!b.pet)
+        .map(b => [b.petId as string, { id: b.petId as string, name: b.pet!.name }])
+    ).values()
+  )
+
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
@@ -90,6 +120,37 @@ export default function BookingsPage() {
               <p className="text-gray-600">{t('bookings.subtitle')}</p>
             </div>
 
+            {/* Filters */}
+            <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600">Filtruoti pagal augintinį</label>
+                <Select value={selectedPetId} onValueChange={setSelectedPetId}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Visi augintiniai" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Visi augintiniai</SelectItem>
+                    {uniquePets.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Būsena pagal laiką</label>
+                <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as 'all' | 'past' | 'future')}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Visi užsakymai</SelectItem>
+                    <SelectItem value="future">Būsimi užsakymai</SelectItem>
+                    <SelectItem value="past">Praėję užsakymai</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             {/* Bookings List */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {loading ? (
@@ -106,7 +167,7 @@ export default function BookingsPage() {
                     <Button onClick={fetchBookings}>{t('bookings.tryAgain')}</Button>
                   </CardContent>
                 </Card>
-              ) : bookings.length === 0 ? (
+              ) : filteredBookings.length === 0 ? (
                 <Card className="lg:col-span-2">
                   <CardContent className="text-center py-8">
                     <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -118,7 +179,7 @@ export default function BookingsPage() {
                   </CardContent>
                 </Card>
               ) : (
-                bookings.map((booking) => (
+                filteredBookings.map((booking) => (
                   <Card key={booking.id}>
                     <CardContent className="p-6">
                       <div className="space-y-4">

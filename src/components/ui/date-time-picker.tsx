@@ -66,15 +66,15 @@ export function DateTimePicker({
   return (
     <div>
       <div className="rounded-lg border border-border">
-        <div className="flex max-sm:flex-col">
+        <div className="flex w-full max-sm:flex-col">
           <CalendarBooking
             mode="single"
             selected={date}
             onSelect={handleDateSelect}
-            className="p-2 sm:pe-5 bg-background"
+            className="p-2 sm:pe-5 bg-background flex-1"
             disabled={disabled || [{ before: today }]}
           />
-          <div className="relative w-full max-sm:h-48 sm:w-40">
+          <div className="relative w-full max-sm:h-48 sm:w-64">
             <div className="absolute inset-0 border-border py-4 max-sm:border-t">
               <ScrollArea className="h-full border-border sm:border-s">
                 <div className="space-y-3">

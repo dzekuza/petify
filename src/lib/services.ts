@@ -12,6 +12,7 @@ export interface CreateServiceData {
   requirements?: string[]
   includes?: string[]
   images?: string[]
+  serviceLocation?: Record<string, unknown>
 }
 
 export interface UpdateServiceData {
@@ -24,31 +25,51 @@ export interface UpdateServiceData {
   includes?: string[]
   images?: string[]
   isActive?: boolean
+  serviceLocation?: Record<string, unknown>
 }
 
 export const serviceApi = {
   // Create a new service
   async createService(data: CreateServiceData) {
     try {
-      const { data: service, error } = await supabase
+      // Build base payload
+      const basePayload: any = {
+        provider_id: data.providerId,
+        category: data.category,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        duration_minutes: data.duration,
+        max_pets: data.maxPets,
+        requirements: data.requirements || [],
+        includes: data.includes || [],
+        images: data.images || [],
+        is_active: true
+      }
+
+      // Try including service_location if provided
+      let payload = basePayload
+      if (data.serviceLocation) {
+        payload = { ...basePayload, service_location: data.serviceLocation }
+      }
+
+      let { data: service, error } = await supabase
         .from('services')
-        .insert([
-          {
-            provider_id: data.providerId,
-            category: data.category,
-            name: data.name,
-            description: data.description,
-            price: data.price,
-            duration_minutes: data.duration,
-            max_pets: data.maxPets,
-            requirements: data.requirements || [],
-            includes: data.includes || [],
-            images: data.images || [],
-            is_active: true
-          }
-        ])
+        .insert([payload])
         .select()
         .single()
+
+      // If schema not updated yet, retry without service_location
+      if (error && (error as any).code === 'PGRST204' && data.serviceLocation) {
+        const retryPayload = basePayload
+        const retry = await supabase
+          .from('services')
+          .insert([retryPayload])
+          .select()
+          .single()
+        service = retry.data
+        error = retry.error as any
+      }
 
       if (error) {
         console.error('Error creating service:', error)
@@ -108,20 +129,23 @@ export const serviceApi = {
   // Update service
   async updateService(serviceId: string, data: UpdateServiceData) {
     try {
+      const updatePayload: any = {
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        duration_minutes: data.duration,
+        max_pets: data.maxPets,
+        requirements: data.requirements,
+        includes: data.includes,
+        images: data.images,
+        is_active: data.isActive,
+        updated_at: new Date().toISOString()
+      }
+      if (data.serviceLocation) updatePayload.service_location = data.serviceLocation
+
       const { data: service, error } = await supabase
         .from('services')
-        .update({
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          duration_minutes: data.duration,
-          max_pets: data.maxPets,
-          requirements: data.requirements,
-          includes: data.includes,
-          images: data.images,
-          is_active: data.isActive,
-          updated_at: new Date().toISOString()
-        })
+        .update(updatePayload)
         .eq('id', serviceId)
         .select()
         .single()
