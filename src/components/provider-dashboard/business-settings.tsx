@@ -350,16 +350,16 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
         <CardHeader>
           <CardTitle className="flex items-center">
             <Heart className="h-5 w-5 mr-2 text-pink-600" />
-            Adoption Settings
+            Breeding Settings
           </CardTitle>
           <CardDescription>
-            Configure your adoption process parameters
+            Configure your breeding and sales process parameters
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="adoptionFee">Standard Adoption Fee (€)</Label>
+              <Label htmlFor="adoptionFee">Standard Sale Price (€)</Label>
               <Input
                 id="adoptionFee"
                 type="number"
@@ -399,7 +399,7 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
             <div className="flex items-center justify-between">
               <div>
                 <Label>Home Visit Required</Label>
-                <p className="text-sm text-gray-500">Require home visit before adoption</p>
+                <p className="text-sm text-gray-500">Require home visit before sale</p>
               </div>
               <Switch
                 checked={settings.homeVisitRequired}
@@ -409,8 +409,8 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
             
             <div className="flex items-center justify-between">
               <div>
-                <Label>Adoption Contract</Label>
-                <p className="text-sm text-gray-500">Require signed adoption contract</p>
+                <Label>Sales Contract</Label>
+                <p className="text-sm text-gray-500">Require signed sales contract</p>
               </div>
               <Switch
                 checked={settings.adoptionContract}
@@ -421,7 +421,7 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
 
           <Button onClick={handleSave} className="w-full">
             <Save className="h-4 w-4 mr-2" />
-            Save Adoption Settings
+            Save Breeding Settings
           </Button>
         </CardContent>
       </Card>

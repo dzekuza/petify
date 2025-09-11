@@ -200,7 +200,7 @@ export const translations = {
     veterinary: 'Veterinarijos paslaugos',
     boarding: 'Gyvūnų prieglauda',
     training: 'Gyvūnų treniruotės',
-    adoption: 'Skelbimai',
+    adoption: 'Veislynai',
     sitting: 'Gyvūnų prižiūrėjimas'
   },
 
@@ -616,7 +616,7 @@ export const translations = {
         training: 'Dresūra',
         boarding: 'Poravimas',
         veterinary: 'Veterinarijos',
-        adoption: 'Skelbimai'
+        adoption: 'Veislynai'
       },
       providersGrid: {
         popularGrooming: 'Populiarios kirpyklos Palangoje',

@@ -43,8 +43,8 @@ const serviceCategories = [
   },
   {
     id: 'adoption',
-    name: 'Skelbimai',
-    description: 'Gyvūnų pardavimo ir įvaikinimo skelbimai',
+    name: 'Veislynai',
+    description: 'Gyvūnų veislynų ir pardavimo paslaugos',
     icon: '/Pet_Ads_Icon Background Removed.png'
   }
 ]

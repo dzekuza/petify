@@ -69,8 +69,8 @@ const providerTypes = [
   },
   {
     id: 'adoption',
-    name: 'Skelbimai',
-    description: 'Pet sales and adoption services',
+    name: 'Veislynai',
+    description: 'Pet breeding and sales services',
     icon: '/image (8).png',
     features: [
       'Pet adoption listings',

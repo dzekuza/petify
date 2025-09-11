@@ -52,8 +52,8 @@ export const ServiceCategories = () => {
     },
     {
       id: 'adoption' as ServiceCategory,
-      name: 'Skelbimai',
-      description: 'Gyvūnų pardavimo ir įvaikinimo skelbimai',
+      name: 'Veislynai',
+      description: 'Gyvūnų veislynų ir pardavimo paslaugos',
       icon: Home,
       color: 'bg-green-100 text-green-600',
       href: '/search?category=adoption',

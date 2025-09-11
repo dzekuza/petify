@@ -42,7 +42,7 @@ const serviceTypes = [
   { value: 'veterinary', label: 'Veterinarijos gydytojas' },
   { value: 'boarding', label: 'Gyvūnų prieglauda' },
   { value: 'training', label: 'Gyvūnų treneris' },
-  { value: 'adoption', label: 'Skelbimai' },
+  { value: 'adoption', label: 'Veislynai' },
   { value: 'sitting', label: 'Gyvūnų prižiūrėtojas' },
 ]
 
@@ -99,7 +99,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
       name: t('landing.hero.categories.adoption'), 
       href: '/search?category=adoption',
       icon: '/Pet_Ads_Icon Background Removed.png',
-      shortName: 'Skelbimai'
+      shortName: 'Veislynai'
     },
   ]
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -325,7 +325,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                       onClick={() => router.push(provider?.business_type === 'adoption' ? '/provider/pet-ads' : '/provider/dashboard/services')}
                     >
                       <Star className="mr-2 h-4 w-4" />
-                      {provider?.business_type === 'adoption' ? 'Skelbimai' : t('navigation.services')}
+                      {provider?.business_type === 'adoption' ? 'Veislynai' : t('navigation.services')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -716,7 +716,7 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
                                   className="flex items-center space-x-3 px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 rounded-md transition-colors"
                                 >
                                   <Star className="h-5 w-5" />
-                                  <span>{provider?.business_type === 'adoption' ? 'Skelbimai' : t('navigation.services')}</span>
+                                  <span>{provider?.business_type === 'adoption' ? 'Veislynai' : t('navigation.services')}</span>
                                 </Link>
                               </DrawerClose>
                               <DrawerClose asChild>

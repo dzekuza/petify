@@ -1,4 +1,4 @@
-export type ProviderType = 'grooming' | 'training' | 'veterinary' | 'boarding' | 'adoption' | 'sitting'
+export type ProviderType = 'grooming' | 'training' | 'veterinary' | 'boarding' | 'adoption' | 'sitting' // adoption = veislynai
 
 export interface OnboardingData {
   // Step 0: Provider Type
@@ -23,6 +23,20 @@ export interface OnboardingData {
     price: string
     locationId?: string
     gallery?: File[]
+    // Breeding-specific fields
+    maleCount?: number
+    femaleCount?: number
+    breed?: string
+    generation?: string
+    ageWeeks?: number
+    ageDays?: number
+    readyToLeave?: string
+    microchipped?: boolean
+    vaccinated?: boolean
+    wormed?: boolean
+    healthChecked?: boolean
+    parentsTested?: boolean
+    kcRegistered?: boolean
   }>
   
   // Step 4: Detailed Services (only for non-ads providers)

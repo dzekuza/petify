@@ -161,7 +161,7 @@ export const ListingsGrid = ({
                        provider.services[0] === 'veterinary' ? 'Veterinarija' :
                        provider.services[0] === 'boarding' ? 'Prieglauda' :
                        provider.services[0] === 'training' ? 'Dresūra' :
-                       provider.services[0] === 'adoption' ? 'Skelbimai' :
+                       provider.services[0] === 'adoption' ? 'Veislynai' :
                        provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
                        'Paslaugos'} • {provider.location.city}
                     </CardDescription>

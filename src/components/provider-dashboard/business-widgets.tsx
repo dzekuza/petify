@@ -56,8 +56,8 @@ const getBusinessTypeInfo = (businessType: string) => {
     case 'adoption':
       return {
         icon: Heart,
-        title: 'Adoption Dashboard',
-        description: 'Manage pet listings and adoption applications',
+        title: 'Breeding Dashboard',
+        description: 'Manage pet listings and sales applications',
         color: 'text-pink-600',
         bgColor: 'bg-pink-50',
         borderColor: 'border-pink-200'
@@ -350,7 +350,7 @@ export function AdoptionWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center">
             <Users className="h-5 w-5 mr-2 text-blue-600" />
-            Adoption Applications
+            Sales Applications
           </CardTitle>
         </CardHeader>
         <CardContent>

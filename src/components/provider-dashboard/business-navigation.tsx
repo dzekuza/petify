@@ -75,7 +75,7 @@ const getBusinessNavigation = (businessType: string) => {
         { href: '/provider/dashboard', label: 'Dashboard', icon: BarChart3 },
         { href: '/provider/pet-ads', label: 'Pet Listings', icon: Heart },
         { href: '/provider/applications', label: 'Applications', icon: FileText },
-        { href: '/provider/adoption-process', label: 'Adoption Process', icon: Users },
+        { href: '/provider/adoption-process', label: 'Breeding Process', icon: Users },
         { href: '/provider/dashboard/services', label: 'Services', icon: Settings },
         { href: '/provider/notifications', label: 'Notifications', icon: Bell },
         { href: '/provider/dashboard/settings', label: 'Settings', icon: Settings },
@@ -194,7 +194,7 @@ export function BusinessQuickActions({ businessType }: BusinessNavigationProps) 
         return [
           { href: '/provider/pet-ads', label: 'List Pet', icon: Heart },
           { href: '/provider/applications', label: 'Review Applications', icon: FileText },
-          { href: '/provider/adoption-process', label: 'Process Adoption', icon: Users }
+          { href: '/provider/adoption-process', label: 'Process Sales', icon: Users }
         ]
       case 'boarding':
         return [

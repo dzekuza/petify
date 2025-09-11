@@ -92,8 +92,8 @@ export function ImageGallery({
           <span className="text-6xl">✂️</span>
         </div>
         
-        {/* Overlay Controls for single image */}
-        <div className="absolute inset-0 bg-black/20">
+        {/* Overlay Controls for single image - Mobile only */}
+        <div className="absolute inset-0 bg-black/20 md:hidden">
           {/* Top Controls */}
           <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
             <button

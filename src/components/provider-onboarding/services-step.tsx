@@ -14,6 +14,11 @@ import { TextareaField } from '@/components/ui/input-field'
 import { InputField } from '@/components/ui/input-field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ImageUpload } from '@/components/ui/image-upload'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { CalendarIcon } from 'lucide-react'
+import { format } from 'date-fns'
 
 interface ServicesStepProps {
   data: OnboardingData
@@ -61,10 +66,11 @@ const getBusinessTypeServices = (businessType: string) => {
       ]
     case 'adoption':
       return [
-        { id: 'pet-adoption', name: 'Pet Adoption', description: 'Pet adoption services' },
-        { id: 'foster-care', name: 'Foster Care', description: 'Temporary foster placement' },
-        { id: 'rescue-services', name: 'Rescue Services', description: 'Animal rescue operations' },
-        { id: 'rehoming', name: 'Rehoming', description: 'Pet rehoming assistance' }
+        { id: 'dogs', name: 'Šunys', description: 'Šunų veisimas ir pardavimas' },
+        { id: 'cats', name: 'Katės', description: 'Kačių veisimas ir pardavimas' },
+        { id: 'birds', name: 'Paukščiai', description: 'Paukščių veisimas ir pardavimas' },
+        { id: 'small-animals', name: 'Smulkūs gyvūnai', description: 'Triušių, žiurkių ir kitų smulkių gyvūnų veisimas' },
+        { id: 'exotic', name: 'Egzotiniai gyvūnai', description: 'Egzotinių gyvūnų veisimas ir pardavimas' }
       ]
     default:
       return [
@@ -135,7 +141,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
     return (data.serviceDetails || []).find(d => d.id === serviceId)
   }
 
-  const updateServiceDetails = (serviceId: string, patch: Partial<{ description: string; price: string; locationId?: string; gallery: File[] }>) => {
+  const updateServiceDetails = (serviceId: string, patch: Partial<OnboardingData['serviceDetails'][0]>) => {
     const details = [...(data.serviceDetails || [])]
     const idx = details.findIndex(d => d.id === serviceId)
     const existing = idx >= 0 ? details[idx] : { id: serviceId, name: getServiceName(serviceId), description: '', price: '', locationId: undefined, gallery: [] }
@@ -156,15 +162,20 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
           <div className="flex flex-col gap-6 items-start justify-start">
             {/* Title */}
             <h1 className="text-3xl font-bold text-black">
-              Pasirinkite paslaugas
+              {data.providerType === 'adoption' ? 'Pasirinkite gyvūnų tipus' : 'Pasirinkite paslaugas'}
             </h1>
             <p className="text-gray-600">
-              Pasirinkite paslaugas, kurias teikiate savo klientams
+              {data.providerType === 'adoption' 
+                ? 'Pasirinkite gyvūnų tipus, kuriuos veisiate ir parduosite'
+                : 'Pasirinkite paslaugas, kurias teikiate savo klientams'
+              }
             </p>
 
             {/* Available Services */}
             <div className="w-full">
-              <h2 className="text-xl font-semibold mb-4">Galimos paslaugos</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                {data.providerType === 'adoption' ? 'Galimi gyvūnų tipai' : 'Galimos paslaugos'}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {availableServices.map((service) => (
                   <Card 
@@ -198,7 +209,9 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
             {/* Service details editor for selected services */}
             {selectedServices.length > 0 && (
               <div className="w-full mt-8">
-                <h2 className="text-xl font-semibold mb-4">Paslaugų detalizacija</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {data.providerType === 'adoption' ? 'Gyvūnų tipų detalizacija' : 'Paslaugų detalizacija'}
+                </h2>
                 <div className="space-y-6">
                   {selectedServices.map((serviceId) => {
                     const details = getServiceDetailsById(serviceId)
@@ -214,17 +227,232 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                                 label="Aprašymas"
                                 value={details?.description || ''}
                                 onChange={(e) => updateServiceDetails(serviceId, { description: e.target.value })}
-                                placeholder="Trumpai apibūdinkite paslaugą"
+                                placeholder={data.providerType === 'adoption' ? 'Trumpai apibūdinkite gyvūnų tipą ir veisimo ypatumus' : 'Trumpai apibūdinkite paslaugą'}
                               />
                               <InputField
-                                label="Kaina (€)"
-                                type="number"
+                                label={data.providerType === 'adoption' ? 'Kainų diapazonas (€)' : 'Kaina (€)'}
+                                type="text"
                                 value={details?.price || ''}
-                                min="0"
-                                step="0.01"
                                 onChange={(e) => updateServiceDetails(serviceId, { price: e.target.value })}
-                                placeholder="Įveskite kainą"
+                                placeholder={data.providerType === 'adoption' ? 'pvz: 500-800' : 'Įveskite kainą'}
                               />
+                              
+                              {/* Breeding-specific fields */}
+                              {data.providerType === 'adoption' && (
+                                <>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <InputField
+                                      label="Šuniukų skaičius (patinų)"
+                                      type="number"
+                                      value={details?.maleCount || ''}
+                                      onChange={(e) => updateServiceDetails(serviceId, { maleCount: parseInt(e.target.value) || 0 })}
+                                      placeholder="4"
+                                    />
+                                    <InputField
+                                      label="Šuniukų skaičius (patelių)"
+                                      type="number"
+                                      value={details?.femaleCount || ''}
+                                      onChange={(e) => updateServiceDetails(serviceId, { femaleCount: parseInt(e.target.value) || 0 })}
+                                      placeholder="4"
+                                    />
+                                  </div>
+                                  
+                                  <Select
+                                    value={details?.breed || ''}
+                                    onValueChange={(v) => updateServiceDetails(serviceId, { breed: v })}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Pasirinkite veislę" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="labradoodle">Labradoodle</SelectItem>
+                                      <SelectItem value="goldendoodle">Goldendoodle</SelectItem>
+                                      <SelectItem value="cockapoo">Cockapoo</SelectItem>
+                                      <SelectItem value="maltipoo">Maltipoo</SelectItem>
+                                      <SelectItem value="yorkipoo">Yorkipoo</SelectItem>
+                                      <SelectItem value="schnoodle">Schnoodle</SelectItem>
+                                      <SelectItem value="bernadoodle">Bernadoodle</SelectItem>
+                                      <SelectItem value="australian-labradoodle">Australian Labradoodle</SelectItem>
+                                      <SelectItem value="cavapoo">Cavapoo</SelectItem>
+                                      <SelectItem value="shihpoo">Shihpoo</SelectItem>
+                                      <SelectItem value="havanese">Havanese</SelectItem>
+                                      <SelectItem value="bichon-frise">Bichon Frise</SelectItem>
+                                      <SelectItem value="poodle">Poodle</SelectItem>
+                                      <SelectItem value="labrador-retriever">Labrador Retriever</SelectItem>
+                                      <SelectItem value="golden-retriever">Golden Retriever</SelectItem>
+                                      <SelectItem value="cocker-spaniel">Cocker Spaniel</SelectItem>
+                                      <SelectItem value="maltese">Maltese</SelectItem>
+                                      <SelectItem value="yorkshire-terrier">Yorkshire Terrier</SelectItem>
+                                      <SelectItem value="schnauzer">Schnauzer</SelectItem>
+                                      <SelectItem value="bernese-mountain-dog">Bernese Mountain Dog</SelectItem>
+                                      <SelectItem value="cavalier-king-charles-spaniel">Cavalier King Charles Spaniel</SelectItem>
+                                      <SelectItem value="shih-tzu">Shih Tzu</SelectItem>
+                                      <SelectItem value="french-bulldog">French Bulldog</SelectItem>
+                                      <SelectItem value="english-bulldog">English Bulldog</SelectItem>
+                                      <SelectItem value="pug">Pug</SelectItem>
+                                      <SelectItem value="beagle">Beagle</SelectItem>
+                                      <SelectItem value="german-shepherd">German Shepherd</SelectItem>
+                                      <SelectItem value="rottweiler">Rottweiler</SelectItem>
+                                      <SelectItem value="husky">Husky</SelectItem>
+                                      <SelectItem value="border-collie">Border Collie</SelectItem>
+                                      <SelectItem value="australian-shepherd">Australian Shepherd</SelectItem>
+                                      <SelectItem value="jack-russell-terrier">Jack Russell Terrier</SelectItem>
+                                      <SelectItem value="chihuahua">Chihuahua</SelectItem>
+                                      <SelectItem value="dachshund">Dachshund</SelectItem>
+                                      <SelectItem value="boxer">Boxer</SelectItem>
+                                      <SelectItem value="doberman">Doberman</SelectItem>
+                                      <SelectItem value="great-dane">Great Dane</SelectItem>
+                                      <SelectItem value="mastiff">Mastiff</SelectItem>
+                                      <SelectItem value="saint-bernard">Saint Bernard</SelectItem>
+                                      <SelectItem value="newfoundland">Newfoundland</SelectItem>
+                                      <SelectItem value="akita">Akita</SelectItem>
+                                      <SelectItem value="shiba-inu">Shiba Inu</SelectItem>
+                                      <SelectItem value="samoyed">Samoyed</SelectItem>
+                                      <SelectItem value="malamute">Malamute</SelectItem>
+                                      <SelectItem value="chow-chow">Chow Chow</SelectItem>
+                                      <SelectItem value="dalmatian">Dalmatian</SelectItem>
+                                      <SelectItem value="weimaraner">Weimaraner</SelectItem>
+                                      <SelectItem value="vizsla">Vizsla</SelectItem>
+                                      <SelectItem value="pointer">Pointer</SelectItem>
+                                      <SelectItem value="setter">Setter</SelectItem>
+                                      <SelectItem value="spaniel">Spaniel</SelectItem>
+                                      <SelectItem value="retriever">Retriever</SelectItem>
+                                      <SelectItem value="terrier">Terrier</SelectItem>
+                                      <SelectItem value="hound">Hound</SelectItem>
+                                      <SelectItem value="working-dog">Working Dog</SelectItem>
+                                      <SelectItem value="herding-dog">Herding Dog</SelectItem>
+                                      <SelectItem value="sporting-dog">Sporting Dog</SelectItem>
+                                      <SelectItem value="non-sporting-dog">Non-Sporting Dog</SelectItem>
+                                      <SelectItem value="toy-dog">Toy Dog</SelectItem>
+                                      <SelectItem value="mixed-breed">Mixed Breed</SelectItem>
+                                      <SelectItem value="other">Kita</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  
+                                  <Select
+                                    value={details?.generation || ''}
+                                    onValueChange={(v) => updateServiceDetails(serviceId, { generation: v })}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Kartos tipas" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="f1">F1</SelectItem>
+                                      <SelectItem value="f1b">F1B</SelectItem>
+                                      <SelectItem value="f2">F2</SelectItem>
+                                      <SelectItem value="f2b">F2B</SelectItem>
+                                      <SelectItem value="multigen">Multigen</SelectItem>
+                                      <SelectItem value="purebred">Grynakraujis</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <InputField
+                                      label="Amžius (savaitės)"
+                                      type="number"
+                                      value={details?.ageWeeks || ''}
+                                      onChange={(e) => updateServiceDetails(serviceId, { ageWeeks: parseInt(e.target.value) || 0 })}
+                                      placeholder="5"
+                                    />
+                                    <InputField
+                                      label="Amžius (dienos)"
+                                      type="number"
+                                      value={details?.ageDays || ''}
+                                      onChange={(e) => updateServiceDetails(serviceId, { ageDays: parseInt(e.target.value) || 0 })}
+                                      placeholder="4"
+                                    />
+                                  </div>
+                                  
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700">Paruošti išvežti</Label>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          className="w-full justify-start text-left font-normal"
+                                        >
+                                          <CalendarIcon className="mr-2 h-4 w-4" />
+                                          {details?.readyToLeave ? format(new Date(details.readyToLeave), 'PPP') : 'Pasirinkite datą'}
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                          mode="single"
+                                          selected={details?.readyToLeave ? new Date(details.readyToLeave) : undefined}
+                                          onSelect={(date) => updateServiceDetails(serviceId, { readyToLeave: date?.toISOString() })}
+                                          initialFocus
+                                        />
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                  
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Sveikatos dokumentai</Label>
+                                    <div className="space-y-3">
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`microchipped-${serviceId}`}
+                                          checked={details?.microchipped || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { microchipped: checked === true })}
+                                        />
+                                        <Label htmlFor={`microchipped-${serviceId}`} className="text-sm">
+                                          Mikročipas iki išvežimo
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`vaccinated-${serviceId}`}
+                                          checked={details?.vaccinated || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { vaccinated: checked === true })}
+                                        />
+                                        <Label htmlFor={`vaccinated-${serviceId}`} className="text-sm">
+                                          Skiepai atnaujinti
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`wormed-${serviceId}`}
+                                          checked={details?.wormed || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { wormed: checked === true })}
+                                        />
+                                        <Label htmlFor={`wormed-${serviceId}`} className="text-sm">
+                                          Išvaryti parazitai ir blusos
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`health-checked-${serviceId}`}
+                                          checked={details?.healthChecked || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { healthChecked: checked === true })}
+                                        />
+                                        <Label htmlFor={`health-checked-${serviceId}`} className="text-sm">
+                                          Veterinarijos sveikatos patikra
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`parents-tested-${serviceId}`}
+                                          checked={details?.parentsTested || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { parentsTested: checked === true })}
+                                        />
+                                        <Label htmlFor={`parents-tested-${serviceId}`} className="text-sm">
+                                          Tėvai sveikatos patikros
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                          id={`kc-registered-${serviceId}`}
+                                          checked={details?.kcRegistered || false}
+                                          onCheckedChange={(checked) => updateServiceDetails(serviceId, { kcRegistered: checked === true })}
+                                        />
+                                        <Label htmlFor={`kc-registered-${serviceId}`} className="text-sm">
+                                          KC registracija iki išvežimo
+                                        </Label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                               {data.addresses?.length > 0 && (
                                 <div className="space-y-2">
                                   <Label className="text-sm font-medium text-gray-700">Vieta</Label>
@@ -286,12 +514,14 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
 
             {/* Custom Services */}
             <div className="w-full">
-              <h2 className="text-xl font-semibold mb-4">Pridėti savo paslaugą</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                {data.providerType === 'adoption' ? 'Pridėti kitą gyvūnų tipą' : 'Pridėti savo paslaugą'}
+              </h2>
               <div className="flex space-x-2">
                 <Input
                   value={newCustomService}
                   onChange={(e) => setNewCustomService(e.target.value)}
-                  placeholder="Įveskite paslaugos pavadinimą"
+                  placeholder={data.providerType === 'adoption' ? 'Įveskite gyvūnų tipo pavadinimą' : 'Įveskite paslaugos pavadinimą'}
                   className="flex-1"
                 />
                 <Button onClick={handleAddCustomService} disabled={!newCustomService.trim()}>
@@ -304,7 +534,9 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
             {/* Selected Custom Services */}
             {customServices.length > 0 && (
               <div className="w-full">
-                <h2 className="text-xl font-semibold mb-4">Jūsų paslaugos</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {data.providerType === 'adoption' ? 'Jūsų gyvūnų tipai' : 'Jūsų paslaugos'}
+                </h2>
                 <div className="space-y-2">
                   {customServices.map((service) => (
                     <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -326,7 +558,10 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
             {selectedServices.length > 0 && (
               <div className="w-full bg-green-50 p-4 rounded-lg">
                 <h3 className="font-medium text-green-900 mb-2">
-                  Pasirinktos paslaugos ({selectedServices.length})
+                  {data.providerType === 'adoption' 
+                    ? `Pasirinkti gyvūnų tipai (${selectedServices.length})`
+                    : `Pasirinktos paslaugos (${selectedServices.length})`
+                  }
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedServices.map((serviceId) => {

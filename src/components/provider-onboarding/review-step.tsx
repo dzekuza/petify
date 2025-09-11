@@ -96,10 +96,12 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                 </div>
               </div>
 
-              {/* Services */}
+              {/* Services or Pet Types */}
               {data.services && data.services.length > 0 && (
                 <div className="w-full bg-white p-6 rounded-lg border">
-                  <h2 className="text-xl font-semibold mb-4">Paslaugos</h2>
+                  <h2 className="text-xl font-semibold mb-4">
+                    {data.providerType === 'adoption' ? 'Gyvūnų tipai' : 'Paslaugos'}
+                  </h2>
                   <div className="flex flex-wrap gap-2">
                     {data.services.map((service, index) => (
                       <Badge key={index} variant="secondary">
@@ -110,8 +112,96 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                 </div>
               )}
 
-              {/* Detailed Services */}
-              {data.detailedServices && data.detailedServices.length > 0 && (
+              {/* Detailed Services or Pet Type Details */}
+              {data.providerType === 'adoption' && data.serviceDetails && data.serviceDetails.length > 0 ? (
+                <div className="w-full bg-white p-6 rounded-lg border">
+                  <h2 className="text-xl font-semibold mb-4">Gyvūnų tipų detalizacija</h2>
+                  <div className="space-y-6">
+                    {data.serviceDetails.map((service, index) => (
+                      <div key={index} className="border-b border-gray-100 pb-6 last:border-b-0">
+                        <h3 className="font-medium text-lg mb-3">{service.name}</h3>
+                        
+                        {/* Basic Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          {service.breed && (
+                            <div>
+                              <span className="font-medium text-sm text-gray-700">Veislė:</span>
+                              <p className="text-gray-600 capitalize">{service.breed.replace('-', ' ')}</p>
+                            </div>
+                          )}
+                          {service.generation && (
+                            <div>
+                              <span className="font-medium text-sm text-gray-700">Kartos tipas:</span>
+                              <p className="text-gray-600">{service.generation}</p>
+                            </div>
+                          )}
+                          {service.price && (
+                            <div>
+                              <span className="font-medium text-sm text-gray-700">Kainų diapazonas:</span>
+                              <p className="text-gray-600">€{service.price}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Litter Information */}
+                        {(service.maleCount || service.femaleCount) && (
+                          <div className="mb-4">
+                            <span className="font-medium text-sm text-gray-700">Šuniukų skaičius:</span>
+                            <p className="text-gray-600">
+                              {service.maleCount && `${service.maleCount} patinų`}
+                              {service.maleCount && service.femaleCount && ' / '}
+                              {service.femaleCount && `${service.femaleCount} patelių`}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Age Information */}
+                        {(service.ageWeeks || service.ageDays) && (
+                          <div className="mb-4">
+                            <span className="font-medium text-sm text-gray-700">Amžius:</span>
+                            <p className="text-gray-600">
+                              {service.ageWeeks && `${service.ageWeeks} savaitės`}
+                              {service.ageWeeks && service.ageDays && ', '}
+                              {service.ageDays && `${service.ageDays} dienos`}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Ready to Leave */}
+                        {service.readyToLeave && (
+                          <div className="mb-4">
+                            <span className="font-medium text-sm text-gray-700">Paruošti išvežti:</span>
+                            <p className="text-gray-600">{new Date(service.readyToLeave).toLocaleDateString('lt-LT')}</p>
+                          </div>
+                        )}
+
+                        {/* Health Documents */}
+                        {(service.microchipped || service.vaccinated || service.wormed || service.healthChecked || service.parentsTested || service.kcRegistered) && (
+                          <div className="mb-4">
+                            <span className="font-medium text-sm text-gray-700">Sveikatos dokumentai:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {service.microchipped && <Badge variant="outline" className="text-xs">Mikročipas</Badge>}
+                              {service.vaccinated && <Badge variant="outline" className="text-xs">Skiepai</Badge>}
+                              {service.wormed && <Badge variant="outline" className="text-xs">Parazitų valymas</Badge>}
+                              {service.healthChecked && <Badge variant="outline" className="text-xs">Veterinarijos patikra</Badge>}
+                              {service.parentsTested && <Badge variant="outline" className="text-xs">Tėvų sveikatos patikra</Badge>}
+                              {service.kcRegistered && <Badge variant="outline" className="text-xs">KC registracija</Badge>}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Description */}
+                        {service.description && (
+                          <div>
+                            <span className="font-medium text-sm text-gray-700">Aprašymas:</span>
+                            <p className="text-gray-600 text-sm mt-1">{service.description}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : data.detailedServices && data.detailedServices.length > 0 ? (
                 <div className="w-full bg-white p-6 rounded-lg border">
                   <h2 className="text-xl font-semibold mb-4">Detalios paslaugos</h2>
                   <div className="space-y-4">
@@ -133,54 +223,60 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* Pricing */}
-              <div className="w-full bg-white p-6 rounded-lg border">
-                <h2 className="text-xl font-semibold mb-4">Kainodara</h2>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Euro className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-600">Bazinė kaina: €{data.basePrice}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Euro className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-600">Kaina už valandą: €{data.pricePerHour}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Experience & Certifications */}
-              <div className="w-full bg-white p-6 rounded-lg border">
-                <h2 className="text-xl font-semibold mb-4">Patirtis ir sertifikatai</h2>
-                <div className="space-y-3">
-                  <div>
-                    <span className="font-medium">Patirtis:</span>
-                    <p className="text-gray-600">{data.experience}</p>
-                  </div>
-                  {data.certifications && data.certifications.length > 0 && (
-                    <div>
-                      <span className="font-medium">Sertifikatai:</span>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {data.certifications.map((cert, index) => (
-                          <Badge key={index} variant="outline">
-                            {cert}
-                          </Badge>
-                        ))}
-                      </div>
+              {data.providerType !== 'adoption' && (
+                <div className="w-full bg-white p-6 rounded-lg border">
+                  <h2 className="text-xl font-semibold mb-4">Kainodara</h2>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Euro className="h-4 w-4 text-gray-500" />
+                      <span className="text-gray-600">Bazinė kaina: €{data.basePrice}</span>
                     </div>
-                  )}
+                    <div className="flex items-center gap-2">
+                      <Euro className="h-4 w-4 text-gray-500" />
+                      <span className="text-gray-600">Kaina už valandą: €{data.pricePerHour}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Working Hours */}
-              <div className="w-full bg-white p-6 rounded-lg border">
-                <h2 className="text-xl font-semibold mb-4">Darbo laikas</h2>
-                <div className="flex items-start gap-2">
-                  <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
-                  <p className="text-gray-600">{formatWorkingHours()}</p>
+              {/* Experience & Certifications - Hidden for breeders */}
+              {data.providerType !== 'adoption' && (
+                <div className="w-full bg-white p-6 rounded-lg border">
+                  <h2 className="text-xl font-semibold mb-4">Patirtis ir sertifikatai</h2>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="font-medium">Patirtis:</span>
+                      <p className="text-gray-600">{data.experience}</p>
+                    </div>
+                    {data.certifications && data.certifications.length > 0 && (
+                      <div>
+                        <span className="font-medium">Sertifikatai:</span>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {data.certifications.map((cert, index) => (
+                            <Badge key={index} variant="outline">
+                              {cert}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Working Hours - Hidden for breeders */}
+              {data.providerType !== 'adoption' && (
+                <div className="w-full bg-white p-6 rounded-lg border">
+                  <h2 className="text-xl font-semibold mb-4">Darbo laikas</h2>
+                  <div className="flex items-start gap-2">
+                    <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
+                    <p className="text-gray-600">{formatWorkingHours()}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Terms Acceptance */}
               <div className="w-full bg-green-50 p-4 rounded-lg">

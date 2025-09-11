@@ -6,7 +6,7 @@ export type ServiceCategory =
   | 'boarding' // prieglauda
   | 'training' // treniruotės
   | 'sitting' // prižiūrėjimas
-  | 'adoption' // skelbimai
+  | 'adoption' // veislynai
 
 export type ServiceStatus = 'active' | 'inactive' | 'pending' // aktyvus | neaktyvus | laukiama
 

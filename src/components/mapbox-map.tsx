@@ -265,7 +265,7 @@ export const MapboxMap = ({
       case 'training':
         return 'Dresūra'
       case 'adoption':
-        return 'Skelbimai'
+        return 'Veislynai'
       case 'sitting':
         return 'Prižiūrėjimas'
       default:

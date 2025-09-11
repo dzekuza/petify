@@ -85,7 +85,7 @@ export const ProviderCard = ({
       case 'training':
         return 'Dresūra'
       case 'adoption':
-        return 'Skelbimai'
+        return 'Veislynai'
       case 'sitting':
         return 'Prižiūrėjimas'
       default:

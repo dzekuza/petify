@@ -29,7 +29,7 @@ export const HeroSection = () => {
     { value: 'boarding', label: 'Prieglauda' },
     { value: 'training', label: 'Dresūra' },
     { value: 'sitting', label: 'Prižiūrėjimas' },
-    { value: 'adoption', label: 'Skelbimai' },
+    { value: 'adoption', label: 'Veislynai' },
   ], [])
 
   const citySuggestions = useMemo(() => [

@@ -165,7 +165,7 @@ function ProviderOnboardingPage() {
     
     let nextStep = currentStep + 1
     
-    // Skip Services step if provider type is "Skelbimai" (adoption)
+    // Skip Services step if provider type is "Veislynai" (adoption)
     if (currentStep === 5 && onboardingData.providerType === 'adoption') {
       // Skip Services step for adoption provider
       nextStep = currentStep + 2 // Skip services (5) step, go to working-hours (6)
@@ -185,7 +185,7 @@ function ProviderOnboardingPage() {
     
     let prevStep = currentStep - 1
     
-    // Skip Services step if provider type is "Skelbimai" (adoption) when going back
+    // Skip Services step if provider type is "Veislynai" (adoption) when going back
     if (currentStep === 6 && onboardingData.providerType === 'adoption') {
       // Skip Services step when going back for adoption provider
       prevStep = currentStep - 2 // Skip services (5) step, go to business-info (4)

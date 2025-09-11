@@ -46,7 +46,7 @@ const serviceCategories: ServiceCategory[] = [
   },
   {
     id: 'ads',
-    label: 'Skelbimai',
+    label: 'Veislynai',
     icon: imgPetAdsIcon,
     value: 'adoption'
   }
