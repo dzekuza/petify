@@ -16,7 +16,8 @@ import {
   DollarSign, 
   Clock,
   Settings,
-  Bell
+  Bell,
+  MessageCircle
 } from 'lucide-react'
 import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
@@ -359,6 +360,14 @@ export default function ProviderDashboard() {
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       {t('providerDashboard.editProfile')}
+                    </Button>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => router.push('/provider/dashboard/chat')}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Customer Messages
                     </Button>
                   </CardContent>
                 </Card>

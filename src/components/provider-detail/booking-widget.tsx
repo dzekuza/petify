@@ -525,25 +525,6 @@ export function BookingWidget({
         {petAd ? 'Teirautis' : t('provider.bookService')}
       </Button>
       
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-100 rounded">
-          Debug: Date: {selectedDate ? (() => {
-            const year = selectedDate.getFullYear()
-            const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
-            const day = String(selectedDate.getDate()).padStart(2, '0')
-            return `${year}-${month}-${day}`
-          })() : 'none'}, 
-          Time: {selectedTime || 'none'}, 
-          Service: {selectedService || 'none'}, 
-          Pets: {selectedPets.length}, 
-          PetAd: {petAd ? 'yes' : 'no'}
-        </div>
-      )}
-      
-      <div className="text-center text-sm text-gray-600">
-        {t('provider.secureBooking')}
-      </div>
     </div>
   )
 }

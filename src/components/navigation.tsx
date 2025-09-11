@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, X, Heart, User, Settings, LogOut, PawPrint, Calendar, Star, Dog, DollarSign, Clock } from 'lucide-react'
+import { Menu, X, Heart, User, Settings, LogOut, Calendar, Star, Dog, Clock } from 'lucide-react'
 import { NotificationsDropdown } from '@/components/notifications'
 import Image from 'next/image'
 import { NavigationSearch } from '@/components/navigation-search'
@@ -25,9 +25,6 @@ import { t } from '@/lib/translations'
 import { providerApi } from '@/lib/providers'
 import { useDeviceDetection } from '@/lib/device-detection'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { InputWithLabel, SelectWithLabel } from '@/components/ui/input-with-label'
 import AddressAutocomplete from '@/components/address-autocomplete'
 import {

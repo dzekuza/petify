@@ -1,14 +1,13 @@
 'use client'
 
 import React from 'react'
-import { Bell, Calendar, DollarSign, Star, X, CheckCircle, AlertCircle, Clock } from 'lucide-react'
+import { Bell, Calendar, DollarSign, Star, X, CheckCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNotifications, Notification } from '@/contexts/notifications-context'

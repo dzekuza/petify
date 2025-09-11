@@ -1,13 +1,18 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 
 export const useDeviceDetection = () => {
-  const [windowWidth, setWindowWidth] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
+    
     const checkDevice = () => {
-      setWindowWidth(window.innerWidth)
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 768)
+      }
     }
 
     // Check on mount
@@ -20,39 +25,38 @@ export const useDeviceDetection = () => {
       timeoutId = setTimeout(checkDevice, 100)
     }
 
-    window.addEventListener('resize', throttledResize)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', throttledResize)
+    }
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', throttledResize)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', throttledResize)
+      }
       clearTimeout(timeoutId)
     }
   }, [])
 
-  // Memoize device detection to prevent unnecessary re-renders
-  const deviceInfo = useMemo(() => {
-    if (windowWidth === 0) {
-      return {
-        isMobile: false,
-        isTablet: false,
-        isDesktop: true,
-        isMobileOrTablet: false
-      }
-    }
-
-    const isMobile = windowWidth < 768
-    const isTablet = windowWidth >= 768 && windowWidth < 1024
-    const isDesktop = windowWidth >= 1024
-
+  // During SSR or before hydration, assume desktop to prevent hydration mismatch
+  if (!isClient) {
     return {
-      isMobile,
-      isTablet,
-      isDesktop,
-      isMobileOrTablet: isMobile || isTablet
+      isMobile: false,
+      isTablet: false,
+      isDesktop: true,
+      isMobileOrTablet: false
     }
-  }, [windowWidth])
+  }
 
-  return deviceInfo
+  const isTablet = !isMobile && typeof window !== 'undefined' && window.innerWidth < 1024
+  const isDesktop = !isMobile && !isTablet
+
+  return {
+    isMobile,
+    isTablet,
+    isDesktop,
+    isMobileOrTablet: isMobile || isTablet
+  }
 }
 
 export const isMobileDevice = () => {

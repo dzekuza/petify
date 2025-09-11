@@ -3,14 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { useRouter } from 'next/navigation'
@@ -18,13 +15,10 @@ import {
   Plus, 
   Edit, 
   Trash2,
-  X,
   Eye,
   EyeOff,
   PawPrint,
-  Euro,
-  Calendar,
-  MapPin
+  Euro
 } from 'lucide-react'
 import { PetAd, CreatePetAdForm } from '@/types'
 import { useAuth } from '@/contexts/auth-context'
@@ -88,7 +82,7 @@ export default function ProviderPetAdsPage() {
         }
         
       } catch (error) {
-        console.error('Error loading data:', error)
+        // Error handling - could be logged to monitoring service in production
         toast.error('Failed to load pet ads data. Please try again.')
       } finally {
         setLoading(false)
@@ -145,7 +139,7 @@ export default function ProviderPetAdsPage() {
       // Show success notification
       toast.success('Pet ad has been created successfully!')
     } catch (error) {
-      console.error('Error creating pet ad:', error)
+      // Error handling - could be logged to monitoring service in production
       toast.error('Failed to create pet ad. Please try again.')
     } finally {
       setPetAdFormLoading(false)
@@ -195,7 +189,7 @@ export default function ProviderPetAdsPage() {
       // Show success notification
       toast.success('Pet ad has been updated successfully!')
     } catch (error) {
-      console.error('Error updating pet ad:', error)
+      // Error handling - could be logged to monitoring service in production
       toast.error('Failed to update pet ad. Please try again.')
     } finally {
       setPetAdFormLoading(false)
@@ -210,7 +204,7 @@ export default function ProviderPetAdsPage() {
       setPetAds(prev => prev.filter(ad => ad.id !== petAdId))
       toast.success('Pet ad has been deleted successfully!')
     } catch (error) {
-      console.error('Error deleting pet ad:', error)
+      // Error handling - could be logged to monitoring service in production
       toast.error('Failed to delete pet ad. Please try again.')
     }
   }
@@ -223,7 +217,7 @@ export default function ProviderPetAdsPage() {
       ))
       toast.success(`Pet ad has been ${!isActive ? 'activated' : 'deactivated'} successfully!`)
     } catch (error) {
-      console.error('Error toggling pet ad status:', error)
+      // Error handling - could be logged to monitoring service in production
       toast.error('Failed to update pet ad status. Please try again.')
     }
   }

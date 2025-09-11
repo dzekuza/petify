@@ -177,7 +177,7 @@ function SearchPageContent() {
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
           {/* Fixed trigger button - only show when drawer is closed */}
           {!isDrawerOpen && (
-            <div className="fixed bottom-24 left-0 right-0 h-24 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
+            <div className="fixed bottom-16 left-0 right-0 h-24 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
               <DrawerTrigger asChild>
                 <button
                   className="w-full h-full cursor-pointer"
@@ -201,7 +201,7 @@ function SearchPageContent() {
             </div>
           )}
           
-          <DrawerContent className="max-h-[80vh] h-[80vh]">
+          <DrawerContent className="max-h-[90vh] h-[90vh]">
             <DrawerHeader>
               <DrawerTitle>
                 {loading ? (

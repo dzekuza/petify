@@ -6,9 +6,7 @@ import { BusinessSettings } from '@/components/provider-dashboard/business-setti
 import { GeneralBusinessInfo } from '@/components/provider-dashboard/general-business-info'
 import { dashboardApi } from '@/lib/dashboard'
 import { useAuth } from '@/contexts/auth-context'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Settings, Save, CheckCircle } from 'lucide-react'
+import { CheckCircle, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function BusinessSettingsPage() {

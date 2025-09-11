@@ -3,11 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Lock } from 'lucide-react'
 import { Loading } from '@/components/ui/loading'
-import { Layout } from '@/components/layout'
 
 interface ProtectedRouteProps {
   children: React.ReactNode

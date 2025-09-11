@@ -40,7 +40,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       setFavorites(userFavorites)
       setFavoriteIds(new Set(userFavorites.map(fav => fav.provider_id)))
     } catch (err) {
-      console.error('Error fetching favorites:', err)
+      // Error handling - could be logged to monitoring service in production
       setError('Failed to load favorites')
     } finally {
       setLoading(false)
@@ -65,7 +65,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       await fetchFavorites()
       return true
     } catch (err) {
-      console.error('Error adding to favorites:', err)
+      // Error handling - could be logged to monitoring service in production
       setError('Failed to add to favorites')
       return false
     }
@@ -79,15 +79,19 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setError(null)
+      // Only update state after successful API call
       await favoritesApi.removeFromFavorites(user.id, providerId)
+      
       setFavoriteIds(prev => {
         const newSet = new Set(prev)
         newSet.delete(providerId)
         return newSet
       })
       setFavorites(prev => prev.filter(fav => fav.provider_id !== providerId))
+      
       return true
     } catch (err) {
+      // Error handling - could be logged to monitoring service in production
       console.error('Error removing from favorites:', err)
       setError('Failed to remove from favorites')
       return false
@@ -119,7 +123,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       
       return isNowFavorited
     } catch (err) {
-      console.error('Error toggling favorite:', err)
+      // Error handling - could be logged to monitoring service in production
       setError('Failed to update favorites')
       return false
     }

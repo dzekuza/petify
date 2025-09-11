@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { AIChatButton } from '@/components/ui/ai-chat-button'
 import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { ImageGallery } from './image-gallery'
@@ -79,7 +80,7 @@ export function MobileLayout({
 
           {/* Fixed Bottom Bar */}
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[60]">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-lg font-semibold text-gray-900">
                   {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
@@ -88,13 +89,22 @@ export function MobileLayout({
                   {petAd ? 'Kaina' : t('common.perService')}
                 </div>
               </div>
-              <Button 
-                variant="gradient"
-                size="lg"
-                onClick={() => onBookService()}
-              >
-                {petAd ? 'Teirautis' : t('common.book')}
-              </Button>
+              <div className="flex gap-2">
+                <AIChatButton
+                  providerName={provider.businessName}
+                  providerId={provider.id}
+                  variant="outline"
+                  size="lg"
+                  className="flex-shrink-0"
+                />
+                <Button 
+                  variant="gradient"
+                  size="lg"
+                  onClick={() => onBookService()}
+                >
+                  {petAd ? 'Teirautis' : t('common.book')}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

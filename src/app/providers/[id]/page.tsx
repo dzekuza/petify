@@ -15,6 +15,7 @@ import { BookingWidget } from '@/components/provider-detail/booking-widget'
 import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
 import { ReviewDialog } from '@/components/review-dialog'
+import { AIChatButton } from '@/components/ui/ai-chat-button'
 import { toast } from 'sonner'
 
 export default function ProviderDetailPage() {
@@ -404,7 +405,7 @@ export default function ProviderDetailPage() {
 
             {/* Right column - Booking widget */}
             <div className="col-span-1">
-              <div className="sticky top-8">
+              <div className="sticky top-8 space-y-4">
                 <BookingWidget
                   provider={provider}
                   services={services}
@@ -413,6 +414,15 @@ export default function ProviderDetailPage() {
                   onBookService={handleBookService}
                   onPetsUpdate={handlePetsUpdate}
                   isMobile={false}
+                />
+                
+                {/* AI Chat Button */}
+                <AIChatButton
+                  providerName={provider.businessName}
+                  providerId={provider.id}
+                  className="w-full"
+                  variant="default"
+                  size="lg"
                 />
               </div>
             </div>

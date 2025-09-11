@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,61 +12,69 @@ import { Search } from 'lucide-react'
 import { t } from '@/lib/translations'
 import { format } from 'date-fns'
 import { CategorySection } from '@/components/category-section'
+import { MobileHeroSection } from '@/components/mobile-hero-section'
 
 export const HeroSection = () => {
+  const router = useRouter()
   const [location, setLocation] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
   const [showDateSuggestions, setShowDateSuggestions] = useState(false)
 
-  // Business types/categories for dropdown
-  const businessTypes = [
+  // Memoize static data to prevent unnecessary re-renders
+  const businessTypes = useMemo(() => [
     { value: 'grooming', label: 'Kirpyklos' },
     { value: 'veterinary', label: 'Veterinarija' },
     { value: 'boarding', label: 'Prieglauda' },
     { value: 'training', label: 'Dresūra' },
     { value: 'sitting', label: 'Prižiūrėjimas' },
     { value: 'adoption', label: 'Skelbimai' },
-  ]
+  ], [])
 
-  // Mock data for suggestions
-  const citySuggestions = [
+  const citySuggestions = useMemo(() => [
     'Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena'
-  ]
+  ], [])
 
 
-  const dateSuggestions = [
-    { label: 'Šiandien', value: new Date() },
-    { label: 'Rytoj', value: new Date(Date.now() + 24 * 60 * 60 * 1000) },
-    { label: 'Šį savaitgalį', value: getNextWeekend() },
-    { label: 'Kitą savaitę', value: getNextWeek() },
-    { label: 'Kitą mėnesį', value: getNextMonth() }
-  ]
-
-  function getNextWeekend() {
+  // Memoize date suggestions to prevent recalculation on every render
+  const dateSuggestions = useMemo(() => {
     const today = new Date()
-    const dayOfWeek = today.getDay()
-    const daysUntilSaturday = (6 - dayOfWeek) % 7
-    const nextSaturday = new Date(today)
-    nextSaturday.setDate(today.getDate() + (daysUntilSaturday === 0 ? 7 : daysUntilSaturday))
-    return nextSaturday
-  }
+    const tomorrow = new Date(today)
+    tomorrow.setDate(today.getDate() + 1)
+    
+    const getNextWeekend = () => {
+      const dayOfWeek = today.getDay()
+      const daysUntilSaturday = (6 - dayOfWeek) % 7
+      const nextSaturday = new Date(today)
+      nextSaturday.setDate(today.getDate() + (daysUntilSaturday === 0 ? 7 : daysUntilSaturday))
+      return nextSaturday
+    }
 
-  function getNextWeek() {
-    const nextWeek = new Date()
-    nextWeek.setDate(nextWeek.getDate() + 7)
-    return nextWeek
-  }
+    const getNextWeek = () => {
+      const nextWeek = new Date(today)
+      nextWeek.setDate(today.getDate() + 7)
+      return nextWeek
+    }
 
-  function getNextMonth() {
-    const nextMonth = new Date()
-    nextMonth.setMonth(nextMonth.getMonth() + 1)
-    return nextMonth
-  }
+    const getNextMonth = () => {
+      const nextMonth = new Date(today)
+      nextMonth.setMonth(today.getMonth() + 1)
+      return nextMonth
+    }
+
+    return [
+      { label: 'Šiandien', value: today },
+      { label: 'Rytoj', value: tomorrow },
+      { label: 'Šį savaitgalį', value: getNextWeekend() },
+      { label: 'Kitą savaitę', value: getNextWeek() },
+      { label: 'Kitą mėnesį', value: getNextMonth() }
+    ]
+  }, [])
 
 
-  const handleSearch = () => {
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handleSearch = useCallback(() => {
     const params = new URLSearchParams()
     
     // Add location if provided
@@ -83,17 +92,55 @@ export const HeroSection = () => {
       params.set('date', selectedDate.toISOString().split('T')[0])
     }
     
-    // Navigate to search page with parameters
-    window.location.href = `/search?${params.toString()}`
-  }
+    // Use Next.js router for better performance
+    router.push(`/search?${params.toString()}`)
+  }, [location, selectedCategory, selectedDate, router])
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch()
     }
-  }
+  }, [handleSearch])
+
+  const handleLocationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(e.target.value)
+    setShowLocationSuggestions(e.target.value.length > 0)
+  }, [])
+
+  const handleLocationFocus = useCallback(() => {
+    setShowLocationSuggestions(location.length > 0)
+  }, [location])
+
+  const handleLocationBlur = useCallback(() => {
+    setTimeout(() => setShowLocationSuggestions(false), 200)
+  }, [])
+
+  const handleDateFocus = useCallback(() => {
+    setShowDateSuggestions(!showDateSuggestions)
+  }, [showDateSuggestions])
+
+  const handleDateBlur = useCallback(() => {
+    setTimeout(() => setShowDateSuggestions(false), 200)
+  }, [])
+
+  const handleCitySelect = useCallback((city: string) => {
+    setLocation(city)
+    setShowLocationSuggestions(false)
+  }, [])
+
+  const handleDateSelect = useCallback((date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date)
+      setShowDateSuggestions(false)
+    }
+  }, [])
 
   return (
+    <>
+      
+      
+      {/* Desktop Hero Section - Hidden on mobile */}
+      <div className=" md:block">
     <section className="bg-white pt-20">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 items-center justify-center">
@@ -120,28 +167,31 @@ export const HeroSection = () => {
                     placeholder={t('landing.hero.search.wherePlaceholder')}
                     autoComplete="off"
                     value={location}
-                    onChange={(e) => {
-                      setLocation(e.target.value)
-                      setShowLocationSuggestions(e.target.value.length > 0)
-                    }}
-                    onFocus={() => setShowLocationSuggestions(location.length > 0)}
-                    onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+                    onChange={handleLocationChange}
+                    onFocus={handleLocationFocus}
+                    onBlur={handleLocationBlur}
+                    onKeyDown={handleKeyPress}
                     className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
+                    aria-describedby="location-suggestions"
                   />
                   
                   {/* Location Suggestions */}
                   {showLocationSuggestions && (
-                    <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-48 overflow-y-auto">
+                    <div 
+                      id="location-suggestions"
+                      className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-48 overflow-y-auto"
+                      role="listbox"
+                      aria-label="City suggestions"
+                    >
                       {citySuggestions
                         .filter(city => city.toLowerCase().includes(location.toLowerCase()))
                         .map((city, index) => (
                           <button
-                            key={index}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
-                            onClick={() => {
-                              setLocation(city)
-                              setShowLocationSuggestions(false)
-                            }}
+                            key={city}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none"
+                            onClick={() => handleCitySelect(city)}
+                            role="option"
+                            aria-selected={false}
                           >
                             {city}
                           </button>
@@ -182,23 +232,29 @@ export const HeroSection = () => {
                     id="date-input"
                     variant="ghost"
                     className="w-full text-lg text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
-                    onClick={() => setShowDateSuggestions(!showDateSuggestions)}
-                    onBlur={() => setTimeout(() => setShowDateSuggestions(false), 200)}
+                    onClick={handleDateFocus}
+                    onBlur={handleDateBlur}
+                    aria-describedby="date-suggestions"
+                    aria-expanded={showDateSuggestions}
                   >
                     {selectedDate ? format(selectedDate, "MMM dd") : t('landing.hero.search.datePlaceholder')}
                   </Button>
                   
                   {/* Date Suggestions */}
                   {showDateSuggestions && (
-                    <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1">
-                      {dateSuggestions.map((suggestion, index) => (
+                    <div 
+                      id="date-suggestions"
+                      className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1"
+                      role="listbox"
+                      aria-label="Date suggestions"
+                    >
+                      {dateSuggestions.map((suggestion) => (
                         <button
-                          key={index}
-                          className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors"
-                          onClick={() => {
-                            setSelectedDate(suggestion.value)
-                            setShowDateSuggestions(false)
-                          }}
+                          key={suggestion.label}
+                          className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none"
+                          onClick={() => handleDateSelect(suggestion.value)}
+                          role="option"
+                          aria-selected={false}
                         >
                           {suggestion.label}
                         </button>
@@ -208,7 +264,10 @@ export const HeroSection = () => {
                       <div className="border-t border-gray-200">
                         <Popover>
                           <PopoverTrigger asChild>
-                            <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors">
+                            <button 
+                              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors focus:bg-gray-50 focus:outline-none"
+                              aria-label="Open calendar to select custom date"
+                            >
                               Pasirinkti datą iš kalendoriaus
                             </button>
                           </PopoverTrigger>
@@ -216,12 +275,10 @@ export const HeroSection = () => {
                             <Calendar
                               mode="single"
                               selected={selectedDate}
-                              onSelect={(date) => {
-                                setSelectedDate(date)
-                                setShowDateSuggestions(false)
-                              }}
+                              onSelect={handleDateSelect}
                               disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
                               initialFocus
+                              required={false}
                             />
                           </PopoverContent>
                         </Popover>
@@ -234,8 +291,11 @@ export const HeroSection = () => {
               {/* Search Button */}
               <div className="w-full md:w-auto">
                 <button
-                  className="flex items-center justify-center w-full md:w-12 h-12 md:rounded-full rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                  className="flex items-center justify-center w-full md:w-12 h-12 md:rounded-full rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   onClick={handleSearch}
+                  onKeyDown={handleKeyPress}
+                  aria-label="Search for services"
+                  type="button"
                 >
                   <Search className="h-6 w-6 md:mr-0 mr-2" aria-hidden="true" />
                   <span className="md:hidden text-lg font-medium">Ieškoti</span>
@@ -247,38 +307,25 @@ export const HeroSection = () => {
 
           {/* Category Sections */}
           <div className="w-full space-y-12">
-            <CategorySection
-              title="Kirpyklos"
-              category="grooming"
-              limit={8}
-            />
-            
-            <CategorySection
-              title="Jūsų šuniui"
-              category="boarding"
-              limit={8}
-            />
-            
-            <CategorySection
-              title="Veterinarija"
-              category="veterinary"
-              limit={8}
-            />
-            
-            <CategorySection
-              title="Dresūra"
-              category="training"
-              limit={8}
-            />
-            
-            <CategorySection
-              title="Prižiūrėjimas"
-              category="sitting"
-              limit={8}
-            />
+            {useMemo(() => [
+              { title: "Kirpyklos", category: "grooming" },
+              { title: "Jūsų šuniui", category: "boarding" },
+              { title: "Veterinarija", category: "veterinary" },
+              { title: "Dresūra", category: "training" },
+              { title: "Prižiūrėjimas", category: "sitting" }
+            ].map((section) => (
+              <CategorySection
+                key={section.category}
+                title={section.title}
+                category={section.category}
+                limit={8}
+              />
+            )), [])}
           </div>
         </div>
       </div>
     </section>
+      </div>
+    </>
   )
 }

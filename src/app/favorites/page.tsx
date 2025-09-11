@@ -1,21 +1,29 @@
 'use client'
 
+import { useState } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
 import { useFavorites } from '@/contexts/favorites-context'
-import { Heart, Star, MapPin, Phone } from 'lucide-react'
+import { Heart, Star, MapPin, Phone, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function FavoritesPage() {
   const { user } = useAuth()
   const { favorites, loading, removeFromFavorites } = useFavorites()
+  const [removingId, setRemovingId] = useState<string | null>(null)
 
   const handleRemove = async (providerId: string) => {
-    if (!providerId) return
-    await removeFromFavorites(providerId)
+    if (!providerId || removingId) return
+    
+    setRemovingId(providerId)
+    try {
+      await removeFromFavorites(providerId)
+    } finally {
+      setRemovingId(null)
+    }
   }
 
   if (!user) return null
@@ -50,7 +58,7 @@ export default function FavoritesPage() {
             ) : (
               <div className="space-y-4">
                 {favorites.map((fav) => (
-                  <Card key={fav.id}>
+                  <Card key={`favorite-${fav.id}-${fav.provider_id}`}>
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
                         <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -58,31 +66,18 @@ export default function FavoritesPage() {
                         </div>
                         
                         <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                                {fav.provider?.business_name || 'Provider'}
-                              </h3>
-                              <p className="text-gray-600 mb-2">{fav.provider?.services?.[0] || 'Service'}</p>
-                              
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <div className="flex items-center space-x-1">
-                                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                  <span>{fav.provider?.rating ?? 0}</span>
-                                  <span>({fav.provider?.review_count ?? 0} reviews)</span>
-                                </div>
-                              </div>
-                            </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                              {fav.provider?.business_name || 'Provider'}
+                            </h3>
+                            <p className="text-gray-600 mb-2">{fav.provider?.services?.[0] || 'Service'}</p>
                             
-                            <div className="flex space-x-2">
-                              <Link href={`/providers/${fav.provider?.id || ''}`}>
-                                <Button variant="outline" size="sm">
-                                  View Profile
-                                </Button>
-                              </Link>
-                              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700" onClick={() => handleRemove(fav.provider_id)}>
-                                Remove
-                              </Button>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <div className="flex items-center space-x-1">
+                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                <span>{fav.provider?.rating ?? 0}</span>
+                                <span>({fav.provider?.review_count ?? 0} reviews)</span>
+                              </div>
                             </div>
                           </div>
                           
@@ -96,6 +91,32 @@ export default function FavoritesPage() {
                                 <Phone className="h-4 w-4" />
                                 <span>{fav.provider?.contact_info && typeof fav.provider.contact_info === 'object' && 'phone' in fav.provider.contact_info ? (fav.provider.contact_info as { phone: string }).phone : ''}</span>
                               </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 pt-3 border-t border-gray-100">
+                            <div className="flex space-x-2">
+                              <Link href={`/providers/${fav.provider?.id || ''}`}>
+                                <Button variant="outline" size="sm">
+                                  View Profile
+                                </Button>
+                              </Link>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="text-red-600 hover:text-red-700" 
+                                onClick={() => handleRemove(fav.provider_id)}
+                                disabled={removingId === fav.provider_id}
+                              >
+                                {removingId === fav.provider_id ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                                    Removing...
+                                  </>
+                                ) : (
+                                  'Remove'
+                                )}
+                              </Button>
                             </div>
                           </div>
                         </div>

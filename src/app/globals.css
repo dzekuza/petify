@@ -13,6 +13,16 @@
   display: none;
 }
 
+/* Hide pagination dots */
+.pagination-dots,
+[class*="pagination"],
+[class*="dots"],
+.carousel-indicators,
+.slider-dots,
+.flex.justify-center.mt-4.space-x-2 button[class*="w-2 h-2 rounded-full"] {
+  display: none !important;
+}
+
 /* Satoshi Font Family */
 @font-face {
   font-family: 'Satoshi';

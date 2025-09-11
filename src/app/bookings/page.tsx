@@ -121,7 +121,7 @@ export default function BookingsPage() {
             </div>
 
             {/* Filters */}
-            <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mb-6 grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-gray-600">Filtruoti pagal augintinį</label>
                 <Select value={selectedPetId} onValueChange={setSelectedPetId}>

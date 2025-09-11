@@ -9,8 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import { SearchFilters as SearchFiltersType, ServiceCategory, Pet } from '@/types'
 import { Filter, X, User, ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { petsApi } from '@/lib/pets'
-import { providerApi } from '@/lib/providers'
 import {
   Drawer,
   DrawerContent,
@@ -35,15 +33,13 @@ interface MobileFilterDrawerProps {
   onFiltersChange: (filters: SearchFiltersType) => void
   userPets: Pet[]
   loadingPets: boolean
-  locationSuggestions: any[]
 }
 
 export const MobileFilterDrawer = ({ 
   filters, 
   onFiltersChange, 
   userPets, 
-  loadingPets, 
-  locationSuggestions 
+  loadingPets
 }: MobileFilterDrawerProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const { user } = useAuth()
@@ -130,7 +126,7 @@ export const MobileFilterDrawer = ({
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Visos paslaugos" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[200]">
                 <SelectItem value="all">Visos paslaugos</SelectItem>
                 {serviceCategories.map((category) => (
                   <SelectItem key={category.value} value={category.value}>
@@ -172,7 +168,7 @@ export const MobileFilterDrawer = ({
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[200]">
                 <SelectItem value="5">Per 5 km</SelectItem>
                 <SelectItem value="10">Per 10 km</SelectItem>
                 <SelectItem value="25">Per 25 km</SelectItem>
@@ -193,7 +189,7 @@ export const MobileFilterDrawer = ({
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[200]">
                 <SelectItem value="all">Visi gyvūnai</SelectItem>
                 {userPets.map((pet) => (
                   <SelectItem key={pet.id} value={pet.id}>
@@ -248,7 +244,7 @@ export const MobileFilterDrawer = ({
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[200]">
                 <SelectItem value="0">Bet koks įvertinimas</SelectItem>
                 <SelectItem value="3">3+ žvaigždutės</SelectItem>
                 <SelectItem value="4">4+ žvaigždutės</SelectItem>
@@ -264,7 +260,7 @@ export const MobileFilterDrawer = ({
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[200]">
                 <SelectItem value="relevance">Reikšmingumą</SelectItem>
                 <SelectItem value="rating">Įvertinimą</SelectItem>
                 <SelectItem value="price-low">Kainą: nuo žemiausios</SelectItem>

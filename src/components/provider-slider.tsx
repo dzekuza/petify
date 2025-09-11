@@ -118,7 +118,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
     try {
       await toggleFavorite(providerId)
     } catch (error) {
-      console.error('Error toggling favorite:', error)
+      // Error handling - could be logged to monitoring service in production
     } finally {
       setTogglingFavorites(prev => {
         const newSet = new Set(prev)
@@ -201,8 +201,8 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
               className="flex-shrink-0 group cursor-pointer"
               style={{ 
                 width: isMobile 
-                  ? 'calc(100% - 1rem)' 
-                  : `calc((60% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
+                  ? 'calc(80% - 1rem)' 
+                  : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
               }}
             >
               <Link href={`/providers/${provider.id}`}>
@@ -256,7 +256,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                   {/* Card Content - No top/bottom padding */}
                   <CardContent className="px-4 pt-4 pb-0">
                     {/* Business Name */}
-                    <CardTitle className="text-sm mb-1">
+                    <CardTitle className="text-sm mb-1 truncate">
                       {provider.businessName}
                     </CardTitle>
 
@@ -291,24 +291,6 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
         })}
       </div>
 
-      {/* Dots Indicator */}
-      {providers.length > itemsPerView && (
-        <div className="flex justify-center mt-4 space-x-2">
-          {Array.from({ length: Math.ceil(providers.length / itemsPerView) }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setCurrentIndex(index)
-                scrollToIndex(index)
-              }}
-              className={cn(
-                "w-2 h-2 rounded-full transition-all duration-200",
-                currentIndex === index ? "bg-gray-900" : "bg-gray-300"
-              )}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 })

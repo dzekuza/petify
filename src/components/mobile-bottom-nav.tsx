@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Search, Heart, Calendar, User } from 'lucide-react'
+import { Home, Search, Heart, Calendar, User, MessageCircle } from 'lucide-react'
 
 // Mobile bottom navigation with main app sections
 export function MobileBottomNav() {
@@ -14,8 +14,10 @@ export function MobileBottomNav() {
   if (isProviderRoute) return null
 
   const items = [
+    { id: 'home', name: 'Pradžia', href: '/', icon: Home },
     { id: 'search', name: 'Paieška', href: '/search', icon: Search },
     { id: 'favorites', name: 'Mėgstami', href: '/favorites', icon: Heart },
+    { id: 'chat', name: 'Pokalbiai', href: '/chat', icon: MessageCircle },
     { id: 'bookings', name: 'Rezervacijos', href: '/bookings', icon: Calendar },
     { id: 'profile', name: 'Profilis', href: '/profile', icon: User },
   ]
@@ -26,9 +28,12 @@ export function MobileBottomNav() {
       role="navigation"
       aria-label="Main navigation"
     >
-      <ul className="grid grid-cols-4 items-stretch px-4 py-2">
+      <ul className="grid grid-cols-6 items-stretch px-4 py-2">
         {items.map(item => {
-          const isActive = pathname === item.href || (item.id === 'search' && pathname?.startsWith('/search'))
+          const isActive = pathname === item.href || 
+            (item.id === 'search' && pathname?.startsWith('/search')) ||
+            (item.id === 'home' && pathname === '/') ||
+            (item.id === 'chat' && pathname?.startsWith('/chat'))
           const IconComponent = item.icon
           return (
             <li key={item.id} className="min-w-0">

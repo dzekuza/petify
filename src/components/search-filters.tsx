@@ -119,7 +119,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Visos paslaugos" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[200]">
                       <SelectItem value="all">Visos paslaugos</SelectItem>
                       {serviceCategories.map((category) => (
                         <SelectItem key={category.value} value={category.value}>
@@ -149,7 +149,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[200]">
                       <SelectItem value="5">Per 5 km</SelectItem>
                       <SelectItem value="10">Per 10 km</SelectItem>
                       <SelectItem value="25">Per 25 km</SelectItem>
@@ -170,7 +170,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[200]">
                       <SelectItem value="all">Visi gyvūnai</SelectItem>
                       {userPets.map((pet) => (
                         <SelectItem key={pet.id} value={pet.id}>
@@ -200,7 +200,6 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                   onFiltersChange={onFiltersChange}
                   userPets={userPets}
                   loadingPets={loadingPets}
-                  locationSuggestions={locationSuggestions}
                 />
               ) : (
                 <Button
@@ -264,7 +263,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[200]">
                       <SelectItem value="0">Bet koks įvertinimas</SelectItem>
                       <SelectItem value="3">3+ žvaigždutės</SelectItem>
                       <SelectItem value="4">4+ žvaigždutės</SelectItem>
@@ -280,7 +279,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[200]">
                       <SelectItem value="relevance">Reikšmingumą</SelectItem>
                       <SelectItem value="rating">Įvertinimą</SelectItem>
                       <SelectItem value="price-low">Kainą: nuo žemiausios</SelectItem>

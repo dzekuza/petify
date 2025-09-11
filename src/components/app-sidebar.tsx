@@ -8,6 +8,7 @@ import {
   Frame,
   LifeBuoy,
   Map,
+  MessageCircle,
   PieChart,
   Send,
   Settings2,
@@ -218,6 +219,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Link href="/provider/dashboard/bookings">
                     <Bot />
                     <span>{t('navigation.bookings')}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/provider/dashboard/chat">
+                    <MessageCircle />
+                    <span>Customer Messages</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

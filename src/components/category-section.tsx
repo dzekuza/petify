@@ -7,7 +7,7 @@ import { ProviderSlider } from '@/components/provider-slider'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronRightIcon } from 'lucide-react'
 
 interface CategorySectionProps {
   title: string
@@ -52,7 +52,7 @@ export const CategorySection = ({
         
         setProviders(transformedProviders)
       } catch (err) {
-        console.error(`Error fetching ${category} providers:`, err)
+        // Error handling - could be logged to monitoring service in production
         setError('Failed to load providers')
         setProviders([])
       } finally {
@@ -135,14 +135,6 @@ export const CategorySection = ({
       <div className={cn("w-full", className)}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          {showViewAll && (
-            <Link 
-              href={`/search?category=${category}`}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Peržiūrėti visus →
-            </Link>
-          )}
         </div>
         <div className="flex gap-6">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -164,7 +156,13 @@ export const CategorySection = ({
       {/* Header */}
       <div className="flex items-center justify-between w-full mb-6">
         <div className="flex items-center space-x-6 flex-1">
-          <h2 className="text-2xl font-bold text-gray-900 flex-1">{title}</h2>
+          <Link 
+            href={`/search?category=${category}`}
+            className="flex items-center space-x-2 text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors flex-1"
+          >
+            <span>{title}</span>
+            <ChevronRightIcon className="h-5 w-5" />
+          </Link>
           {/* Navigation Buttons - Only show if there are more items than can fit */}
           {providers.length > itemsPerView && (
             <div className="flex items-center space-x-2">
@@ -195,17 +193,6 @@ export const CategorySection = ({
       {/* Provider Slider */}
       <ProviderSlider providers={providers} showNavigation={false} ref={sliderRef} />
 
-      {/* View All Link - Positioned under the grid to the right */}
-      {showViewAll && (
-        <div className="flex justify-end mt-4">
-          <Link 
-            href={`/search?category=${category}`}
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            Peržiūrėti visus →
-          </Link>
-        </div>
-      )}
     </div>
   )
 }
