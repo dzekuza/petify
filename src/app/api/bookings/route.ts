@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
-import { sendBookingConfirmationEmail } from '@/lib/email'
+import { sendBookingConfirmationEmail, sendOrderDetailsEmail, sendProviderNotificationEmail } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
   try {
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
       .select(`
         *,
         customer:users!customer_id(id, full_name, email, phone),
-        provider:providers(id, business_name, user_id),
+        provider:providers(id, business_name, user_id, contact_phone, contact_email, address),
         service:services(id, name, price, description),
         pet:pets(id, name, species, breed, age)
       `)
@@ -176,9 +176,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send confirmation email to customer
+    // Send comprehensive order details email to customer
     if (booking.customer?.email && booking.provider && booking.service && booking.pet) {
       try {
+        // Send the detailed order confirmation email
         await sendBookingConfirmationEmail(booking.customer.email, {
           customerName: booking.customer.full_name || 'Valued Customer',
           providerName: booking.provider.business_name,
@@ -195,8 +196,66 @@ export async function POST(request: NextRequest) {
           notes: booking.special_instructions,
           bookingId: booking.id
         })
+
+        // Send comprehensive order details email
+        await sendOrderDetailsEmail(booking.customer.email, {
+          customerName: booking.customer.full_name || 'Valued Customer',
+          customerEmail: booking.customer.email,
+          providerName: booking.provider.business_name,
+          providerEmail: booking.provider.contact_email || '',
+          serviceName: booking.service.name,
+          serviceDescription: booking.service.description || '',
+          bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          bookingTime: `${booking.start_time} - ${booking.end_time}`,
+          totalPrice: parseFloat(booking.total_price),
+          petName: booking.pet.name,
+          petSpecies: booking.pet.species || '',
+          petBreed: booking.pet.breed || '',
+          notes: booking.special_instructions,
+          bookingId: booking.id,
+          status: 'pending' as const,
+          providerContact: {
+            phone: booking.provider.contact_phone || '',
+            email: booking.provider.contact_email || '',
+            address: booking.provider.address || ''
+          }
+        })
       } catch (emailError) {
-        console.error('Failed to send booking confirmation email:', emailError)
+        console.error('Failed to send customer emails:', emailError)
+        // Don't fail the entire request if email fails
+      }
+    }
+
+    // Send notification email to provider
+    if (booking.provider?.contact_email && booking.customer && booking.service && booking.pet) {
+      try {
+        await sendProviderNotificationEmail(booking.provider.contact_email, {
+          providerName: booking.provider.business_name,
+          customerName: booking.customer.full_name || 'Valued Customer',
+          customerEmail: booking.customer.email,
+          customerPhone: booking.customer.phone || '',
+          serviceName: booking.service.name,
+          bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          bookingTime: `${booking.start_time} - ${booking.end_time}`,
+          totalPrice: parseFloat(booking.total_price),
+          petName: booking.pet.name,
+          petSpecies: booking.pet.species || '',
+          petBreed: booking.pet.breed || '',
+          notes: booking.special_instructions,
+          bookingId: booking.id
+        })
+      } catch (emailError) {
+        console.error('Failed to send provider notification email:', emailError)
         // Don't fail the entire request if email fails
       }
     }

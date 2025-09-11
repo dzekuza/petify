@@ -313,7 +313,7 @@ export const MapboxMap = ({
           >
             <div className="w-72 bg-white rounded-xl shadow-xl overflow-hidden">
               {/* Cover Image Section */}
-              <div className="relative h-32 w-full overflow-hidden">
+              <div className="relative aspect-video w-full overflow-hidden">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
                   <div className="relative w-full h-full">
                     {selectedResult.provider.images.map((image, index) => (
@@ -405,7 +405,7 @@ export const MapboxMap = ({
                   </div>
                   <div className="flex items-center">
                     <Users className="h-3 w-3 mr-1" />
-                    {selectedResult.provider.experience}y exp
+                    {selectedResult.provider.experience} {t('search.yearsExperience')}
                   </div>
                 </div>
                 
@@ -413,7 +413,7 @@ export const MapboxMap = ({
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-gray-900">
                     {formatPrice(selectedResult.provider.priceRange)}
-                    <span className="text-xs font-normal text-gray-600 ml-1">service</span>
+                    <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
                   </div>
                   
                   {/* Action Buttons */}
@@ -423,7 +423,7 @@ export const MapboxMap = ({
                       variant="outline" 
                       className="text-xs px-2 py-1 h-6"
                     >
-                      View
+                      {t('search.viewProfile')}
                     </Button>
                     <Button 
                       size="sm" 
@@ -492,14 +492,14 @@ export const MapboxMap = ({
                   </div>
                   <div className="flex items-center">
                     <Users className="h-3 w-3 mr-1" />
-                    {selectedResult.provider.experience}y
+                    {selectedResult.provider.experience} {t('search.yearsExperience')}
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-gray-900">
                     {formatPrice(selectedResult.provider.priceRange)}
-                    <span className="text-xs font-normal text-gray-600 ml-1">service</span>
+                    <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
                   </div>
                   
                   <div className="flex items-center">

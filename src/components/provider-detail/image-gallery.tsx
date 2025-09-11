@@ -64,15 +64,67 @@ export function ImageGallery({
 
   if (!provider.images || provider.images.length === 0) {
     return (
-      <div className={`${isMobile ? 'h-[50vh] sm:h-[60vh]' : 'h-[400px]'} bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center rounded-2xl`}>
+      <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center rounded-2xl">
         <span className="text-6xl">✂️</span>
+      </div>
+    )
+  }
+
+  // If only one image, show as cover image with 16:9 aspect ratio
+  if (provider.images.length === 1) {
+    return (
+      <div className={`${isMobile ? 'aspect-video' : 'aspect-video'} relative overflow-hidden rounded-2xl`}>
+        <Image
+          src={provider.images[0]}
+          alt={`${provider.businessName} - Cover Image`}
+          fill
+          className="object-cover"
+          priority
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+            const fallback = e.currentTarget.nextElementSibling as HTMLElement
+            if (fallback) {
+              fallback.style.display = 'flex'
+            }
+          }}
+        />
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200" style={{ display: 'none' }}>
+          <span className="text-6xl">✂️</span>
+        </div>
+        
+        {/* Overlay Controls for single image */}
+        <div className="absolute inset-0 bg-black/20">
+          {/* Top Controls */}
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+            <button
+              onClick={onBack}
+              className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={onToggleFavorite}
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
+              </button>
+              <button 
+                onClick={onShare}
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+              >
+                <Share2 className="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 
   if (isMobile) {
     return (
-      <div className="relative h-[50vh] sm:h-[60vh] overflow-hidden">
+      <div className="relative aspect-video overflow-hidden">
         <div className="relative w-full h-full">
           {provider.images.map((image, index) => (
             <div
@@ -184,9 +236,9 @@ export function ImageGallery({
     )
   }
 
-  // Desktop layout
+  // Desktop layout - Gallery with multiple images
   return (
-    <div className="grid grid-cols-4 gap-2 h-[400px]">
+    <div className="grid grid-cols-4 gap-2 aspect-video">
       {/* Main large image */}
       <div className="col-span-2 row-span-2 relative overflow-hidden rounded-2xl">
         <Image

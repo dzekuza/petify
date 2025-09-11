@@ -63,8 +63,8 @@ export const FeaturedProviders = () => {
           {featuredProviders.map((provider) => (
             <Card key={provider.id} className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
               <div className="relative">
-                <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-t-lg overflow-hidden">
-                  <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                <div className="aspect-video bg-gray-200 rounded-t-lg overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                     <span className="text-gray-500 text-sm">Provider Image</span>
                   </div>
                 </div>

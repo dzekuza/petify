@@ -207,10 +207,49 @@ export const dashboardApi = {
         throw error
       }
 
+      // Transform the provider data to include media URLs
+      if (provider) {
+        // For now, we'll use the existing images array and avatar_url
+        // In the future, you might want to add specific logo_url, cover_image_url, gallery_images fields
+        const transformedProvider = {
+          ...provider,
+          // Map existing fields to expected structure
+          logo_url: provider.avatar_url || null,
+          cover_image_url: provider.images && provider.images.length > 0 ? provider.images[0] : null,
+          gallery_images: provider.images && provider.images.length > 1 ? provider.images.slice(1) : [],
+          // Keep original fields for backward compatibility
+          images: provider.images || [],
+          avatar_url: provider.avatar_url || null
+        }
+        return transformedProvider
+      }
+
       return provider
     } catch (error) {
       console.error('Error in getProviderByUserId:', error)
       throw error
+    }
+  },
+
+  // Update provider data
+  async updateProvider(providerId: string, updateData: any) {
+    try {
+      const { data, error } = await supabase
+        .from('providers')
+        .update(updateData)
+        .eq('id', providerId)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error updating provider:', error)
+        throw error
+      }
+
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error in updateProvider:', error)
+      return { data: null, error }
     }
   }
 }

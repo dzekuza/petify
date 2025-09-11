@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ServiceProvider, Service, Review, PetAd } from '@/types'
+import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { ImageGallery } from './image-gallery'
 import { ProviderInfo } from './provider-info'
@@ -11,6 +11,8 @@ interface MobileLayoutProps {
   services: Service[]
   reviews: Review[]
   petAd?: PetAd | null
+  userPets: Pet[]
+  onPetsUpdate: (pets: Pet[]) => void
   isFavorite: boolean
   onToggleFavorite: () => void
   onShare: () => void
@@ -23,6 +25,8 @@ export function MobileLayout({
   services,
   reviews,
   petAd,
+  userPets,
+  onPetsUpdate,
   isFavorite,
   onToggleFavorite,
   onShare,
@@ -66,6 +70,8 @@ export function MobileLayout({
               services={services} 
               reviews={reviews} 
               petAd={petAd}
+              userPets={userPets}
+              onPetsUpdate={onPetsUpdate}
               isMobile={true}
               onBookService={(serviceId) => onBookService(serviceId)}
             />

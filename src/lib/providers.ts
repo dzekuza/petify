@@ -411,6 +411,79 @@ export const providerApi = {
     }
   },
 
+  // Get provider by ID
+  async getProviderById(providerId: string) {
+    try {
+      console.log('Fetching provider with ID:', providerId)
+      const { data: provider, error } = await supabase
+        .from('providers')
+        .select('*')
+        .eq('id', providerId)
+        .single()
+
+      if (error) {
+        console.error('Error fetching provider:', error)
+        console.error('Provider ID that failed:', providerId)
+        throw error
+      }
+
+      console.log('Provider data fetched:', provider)
+      
+      if (!provider) {
+        console.error('Provider not found for ID:', providerId)
+        return null
+      }
+
+      // Transform provider data to match ServiceProvider interface
+      return {
+        id: provider.id,
+        userId: provider.user_id,
+        businessName: provider.business_name,
+        description: provider.description,
+        services: provider.services || [],
+        location: {
+          address: provider.location?.address || '',
+          city: provider.location?.city || '',
+          state: provider.location?.state || '',
+          zipCode: provider.location?.zip || '',
+          coordinates: {
+            lat: provider.location?.coordinates?.lat || 0,
+            lng: provider.location?.coordinates?.lng || 0
+          }
+        },
+        rating: provider.rating || 0,
+        reviewCount: provider.review_count || 0,
+        priceRange: {
+          min: provider.price_range?.min || 0,
+          max: provider.price_range?.max || 100
+        },
+        availability: provider.availability || {
+          monday: [],
+          tuesday: [],
+          wednesday: [],
+          thursday: [],
+          friday: [],
+          saturday: [],
+          sunday: []
+        },
+        certifications: provider.certifications || [],
+        experience: provider.experience_years || 0,
+        images: provider.images || [],
+        avatarUrl: provider.avatar_url,
+        isVerified: provider.is_verified || false,
+        status: provider.status || 'active',
+        businessType: provider.business_type || 'individual',
+        contactInfo: provider.contact_info || {},
+        businessHours: provider.business_hours || {},
+        createdAt: provider.created_at,
+        updatedAt: provider.updated_at
+      }
+    } catch (error) {
+      console.error('Error in getProviderById:', error)
+      throw error
+    }
+  },
+
   // Search providers with filters and services
   async searchProviders(filters?: {
     category?: string
@@ -430,8 +503,8 @@ export const providerApi = {
         .select('*')
         .eq('status', 'active')
       
-      // Only filter by verification if explicitly requested (default to true for public search)
-      if (filters?.verifiedOnly !== false) {
+      // Only filter by verification if explicitly requested (default to show all active providers)
+      if (filters?.verifiedOnly === true) {
         query = query.eq('is_verified', true)
       }
 
@@ -454,17 +527,27 @@ export const providerApi = {
 
       const { data: providers, error } = await query
 
-
       if (error) {
         // Error searching providers
         throw error
+      }
+
+      // Apply location filter after getting providers
+      let filteredProviders = providers || []
+      
+      if (filters?.location && filters.location.trim()) {
+        const searchLocation = filters.location.toLowerCase().trim()
+        filteredProviders = filteredProviders.filter(provider => {
+          if (!provider.location?.city) return false
+          return provider.location.city.toLowerCase().includes(searchLocation)
+        })
       }
 
       // Found providers
 
       // Transform snake_case to camelCase and add services
       const transformedProviders = await Promise.all(
-        (providers || []).map(async (provider) => {
+        filteredProviders.map(async (provider) => {
           // Fetch services for this provider from the services table (if any)
           const { data: services } = await supabase
             .from('services')
@@ -581,6 +664,52 @@ export const providerApi = {
     } catch (error) {
       // Error in getProviderAvailability
       throw error
+    }
+  },
+
+  // Get unique locations from all providers for autocomplete
+  async getProviderLocations() {
+    try {
+      const { data: providers, error } = await supabase
+        .from('providers')
+        .select('location')
+        .eq('status', 'active')
+
+      if (error) {
+        throw error
+      }
+
+      // Extract unique cities and create location suggestions
+      const locationMap = new Map<string, { name: string; city: string; coordinates: { lat: number; lng: number } }>()
+      
+      providers?.forEach(provider => {
+        if (provider.location?.city && provider.location?.coordinates) {
+          const city = provider.location.city
+          const key = city.toLowerCase()
+          
+          if (!locationMap.has(key)) {
+            locationMap.set(key, {
+              name: city,
+              city: city,
+              coordinates: {
+                lat: provider.location.coordinates.lat,
+                lng: provider.location.coordinates.lng
+              }
+            })
+          }
+        }
+      })
+
+      // Convert to array and sort alphabetically
+      return Array.from(locationMap.values())
+        .map((location, index) => ({
+          id: `location-${index}`,
+          ...location
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    } catch (error) {
+      console.error('Error getting provider locations:', error)
+      return []
     }
   }
 }

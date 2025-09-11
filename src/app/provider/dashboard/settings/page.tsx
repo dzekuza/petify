@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ProtectedRoute } from '@/components/protected-route'
 import { BusinessSettings } from '@/components/provider-dashboard/business-settings'
+import { GeneralBusinessInfo } from '@/components/provider-dashboard/general-business-info'
 import { dashboardApi } from '@/lib/dashboard'
 import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -41,14 +42,62 @@ export default function BusinessSettingsPage() {
   }, [user?.id])
 
   const handleUpdate = async (newSettings: Record<string, any>) => {
-    if (!user?.id) return
+    if (!user?.id || !providerData?.id) return
 
     try {
       setSaving(true)
       
-      // Here you would typically save to your API
-      // For now, we'll just update the local state
-      setProviderData((prev: Record<string, any> | null) => ({ ...prev, ...newSettings }))
+      // Prepare the data for saving
+      const updateData: any = {
+        business_name: newSettings.businessName,
+        description: newSettings.businessDescription,
+        contact_info: {
+          phone: newSettings.phone,
+          email: newSettings.email,
+          website: newSettings.website
+        },
+        location: {
+          address: newSettings.address,
+          city: newSettings.city,
+          state: newSettings.state,
+          zip_code: newSettings.zipCode,
+          country: newSettings.country
+        },
+        business_hours: newSettings.business_hours
+      }
+
+      // Handle media uploads if they exist
+      if (newSettings.logo) {
+        // TODO: Upload logo to storage and get URL
+        // For now, we'll just update the avatar_url field
+        updateData.avatar_url = newSettings.logo_url
+      }
+
+      if (newSettings.cover_image) {
+        // TODO: Upload cover image to storage and get URL
+        // For now, we'll update the images array
+        const existingImages = providerData.images || []
+        const newImages = [newSettings.cover_image_url, ...existingImages.slice(1)]
+        updateData.images = newImages
+      }
+
+      if (newSettings.gallery_images && newSettings.gallery_images.length > 0) {
+        // TODO: Upload gallery images to storage and get URLs
+        // For now, we'll update the images array
+        const existingImages = providerData.images || []
+        const newImages = [existingImages[0], ...newSettings.gallery_image_urls]
+        updateData.images = newImages
+      }
+
+      // Save to database
+      const { data, error } = await dashboardApi.updateProvider(providerData.id, updateData)
+      
+      if (error) {
+        throw error
+      }
+
+      // Update local state
+      setProviderData((prev: Record<string, any> | null) => ({ ...prev, ...updateData }))
       setLastSaved(new Date())
       
       toast.success('Settings saved successfully!')
@@ -107,72 +156,15 @@ export default function BusinessSettingsPage() {
           />
         )}
 
-        {/* Additional Settings */}
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>General Business Information</CardTitle>
-              <CardDescription>
-                Update your basic business information
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Business Name
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue={providerData?.business_name || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Business Type
-                    </label>
-                    <input
-                      type="text"
-                      value={businessType}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Business Description
-                  </label>
-                  <textarea
-                    defaultValue={providerData?.description || ''}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <Button 
-                  disabled={saving}
-                  className="w-full md:w-auto"
-                >
-                  {saving ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save General Settings
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* General Business Information */}
+        {providerData && (
+          <div className="mt-8">
+            <GeneralBusinessInfo
+              providerData={providerData}
+              onUpdate={handleUpdate}
+            />
+          </div>
+        )}
       </>
     </ProtectedRoute>
   )

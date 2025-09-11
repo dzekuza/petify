@@ -127,7 +127,7 @@ export const ProviderCard = ({
     <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden", className)}>
       {/* Image Section */}
       <div className="relative">
-        <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 overflow-hidden">
+        <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
           {!imageError && provider.images[0] ? (
             <Image
               src={provider.images[0]}

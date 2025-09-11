@@ -20,8 +20,6 @@ import {
 } from 'lucide-react'
 import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
-import { BusinessTypeHeader, BusinessSpecificWidget } from '@/components/provider-dashboard/business-widgets'
-import { BusinessQuickActions } from '@/components/provider-dashboard/business-navigation'
 
 // Remove duplicate interfaces since they're now imported from dashboard.ts
 
@@ -222,31 +220,6 @@ export default function ProviderDashboard() {
               </Card>
             </div>
 
-            {/* Business Type Header */}
-            {businessType && (
-              <div className="mb-8">
-                <BusinessTypeHeader businessType={businessType} />
-              </div>
-            )}
-
-            {/* Business-Specific Widgets */}
-            {businessType && (
-              <div className="mb-8">
-                <BusinessSpecificWidget 
-                  businessType={businessType} 
-                  stats={stats} 
-                  providerData={providerData} 
-                />
-              </div>
-            )}
-
-            {/* Quick Actions */}
-            {businessType && (
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-                <BusinessQuickActions businessType={businessType} />
-              </div>
-            )}
 
             {/* Recent Bookings */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

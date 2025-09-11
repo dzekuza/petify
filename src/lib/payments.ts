@@ -1,4 +1,6 @@
 import { stripe, formatAmountForStripe, STRIPE_CONFIG } from './stripe'
+import { createSupabaseAdmin } from './supabase'
+import { sendPaymentConfirmationEmail } from './email'
 import type { Booking } from '@/types'
 
 export interface PaymentIntentData {
@@ -150,13 +152,65 @@ export const handlePaymentSucceeded = async (paymentIntent: { id: string; status
       throw new Error('No booking ID found in payment intent metadata')
     }
 
-    // Here you would typically update your database to mark the booking as paid
-    // For now, we'll just log the successful payment
     console.log(`Payment succeeded for booking ${bookingId}:`, {
       paymentIntentId: paymentIntent.id,
       amount: (paymentIntent as any).amount,
       currency: (paymentIntent as any).currency,
     })
+
+    // Update booking status to paid and get booking details
+    const supabaseAdmin = createSupabaseAdmin()
+    const { data: booking, error: bookingError } = await supabaseAdmin
+      .from('bookings')
+      .update({ 
+        payment_status: 'paid',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+      .select(`
+        *,
+        customer:users!customer_id(id, full_name, email, phone),
+        provider:providers(id, business_name, user_id, contact_phone, contact_email, address),
+        service:services(id, name, price, description),
+        pet:pets(id, name, species, breed, age)
+      `)
+      .single()
+
+    if (bookingError) {
+      console.error('Error updating booking payment status:', bookingError)
+      // Don't fail the webhook if we can't update the booking
+    }
+
+    // Send payment confirmation email to customer
+    if (booking?.customer?.email && booking.provider && booking.service && booking.pet) {
+      try {
+        const amount = (paymentIntent as any).amount / 100 // Convert from cents
+        const currency = (paymentIntent as any).currency
+        
+        await sendPaymentConfirmationEmail(booking.customer.email, {
+          customerName: booking.customer.full_name || 'Valued Customer',
+          serviceName: booking.service.name,
+          providerName: booking.provider.business_name,
+          bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          bookingTime: `${booking.start_time} - ${booking.end_time}`,
+          totalAmount: amount,
+          paymentMethod: 'Card Payment', // You could get this from payment intent if needed
+          transactionId: paymentIntent.id,
+          bookingId: booking.id,
+          petName: booking.pet.name
+        })
+
+        console.log(`Payment confirmation email sent to ${booking.customer.email}`)
+      } catch (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError)
+        // Don't fail the webhook if email fails
+      }
+    }
 
     return { success: true, bookingId }
   } catch (error) {

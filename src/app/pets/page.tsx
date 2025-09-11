@@ -61,7 +61,7 @@ export default function PetsPage() {
     if (user) {
       fetchPets()
     }
-  }, [user, fetchPets])
+  }, [user, fetchPets]) // Include fetchPets but it's memoized with useCallback
 
   if (!user) return null
 

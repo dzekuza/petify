@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/drawer'
 import { ListingsGrid } from '@/components/listings-grid'
 import { PetAdsGrid } from '@/components/pet-ads-grid'
+import { SearchFilters as SearchFiltersComponent } from '@/components/search-filters'
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
@@ -172,7 +173,7 @@ function SearchPageContent() {
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
           {/* Fixed trigger button - only show when drawer is closed */}
           {!isDrawerOpen && (
-            <div className="fixed bottom-16 left-0 right-0 h-16 bg-background border-t shadow-lg pointer-events-auto z-[90]">
+            <div className="fixed bottom-24 left-0 right-0 h-16 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
               <DrawerTrigger asChild>
                 <button
                   className="w-full h-full cursor-pointer"
@@ -189,17 +190,6 @@ function SearchPageContent() {
                           t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
                         )}
                       </DrawerTitle>
-                      <DrawerDescription className="text-sm text-gray-600 mt-1">
-                        {loading ? (
-                          <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
-                        ) : (
-                          filters.category === 'adoption' ? (
-                            `Showing ${Math.min(petAds.length, 12)} pets`
-                          ) : (
-                            t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())
-                          )
-                        )}
-                      </DrawerDescription>
                     </div>
                   </DrawerHeader>
                 </button>
@@ -218,19 +208,17 @@ function SearchPageContent() {
                   t('search.overProviders', 'Over {count} providers').replace('{count}', results.length.toString())
                 )}
               </DrawerTitle>
-              <DrawerDescription>
-                {loading ? (
-                  <span className="inline-block animate-pulse bg-gray-200 h-4 w-48 rounded"></span>
-                ) : (
-                  filters.category === 'adoption' ? (
-                    `Showing ${Math.min(petAds.length, 12)} pets`
-                  ) : (
-                    t('search.showingProviders', 'Showing {count} providers').replace('{count}', Math.min(results.length, 12).toString())
-                  )
-                )}
-              </DrawerDescription>
             </DrawerHeader>
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
+            
+            {/* Mobile Filters */}
+            <div className="px-4 pb-4">
+              <SearchFiltersComponent 
+                filters={filters} 
+                onFiltersChange={handleFiltersChange} 
+              />
+            </div>
+            
+            <div className="flex-1 overflow-y-auto px-4 pb-32">
               {loading ? (
                 <div className="space-y-4">
                   {[...Array(6)].map((_, i) => (

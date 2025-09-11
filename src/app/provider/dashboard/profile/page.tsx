@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { ImageUpload } from '@/components/ui/image-upload'
 import { useAuth } from '@/contexts/auth-context'
 import { useDeviceDetection } from '@/lib/device-detection'
+import { supabase } from '@/lib/supabase'
 import { User, Mail, Calendar, MapPin, Phone, Building, Star, CheckCircle } from 'lucide-react'
 
 interface ProviderProfile {
@@ -121,23 +122,44 @@ export default function ProviderProfilePage() {
         formData.append('profileImage', profileImage)
       }
 
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        throw new Error('No active session')
+      }
+
+      console.log('Session token:', session.access_token ? 'Present' : 'Missing')
+      console.log('User ID:', session.user?.id)
+
       // Update profile via API
       const response = await fetch('/api/providers/update-profile', {
         method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
         body: formData,
       })
       
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+      
       if (!response.ok) {
-        throw new Error('Failed to update profile')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update profile')
       }
       
       const updatedProfile = await response.json()
       setProfile(updatedProfile)
       setEditProfileOpen(false)
       setProfileImage(null)
+      
+      // Show success message
+      alert('Profile updated successfully!')
     } catch (error) {
       console.error('Error updating profile:', error)
-      alert('Failed to update profile. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Failed to update profile: ${errorMessage}`)
     }
   }
 
@@ -401,7 +423,7 @@ export default function ProviderProfilePage() {
                         maxSize={5}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="businessName">Verslo pavadinimas</Label>
                       <Input
                         id="businessName"
@@ -409,7 +431,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="businessType">Verslo tipas</Label>
                       <Input
                         id="businessType"
@@ -417,7 +439,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, businessType: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="description">Aprašymas</Label>
                       <Input
                         id="description"
@@ -425,7 +447,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="address">Adresas</Label>
                       <Input
                         id="address"
@@ -433,7 +455,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, address: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="phone">Telefonas</Label>
                       <Input
                         id="phone"
@@ -441,7 +463,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="email">El. paštas</Label>
                       <Input
                         id="email"
@@ -450,7 +472,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="website">Svetainė</Label>
                       <Input
                         id="website"
@@ -495,7 +517,7 @@ export default function ProviderProfilePage() {
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="businessName">Verslo pavadinimas</Label>
                       <Input
                         id="businessName"
@@ -503,7 +525,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="businessType">Verslo tipas</Label>
                       <Input
                         id="businessType"
@@ -512,7 +534,7 @@ export default function ProviderProfilePage() {
                       />
                     </div>
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="description">Aprašymas</Label>
                     <Input
                       id="description"
@@ -520,7 +542,7 @@ export default function ProviderProfilePage() {
                       onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="address">Adresas</Label>
                     <Input
                       id="address"
@@ -529,7 +551,7 @@ export default function ProviderProfilePage() {
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="phone">Telefonas</Label>
                       <Input
                         id="phone"
@@ -537,7 +559,7 @@ export default function ProviderProfilePage() {
                         onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="email">El. paštas</Label>
                       <Input
                         id="email"
@@ -547,7 +569,7 @@ export default function ProviderProfilePage() {
                       />
                     </div>
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="website">Svetainė</Label>
                     <Input
                       id="website"

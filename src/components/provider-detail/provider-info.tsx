@@ -1,23 +1,51 @@
 'use client'
 
 import { Star, Clock, Users, PawPrint, Euro } from 'lucide-react'
-import { ServiceProvider, Service, Review, PetAd } from '@/types'
+import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
+import { QuickBookingDialog } from './quick-booking-dialog'
+import { useState } from 'react'
 
 interface ProviderInfoProps {
   provider: ServiceProvider
   services: Service[]
   reviews: Review[]
   petAd?: PetAd | null
+  userPets: Pet[]
+  onPetsUpdate: (pets: Pet[]) => void
   isMobile?: boolean
   onBookService?: (serviceId: string) => void
 }
 
-export function ProviderInfo({ provider, services, reviews, petAd, isMobile = false, onBookService }: ProviderInfoProps) {
+export function ProviderInfo({ provider, services, reviews, petAd, userPets, onPetsUpdate, isMobile = false, onBookService }: ProviderInfoProps) {
+  const [quickBookingDialogOpen, setQuickBookingDialogOpen] = useState(false)
+  const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null)
+  
   const containerClass = isMobile ? 'space-y-6' : 'space-y-6'
   const titleClass = isMobile ? 'text-lg font-semibold' : 'text-xl font-semibold'
   const descriptionClass = isMobile ? 'text-gray-600 leading-relaxed' : 'text-gray-600 leading-relaxed text-lg'
+
+  const handleServiceBooking = (service: Service) => {
+    setSelectedServiceForBooking(service)
+    setQuickBookingDialogOpen(true)
+  }
+
+  const handleQuickBook = (bookingData: {
+    serviceId: string
+    date: Date
+    time: string
+    petIds: string[]
+  }) => {
+    // Redirect to checkout with booking data
+    const params = new URLSearchParams()
+    params.set('date', bookingData.date.toISOString().split('T')[0])
+    params.set('time', bookingData.time)
+    params.set('pets', bookingData.petIds.join(','))
+    params.set('service', bookingData.serviceId)
+    
+    window.location.href = `/bookings/checkout?${params.toString()}`
+  }
 
   return (
     <div className={containerClass}>
@@ -210,7 +238,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                       €{service.price}
                     </div>
                     <Button
-                      onClick={() => onBookService?.(service.id)}
+                      onClick={() => handleServiceBooking(service)}
                       className={`mt-2 bg-black hover:bg-gray-800 text-white ${isMobile ? 'w-full' : 'w-auto px-4'}`}
                       size="sm"
                     >
@@ -256,6 +284,18 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             ))}
           </div>
         </div>
+      )}
+
+      {/* Quick Booking Dialog */}
+      {selectedServiceForBooking && (
+        <QuickBookingDialog
+          open={quickBookingDialogOpen}
+          onOpenChange={setQuickBookingDialogOpen}
+          service={selectedServiceForBooking}
+          userPets={userPets}
+          onPetsUpdate={onPetsUpdate}
+          onBook={handleQuickBook}
+        />
       )}
     </div>
   )

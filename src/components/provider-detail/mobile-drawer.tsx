@@ -41,6 +41,8 @@ export function MobileDrawer({
             provider={provider} 
             services={services} 
             reviews={reviews} 
+            userPets={userPets}
+            onPetsUpdate={onPetsUpdate}
             isMobile={true} 
           />
           

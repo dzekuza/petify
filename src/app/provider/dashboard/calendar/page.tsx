@@ -52,6 +52,7 @@ interface BookingWithDetails {
 }
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, User, Phone, Mail } from 'lucide-react'
 import { toast } from 'sonner'
+import { t } from '@/lib/translations'
 
 export default function ProviderSchedulePage() {
   const { user } = useAuth()
@@ -150,7 +151,7 @@ export default function ProviderSchedulePage() {
     <ProtectedRoute requiredRole="provider">
       <>
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Schedule</h1>
+          <h1 className="text-2xl font-bold">{t('providerDashboard.schedule')}</h1>
           <div className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5 text-gray-500" />
             <span className="text-sm text-gray-600">
@@ -165,7 +166,7 @@ export default function ProviderSchedulePage() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle>Calendar</CardTitle>
+                    <CardTitle>{t('providerDashboard.calendarTitle')}</CardTitle>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
@@ -183,7 +184,7 @@ export default function ProviderSchedulePage() {
                       </Button>
                     </div>
                   </div>
-                  <CardDescription>Your upcoming appointments</CardDescription>
+                  <CardDescription>{t('providerDashboard.upcomingAppointments')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {loading ? (
@@ -234,7 +235,7 @@ export default function ProviderSchedulePage() {
                                 ))}
                                 {dayBookings.length > 2 && (
                                   <div className="text-xs text-gray-500">
-                                    +{dayBookings.length - 2} more
+                                    +{dayBookings.length - 2} {t('providerDashboard.more')}
                                   </div>
                                 )}
                               </div>
@@ -264,13 +265,13 @@ export default function ProviderSchedulePage() {
                         })}
                       </>
                     ) : (
-                      'Select a date'
+                      t('providerDashboard.selectDate')
                     )}
                   </CardTitle>
                   <CardDescription>
                     {selectedDateBookings.length > 0
-                      ? `${selectedDateBookings.length} appointment${selectedDateBookings.length !== 1 ? 's' : ''}`
-                      : 'No appointments'}
+                      ? `${selectedDateBookings.length} ${selectedDateBookings.length === 1 ? t('providerDashboard.appointment') : t('providerDashboard.appointments')}`
+                      : t('providerDashboard.noAppointments')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -279,14 +280,14 @@ export default function ProviderSchedulePage() {
                       {selectedDateBookings.length === 0 ? (
                         <div className="text-center py-6 text-gray-500">
                           <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                          <p>No appointments scheduled</p>
+                          <p>{t('providerDashboard.noAppointmentsScheduled')}</p>
                         </div>
                       ) : (
                         selectedDateBookings.map((booking) => (
                           <div key={booking.id} className="border rounded-lg p-4 space-y-3">
                             <div className="flex items-center justify-between">
                               <Badge className={getStatusColor(booking.status)}>
-                                {booking.status}
+                                {t(`providerDashboard.status.${booking.status}`)}
                               </Badge>
                               <span className="text-sm font-medium text-gray-600">
                                 €{booking.totalPrice}
@@ -302,21 +303,21 @@ export default function ProviderSchedulePage() {
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm font-medium">
-                                  {booking.customer?.full_name || 'Customer'}
+                                  {booking.customer?.full_name || t('providerDashboard.customer')}
                                 </span>
                               </div>
                               
                               <div className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm">
-                                  {booking.customer?.phone || 'No phone'}
+                                  {booking.customer?.phone || t('providerDashboard.noPhone')}
                                 </span>
                               </div>
                               
                               <div className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm">
-                                  {booking.customer?.email || 'No email'}
+                                  {booking.customer?.email || t('providerDashboard.noEmail')}
                                 </span>
                               </div>
                             </div>
@@ -325,7 +326,7 @@ export default function ProviderSchedulePage() {
                               <p className="text-sm font-medium">{booking.service?.name}</p>
                               {booking.pet && (
                                 <p className="text-sm text-gray-600">
-                                  Pet: {booking.pet.name} ({booking.pet.species})
+                                  {t('providerDashboard.pet')}: {booking.pet.name} ({booking.pet.species})
                                 </p>
                               )}
                             </div>
@@ -336,7 +337,7 @@ export default function ProviderSchedulePage() {
                   ) : (
                     <div className="text-center py-6 text-gray-500">
                       <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                      <p>Click on a date to view appointments</p>
+                      <p>{t('providerDashboard.clickDateToView')}</p>
                     </div>
                   )}
                 </CardContent>

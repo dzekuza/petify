@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
-import { sendBookingUpdateEmail } from '@/lib/email'
+import { sendBookingUpdateEmail, sendOrderDetailsEmail } from '@/lib/email'
 
 export async function PATCH(
   request: NextRequest,
@@ -32,8 +32,9 @@ export async function PATCH(
       .select(`
         *,
         customer:users!customer_id(id, full_name, email, phone),
-        provider:providers(id, business_name, user_id),
-        service:services(id, name, price)
+        provider:providers(id, business_name, user_id, contact_phone, contact_email, address),
+        service:services(id, name, price, description),
+        pet:pets(id, name, species, breed, age)
       `)
       .single()
 
@@ -100,9 +101,10 @@ export async function PATCH(
         })
     }
 
-    // Send email notification to customer
+    // Send email notifications to customer
     if (booking.customer.email && booking.provider && booking.service) {
       try {
+        // Send booking update notification
         await sendBookingUpdateEmail(booking.customer.email, {
           customerName: booking.customer.full_name || 'Valued Customer',
           providerName: booking.provider.business_name,
@@ -118,8 +120,39 @@ export async function PATCH(
           reason: status === 'cancelled' ? reason : undefined,
           bookingId: id
         })
+
+        // Send comprehensive order details email with updated status
+        if (booking.pet) {
+          await sendOrderDetailsEmail(booking.customer.email, {
+            customerName: booking.customer.full_name || 'Valued Customer',
+            customerEmail: booking.customer.email,
+            providerName: booking.provider.business_name,
+            providerEmail: booking.provider.contact_email || '',
+            serviceName: booking.service.name,
+            serviceDescription: booking.service.description || '',
+            bookingDate: new Date(booking.booking_date).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }),
+            bookingTime: `${booking.start_time} - ${booking.end_time}`,
+            totalPrice: parseFloat(booking.total_price),
+            petName: booking.pet.name,
+            petSpecies: booking.pet.species || '',
+            petBreed: booking.pet.breed || '',
+            notes: booking.special_instructions,
+            bookingId: id,
+            status: status as 'pending' | 'confirmed' | 'cancelled' | 'completed',
+            providerContact: {
+              phone: booking.provider.contact_phone || '',
+              email: booking.provider.contact_email || '',
+              address: booking.provider.address || ''
+            }
+          })
+        }
       } catch (emailError) {
-        console.error('Failed to send booking update email:', emailError)
+        console.error('Failed to send booking update emails:', emailError)
         // Don't fail the entire request if email fails
       }
     }

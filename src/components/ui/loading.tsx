@@ -39,19 +39,6 @@ export const Loading = ({
   )
 }
 
-// Full screen loading component
-export const FullScreenLoading = ({ 
-  text = 'Loading...', 
-  size = 'md',
-  showText = true,
-  background = 'bg-gray-50'
-}: Omit<LoadingProps, 'className'> & { background?: string }) => {
-  return (
-    <div className={`min-h-screen flex items-center justify-center ${background}`}>
-      <Loading text={text} size={size} showText={showText} />
-    </div>
-  )
-}
 
 // Card loading component
 export const CardLoading = ({ 

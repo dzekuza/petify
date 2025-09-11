@@ -6,11 +6,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { LocationAutocomplete } from '@/components/location-autocomplete'
 import { SearchFilters as SearchFiltersType, ServiceCategory, Pet } from '@/types'
-import { MapPin, Filter, X, User } from 'lucide-react'
+import { Filter, X, User } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
+import { providerApi } from '@/lib/providers'
 
 const serviceCategories: { value: ServiceCategory; label: string }[] = [
   { value: 'grooming', label: 'Gyvūnų šukavimas' },
@@ -30,6 +31,7 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
   const [isExpanded, setIsExpanded] = useState(false)
   const [userPets, setUserPets] = useState<Pet[]>([])
   const [loadingPets, setLoadingPets] = useState(false)
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([])
   const { user } = useAuth()
 
   // Fetch user pets when component mounts
@@ -51,6 +53,21 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
 
     fetchUserPets()
   }, [user])
+
+  // Fetch location suggestions when component mounts
+  useEffect(() => {
+    const fetchLocationSuggestions = async () => {
+      try {
+        const locations = await providerApi.getProviderLocations()
+        setLocationSuggestions(locations)
+      } catch (error) {
+        console.error('Error fetching location suggestions:', error)
+        setLocationSuggestions([])
+      }
+    }
+
+    fetchLocationSuggestions()
+  }, [])
 
   const handleFilterChange = (key: keyof SearchFiltersType, value: string | number | undefined | { min: number; max?: number } | { max: number; min?: number }) => {
     // Convert "all" to undefined for category filter
@@ -75,19 +92,17 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
   const hasActiveFilters = filters.category || filters.location || (filters.rating && filters.rating > 0) || filters.petId
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          {/* Main Search Row */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <div className="space-y-4">
+      {/* Main Search Row */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Service Category */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="category">Paslaugos tipas</Label>
               <Select 
                 value={filters.category || 'all'} 
                 onValueChange={(value) => handleFilterChange('category', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Visos paslaugos" />
                 </SelectTrigger>
                 <SelectContent>
@@ -102,28 +117,22 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
             </div>
 
             {/* Location */}
-            <div>
-              <Label htmlFor="location">Vieta</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="location"
-                  placeholder="Įveskite vietą"
-                  value={filters.location || ''}
-                  onChange={(e) => handleFilterChange('location', e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+            <LocationAutocomplete
+              value={filters.location || ''}
+              onChange={(value) => handleFilterChange('location', value)}
+              suggestions={locationSuggestions}
+              placeholder="Įveskite vietą"
+              label="Vieta"
+            />
 
             {/* Distance */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="distance">Atstumas</Label>
               <Select 
                 value={filters.distance?.toString() || '25'} 
                 onValueChange={(value) => handleFilterChange('distance', parseInt(value))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -137,14 +146,14 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
             </div>
 
             {/* Pet Selection */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="pet">Gyvūnas</Label>
               <Select 
                 value={filters.petId || 'all'} 
                 onValueChange={(value) => handleFilterChange('petId', value === 'all' ? undefined : value)}
                 disabled={loadingPets || !user}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,9 +204,9 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
             <div className="border-t pt-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Price Range */}
-                <div>
+                <div className="space-y-2">
                   <Label>Kainų intervalas</Label>
-                  <div className="flex space-x-2 mt-1">
+                  <div className="flex space-x-2">
                     <Input
                       type="number"
                       placeholder="Min"
@@ -220,13 +229,13 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                 </div>
 
                 {/* Rating */}
-                <div>
+                <div className="space-y-2">
                   <Label>Minimalus įvertinimas</Label>
                   <Select 
                     value={filters.rating?.toString() || '0'} 
                     onValueChange={(value) => handleFilterChange('rating', parseFloat(value))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -239,10 +248,10 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
                 </div>
 
                 {/* Sort By */}
-                <div>
+                <div className="space-y-2">
                   <Label>Rūšiuoti pagal</Label>
                   <Select value="relevance" onValueChange={() => {}}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -300,7 +309,5 @@ export const SearchFilters = ({ filters, onFiltersChange }: SearchFiltersProps) 
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
   )
 }

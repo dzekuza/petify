@@ -5,6 +5,7 @@ import { MapboxMap } from '@/components/mapbox-map'
 import { ListingsGrid } from '@/components/listings-grid'
 import { PetAdsGrid } from '@/components/pet-ads-grid'
 import { FilterModal } from '@/components/filter-modal'
+import { SearchFilters } from '@/components/search-filters'
 import { SearchResult, SearchFilters as SearchFiltersType, PetAd } from '@/types'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/translations'
@@ -66,9 +67,9 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
   const mapHeight = isDrawerOpen ? 'h-[20vh]' : 'h-[84vh]'
 
   return (
-    <div className="h-screen bg-white overflow-hidden">
+    <div className="min-h-screen bg-white">
       {/* Mobile Layout - Full Screen Map */}
-      <div className="lg:hidden h-full">
+      <div className="lg:hidden h-screen">
         <MapboxMap
           results={results}
           onMarkerClick={onMarkerClick}
@@ -83,9 +84,16 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
       {/* Desktop Layout - Side by Side */}
       <div className="hidden lg:block mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {viewMode === 'list' ? (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {/* Left: Provider Grid */}
-            <div className="space-y-4">
+          <div className="space-y-6 h-[calc(100vh-8rem)]">
+            {/* Filters */}
+            <SearchFilters 
+              filters={filters} 
+              onFiltersChange={onFiltersChange} 
+            />
+            
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1">
+              {/* Left: Provider Grid */}
+              <div className="space-y-4 overflow-y-auto pr-2">
                 {loading ? (
                   <div className="space-y-4">
                     {[...Array(6)].map((_, i) => (
@@ -122,9 +130,16 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
                 className="sticky top-24 h-[calc(100vh-8rem)] rounded-lg"
               />
             </div>
+            </div>
           ) : viewMode === 'grid' ? (
             /* Grid Only View */
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Filters */}
+              <SearchFilters 
+                filters={filters} 
+                onFiltersChange={onFiltersChange} 
+              />
+              <div className="space-y-4">
               {loading ? (
                 <div className="provider-grid">
                   {[...Array(12)].map((_, i) => (
@@ -140,6 +155,7 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
                   showViewAll={false}
                 />
               )}
+              </div>
             </div>
           ) : (
             /* Map Only View */

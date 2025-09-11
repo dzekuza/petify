@@ -1,15 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseAdmin } from '@/lib/supabase'
 
 export async function PUT(request: NextRequest) {
   try {
+    console.log('Profile update API called')
     
-    // Get the current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get the authorization header
+    const authHeader = request.headers.get('authorization')
+    console.log('Auth header present:', !!authHeader)
     
-    if (authError || !user) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('No valid auth header')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const token = authHeader.split(' ')[1]
+    console.log('Token length:', token.length)
+    
+    // Create admin client to verify the JWT token
+    const supabaseAdmin = createSupabaseAdmin()
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError)
+      console.error('User:', user)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    console.log('User authenticated:', user.id)
 
     const formData = await request.formData()
     const businessName = formData.get('businessName') as string
@@ -38,7 +56,7 @@ export async function PUT(request: NextRequest) {
       const filePath = `avatars/${fileName}`
 
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabaseAdmin.storage
         .from('provider-images')
         .upload(filePath, profileImage)
 
@@ -48,16 +66,16 @@ export async function PUT(request: NextRequest) {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabaseAdmin.storage
         .from('provider-images')
         .getPublicUrl(filePath)
 
       updates.avatar_url = publicUrl
     }
 
-    // Update user metadata
-    const { error: updateError } = await supabase.auth.updateUser({
-      data: updates
+    // Update user metadata using admin client
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      user_metadata: updates
     })
 
     if (updateError) {
@@ -67,7 +85,7 @@ export async function PUT(request: NextRequest) {
 
     // If email is being changed, update it separately
     if (email && email !== user.email) {
-      const { error: emailError } = await supabase.auth.updateUser({
+      const { error: emailError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
         email: email
       })
 

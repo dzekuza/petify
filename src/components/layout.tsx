@@ -12,7 +12,7 @@ interface LayoutProps {
 
 export const Layout = ({ children, hideServiceCategories = false, onFiltersClick, hideFooter = false }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col">
       <Suspense fallback={<div className="px-4 py-2 text-sm text-gray-500">Loading...</div>}>
         <Navigation hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
       </Suspense>

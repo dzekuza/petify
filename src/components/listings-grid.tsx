@@ -104,7 +104,7 @@ export const ListingsGrid = ({
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
                   {/* Image Section */}
                   <div className="relative overflow-hidden">
-                    <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-100 to-blue-200 h-48 relative">
+                    <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative">
                       {provider.images[0] ? (
                         <Image
                           src={provider.images[0]}

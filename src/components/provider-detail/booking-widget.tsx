@@ -127,17 +127,56 @@ export function BookingWidget({
 
   const handleBookService = () => {
     // For mobile, allow booking without pre-selections (will be made in next step)
-    // For desktop, require all selections
+    // For desktop, require all selections and redirect to checkout
     const isMobileDevice = window.innerWidth < 1024
-    if (!isMobileDevice && (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0)) {
+    
+    if (!isMobileDevice) {
+      // Desktop: require all selections and redirect to checkout
+      if (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0) {
+        toast.error('Please fill in all required fields')
+        return
+      }
+
+      // Format date in local timezone to avoid UTC conversion issues
+      const year = selectedDate.getFullYear()
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
+      const day = String(selectedDate.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
+
+      // Debug logging
+      console.log('Booking data:', {
+        date: dateString,
+        time: selectedTime,
+        pets: selectedPets,
+        service: selectedService,
+        providerId: provider.id
+      })
+
+      // Redirect to payment page with all parameters
+      const bookingParams = new URLSearchParams()
+      bookingParams.set('date', dateString)
+      bookingParams.set('time', selectedTime)
+      bookingParams.set('pets', selectedPets.join(','))
+      bookingParams.set('service', selectedService)
+      
+      const paymentUrl = `/providers/${provider.id}/payment?${bookingParams.toString()}`
+      console.log('Redirecting to:', paymentUrl)
+      
+      // Redirect to payment page
+      window.location.href = paymentUrl
       return
     }
 
+    // Mobile: use existing flow
     const bookingParams = new URLSearchParams()
     
     // Only add parameters if they exist (for mobile compatibility)
     if (selectedDate) {
-      bookingParams.set('date', selectedDate.toISOString().split('T')[0])
+      const year = selectedDate.getFullYear()
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
+      const day = String(selectedDate.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
+      bookingParams.set('date', dateString)
     }
     if (selectedTime) {
       bookingParams.set('time', selectedTime)
@@ -408,14 +447,23 @@ export function BookingWidget({
           required
           options={[
             { value: "09:00", label: "9:00 AM" },
+            { value: "09:30", label: "9:30 AM" },
             { value: "10:00", label: "10:00 AM" },
+            { value: "10:30", label: "10:30 AM" },
             { value: "11:00", label: "11:00 AM" },
+            { value: "11:30", label: "11:30 AM" },
             { value: "12:00", label: "12:00 PM" },
+            { value: "12:30", label: "12:30 PM" },
             { value: "13:00", label: "1:00 PM" },
+            { value: "13:30", label: "1:30 PM" },
             { value: "14:00", label: "2:00 PM" },
+            { value: "14:30", label: "2:30 PM" },
             { value: "15:00", label: "3:00 PM" },
+            { value: "15:30", label: "3:30 PM" },
             { value: "16:00", label: "4:00 PM" },
+            { value: "16:30", label: "4:30 PM" },
             { value: "17:00", label: "5:00 PM" },
+            { value: "17:30", label: "5:30 PM" },
             { value: "18:00", label: "6:00 PM" }
           ]}
         />
@@ -476,6 +524,22 @@ export function BookingWidget({
       >
         {petAd ? 'Teirautis' : t('provider.bookService')}
       </Button>
+      
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-100 rounded">
+          Debug: Date: {selectedDate ? (() => {
+            const year = selectedDate.getFullYear()
+            const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
+            const day = String(selectedDate.getDate()).padStart(2, '0')
+            return `${year}-${month}-${day}`
+          })() : 'none'}, 
+          Time: {selectedTime || 'none'}, 
+          Service: {selectedService || 'none'}, 
+          Pets: {selectedPets.length}, 
+          PetAd: {petAd ? 'yes' : 'no'}
+        </div>
+      )}
       
       <div className="text-center text-sm text-gray-600">
         {t('provider.secureBooking')}

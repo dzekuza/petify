@@ -535,6 +535,22 @@ export const translations = {
     profile: 'Profilis',
     analytics: 'Analitika',
     
+    // Calendar page translations
+    schedule: 'Grafikas',
+    calendarTitle: 'Kalendorius',
+    upcomingAppointments: 'Jūsų artimiausi susitikimai',
+    selectDate: 'Pasirinkti datą',
+    noAppointments: 'Nėra susitikimų',
+    clickDateToView: 'Spustelėkite datą, kad peržiūrėtumėte susitikimus',
+    noAppointmentsScheduled: 'Nėra suplanuotų susitikimų',
+    appointment: 'susitikimas',
+    appointments: 'susitikimai',
+    more: 'daugiau',
+    customer: 'Klientas',
+    noPhone: 'Nėra telefono',
+    noEmail: 'Nėra el. pašto',
+    pet: 'Augintinis',
+    
     // Status translations
     status: {
       pending: 'Laukiantis',
