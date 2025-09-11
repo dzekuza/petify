@@ -15,7 +15,9 @@ import { BookingWidget } from '@/components/provider-detail/booking-widget'
 import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
 import { ReviewDialog } from '@/components/review-dialog'
-import { AIChatButton } from '@/components/ui/ai-chat-button'
+import { FloatingChatButton } from '@/components/ui/floating-chat-button'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
 import { toast } from 'sonner'
 
 export default function ProviderDetailPage() {
@@ -354,6 +356,9 @@ export default function ProviderDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <Navigation />
+      
       {/* Mobile Layout */}
       <MobileLayout
         provider={provider}
@@ -416,14 +421,6 @@ export default function ProviderDetailPage() {
                   isMobile={false}
                 />
                 
-                {/* AI Chat Button */}
-                <AIChatButton
-                  providerName={provider.businessName}
-                  providerId={provider.id}
-                  className="w-full"
-                  variant="default"
-                  size="lg"
-                />
               </div>
             </div>
           </div>
@@ -441,6 +438,18 @@ export default function ProviderDetailPage() {
           onReviewSubmitted={handleReviewSubmitted}
         />
       )}
+
+      {/* Floating Chat Button */}
+      {provider && (
+        <FloatingChatButton
+          providerName={provider.businessName}
+          providerId={provider.id}
+          providerLogo={provider.images?.[0]}
+        />
+      )}
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

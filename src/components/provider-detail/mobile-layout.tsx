@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { AIChatButton } from '@/components/ui/ai-chat-button'
 import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { ImageGallery } from './image-gallery'
@@ -89,22 +88,14 @@ export function MobileLayout({
                   {petAd ? 'Kaina' : t('common.perService')}
                 </div>
               </div>
-              <div className="flex gap-2">
-                <AIChatButton
-                  providerName={provider.businessName}
-                  providerId={provider.id}
-                  variant="outline"
-                  size="lg"
-                  className="flex-shrink-0"
-                />
-                <Button 
-                  variant="gradient"
-                  size="lg"
-                  onClick={() => onBookService()}
-                >
-                  {petAd ? 'Teirautis' : t('common.book')}
-                </Button>
-              </div>
+              <Button 
+                variant="gradient"
+                size="lg"
+                onClick={() => onBookService()}
+                className="w-full"
+              >
+                {petAd ? 'Teirautis' : t('common.book')}
+              </Button>
             </div>
           </div>
         </div>

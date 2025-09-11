@@ -256,7 +256,7 @@ export function ImageGallery({
             src={image}
             alt={`${provider.businessName} - Image ${index + 2}`}
             fill
-            className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            className="object-cover aspect-square cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => setCurrentImageIndex(index + 1)}
           />
         </div>

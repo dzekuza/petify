@@ -17,6 +17,7 @@ import { t } from '@/lib/translations'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { ClaimBusinessWidget } from './claim-business-widget'
 
 interface BookingWidgetProps {
   provider: ServiceProvider
@@ -39,7 +40,25 @@ export function BookingWidget({
 }: BookingWidgetProps) {
   const { user } = useAuth()
   
-  // Booking form state
+  // List of scraped provider user IDs (from BookitNow.lt import)
+  const scrapedProviderUserIds = [
+    'a6558eeb-8dac-44e6-a196-faaf93eef966', // Dresūros centras | Nemirseta
+    '0dcedfce-dca7-4911-8320-8de3c7232b25', // Dresūros centras | Palanga
+    '947814d9-60b8-4de5-aea7-04ade3168f30', // Fracco dresūros mokykla
+    '024f9da0-a579-4f6b-9ff5-3121996e2767', // OH MY DOG šunų ir kačių kirpykla
+    '52077fbe-293a-4888-876e-4f753d719819', // Reksas - Šunų pamokos Vilniuje
+    '7bab2720-a543-4b1b-b42e-9a57d5108915', // Šunų ir kačių kirpykla „Keturkojų stilius"
+    'c93d2cfd-914f-43e5-82a5-eb230aac1d46', // Tauro Grooming & Skin Care
+    '7024c980-0616-4266-8cf1-1f2c64abf9fc', // Vanilos salonas – gyvūnų kirpykla
+    '5cb11b91-ee79-4fc2-bfe6-d44d598c85fa', // Zoohotel – naminių gyvūnų grožio salonas Lazdynuose
+    '470f752b-915b-404e-a3bf-965f070c11f8', // Zoohotel – naminių gyvūnų grožio salonas Naujojoje Vilnioje
+    '8fc776c6-d413-4250-ba52-058b4e2e7dc8'  // Zoohotel – naminių gyvūnų grožio salonas Pavilnyje
+  ]
+  
+  // Check if this is a scraped provider
+  const isScrapedProvider = scrapedProviderUserIds.includes(provider.userId)
+  
+  // Booking form state - always declare hooks at the top level
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState('')
   const [selectedPets, setSelectedPets] = useState<string[]>([])
@@ -189,6 +208,11 @@ export function BookingWidget({
     }
 
     onBookService()
+  }
+
+  // If it's a scraped provider, show claim business widget instead
+  if (isScrapedProvider) {
+    return <ClaimBusinessWidget provider={provider} isMobile={isMobile} />
   }
 
   const AddPetDialog = () => (

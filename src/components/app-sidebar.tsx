@@ -157,7 +157,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const avatar = (user?.user_metadata as any)?.avatar_url || "/vercel.svg"
   const pathname = usePathname()
 
-  const isProviderArea = pathname?.startsWith('/provider')
+  const isProviderArea = pathname?.startsWith('/provider/')
   const [businessType, setBusinessType] = React.useState<string | null>(null)
 
   React.useEffect(() => {

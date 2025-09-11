@@ -63,7 +63,9 @@ function NavigationContent({ hideServiceCategories = false, onFiltersClick }: Na
   }, [])
   
   // Ensure consistent rendering between server and client
-  const isProviderRoute = typeof pathname === 'string' && pathname.startsWith('/provider')
+  // Fix: Only show provider navigation when on actual provider routes (/provider/*)
+  // NOT on customer-facing provider detail pages (/providers/*)
+  const isProviderRoute = typeof pathname === 'string' && pathname.startsWith('/provider/')
   const isSearchPage = pathname === '/search'
   const hasCategory = searchParams?.get('category')
   const showSearchBar = isSearchPage || hasCategory

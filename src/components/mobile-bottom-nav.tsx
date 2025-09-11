@@ -10,7 +10,7 @@ export function MobileBottomNav() {
   const pathname = usePathname()
 
   // Hide on provider routes and certain flows where bottom nav is undesirable
-  const isProviderRoute = pathname?.startsWith('/provider')
+  const isProviderRoute = pathname?.startsWith('/provider/')
   if (isProviderRoute) return null
 
   const items = [
