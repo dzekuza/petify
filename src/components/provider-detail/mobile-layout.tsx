@@ -36,7 +36,7 @@ export function MobileLayout({
   return (
     <div className="lg:hidden">
       {/* Fixed Image Gallery */}
-      <div className="fixed top-0 left-0 right-0 z-40">
+      <div className="fixed top-0 left-0 right-0 z-40 h-[40vh] sm:h-[60vh] overflow-hidden">
         <ImageGallery
           provider={provider}
           isFavorite={isFavorite}
@@ -64,7 +64,7 @@ export function MobileLayout({
           </div>
 
           {/* Scrollable Content */}
-          <div className="px-6 py-4 pb-24">
+          <div className="px-6 py-4 pb-32">
             <ProviderInfo 
               provider={provider} 
               services={services} 
@@ -79,24 +79,47 @@ export function MobileLayout({
 
           {/* Fixed Bottom Bar */}
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[60]">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-lg font-semibold text-gray-900">
-                  {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
+            {provider.businessType === 'adoption' ? (
+              // Breeder interface
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="text-lg font-semibold text-gray-900">
+                    Šiuo metu prieinama
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Pasirinkite gyvūną ir siųskite užklausą
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600">
-                  {petAd ? 'Kaina' : t('common.perService')}
-                </div>
+                <Button 
+                  variant="gradient"
+                  size="sm"
+                  onClick={() => onBookService()}
+                  className="shrink-0 px-4 text-sm"
+                >
+                  Siųsti užklausą
+                </Button>
               </div>
-              <Button 
-                variant="gradient"
-                size="lg"
-                onClick={() => onBookService()}
-                className="w-full"
-              >
-                {petAd ? 'Teirautis' : t('common.book')}
-              </Button>
-            </div>
+            ) : (
+              // Regular service provider interface
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="text-lg font-semibold text-gray-900">
+                    {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {petAd ? 'Kaina' : t('common.perService')}
+                  </div>
+                </div>
+                <Button 
+                  variant="gradient"
+                  size="sm"
+                  onClick={() => onBookService()}
+                  className="shrink-0 px-4 text-sm"
+                >
+                  {petAd ? 'Teirautis' : t('common.book')}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
