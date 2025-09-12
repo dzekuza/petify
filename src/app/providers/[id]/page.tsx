@@ -202,6 +202,7 @@ export default function ProviderDetailPage() {
           id: providerData.id,
           userId: providerData.user_id,
           businessName: providerData.business_name,
+          businessType: providerData.business_type,
           description: providerData.description,
           services: providerData.services || [],
           location: {

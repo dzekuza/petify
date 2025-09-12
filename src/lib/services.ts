@@ -13,6 +13,20 @@ export interface CreateServiceData {
   includes?: string[]
   images?: string[]
   serviceLocation?: Record<string, unknown>
+  // Breeding-specific fields
+  maleCount?: number
+  femaleCount?: number
+  breed?: string
+  generation?: string
+  ageWeeks?: number
+  ageDays?: number
+  readyToLeave?: string
+  microchipped?: boolean
+  vaccinated?: boolean
+  wormed?: boolean
+  healthChecked?: boolean
+  parentsTested?: boolean
+  kcRegistered?: boolean
 }
 
 export interface UpdateServiceData {
@@ -26,6 +40,20 @@ export interface UpdateServiceData {
   images?: string[]
   isActive?: boolean
   serviceLocation?: Record<string, unknown>
+  // Breeding-specific fields
+  maleCount?: number
+  femaleCount?: number
+  breed?: string
+  generation?: string
+  ageWeeks?: number
+  ageDays?: number
+  readyToLeave?: string
+  microchipped?: boolean
+  vaccinated?: boolean
+  wormed?: boolean
+  healthChecked?: boolean
+  parentsTested?: boolean
+  kcRegistered?: boolean
 }
 
 export const serviceApi = {
@@ -44,7 +72,21 @@ export const serviceApi = {
         requirements: data.requirements || [],
         includes: data.includes || [],
         images: data.images || [],
-        is_active: true
+        is_active: true,
+        // Breeding-specific fields
+        male_count: data.maleCount,
+        female_count: data.femaleCount,
+        breed: data.breed,
+        generation: data.generation,
+        age_weeks: data.ageWeeks,
+        age_days: data.ageDays,
+        ready_to_leave: data.readyToLeave,
+        microchipped: data.microchipped,
+        vaccinated: data.vaccinated,
+        wormed: data.wormed,
+        health_checked: data.healthChecked,
+        parents_tested: data.parentsTested,
+        kc_registered: data.kcRegistered
       }
 
       // Try including service_location if provided
@@ -139,7 +181,21 @@ export const serviceApi = {
         includes: data.includes,
         images: data.images,
         is_active: data.isActive,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // Breeding-specific fields
+        male_count: data.maleCount,
+        female_count: data.femaleCount,
+        breed: data.breed,
+        generation: data.generation,
+        age_weeks: data.ageWeeks,
+        age_days: data.ageDays,
+        ready_to_leave: data.readyToLeave,
+        microchipped: data.microchipped,
+        vaccinated: data.vaccinated,
+        wormed: data.wormed,
+        health_checked: data.healthChecked,
+        parents_tested: data.parentsTested,
+        kc_registered: data.kcRegistered
       }
       if (data.serviceLocation) updatePayload.service_location = data.serviceLocation
 

@@ -382,7 +382,21 @@ function ProviderOnboardingPage() {
                 duration: 60,
                 maxPets: 1,
                 images: [],
-                serviceLocation: detail.locationId ? (onboardingData.addresses || []).find(a => a.id === detail.locationId) : undefined
+                serviceLocation: detail.locationId ? (onboardingData.addresses || []).find(a => a.id === detail.locationId) : undefined,
+                // Breeding-specific fields
+                maleCount: detail.maleCount,
+                femaleCount: detail.femaleCount,
+                breed: detail.breed,
+                generation: detail.generation,
+                ageWeeks: detail.ageWeeks,
+                ageDays: detail.ageDays,
+                readyToLeave: detail.readyToLeave,
+                microchipped: detail.microchipped,
+                vaccinated: detail.vaccinated,
+                wormed: detail.wormed,
+                healthChecked: detail.healthChecked,
+                parentsTested: detail.parentsTested,
+                kcRegistered: detail.kcRegistered
               })
 
               const imageUrls: string[] = []

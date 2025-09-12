@@ -325,8 +325,8 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
         </div>
       )}
 
-      {/* Services */}
-      {services.length > 0 && (
+      {/* Services - Hide for breeders */}
+      {services.length > 0 && provider.businessType !== 'adoption' && (
         <div className="border-t border-gray-200 pt-6 mb-6">
           <h2 className={`${titleClass} text-gray-900 mb-4`}>{t('provider.servicesAndPricing')}</h2>
           <div className="space-y-4">
