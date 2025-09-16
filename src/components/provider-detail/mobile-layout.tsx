@@ -36,7 +36,7 @@ export function MobileLayout({
   return (
     <div className="lg:hidden">
       {/* Fixed Image Gallery */}
-      <div className="fixed top-0 left-0 right-0 z-40 h-[40vh] sm:h-[60vh] overflow-hidden">
+      <div className="fixed top-0 left-0 right-0 z-30 h-[40vh] sm:h-[60vh] overflow-hidden">
         <ImageGallery
           provider={provider}
           isFavorite={isFavorite}
@@ -48,8 +48,8 @@ export function MobileLayout({
       </div>
 
       {/* Content Section with top padding to account for fixed gallery */}
-      <div className="pt-[40vh] sm:pt-[60vh]">
-        <div className="bg-white rounded-t-3xl shadow-lg relative z-[60]">
+      <div className="pt-[30vh] sm:pt-[60vh]">
+        <div className="bg-white rounded-t-3xl shadow-lg relative z-[50]">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
@@ -78,7 +78,7 @@ export function MobileLayout({
           </div>
 
           {/* Fixed Bottom Bar */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[60]">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[70]">
             {provider.businessType === 'adoption' ? (
               // Breeder interface
               <div className="flex items-center justify-between gap-2">

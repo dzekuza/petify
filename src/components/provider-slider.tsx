@@ -201,7 +201,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
               className="flex-shrink-0 group cursor-pointer"
               style={{ 
                 width: isMobile 
-                  ? 'calc(80% - 1rem)' 
+                  ? 'calc(80% - 0.5rem)' 
                   : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
               }}
             >

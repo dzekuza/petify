@@ -43,7 +43,7 @@ export function FloatingChatButton({
       <button
         onClick={handleOpenChat}
         className={cn(
-          "fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-4 py-3 border border-gray-200 hover:border-gray-300 group",
+          "fixed bottom-24 lg:bottom-6 right-6 z-50 flex items-center gap-3 bg-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-4 py-3 border border-gray-200 hover:border-gray-300 group",
           className
         )}
       >

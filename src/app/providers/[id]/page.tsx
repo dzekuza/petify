@@ -449,8 +449,10 @@ export default function ProviderDetailPage() {
         />
       )}
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer - Hidden on mobile */}
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </div>
   )
 }
