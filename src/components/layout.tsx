@@ -1,4 +1,4 @@
-import { Navigation } from './navigation'
+import Navigation from './navigation'
 import { Suspense } from 'react'
 import { Footer } from './footer'
 import { MobileBottomNav } from './mobile-bottom-nav'

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - Petify</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9fafb;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .booking-details {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .value {
+            color: #2d3748;
+        }
+        .total {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .total-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #38b2ac;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 14px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐾 Petify</h1>
+        <h2>Booking Confirmed!</h2>
+    </div>
+    
+    <div class="content">
+        <h3>Hello {{customerName}}!</h3>
+        <p>Your booking has been successfully confirmed. Here are the details:</p>
+        
+        <div class="booking-details">
+            <div class="detail-row">
+                <span class="label">Service Provider:</span>
+                <span class="value">{{providerName}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Service:</span>
+                <span class="value">{{serviceName}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Pet:</span>
+                <span class="value">{{petName}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Date:</span>
+                <span class="value">{{bookingDate}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Time:</span>
+                <span class="value">{{bookingTime}}</span>
+            </div>
+            {{#if notes}}
+            <div class="detail-row">
+                <span class="label">Notes:</span>
+                <span class="value">{{notes}}</span>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="total">
+            <div>Total Amount</div>
+            <div class="total-price">€{{totalPrice}}</div>
+        </div>
+        
+        <p>We'll send you a reminder 24 hours before your appointment. If you need to make any changes, please contact the service provider directly.</p>
+        
+        <div style="text-align: center;">
+            <a href="https://petify.lt/bookings" class="cta-button">View My Bookings</a>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for choosing Petify!</p>
+            <p>Questions? Contact us at info@petify.lt</p>
+        </div>
+    </div>
+</body>
+</html>

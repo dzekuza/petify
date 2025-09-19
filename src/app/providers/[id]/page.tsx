@@ -16,7 +16,7 @@ import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
 import { ReviewDialog } from '@/components/review-dialog'
 import { FloatingChatButton } from '@/components/ui/floating-chat-button'
-import { Navigation } from '@/components/navigation'
+import Navigation from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { toast } from 'sonner'
 
