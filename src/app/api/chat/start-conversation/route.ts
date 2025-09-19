@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { validateProviderId, checkRateLimit } from '@/lib/sanitization'
 
 // Start a conversation between customer and provider
 export async function POST(request: NextRequest) {
@@ -21,10 +22,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check rate limit
+    if (checkRateLimit(user.id, 5, 60000)) { // 5 conversations per minute
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
+    }
+
     const { provider_id, booking_id } = await request.json()
 
     if (!provider_id) {
       return NextResponse.json({ error: 'Provider ID is required' }, { status: 400 })
+    }
+
+    // Validate provider ID format
+    if (!validateProviderId(provider_id)) {
+      return NextResponse.json({ error: 'Invalid provider ID format' }, { status: 400 })
     }
 
     // Check if conversation already exists
@@ -66,4 +77,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
 

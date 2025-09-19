@@ -236,7 +236,42 @@ export interface CreateServiceForm {
   images?: File[] // paveikslėliai
 }
 
-// Pet Ads types
+// Pet Adoption types (simplified - no profile level)
+export interface PetType {
+  id: string
+  providerId: string
+  title: string // tipas pavadinimas (pvz., "Toy Poodle")
+  description: string // aprašymas
+  breedType: string // veislės tipas
+  individualPets: IndividualPet[] // atskiri gyvūnai
+  isActive: boolean // ar aktyvus
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
+}
+
+export interface IndividualPet {
+  id: string
+  petTypeId: string
+  title: string // gyvūno pavadinimas
+  price: number // kaina
+  gallery: string[] // galerijos paveikslėliai
+  sexType: 'male' | 'female' // lytis
+  age: number // amžius (savaitės)
+  readyToLeave: string // kada paruoštas išvežti (data)
+  features: PetFeature[] // savybės/opcijos
+  createdAt: string // sukurtas
+  updatedAt: string // atnaujintas
+}
+
+export type PetFeature = 
+  | 'microchipped' // Mikročipas iki surinkimo datos
+  | 'vaccinated' // Vakcinos iki datos
+  | 'wormed' // Išvaryti parazitai ir blusos
+  | 'health_checked' // Sveikatos patikra veterinarijos
+  | 'parents_tested' // Tėvai sveikatos patikrinti
+  | 'kc_registered' // KC registruotas iki surinkimo
+
+// Legacy Pet Ads types (keeping for backward compatibility)
 export interface PetAd {
   id: string
   providerId: string
@@ -273,6 +308,25 @@ export interface PetAdRequest {
   customer?: User // klientas
 }
 
+// Pet Adoption Form types (simplified)
+export interface CreatePetTypeForm {
+  title: string // tipas pavadinimas
+  description: string // aprašymas
+  breedType: string // veislės tipas
+  individualPets: CreateIndividualPetForm[] // atskiri gyvūnai
+}
+
+export interface CreateIndividualPetForm {
+  title: string // gyvūno pavadinimas
+  price: number // kaina
+  gallery: File[] // galerijos paveikslėliai
+  sexType: 'male' | 'female' // lytis
+  age: number // amžius (savaitės)
+  readyToLeave: string // kada paruoštas išvežti (data)
+  features: PetFeature[] // savybės/opcijos
+}
+
+// Legacy Pet Ad Form (keeping for backward compatibility)
 export interface CreatePetAdForm {
   name: string // gyvūno vardas
   description: string // aprašymas

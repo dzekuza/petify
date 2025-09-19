@@ -150,13 +150,15 @@ export default function ProviderSchedulePage() {
   return (
     <ProtectedRoute requiredRole="provider">
       <>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-bold">{t('providerDashboard.schedule')}</h1>
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-gray-500" />
-            <span className="text-sm text-gray-600">
-              {monthNames[currentMonth]} {currentYear}
-            </span>
+          <div className="flex justify-start md:justify-end">
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                {monthNames[currentMonth]} {currentYear}
+              </span>
+            </div>
           </div>
         </div>
 

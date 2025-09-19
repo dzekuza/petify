@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { t } from "@/lib/translations"
 
 export default function ProviderDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,11 +18,11 @@ export default function ProviderDashboardLayout({ children }: { children: React.
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/provider/dashboard">Provider</BreadcrumbLink>
+                  <BreadcrumbLink href="/provider/dashboard">{t('providerDashboard.provider')}</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>{t('providerDashboard.dashboard')}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { validateMessageContent, validateConversationId, checkRateLimit } from '@/lib/sanitization'
 
 // Get messages for a conversation
 export async function GET(request: NextRequest) {
@@ -26,6 +27,11 @@ export async function GET(request: NextRequest) {
 
     if (!conversationId) {
       return NextResponse.json({ error: 'Conversation ID is required' }, { status: 400 })
+    }
+
+    // Validate conversation ID format
+    if (!validateConversationId(conversationId)) {
+      return NextResponse.json({ error: 'Invalid conversation ID format' }, { status: 400 })
     }
 
     // Verify user has access to this conversation
@@ -100,10 +106,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check rate limit
+    if (checkRateLimit(user.id, 20, 60000)) { // 20 messages per minute
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
+    }
+
     const { conversation_id, content, message_type = 'text' } = await request.json()
 
     if (!conversation_id || !content) {
       return NextResponse.json({ error: 'Conversation ID and content are required' }, { status: 400 })
+    }
+
+    // Validate conversation ID format
+    if (!validateConversationId(conversation_id)) {
+      return NextResponse.json({ error: 'Invalid conversation ID format' }, { status: 400 })
+    }
+
+    // Validate and sanitize message content
+    let sanitizedContent: string
+    try {
+      sanitizedContent = validateMessageContent(content)
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof Error ? error.message : 'Invalid message content' }, { status: 400 })
     }
 
     // Verify user has access to this conversation
@@ -138,7 +162,7 @@ export async function POST(request: NextRequest) {
       .insert({
         conversation_id,
         sender_id: user.id,
-        content,
+        content: sanitizedContent,
         message_type
       })
       .select(`
@@ -186,4 +210,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
 

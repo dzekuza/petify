@@ -125,7 +125,7 @@ export default function BusinessSettingsPage() {
       <>
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <Settings className="h-8 w-8 mr-3 text-blue-600" />
@@ -137,9 +137,11 @@ export default function BusinessSettingsPage() {
             </div>
             
             {lastSaved && (
-              <div className="flex items-center text-sm text-green-600">
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Last saved: {lastSaved.toLocaleTimeString()}
+              <div className="flex justify-start md:justify-end">
+                <div className="flex items-center text-sm text-green-600">
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Last saved: {lastSaved.toLocaleTimeString()}
+                </div>
               </div>
             )}
           </div>

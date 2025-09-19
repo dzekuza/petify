@@ -268,15 +268,17 @@ export default function PetsPage() {
         <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Mano gyvūnai</h1>
                 <p className="text-gray-600">Valdykite savo gyvūnų profilius</p>
               </div>
-              <Button onClick={handleAddPet}>
-                <Plus className="h-4 w-4 mr-2" />
-                Pridėti gyvūną
-              </Button>
+              <div className="flex justify-start md:justify-end">
+                <Button onClick={handleAddPet}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Pridėti gyvūną
+                </Button>
+              </div>
             </div>
 
             {/* Pets List */}

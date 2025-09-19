@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateWebhookSignature, handlePaymentSucceeded, handlePaymentFailed } from '@/lib/payments'
-import { stripe } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {

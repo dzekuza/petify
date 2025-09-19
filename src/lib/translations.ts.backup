@@ -203,6 +203,8 @@ export const translations = {
     bookingConfirmedDesc: 'Jūsų užsakymas patvirtintas. Netrukus gausite patvirtinimo el. laišką.',
     close: 'Uždaryti',
     completeBooking: 'Užbaikite savo užsakymą pas {providerName}',
+    cancel: 'Atšaukti',
+    back: 'Atgal',
     processing: 'Apdorojama...',
     next: 'Toliau'
   },

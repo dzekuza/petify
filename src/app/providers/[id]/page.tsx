@@ -31,6 +31,7 @@ export default function ProviderDetailPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [userPets, setUserPets] = useState<Pet[]>([])
   const [petAd, setPetAd] = useState<PetAd | null>(null)
+  const [preSelectedServiceId, setPreSelectedServiceId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
@@ -41,6 +42,7 @@ export default function ProviderDetailPage() {
   // Check if we should open review dialog
   const shouldOpenReview = searchParams.get('review') === 'true'
   const reviewBookingId = searchParams.get('bookingId')
+  
 
   const isFavorite = provider ? isFavorited(provider.id) : false
 
@@ -101,12 +103,10 @@ export default function ProviderDetailPage() {
         return
       }
 
-      const queryParams = new URLSearchParams()
+      // Instead of redirecting, set the pre-selected service
       if (serviceId) {
-        queryParams.set('service', serviceId)
+        setPreSelectedServiceId(serviceId)
       }
-
-      router.push(`/providers/${params.id}/book?${queryParams.toString()}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start booking'
       toast.error(message)
@@ -406,6 +406,8 @@ export default function ProviderDetailPage() {
                 userPets={userPets}
                 onPetsUpdate={setUserPets}
                 isMobile={false}
+                onBookService={handleBookService}
+                preSelectedServiceId={preSelectedServiceId}
               />
             </div>
 
@@ -420,6 +422,7 @@ export default function ProviderDetailPage() {
                   onBookService={handleBookService}
                   onPetsUpdate={handlePetsUpdate}
                   isMobile={false}
+                  preSelectedService={preSelectedServiceId || undefined}
                 />
                 
               </div>

@@ -133,7 +133,7 @@ export const CategorySection = ({
   if (loading) {
     return (
       <div className={cn("w-full", className)}>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
         </div>
         <div className="flex gap-6">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -163,6 +163,7 @@ interface BookingWidgetProps {
   onBookService: () => void
   onPetsUpdate: (pets: Pet[]) => void
   isMobile?: boolean
+  preSelectedService?: string
 }
 
 export function BookingWidget({ 
@@ -172,7 +173,8 @@ export function BookingWidget({
   userPets, 
   onBookService, 
   onPetsUpdate,
-  isMobile = false 
+  isMobile = false,
+  preSelectedService
 }: BookingWidgetProps) {
   const { user } = useAuth()
   
@@ -210,6 +212,16 @@ export function BookingWidget({
     medicalNotes: ''
   })
   const [addPetLoading, setAddPetLoading] = useState(false)
+
+  // Auto-select service when preSelectedService is provided
+  useEffect(() => {
+    if (preSelectedService && services.length > 0) {
+      const serviceExists = services.find(service => service.id === preSelectedService)
+      if (serviceExists) {
+        setSelectedService(preSelectedService)
+      }
+    }
+  }, [preSelectedService, services])
 
   // Pet selection handlers
   const handlePetSelection = (petId: string, checked: boolean) => {

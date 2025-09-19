@@ -394,7 +394,7 @@ END:VCALENDAR`
                           }}
                         >
                           <CalendarPlus className="h-4 w-4 mr-2" />
-                          Apple Calendar
+                          {t('bookings.confirmation.appleCalendar')}
                         </Button>
                         <Button
                           variant="outline"
@@ -420,7 +420,7 @@ END:VCALENDAR`
                           }}
                         >
                           <Calendar className="h-4 w-4 mr-2" />
-                          Google Calendar
+                          {t('bookings.confirmation.googleCalendar')}
                         </Button>
                       </div>
                     </div>

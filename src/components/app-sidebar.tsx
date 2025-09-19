@@ -6,6 +6,7 @@ import {
   Bot,
   Command,
   Frame,
+  Heart,
   LifeBuoy,
   Map,
   MessageCircle,
@@ -26,10 +27,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/auth-context"
 import { providerApi } from "@/lib/providers"
 import { t } from "@/lib/translations"
+import { useDeviceDetection } from "@/lib/device-detection"
 
 const data = {
   navMain: [
@@ -150,6 +153,28 @@ const data = {
   ],
 }
 
+// Custom Menu Item component that handles mobile sidebar closing
+function SidebarMenuItemWithAutoClose({ href, children, ...props }: { href: string; children: React.ReactNode }) {
+  const { isMobile } = useDeviceDetection()
+  const { setOpenMobile } = useSidebar()
+
+  const handleClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
+  return (
+    <SidebarMenuItem {...props}>
+      <SidebarMenuButton asChild>
+        <Link href={href} onClick={handleClick}>
+          {children}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
   const fullName = (user?.user_metadata as any)?.full_name || user?.email || "User"
@@ -206,70 +231,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           {isProviderArea ? (
             <>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard">
-                    <SquareTerminal />
-                    <span>{t('navigation.dashboard')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/bookings">
-                    <Bot />
-                    <span>{t('navigation.bookings')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/chat">
-                    <MessageCircle />
-                    <span>Customer Messages</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/services">
-                    <BookOpen />
-                    <span>{servicesLabel}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/calendar">
-                    <BookOpen />
-                    <span>{t('navigation.calendar')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/analytics">
-                    <PieChart />
-                    <span>{t('providerDashboard.analytics')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/settings">
-                    <Settings2 />
-                    <span>{t('navigation.settings', 'Nustatymai')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/provider/dashboard/profile">
-                    <Settings2 />
-                    <span>{t('navigation.profile')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard">
+                <SquareTerminal />
+                <span>{t('navigation.dashboard')}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/bookings">
+                <Bot />
+                <span>{t('navigation.bookings')}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/chat">
+                <MessageCircle />
+                <span>Customer Messages</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/services">
+                <BookOpen />
+                <span>{servicesLabel}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/pet-ads">
+                <Heart />
+                <span>Gyvūnų adopcija</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/calendar">
+                <BookOpen />
+                <span>{t('navigation.calendar')}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/analytics">
+                <PieChart />
+                <span>{t('providerDashboard.analytics')}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/settings">
+                <Settings2 />
+                <span>{t('navigation.settings', 'Nustatymai')}</span>
+              </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/profile">
+                <Settings2 />
+                <span>{t('navigation.profile')}</span>
+              </SidebarMenuItemWithAutoClose>
             </>
           ) : (
             <>

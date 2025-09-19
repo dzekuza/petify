@@ -4,8 +4,6 @@ import { Star, Clock, Users, PawPrint, Euro, Phone, Mail, Globe, MapPin } from '
 import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
-import { QuickBookingDialog } from './quick-booking-dialog'
-import { useState } from 'react'
 import Map, { Marker } from 'react-map-gl/mapbox'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -40,11 +38,10 @@ interface ProviderInfoProps {
   onPetsUpdate: (pets: Pet[]) => void
   isMobile?: boolean
   onBookService?: (serviceId: string) => void
+  preSelectedServiceId?: string | null
 }
 
-export function ProviderInfo({ provider, services, reviews, petAd, userPets, onPetsUpdate, isMobile = false, onBookService }: ProviderInfoProps) {
-  const [quickBookingDialogOpen, setQuickBookingDialogOpen] = useState(false)
-  const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null)
+export function ProviderInfo({ provider, services, reviews, petAd, userPets, onPetsUpdate, isMobile = false, onBookService, preSelectedServiceId }: ProviderInfoProps) {
   
   // List of scraped provider user IDs (from BookitNow.lt import)
   const scrapedProviderUserIds = [
@@ -69,25 +66,12 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
   const descriptionClass = isMobile ? 'text-gray-600 leading-relaxed' : 'text-gray-600 leading-relaxed text-lg'
 
   const handleServiceBooking = (service: Service) => {
-    setSelectedServiceForBooking(service)
-    setQuickBookingDialogOpen(true)
+    // Instead of opening dialog, redirect to booking page with service pre-selected
+    if (onBookService) {
+      onBookService(service.id)
+    }
   }
 
-  const handleQuickBook = (bookingData: {
-    serviceId: string
-    date: Date
-    time: string
-    petIds: string[]
-  }) => {
-    // Redirect to checkout with booking data
-    const params = new URLSearchParams()
-    params.set('date', bookingData.date.toISOString().split('T')[0])
-    params.set('time', bookingData.time)
-    params.set('pets', bookingData.petIds.join(','))
-    params.set('service', bookingData.serviceId)
-    
-    window.location.href = `/bookings/checkout?${params.toString()}`
-  }
 
   return (
     <div className={containerClass}>
@@ -357,10 +341,14 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
                   {!isScrapedProvider && provider.businessType !== 'adoption' && (
                     <Button
                       onClick={() => handleServiceBooking(service)}
-                      className="bg-black hover:bg-gray-800 text-white w-auto px-4"
+                      className={preSelectedServiceId === service.id 
+                        ? "bg-gray-400 text-white w-auto px-4 cursor-not-allowed" 
+                        : "bg-black hover:bg-gray-800 text-white w-auto px-4"
+                      }
                       size="sm"
+                      disabled={preSelectedServiceId === service.id}
                     >
-                      {t('provider.bookService')}
+                      {preSelectedServiceId === service.id ? "Paslauga pridėta" : t('provider.bookService')}
                     </Button>
                   )}
                   {provider.businessType === 'adoption' && (
@@ -513,17 +501,6 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
         </div>
       )}
 
-      {/* Quick Booking Dialog */}
-      {selectedServiceForBooking && (
-        <QuickBookingDialog
-          open={quickBookingDialogOpen}
-          onOpenChange={setQuickBookingDialogOpen}
-          service={selectedServiceForBooking}
-          userPets={userPets}
-          onPetsUpdate={onPetsUpdate}
-          onBook={handleQuickBook}
-        />
-      )}
 
       {/* Reviews */}
       {reviews.length > 0 && (

@@ -123,7 +123,7 @@ export default function BookingsPage() {
             {/* Filters */}
             <div className="mb-6 grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-600">Filtruoti pagal augintinį</label>
+                <label className="text-sm text-gray-600">{t('bookings.filterByPet')}</label>
                 <Select value={selectedPetId} onValueChange={setSelectedPetId}>
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Visi augintiniai" />
@@ -137,15 +137,15 @@ export default function BookingsPage() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm text-gray-600">Būsena pagal laiką</label>
+                <label className="text-sm text-gray-600">{t('bookings.statusByTime')}</label>
                 <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as 'all' | 'past' | 'future')}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Visi užsakymai</SelectItem>
-                    <SelectItem value="future">Būsimi užsakymai</SelectItem>
-                    <SelectItem value="past">Praėję užsakymai</SelectItem>
+                    <SelectItem value="all">{t('bookings.allBookings')}</SelectItem>
+                    <SelectItem value="future">{t('bookings.futureBookings')}</SelectItem>
+                    <SelectItem value="past">{t('bookings.pastBookings')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -261,7 +261,7 @@ export default function BookingsPage() {
                               }}
                             >
                               <Mail className="h-4 w-4 mr-1" />
-                              El. paštas
+                              {t('bookings.email')}
                             </Button>
                             <Button 
                               variant="outline" 

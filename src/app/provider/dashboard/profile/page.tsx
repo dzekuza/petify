@@ -238,12 +238,14 @@ export default function ProviderProfilePage() {
       <>
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Profilis</h1>
                 <p className="text-gray-600">Tvarkykite savo verslo profilio informaciją</p>
               </div>
-              <Button onClick={handleEditProfile}>Redaguoti profilį</Button>
+              <div className="flex justify-start md:justify-end">
+                <Button onClick={handleEditProfile}>Redaguoti profilį</Button>
+              </div>
             </div>
           </div>
 

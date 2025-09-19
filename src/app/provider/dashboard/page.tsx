@@ -15,11 +15,9 @@ import {
   Star, 
   DollarSign, 
   Clock,
-  Settings,
-  Bell,
-  MessageCircle
+  Bell
 } from 'lucide-react'
-import { dashboardApi, DashboardStats, RecentBooking, ProviderProfileStatus } from '@/lib/dashboard'
+import { dashboardApi, DashboardStats, RecentBooking } from '@/lib/dashboard'
 import { t } from '@/lib/translations'
 
 // Remove duplicate interfaces since they're now imported from dashboard.ts
@@ -37,13 +35,6 @@ export default function ProviderDashboard() {
     totalReviews: 0
   })
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([])
-  const [profileStatus, setProfileStatus] = useState<ProviderProfileStatus>({
-    profileComplete: false,
-    verification: 'pending',
-    availability: 'pending'
-  })
-  const [businessType, setBusinessType] = useState<string>('')
-  const [providerData, setProviderData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -62,20 +53,14 @@ export default function ProviderDashboard() {
           return
         }
 
-        // Set business type and provider data
-        setBusinessType(provider.business_type || 'individual')
-        setProviderData(provider)
-
         // Fetch dashboard data in parallel
-        const [statsData, recentBookingsData, profileStatusData] = await Promise.all([
+        const [statsData, recentBookingsData] = await Promise.all([
           dashboardApi.getDashboardStats(provider.id),
-          dashboardApi.getRecentBookings(provider.id, 5),
-          dashboardApi.getProviderProfileStatus(provider.id)
+          dashboardApi.getRecentBookings(provider.id, 5)
         ])
 
         setStats(statsData)
         setRecentBookings(recentBookingsData)
-        setProfileStatus(profileStatusData)
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
         setError('Failed to load dashboard data')
@@ -101,25 +86,6 @@ export default function ProviderDashboard() {
     return t(`providerDashboard.status.${status}`, status)
   }
 
-  const getProfileStatusColor = (status: string) => {
-    switch (status) {
-      case 'verified':
-      case 'complete': return 'bg-green-100 text-green-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'rejected': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getProfileStatusText = (status: string) => {
-    switch (status) {
-      case 'verified': return t('providerDashboard.verified')
-      case 'complete': return t('providerDashboard.complete')
-      case 'pending': return t('providerDashboard.pending')
-      case 'rejected': return 'Atmesta'
-      default: return status
-    }
-  }
 
   if (loading) {
     return (
@@ -167,7 +133,7 @@ export default function ProviderDashboard() {
           </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{t('providerDashboard.totalBookings')}</CardTitle>
@@ -223,183 +189,112 @@ export default function ProviderDashboard() {
 
 
             {/* Recent Bookings */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('providerDashboard.recentBookings')}</CardTitle>
-                    <CardDescription>
-                      {t('providerDashboard.recentBookingsDesc')}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentBookings.length > 0 ? (
-                        recentBookings.map((booking) => (
-                          <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div>
-                                  <p className="font-medium text-gray-900">{booking.customerName}</p>
-                                  <p className="text-sm text-gray-500">{booking.service}</p>
-                                </div>
-                              </div>
-                              <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                                <span className="flex items-center">
-                                  <Clock className="h-4 w-4 mr-1" />
-                                  {new Date(booking.date).toLocaleDateString('lt-LT')}
-                                </span>
-                                <span className="font-medium text-gray-900">€{booking.amount.toFixed(2)}</span>
+            <div className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('providerDashboard.recentBookings')}</CardTitle>
+                  <CardDescription>
+                    {t('providerDashboard.recentBookingsDesc')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentBookings.length > 0 ? (
+                      recentBookings.map((booking) => (
+                        <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3">
+                              <div>
+                                <p className="font-medium text-gray-900">{booking.customerName}</p>
+                                <p className="text-sm text-gray-500">{booking.service}</p>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge className={getStatusColor(booking.status)}>
-                                {getStatusText(booking.status)}
-                              </Badge>
-                              <Button variant="outline" size="sm">
-                                {t('providerDashboard.view')}
-                              </Button>
+                            <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                              <span className="flex items-center">
+                                <Clock className="h-4 w-4 mr-1" />
+                                {new Date(booking.date).toLocaleDateString('lt-LT')}
+                              </span>
+                              <span className="font-medium text-gray-900">€{booking.amount.toFixed(2)}</span>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-8">
-                          <p className="text-gray-500">{t('providerDashboard.emptyBookingsTitle')}</p>
-                          <p className="text-sm text-gray-400 mt-1">{t('providerDashboard.emptyBookingsDesc')}</p>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getStatusColor(booking.status)}>
+                              {getStatusText(booking.status)}
+                            </Badge>
+                            <Button variant="outline" size="sm">
+                              {t('providerDashboard.view')}
+                            </Button>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                    {recentBookings.length > 0 && (
-                      <div className="mt-4">
-                        <Button variant="outline" className="w-full">
-                          {t('providerDashboard.viewAllBookings')}
-                        </Button>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">{t('providerDashboard.emptyBookingsTitle')}</p>
+                        <p className="text-sm text-gray-400 mt-1">{t('providerDashboard.emptyBookingsDesc')}</p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                  {recentBookings.length > 0 && (
+                    <div className="mt-4">
+                      <Button variant="outline" className="w-full">
+                        {t('providerDashboard.viewAllBookings')}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
-              {/* Quick Actions */}
-              <div className="space-y-6">
-                {/* Recent Notifications */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>Notifications</span>
-                      {unreadCount > 0 && (
-                        <Badge variant="destructive" className="ml-2">
-                          {unreadCount}
-                        </Badge>
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {notifications.slice(0, 5).length > 0 ? (
-                        notifications.slice(0, 5).map((notification) => (
-                          <div key={notification.id} className={`p-3 rounded-lg border ${!notification.read ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-                            <div className="flex items-start space-x-3">
-                              <Bell className={`h-4 w-4 mt-0.5 ${!notification.read ? 'text-blue-500' : 'text-gray-400'}`} />
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${!notification.read ? 'text-blue-900' : 'text-gray-900'}`}>
-                                  {notification.title}
-                                </p>
-                                <p className={`text-xs ${!notification.read ? 'text-blue-700' : 'text-gray-600'}`}>
-                                  {notification.message}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {new Date(notification.created_at).toLocaleDateString('lt-LT')}
-                                </p>
-                              </div>
+            {/* Notifications */}
+            <div className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Notifications</span>
+                    {unreadCount > 0 && (
+                      <Badge variant="destructive" className="ml-2">
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {notifications.slice(0, 5).length > 0 ? (
+                      notifications.slice(0, 5).map((notification) => (
+                        <div key={notification.id} className={`p-3 rounded-lg border ${!notification.read ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+                          <div className="flex items-start space-x-3">
+                            <Bell className={`h-4 w-4 mt-0.5 ${!notification.read ? 'text-blue-500' : 'text-gray-400'}`} />
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium ${!notification.read ? 'text-blue-900' : 'text-gray-900'}`}>
+                                {notification.title}
+                              </p>
+                              <p className={`text-xs ${!notification.read ? 'text-blue-700' : 'text-gray-600'}`}>
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(notification.created_at).toLocaleDateString('lt-LT')}
+                              </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-4">
-                          <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">No notifications yet</p>
                         </div>
-                      )}
-                    </div>
-                    {notifications.length > 5 && (
-                      <div className="mt-4">
-                        <Button variant="outline" size="sm" className="w-full">
-                          View All Notifications
-                        </Button>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">No notifications yet</p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('providerDashboard.quickActions')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button 
-                      className="w-full justify-start" 
-                      variant="outline"
-                      onClick={() => router.push('/provider/availability')}
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {t('providerDashboard.manageAvailability')}
-                    </Button>
-                    <Button 
-                      className="w-full justify-start" 
-                      variant="outline"
-                      onClick={() => router.push('/provider/dashboard/bookings')}
-                    >
-                      <Users className="h-4 w-4 mr-2" />
-                      {t('providerDashboard.viewBookings')}
-                    </Button>
-                    <Button 
-                      className="w-full justify-start" 
-                      variant="outline"
-                      onClick={() => router.push('/provider/profile')}
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      {t('providerDashboard.editProfile')}
-                    </Button>
-                    <Button 
-                      className="w-full justify-start" 
-                      variant="outline"
-                      onClick={() => router.push('/provider/dashboard/chat')}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Customer Messages
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('providerDashboard.profileStatus')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{t('providerDashboard.profileComplete')}</span>
-                        <Badge className={getProfileStatusColor(profileStatus.profileComplete ? 'complete' : 'pending')}>
-                          {getProfileStatusText(profileStatus.profileComplete ? 'complete' : 'pending')}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{t('providerDashboard.verification')}</span>
-                        <Badge className={getProfileStatusColor(profileStatus.verification)}>
-                          {getProfileStatusText(profileStatus.verification)}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{t('providerDashboard.availability')}</span>
-                        <Badge className={getProfileStatusColor(profileStatus.availability)}>
-                          {getProfileStatusText(profileStatus.availability)}
-                        </Badge>
-                      </div>
+                  </div>
+                  {notifications.length > 5 && (
+                    <div className="mt-4">
+                      <Button variant="outline" size="sm" className="w-full">
+                        View All Notifications
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
         </>
       </ProtectedRoute>
