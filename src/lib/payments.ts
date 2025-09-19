@@ -187,7 +187,8 @@ export const handlePaymentSucceeded = async (paymentIntent: { id: string; status
         const amount = (paymentIntent as any).amount / 100 // Convert from cents
         const currency = (paymentIntent as any).currency
         
-        await sendPaymentConfirmationEmail(booking.customer.email, {
+        await sendPaymentConfirmationEmail({
+          customerEmail: booking.customer.email,
           customerName: booking.customer.full_name || 'Valued Customer',
           serviceName: booking.service.name,
           providerName: booking.provider.business_name,

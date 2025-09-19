@@ -17,7 +17,7 @@ export function ServiceCategories({ isMobile = false, className }: ServiceCatego
         <div className="grid grid-cols-2 gap-4">
           {navigationItems.map((item) => (
             <Link
-              key={item.value}
+              key={item.href}
               href={item.href}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
@@ -42,7 +42,7 @@ export function ServiceCategories({ isMobile = false, className }: ServiceCatego
       <div className="grid grid-cols-5 gap-6">
         {navigationItems.map((item) => (
           <Link
-            key={item.value}
+            key={item.href}
             href={item.href}
             className="flex flex-col items-center p-6 border border-gray-200 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
           >

@@ -25,6 +25,7 @@ export interface BookingStepProps {
   onTimeSelect: (time: string) => void
   onNext: () => void
   onPrev: () => void
+  onComplete: () => void
   loading?: boolean
 }
 

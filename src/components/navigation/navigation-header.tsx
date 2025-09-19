@@ -6,21 +6,30 @@ import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { UserMenu } from './user-menu'
+import { useAuth } from '@/contexts/auth-context'
 
 interface NavigationHeaderProps {
   isMobile: boolean
   mobileMenuOpen: boolean
   onMobileMenuToggle: () => void
   showSearchBar?: boolean
+  isProviderRoute: boolean
+  provider?: any
+  onSignOut: () => void
 }
 
 export function NavigationHeader({ 
   isMobile, 
   mobileMenuOpen, 
   onMobileMenuToggle, 
-  showSearchBar = false 
+  showSearchBar = false,
+  isProviderRoute,
+  provider,
+  onSignOut
 }: NavigationHeaderProps) {
   const pathname = usePathname()
+  const { user } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -66,6 +75,17 @@ export function NavigationHeader({
             >
               Kaip tai veikia
             </Link>
+            {user && !isProviderRoute && (
+              <Link 
+                href="/favorites" 
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  pathname === '/favorites' ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Mėgstami
+              </Link>
+            )}
           </nav>
         )}
 
@@ -79,7 +99,11 @@ export function NavigationHeader({
         {/* Desktop Actions */}
         {!isMobile && (
           <div className="flex items-center space-x-4">
-            {/* User menu and other desktop actions will be rendered here */}
+            <UserMenu 
+              isProviderRoute={isProviderRoute}
+              provider={provider}
+              onSignOut={onSignOut}
+            />
           </div>
         )}
 

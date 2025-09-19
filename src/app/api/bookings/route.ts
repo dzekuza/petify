@@ -180,7 +180,8 @@ export async function POST(request: NextRequest) {
     if (booking.customer?.email && booking.provider && booking.service && booking.pet) {
       try {
         // Send the detailed order confirmation email
-        await sendBookingConfirmationEmail(booking.customer.email, {
+        await sendBookingConfirmationEmail({
+          customerEmail: booking.customer.email,
           customerName: booking.customer.full_name || 'Valued Customer',
           providerName: booking.provider.business_name,
           serviceName: booking.service.name,
@@ -198,9 +199,9 @@ export async function POST(request: NextRequest) {
         })
 
         // Send comprehensive order details email
-        await sendOrderDetailsEmail(booking.customer.email, {
-          customerName: booking.customer.full_name || 'Valued Customer',
+        await sendOrderDetailsEmail({
           customerEmail: booking.customer.email,
+          customerName: booking.customer.full_name || 'Valued Customer',
           providerName: booking.provider.business_name,
           providerEmail: booking.provider.contact_email || '',
           serviceName: booking.service.name,
@@ -234,7 +235,8 @@ export async function POST(request: NextRequest) {
     // Send notification email to provider
     if (booking.provider?.contact_email && booking.customer && booking.service && booking.pet) {
       try {
-        await sendProviderNotificationEmail(booking.provider.contact_email, {
+        await sendProviderNotificationEmail({
+          providerEmail: booking.provider.contact_email,
           providerName: booking.provider.business_name,
           customerName: booking.customer.full_name || 'Valued Customer',
           customerEmail: booking.customer.email,

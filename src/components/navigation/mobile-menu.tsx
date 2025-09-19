@@ -88,13 +88,13 @@ export function MobileMenu({
             <div className="space-y-4">
               <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.avatar_url || ''} alt={user.full_name || ''} />
+                  <AvatarImage src={user.user_metadata?.avatar_url || ''} alt={user.user_metadata?.full_name || ''} />
                   <AvatarFallback>
-                    {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                    {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{user.full_name || 'User'}</p>
+                  <p className="font-medium">{user.user_metadata?.full_name || 'User'}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
                 </div>
               </div>

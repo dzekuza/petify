@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, CheckCircle, PawPrint } from 'lucide-react'
 import { format } from 'date-fns'
+import { lt } from 'date-fns/locale'
 import type { BookingStepProps } from './types'
 
 export function BookingStep4({ 
@@ -64,7 +65,7 @@ export function BookingStep4({
               <h4 className="font-medium text-gray-900">Data ir laikas</h4>
               {selectedDate && (
                 <p className="text-gray-600">
-                  {format(selectedDate, 'EEEE, MMMM d, yyyy', { locale: 'lt' })}
+                  {format(selectedDate, 'EEEE, MMMM d, yyyy', { locale: lt })}
                 </p>
               )}
               {selectedTimeSlot && (

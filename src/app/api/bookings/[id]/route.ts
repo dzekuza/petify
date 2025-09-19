@@ -105,7 +105,8 @@ export async function PATCH(
     if (booking.customer.email && booking.provider && booking.service) {
       try {
         // Send booking update notification
-        await sendBookingUpdateEmail(booking.customer.email, {
+        await sendBookingUpdateEmail({
+          customerEmail: booking.customer.email,
           customerName: booking.customer.full_name || 'Valued Customer',
           providerName: booking.provider.business_name,
           serviceName: booking.service.name,
@@ -123,9 +124,9 @@ export async function PATCH(
 
         // Send comprehensive order details email with updated status
         if (booking.pet) {
-          await sendOrderDetailsEmail(booking.customer.email, {
-            customerName: booking.customer.full_name || 'Valued Customer',
+          await sendOrderDetailsEmail({
             customerEmail: booking.customer.email,
+            customerName: booking.customer.full_name || 'Valued Customer',
             providerName: booking.provider.business_name,
             providerEmail: booking.provider.contact_email || '',
             serviceName: booking.service.name,

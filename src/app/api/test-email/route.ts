@@ -16,14 +16,16 @@ export async function POST(request: NextRequest) {
 
     switch (template) {
       case 'welcome':
-        result = await sendWelcomeEmail(email, {
+        result = await sendWelcomeEmail({
+          userEmail: email,
           userName: 'Test User',
           verificationUrl: 'https://petify.lt/verify?token=test123'
         })
         break
 
       case 'booking':
-        result = await sendBookingConfirmationEmail(email, {
+        result = await sendBookingConfirmationEmail({
+          customerEmail: email,
           customerName: 'Test Customer',
           providerName: 'Test Pet Groomer',
           serviceName: 'Full Grooming Service',
@@ -42,7 +44,8 @@ export async function POST(request: NextRequest) {
         break
 
       case 'provider':
-        result = await sendProviderNotificationEmail(email, {
+        result = await sendProviderNotificationEmail({
+          providerEmail: email,
           providerName: 'Test Pet Groomer',
           customerName: 'Test Customer',
           customerEmail: 'customer@example.com',
@@ -66,7 +69,8 @@ export async function POST(request: NextRequest) {
 
       default:
         // Send welcome email as default
-        result = await sendWelcomeEmail(email, {
+        result = await sendWelcomeEmail({
+          userEmail: email,
           userName: 'Test User',
           verificationUrl: 'https://petify.lt/verify?token=test123'
         })

@@ -53,7 +53,8 @@ export function NavigationSearch({ isMobile = false, className }: NavigationSear
         </div>
         
         <AddressAutocomplete
-          onLocationSelect={setSelectedLocation}
+          value={selectedLocation}
+          onChange={setSelectedLocation}
           placeholder="Pasirinkite vietą..."
         />
         
@@ -79,7 +80,8 @@ export function NavigationSearch({ isMobile = false, className }: NavigationSear
       </div>
       
       <AddressAutocomplete
-        onLocationSelect={setSelectedLocation}
+        value={selectedLocation}
+        onChange={setSelectedLocation}
         placeholder="Vieta..."
         className="w-48"
       />

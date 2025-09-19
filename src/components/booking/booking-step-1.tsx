@@ -30,8 +30,7 @@ export function BookingStep1({
             key={service.id}
             service={service}
             isSelected={selectedService?.id === service.id}
-            onSelect={() => onServiceSelect(service)}
-            loading={loading}
+            onClick={() => onServiceSelect(service)}
           />
         ))}
       </div>

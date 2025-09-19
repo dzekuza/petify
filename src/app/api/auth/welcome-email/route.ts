@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await sendWelcomeEmail(email, {
+    const result = await sendWelcomeEmail({
+      userEmail: email,
       userName,
       verificationUrl: undefined // No verification needed for now
     })

@@ -41,10 +41,11 @@ export function BookingStep3({
           </div>
           
           <DateTimePicker
-            value={selectedDate}
-            onChange={onDateSelect}
+            selectedDate={selectedDate}
+            onDateSelect={onDateSelect}
+            selectedTime={selectedTimeSlot}
+            onTimeSelect={onTimeSelect}
             disabled={(date) => date < new Date()}
-            className="w-full"
           />
         </div>
 

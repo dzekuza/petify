@@ -51,6 +51,9 @@ export default function Navigation({ hideServiceCategories = false, onFiltersCli
         isMobile={isMobile}
         mobileMenuOpen={mobileMenuOpen}
         onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+        isProviderRoute={isProviderRoute}
+        provider={provider}
+        onSignOut={signOut}
       />
 
       {/* Mobile Menu */}

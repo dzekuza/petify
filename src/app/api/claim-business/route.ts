@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendEmail } from '@/lib/email'
+import { sendProviderNotificationEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,10 +34,27 @@ ${message || 'Nepateikta'}
 Šis prašymas buvo pateiktas per PetiFy platformą.
 `
 
-    await sendEmail({
-      to: 'info@petify.lt',
-      subject: `Naujas prašymas prisijungti verslą: ${providerName}`,
-      html: emailContent.replace(/\n/g, '<br>')
+    await sendProviderNotificationEmail({
+      providerEmail: 'info@petify.lt',
+      providerName: 'PetiFy Admin',
+      customerName: name,
+      customerEmail: email,
+      customerPhone: phone,
+      serviceName: 'Business Claim Request',
+      bookingDate: new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      bookingTime: new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      totalPrice: 0,
+      petName: 'N/A',
+      notes: emailContent,
+      bookingId: `CLAIM-${providerId}`
     })
 
     return NextResponse.json({ success: true })

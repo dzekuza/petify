@@ -143,15 +143,15 @@ export function BookingWizard({ provider, services }: BookingWizardProps) {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <BookingStep1 {...stepProps} />
+        return <BookingStep1 {...stepProps} onComplete={handleComplete} />
       case 2:
-        return <BookingStep2 {...stepProps} />
+        return <BookingStep2 {...stepProps} onComplete={handleComplete} />
       case 3:
-        return <BookingStep3 {...stepProps} />
+        return <BookingStep3 {...stepProps} onComplete={handleComplete} />
       case 4:
         return <BookingStep4 {...stepProps} onComplete={handleComplete} />
       default:
-        return <BookingStep1 {...stepProps} />
+        return <BookingStep1 {...stepProps} onComplete={handleComplete} />
     }
   }
 
