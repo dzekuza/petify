@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Elements } from '@stripe/react-stripe-js'
 import { Layout } from '@/components/layout'
@@ -151,9 +151,14 @@ export default function PaymentPage() {
         // Fetch selected pets
         if (user && petsParam) {
           const petIds = petsParam.split(',')
+          console.log('Loading pets with IDs:', petIds)
           const userPets = await petsApi.getUserPets(user.id)
+          console.log('User pets loaded:', userPets.length)
           const pets = userPets.filter(pet => petIds.includes(pet.id))
+          console.log('Selected pets after filtering:', pets.length, pets.map(p => p.name))
           setSelectedPets(pets)
+        } else {
+          console.log('No pets param or user:', { petsParam, user: !!user })
         }
 
       } catch (error) {
@@ -169,10 +174,10 @@ export default function PaymentPage() {
     }
   }, [params.id, searchParams, user, router])
 
-  const calculateTotal = () => {
+  const calculateTotal = useCallback(() => {
     if (!selectedService) return 0
     return selectedService.price * selectedPets.length
-  }
+  }, [selectedService, selectedPets])
 
   const calculateServiceFee = () => {
     const total = calculateTotal()
@@ -184,7 +189,7 @@ export default function PaymentPage() {
   }
 
   // Create Stripe payment intent
-  const createPaymentIntent = async () => {
+  const createPaymentIntent = useCallback(async () => {
     if (!selectedService || !provider || !user) return
 
     const amount = calculateTotal()
@@ -244,7 +249,7 @@ export default function PaymentPage() {
     } finally {
       setIsCreatingPayment(false)
     }
-  }
+  }, [selectedService, provider, user, selectedPets, calculateTotal])
 
   // Handle successful payment
   const handlePaymentSuccess = async (paymentIntent: { id: string; status: string }) => {
@@ -305,10 +310,11 @@ export default function PaymentPage() {
 
   // Initialize payment intent when component is ready
   useEffect(() => {
-    if (selectedService && provider && user && selectedPets.length > 0 && !clientSecret && !isCreatingPayment) {
+    if (selectedService && provider && user && selectedPets.length > 0 && !clientSecret && !isCreatingPayment && !loading) {
+      console.log('All data ready, creating payment intent...')
       createPaymentIntent()
     }
-  }, [selectedService, provider, user, selectedPets, clientSecret, isCreatingPayment])
+  }, [selectedService, provider, user, selectedPets, clientSecret, isCreatingPayment, createPaymentIntent, loading])
 
   if (loading) {
     return (
