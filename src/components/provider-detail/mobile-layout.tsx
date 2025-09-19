@@ -46,8 +46,12 @@ export function MobileLayout({
     '8fc776c6-d413-4250-ba52-058b4e2e7dc8'  // Zoohotel – naminių gyvūnų grožio salonas Pavilnyje
   ]
   
-  // Check if this is a scraped provider
-  const isScrapedProvider = scrapedProviderUserIds.includes(provider.userId)
+  // Check if this is a scraped provider that hasn't been claimed yet
+  // A provider is considered "unclaimed" if:
+  // 1. It's in the scraped provider list AND
+  // 2. It doesn't have active services (meaning it hasn't been properly set up by the owner)
+  const isUnclaimedScrapedProvider = scrapedProviderUserIds.includes(provider.userId) && 
+    (services.length === 0 || services.every(service => !service.status || service.status === 'inactive'))
 
   return (
     <div className="lg:hidden">
@@ -80,7 +84,7 @@ export function MobileLayout({
           </div>
 
           {/* Scrollable Content */}
-          <div className={`px-6 py-4 ${isScrapedProvider ? 'pb-4' : 'pb-32'}`}>
+          <div className={`px-6 py-4 ${isUnclaimedScrapedProvider ? 'pb-4' : 'pb-32'}`}>
             <ProviderInfo 
               provider={provider} 
               services={services} 
@@ -91,8 +95,8 @@ export function MobileLayout({
             />
           </div>
 
-          {/* Fixed Bottom Bar - Only show for non-scraped providers */}
-          {!isScrapedProvider && (
+          {/* Fixed Bottom Bar - Only show for claimed providers (not unclaimed scraped providers) */}
+          {!isUnclaimedScrapedProvider && (
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[70]">
               {provider.businessType === 'adoption' ? (
                 // Breeder interface

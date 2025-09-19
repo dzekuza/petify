@@ -192,8 +192,12 @@ export function BookingWidget({
     '8fc776c6-d413-4250-ba52-058b4e2e7dc8'  // Zoohotel – naminių gyvūnų grožio salonas Pavilnyje
   ]
   
-  // Check if this is a scraped provider
-  const isScrapedProvider = scrapedProviderUserIds.includes(provider.userId)
+  // Check if this is a scraped provider that hasn't been claimed yet
+  // A provider is considered "unclaimed" if:
+  // 1. It's in the scraped provider list AND
+  // 2. It doesn't have active services (meaning it hasn't been properly set up by the owner)
+  const isUnclaimedScrapedProvider = scrapedProviderUserIds.includes(provider.userId) && 
+    (services.length === 0 || services.every(service => !service.status || service.status === 'inactive'))
   
   // Booking form state - always declare hooks at the top level
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
@@ -354,8 +358,8 @@ export function BookingWidget({
     onBookService()
   }
 
-  // If it's a scraped provider, show claim business widget instead
-  if (isScrapedProvider) {
+  // If it's an unclaimed scraped provider, show claim business widget instead
+  if (isUnclaimedScrapedProvider) {
     return <ClaimBusinessWidget provider={provider} isMobile={isMobile} />
   }
 

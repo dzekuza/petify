@@ -103,9 +103,21 @@ export default function ProviderDetailPage() {
         return
       }
 
-      // Instead of redirecting, set the pre-selected service
-      if (serviceId) {
-        setPreSelectedServiceId(serviceId)
+      // Check if we're on mobile
+      const isMobile = window.innerWidth < 1024
+      
+      if (isMobile) {
+        // For mobile, redirect to the booking page
+        const bookingUrl = serviceId 
+          ? `/providers/${provider.id}/book?service=${serviceId}`
+          : `/providers/${provider.id}/book`
+        
+        router.push(bookingUrl)
+      } else {
+        // For desktop, set the pre-selected service (existing behavior)
+        if (serviceId) {
+          setPreSelectedServiceId(serviceId)
+        }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start booking'
