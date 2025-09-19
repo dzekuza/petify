@@ -12,7 +12,6 @@ import {
   Upload, 
   X, 
   Image as ImageIcon, 
-  Clock,
   Save
 } from 'lucide-react'
 import { toast } from 'sonner'

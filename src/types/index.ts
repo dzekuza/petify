@@ -7,6 +7,7 @@ export type ServiceCategory =
   | 'training' // treniruotės
   | 'sitting' // prižiūrėjimas
   | 'adoption' // veislynai
+  | 'pets' // gyvūnai pardavimui
 
 export type ServiceStatus = 'active' | 'inactive' | 'pending' // aktyvus | neaktyvus | laukiama
 

@@ -33,6 +33,22 @@ export function MobileLayout({
   onBack,
   onBookService
 }: MobileLayoutProps) {
+  // List of scraped provider user IDs (from BookitNow.lt import)
+  const scrapedProviderUserIds = [
+    'a6558eeb-8dac-44e6-a196-faaf93eef966', // Dresūros centras | Nemirseta
+    '0dcedfce-dca7-4911-8320-8de3c7232b25', // Dresūros centras | Palanga
+    '947814d9-60b8-4de5-aea7-04ade3168f30', // Fracco dresūros mokykla
+    '024f9da0-a579-4f6b-9ff5-3121996e2767', // OH MY DOG šunų ir kačių kirpykla
+    '52077fbe-293a-4888-876e-4f753d719819', // Reksas - Šunų pamokos Vilniuje
+    'b5a8b8b8-8dac-44e6-a196-faaf93eef966', // Šunų dresūros centras "Bėgantis šuo"
+    'c6c9c9c9-8dac-44e6-a196-faaf93eef966', // Šunų dresūros centras "Geras šuo"
+    '470f752b-915b-404e-a3bf-965f070c11f8', // Zoohotel – naminių gyvūnų grožio salonas Naujojoje Vilnioje
+    '8fc776c6-d413-4250-ba52-058b4e2e7dc8'  // Zoohotel – naminių gyvūnų grožio salonas Pavilnyje
+  ]
+  
+  // Check if this is a scraped provider
+  const isScrapedProvider = scrapedProviderUserIds.includes(provider.userId)
+
   return (
     <div className="lg:hidden">
       {/* Fixed Image Gallery */}
@@ -64,63 +80,63 @@ export function MobileLayout({
           </div>
 
           {/* Scrollable Content */}
-          <div className="px-6 py-4 pb-32">
+          <div className={`px-6 py-4 ${isScrapedProvider ? 'pb-4' : 'pb-32'}`}>
             <ProviderInfo 
               provider={provider} 
               services={services} 
               reviews={reviews} 
               petAd={petAd}
-              userPets={userPets}
-              onPetsUpdate={onPetsUpdate}
               isMobile={true}
               onBookService={(serviceId) => onBookService(serviceId)}
             />
           </div>
 
-          {/* Fixed Bottom Bar */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[70]">
-            {provider.businessType === 'adoption' ? (
-              // Breeder interface
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="text-lg font-semibold text-gray-900">
-                    Šiuo metu prieinama
+          {/* Fixed Bottom Bar - Only show for non-scraped providers */}
+          {!isScrapedProvider && (
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[70]">
+              {provider.businessType === 'adoption' ? (
+                // Breeder interface
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-lg font-semibold text-gray-900">
+                      Šiuo metu prieinama
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Pasirinkite gyvūną ir siųskite užklausą
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    Pasirinkite gyvūną ir siųskite užklausą
-                  </div>
+                  <Button 
+                    variant="gradient"
+                    size="sm"
+                    onClick={() => onBookService()}
+                    className="shrink-0 px-4 text-sm"
+                  >
+                    Siųsti užklausą
+                  </Button>
                 </div>
-                <Button 
-                  variant="gradient"
-                  size="sm"
-                  onClick={() => onBookService()}
-                  className="shrink-0 px-4 text-sm"
-                >
-                  Siųsti užklausą
-                </Button>
-              </div>
-            ) : (
-              // Regular service provider interface
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="text-lg font-semibold text-gray-900">
-                    {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
+              ) : (
+                // Regular service provider interface
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-lg font-semibold text-gray-900">
+                      {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {petAd ? 'Kaina' : t('common.perService')}
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    {petAd ? 'Kaina' : t('common.perService')}
-                  </div>
+                  <Button 
+                    variant="gradient"
+                    size="sm"
+                    onClick={() => onBookService()}
+                    className="shrink-0 px-4 text-sm"
+                  >
+                    {petAd ? 'Teirautis' : t('common.book')}
+                  </Button>
                 </div>
-                <Button 
-                  variant="gradient"
-                  size="sm"
-                  onClick={() => onBookService()}
-                  className="shrink-0 px-4 text-sm"
-                >
-                  {petAd ? 'Teirautis' : t('common.book')}
-                </Button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MapPin, Search } from 'lucide-react'
@@ -36,23 +36,21 @@ export const LocationAutocomplete = ({
   suggestions = []
 }: LocationAutocompleteProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [filteredSuggestions, setFilteredSuggestions] = useState<LocationSuggestion[]>([])
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Filter suggestions based on input value
-  useEffect(() => {
+  // Compute filtered suggestions using useMemo to prevent infinite loops
+  const filteredSuggestions = useMemo(() => {
     if (!value.trim()) {
-      setFilteredSuggestions(suggestions.slice(0, 5)) // Show top 5 suggestions when empty
-      return
+      return suggestions.slice(0, 5) // Show top 5 suggestions when empty
     }
 
     const filtered = suggestions.filter(suggestion =>
       suggestion.name.toLowerCase().includes(value.toLowerCase()) ||
       suggestion.city.toLowerCase().includes(value.toLowerCase())
     )
-    setFilteredSuggestions(filtered.slice(0, 8)) // Limit to 8 suggestions
+    return filtered.slice(0, 8) // Limit to 8 suggestions
   }, [value, suggestions])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +121,7 @@ export const LocationAutocomplete = ({
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pl-10 pr-10"
+          className={cn("pl-10 pr-10", className)}
         />
         <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       </div>

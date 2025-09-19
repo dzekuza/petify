@@ -6,7 +6,7 @@ import { ListingsGrid } from '@/components/listings-grid'
 import { PetAdsGrid } from '@/components/pet-ads-grid'
 import { FilterModal } from '@/components/filter-modal'
 import { SearchFilters } from '@/components/search-filters'
-import { SearchResult, SearchFilters as SearchFiltersType, PetAd } from '@/types'
+import { SearchResult, SearchFilters as SearchFiltersType, PetAd, IndividualPet } from '@/types'
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/translations'
 import { useDeviceDetection } from '@/lib/device-detection'
@@ -14,6 +14,7 @@ import { useDeviceDetection } from '@/lib/device-detection'
 interface SearchLayoutProps {
   results: SearchResult[]
   petAds?: PetAd[]
+  individualPets?: IndividualPet[]
   filters: SearchFiltersType
   onFiltersChange: (filters: SearchFiltersType) => void
   loading: boolean
@@ -26,7 +27,7 @@ interface SearchLayoutProps {
   isDrawerOpen?: boolean
 }
 
-export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose, onMarkerClick, selectedProviderId, isDrawerOpen }: SearchLayoutProps) => {
+export const SearchLayout = ({ results, petAds = [], individualPets = [], filters, onFiltersChange, loading, error, onFiltersClick, showFilterModal, onFilterModalClose, onMarkerClick, selectedProviderId, isDrawerOpen }: SearchLayoutProps) => {
   const { isDesktop } = useDeviceDetection()
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'map'>('list')
   const [rating, setRating] = useState(0)
@@ -77,7 +78,7 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
           onSearchClick={handleSearchClick}
           onFiltersClick={handleFiltersClick}
           showControls={false}
-          className={`w-full ${mapHeight}`}
+          className="w-full h-full"
         />
       </div>
 
@@ -88,7 +89,8 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
             {/* Filters */}
             <SearchFilters 
               filters={filters} 
-              onFiltersChange={onFiltersChange} 
+              onFiltersChange={onFiltersChange}
+              isMobile={!isDesktop}
             />
             
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1">
@@ -101,6 +103,39 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
                         <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
                       </div>
                     ))}
+                  </div>
+                ) : filters.category === 'pets' ? (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      {individualPets.length} Gyvūnai pardavimui
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {individualPets.map((pet) => (
+                        <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
+                          <div className="flex gap-4">
+                            {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
+                              <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                  src={pet.gallery[0]}
+                                  alt={pet.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-lg">{pet.title}</h3>
+                              <p className="text-gray-600 text-sm">
+                                {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
+                              </p>
+                              <p className="text-lg font-bold text-green-600">{pet.price}€</p>
+                              <p className="text-sm text-gray-500">
+                                Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <ListingsGrid
@@ -130,7 +165,8 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
               {/* Filters */}
               <SearchFilters 
                 filters={filters} 
-                onFiltersChange={onFiltersChange} 
+                onFiltersChange={onFiltersChange}
+                isMobile={!isDesktop}
               />
               <div className="space-y-4">
               {loading ? (
@@ -140,6 +176,39 @@ export const SearchLayout = ({ results, petAds = [], filters, onFiltersChange, l
                       <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
                     </div>
                   ))}
+                </div>
+              ) : filters.category === 'pets' ? (
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {individualPets.length} Gyvūnai pardavimui
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {individualPets.map((pet) => (
+                      <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
+                        <div className="flex gap-4">
+                          {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
+                            <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              <img
+                                src={pet.gallery[0]}
+                                alt={pet.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">{pet.title}</h3>
+                            <p className="text-gray-600 text-sm">
+                              {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
+                            </p>
+                            <p className="text-lg font-bold text-green-600">{pet.price}€</p>
+                            <p className="text-sm text-gray-500">
+                              Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <ListingsGrid

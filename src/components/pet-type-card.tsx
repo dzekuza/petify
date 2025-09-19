@@ -1,19 +1,14 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { PetType } from '@/types'
-import { cn } from '@/lib/utils'
 import { 
-  Plus, 
   Trash2, 
   Eye, 
   EyeOff, 
   Heart,
   Euro,
-  Calendar,
   Edit
 } from 'lucide-react'
 

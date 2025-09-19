@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +12,6 @@ import { Filter, X, User } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 import { providerApi } from '@/lib/providers'
-import { MobileFilterDrawer } from '@/components/mobile-filter-drawer'
 
 const serviceCategories: { value: ServiceCategory; label: string }[] = [
   { value: 'grooming', label: 'Gyvūnų šukavimas' },
@@ -33,7 +32,8 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
   const [isExpanded, setIsExpanded] = useState(false)
   const [userPets, setUserPets] = useState<Pet[]>([])
   const [loadingPets, setLoadingPets] = useState(false)
-  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([])
+  // Memoize empty suggestions array to prevent re-renders
+  const locationSuggestions = useMemo(() => [], [])
   const { user } = useAuth()
 
   // Fetch user pets when component mounts
@@ -56,20 +56,6 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
     fetchUserPets()
   }, [user])
 
-  // Fetch location suggestions when component mounts
-  useEffect(() => {
-    const fetchLocationSuggestions = async () => {
-      try {
-        const locations = await providerApi.getProviderLocations()
-        setLocationSuggestions(locations)
-      } catch (error) {
-        console.error('Error fetching location suggestions:', error)
-        setLocationSuggestions([])
-      }
-    }
-
-    fetchLocationSuggestions()
-  }, [])
 
   const handleFilterChange = (key: keyof SearchFiltersType, value: string | number | undefined | { min: number; max?: number } | { max: number; min?: number }) => {
     // Convert "all" to undefined for category filter
@@ -195,12 +181,76 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
             {/* Filter Toggle - Full width on mobile, normal on desktop */}
             <div className={`flex items-end space-x-2 ${isMobile ? 'col-span-1' : ''}`}>
               {isMobile ? (
-                <MobileFilterDrawer
-                  filters={filters}
-                  onFiltersChange={onFiltersChange}
-                  userPets={userPets}
-                  loadingPets={loadingPets}
-                />
+                <div className="w-full">
+                  {/* Mobile: Horizontal scrollable filters - no labels */}
+                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                    {/* Service Category - No label */}
+                    <div className="flex-shrink-0 w-[66.67%]">
+                      <Select 
+                        value={filters.category || 'all'} 
+                        onValueChange={(value) => handleFilterChange('category', value)}
+                      >
+                        <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectValue placeholder="Visos paslaugos" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          <SelectItem value="all">Visos paslaugos</SelectItem>
+                          {serviceCategories.map((category) => (
+                            <SelectItem key={category.value} value={category.value}>
+                              {category.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Location - No label */}
+                    <div className="flex-shrink-0 w-[66.67%]">
+                      <LocationAutocomplete
+                        value={filters.location ?? ''}
+                        onChange={(location) => handleFilterChange('location', location)}
+                        placeholder="Vieta"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+
+                    {/* Pet Selection - No label */}
+                    {userPets.length > 0 && (
+                      <div className="flex-shrink-0 w-[66.67%]">
+                        <Select 
+                          value={filters.petId || 'all'} 
+                          onValueChange={(value) => handleFilterChange('petId', value)}
+                        >
+                          <SelectTrigger className="w-full h-8 text-xs">
+                            <SelectValue placeholder="Visi gyvūnai" />
+                          </SelectTrigger>
+                          <SelectContent className="z-[200]">
+                            <SelectItem value="all">Visi gyvūnai</SelectItem>
+                            {userPets.map((pet) => (
+                              <SelectItem key={pet.id} value={pet.id}>
+                                {pet.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {/* Clear Filters - No label */}
+                    <div className="flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="h-8 text-xs"
+                        disabled={!hasActiveFilters}
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        Išvalyti
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <Button
                   variant="outline"

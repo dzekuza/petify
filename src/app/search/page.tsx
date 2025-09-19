@@ -4,9 +4,10 @@ import { useState, useEffect, Suspense, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { SearchLayout } from '@/components/search-layout'
-import { ServiceCategory, SearchFilters, SearchResult, PetAd } from '@/types'
+import { ServiceCategory, SearchFilters, SearchResult, PetAd, IndividualPet } from '@/types'
 import { providerApi } from '@/lib/providers'
 import { petAdsApi } from '@/lib/pet-ads'
+import { petAdoptionApi } from '@/lib/pet-adoption-profiles'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -50,10 +51,12 @@ function SearchPageContent() {
 
   const [results, setResults] = useState<SearchResult[]>([])
   const [petAds, setPetAds] = useState<PetAd[]>([])
+  const [individualPets, setIndividualPets] = useState<IndividualPet[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>()
 
   // Debounce filters to prevent excessive API calls
@@ -91,24 +94,34 @@ function SearchPageContent() {
         setLoading(true)
         setError(null)
         
-        // For adoption category, show breeders as providers (not pet ads)
-        const searchResults = await providerApi.searchProviders({
-          category: debouncedFilters.category,
-          location: debouncedFilters.location,
-          priceRange: debouncedFilters.priceRange,
-          rating: debouncedFilters.rating,
-          distance: debouncedFilters.distance,
-          date: debouncedFilters.date,
-          petId: debouncedFilters.petId,
-          verifiedOnly: false // Include both verified and unverified providers
-        })
-        setResults(searchResults)
-        setPetAds([]) // Clear pet ads results
+        if (debouncedFilters.category === 'pets') {
+          // Fetch individual pets for sale
+          const pets = await petAdoptionApi.getPublicIndividualPets(50)
+          setIndividualPets(pets)
+          setResults([])
+          setPetAds([])
+        } else {
+          // For other categories, show providers
+          const searchResults = await providerApi.searchProviders({
+            category: debouncedFilters.category,
+            location: debouncedFilters.location,
+            priceRange: debouncedFilters.priceRange,
+            rating: debouncedFilters.rating,
+            distance: debouncedFilters.distance,
+            date: debouncedFilters.date,
+            petId: debouncedFilters.petId,
+            verifiedOnly: false // Include both verified and unverified providers
+          })
+          setResults(searchResults)
+          setPetAds([])
+          setIndividualPets([])
+        }
       } catch (err) {
         console.error('Error fetching data:', err)
         setError(t('search.errorLoadingProviders'))
         setResults([])
         setPetAds([])
+        setIndividualPets([])
       } finally {
         setLoading(false)
       }
@@ -125,6 +138,7 @@ function SearchPageContent() {
     setShowFilterModal(!showFilterModal)
   }
 
+
   const handleMarkerClick = (result: SearchResult) => {
     setSelectedProviderId(result.provider.id)
     // Only open drawer on mobile devices
@@ -136,6 +150,7 @@ function SearchPageContent() {
   // Mobile layout with custom header
   if (!isDesktop) {
     return (
+      <>
       <div className="h-screen flex flex-col relative overflow-hidden">
         {/* Custom mobile header with back button */}
         <Button
@@ -147,10 +162,12 @@ function SearchPageContent() {
           <ArrowLeft className="h-6 w-6" />
         </Button>
         
+        
         <main className="flex-1 h-full">
           <SearchLayout
             results={results}
             petAds={petAds}
+            individualPets={individualPets}
             filters={filters}
             onFiltersChange={handleFiltersChange}
             loading={loading}
@@ -168,7 +185,7 @@ function SearchPageContent() {
         <MobileBottomNav />
 
         {/* Mobile Drawer - shadcn implementation */}
-        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="bottom">
           {/* Fixed trigger button - only show when drawer is closed */}
           {!isDrawerOpen && (
             <div className="fixed bottom-16 left-0 right-0 h-24 bg-background border-t shadow-lg pointer-events-auto z-[90] rounded-t-3xl">
@@ -182,6 +199,8 @@ function SearchPageContent() {
                       <DrawerTitle className="text-lg font-semibold text-gray-900">
                         {loading ? (
                           <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                        ) : filters.category === 'pets' ? (
+                          `${individualPets.length} Gyvūnai pardavimui`
                         ) : filters.category === 'adoption' ? (
                           `${petAds.length} Pets Available`
                         ) : (
@@ -200,6 +219,8 @@ function SearchPageContent() {
               <DrawerTitle>
                 {loading ? (
                   <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                ) : filters.category === 'pets' ? (
+                  `${individualPets.length} Gyvūnai pardavimui`
                 ) : filters.category === 'adoption' ? (
                   `${petAds.length} Pets Available`
                 ) : (
@@ -226,6 +247,40 @@ function SearchPageContent() {
                     </div>
                   ))}
                 </div>
+              ) : filters.category === 'pets' ? (
+                individualPets.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {individualPets.map((pet) => (
+                      <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
+                        <div className="flex gap-4">
+                          {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
+                            <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              <img
+                                src={pet.gallery[0]}
+                                alt={pet.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">{pet.title}</h3>
+                            <p className="text-gray-600 text-sm">
+                              {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
+                            </p>
+                            <p className="text-lg font-bold text-green-600">{pet.price}€</p>
+                            <p className="text-sm text-gray-500">
+                              Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600">Šiuo metu nėra gyvūnų pardavimui.</p>
+                  </div>
+                )
               ) : filters.category === 'adoption' ? (
                 petAds.length > 0 ? (
                   <PetAdsGrid
@@ -254,9 +309,12 @@ function SearchPageContent() {
                 )
               )}
             </div>
-          </DrawerContent>
-        </Drawer>
+        </DrawerContent>
+      </Drawer>
+
       </div>
+      
+      </>
     )
   }
 
@@ -266,6 +324,7 @@ function SearchPageContent() {
       <SearchLayout
         results={results}
         petAds={petAds}
+        individualPets={individualPets}
         filters={filters}
         onFiltersChange={handleFiltersChange}
         loading={loading}
@@ -273,6 +332,9 @@ function SearchPageContent() {
         onFiltersClick={handleFiltersClick}
         showFilterModal={showFilterModal}
         onFilterModalClose={() => setShowFilterModal(false)}
+        onMarkerClick={handleMarkerClick}
+        selectedProviderId={selectedProviderId}
+        isDrawerOpen={isDrawerOpen}
       />
     </Layout>
   )

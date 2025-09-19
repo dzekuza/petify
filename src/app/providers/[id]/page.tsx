@@ -403,8 +403,6 @@ export default function ProviderDetailPage() {
                 services={services}
                 reviews={reviews}
                 petAd={petAd}
-                userPets={userPets}
-                onPetsUpdate={setUserPets}
                 isMobile={false}
                 onBookService={handleBookService}
                 preSelectedServiceId={preSelectedServiceId}

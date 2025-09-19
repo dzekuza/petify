@@ -23,6 +23,7 @@ import { getStripe } from '@/lib/stripe'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { t } from '@/lib/translations'
+import Image from 'next/image'
 
 export default function PaymentPage() {
   const params = useParams()
@@ -186,17 +187,39 @@ export default function PaymentPage() {
   const createPaymentIntent = async () => {
     if (!selectedService || !provider || !user) return
 
+    const amount = calculateTotal()
+    const bookingId = `temp_${Date.now()}`
+    
+    // Validate required data
+    if (amount <= 0) {
+      toast.error('Invalid amount calculated. Please check your service selection.')
+      return
+    }
+    
+    if (selectedPets.length === 0) {
+      toast.error('Please select at least one pet for the service.')
+      return
+    }
+
     setIsCreatingPayment(true)
     try {
+      console.log('Creating payment intent with:', {
+        amount,
+        selectedService: selectedService?.name,
+        selectedPets: selectedPets.length,
+        bookingId,
+        userEmail: user.email
+      })
+
       const response = await fetch('/api/payments/create-intent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: calculateTotal(),
+          amount,
           currency: 'eur',
-          bookingId: `temp_${Date.now()}`, // Temporary ID until booking is created
+          bookingId,
           customerEmail: user.email,
           serviceFee: 0.15,
         }),
@@ -282,10 +305,10 @@ export default function PaymentPage() {
 
   // Initialize payment intent when component is ready
   useEffect(() => {
-    if (selectedService && provider && user && !clientSecret && !isCreatingPayment) {
+    if (selectedService && provider && user && selectedPets.length > 0 && !clientSecret && !isCreatingPayment) {
       createPaymentIntent()
     }
-  }, [selectedService, provider, user, clientSecret, isCreatingPayment])
+  }, [selectedService, provider, user, selectedPets, clientSecret, isCreatingPayment])
 
   if (loading) {
     return (
@@ -444,8 +467,18 @@ export default function PaymentPage() {
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div className="px-6 pt-6 pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">✂️</span>
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                      {provider.images && provider.images.length > 0 && provider.images[0] ? (
+                        <Image
+                          src={provider.images[0]}
+                          alt={provider.businessName}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl">✂️</span>
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg text-gray-900">{provider.businessName}</h3>

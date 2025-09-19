@@ -10,14 +10,11 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { 
-  IndividualPet, 
   PetFeature, 
   CreateIndividualPetForm,
   PetType
 } from '@/types'
 import { 
-  Plus, 
-  Trash2, 
   X, 
   Camera,
   Loader2,
@@ -25,6 +22,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { ImageUploadService, extractPathFromUrl } from '@/lib/image-upload'
+import { useAuth } from '@/contexts/auth-context'
 
 const PET_FEATURES: { value: PetFeature; label: string }[] = [
   { value: 'microchipped', label: 'Mikročipas iki surinkimo datos' },
@@ -42,13 +41,14 @@ interface AddIndividualPetDialogProps {
   loading?: boolean
 }
 
-export function AddIndividualPetDialog({ 
-  open, 
-  onOpenChange, 
+export function AddIndividualPetDialog({
+  open,
+  onOpenChange,
   petTypes,
-  onSave, 
-  loading = false 
+  onSave,
+  loading = false
 }: AddIndividualPetDialogProps) {
+  const { user } = useAuth()
   const [selectedPetTypeId, setSelectedPetTypeId] = useState<string>('')
   const [pet, setPet] = useState<CreateIndividualPetForm>({
     title: '',
@@ -59,6 +59,7 @@ export function AddIndividualPetDialog({
     readyToLeave: '',
     features: []
   })
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([])
   const [uploadingImages, setUploadingImages] = useState(false)
   const galleryRef = useRef<HTMLInputElement>(null)
 
@@ -79,7 +80,12 @@ export function AddIndividualPetDialog({
     }
 
     try {
-      await onSave(pet, selectedPetTypeId)
+      // Create a modified pet object with URLs instead of files
+      const petWithUrls = {
+        ...pet,
+        gallery: uploadedUrls // Pass URLs instead of files
+      }
+      await onSave(petWithUrls as any, selectedPetTypeId)
       toast.success('Gyvūnas pridėtas sėkmingai')
       onOpenChange(false)
       resetForm()
@@ -100,6 +106,7 @@ export function AddIndividualPetDialog({
       readyToLeave: '',
       features: []
     })
+    setUploadedUrls([])
   }
 
   const updatePet = (updates: Partial<CreateIndividualPetForm>) => {
@@ -116,17 +123,20 @@ export function AddIndividualPetDialog({
   }
 
   const handleGalleryUpload = async (files: FileList) => {
+    if (!user) return
+    
     setUploadingImages(true)
     try {
-      // TODO: Implement image upload to Supabase storage
-      const newImages: (File | string)[] = []
-      for (let i = 0; i < files.length; i++) {
-        newImages.push(files[i])
-      }
+      const fileArray = Array.from(files)
+      const uploadResults = await ImageUploadService.uploadMultipleImages(
+        fileArray,
+        'individual-pets',
+        user.id
+      )
       
-      updatePet({
-        gallery: [...pet.gallery, ...newImages]
-      })
+      const newUrls = uploadResults.map(result => result.url)
+      setUploadedUrls(prev => [...prev, ...newUrls])
+      toast.success(`${files.length} nuotraukos pridėtos`)
     } catch (error) {
       console.error('Error uploading images:', error)
       toast.error('Nepavyko įkelti nuotraukų')
@@ -135,15 +145,22 @@ export function AddIndividualPetDialog({
     }
   }
 
-  const removeGalleryImage = (index: number) => {
-    updatePet({
-      gallery: pet.gallery.filter((_, i) => i !== index)
-    })
+  const removeGalleryImage = async (index: number) => {
+    const imageUrl = uploadedUrls[index]
+    const imagePath = extractPathFromUrl(imageUrl)
+    
+    try {
+      if (imagePath) {
+        await ImageUploadService.deleteImage(imagePath)
+      }
+      setUploadedUrls(prev => prev.filter((_, i) => i !== index))
+      toast.success('Nuotrauka ištrinta')
+    } catch (error) {
+      console.error('Error deleting image:', error)
+      toast.error('Nepavyko ištrinti nuotraukos')
+    }
   }
 
-  const getFeatureLabel = (feature: PetFeature) => {
-    return PET_FEATURES.find(f => f.value === feature)?.label || feature
-  }
 
   const selectedPetType = petTypes.find(pt => pt.id === selectedPetTypeId)
 
@@ -298,25 +315,27 @@ export function AddIndividualPetDialog({
                 }}
               />
               
-              {pet.gallery.length > 0 && (
+              {uploadedUrls.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-3">
-                  {pet.gallery.map((image, imageIndex) => (
+                  {uploadedUrls.map((image, imageIndex) => (
                     <div key={imageIndex} className="relative group">
-                      {image instanceof File ? (
-                        <div className="w-full h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <span className="text-xs text-gray-500">
-                            {image.name}
-                          </span>
-                        </div>
-                      ) : (
+                      <div className="w-full h-20 bg-gray-200 rounded-lg overflow-hidden">
                         <Image
                           src={image}
                           alt={`Gallery ${imageIndex + 1}`}
                           width={80}
                           height={80}
                           className="w-full h-20 object-cover rounded-lg"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                            target.nextElementSibling?.classList.remove('hidden')
+                          }}
                         />
-                      )}
+                        <div className="w-full h-full items-center justify-center hidden">
+                          <span className="text-xs text-gray-500">Image {imageIndex + 1}</span>
+                        </div>
+                      </div>
                       <Button
                         type="button"
                         variant="destructive"

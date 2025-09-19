@@ -16,10 +16,16 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    if (!amount || !bookingId) {
-      console.error('Missing required fields:', { amount, bookingId })
+    if (amount === undefined || amount === null || amount <= 0 || !bookingId) {
+      console.error('Missing or invalid required fields:', { 
+        amount, 
+        bookingId, 
+        amountType: typeof amount,
+        amountIsZero: amount === 0,
+        amountIsNegative: amount < 0
+      })
       return NextResponse.json(
-        { error: 'Missing required fields: amount and bookingId' },
+        { error: 'Missing or invalid required fields: amount must be greater than 0 and bookingId is required' },
         { status: 400 }
       )
     }

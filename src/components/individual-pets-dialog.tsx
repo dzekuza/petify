@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { 
   IndividualPet, 
@@ -14,13 +13,11 @@ import {
   CreateIndividualPetForm
 } from '@/types'
 import { 
-  Plus, 
   Trash2, 
   Edit, 
   Camera, 
   X, 
   Loader2,
-  Calendar,
   Euro,
   Heart
 } from 'lucide-react'
@@ -174,9 +171,6 @@ export function IndividualPetsDialog({
     updatePet(petIndex, { features: newFeatures })
   }
 
-  const getFeatureLabel = (feature: PetFeature) => {
-    return PET_FEATURES.find(f => f.value === feature)?.label || feature
-  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

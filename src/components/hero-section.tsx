@@ -12,6 +12,7 @@ import { Search } from 'lucide-react'
 import { t } from '@/lib/translations'
 import { format } from 'date-fns'
 import { CategorySection } from '@/components/category-section'
+import { PetAdsSection } from '@/components/pet-ads-section'
 import { MobileHeroSection } from '@/components/mobile-hero-section'
 
 export const HeroSection = () => {
@@ -30,6 +31,7 @@ export const HeroSection = () => {
     { value: 'training', label: 'Dresūra' },
     { value: 'sitting', label: 'Prižiūrėjimas' },
     { value: 'adoption', label: 'Veislynai' },
+    { value: 'pets', label: 'Gyvūnai pardavimui' },
   ], [])
 
   const citySuggestions = useMemo(() => [
@@ -84,6 +86,11 @@ export const HeroSection = () => {
     
     // Add category if provided
     if (selectedCategory) {
+      if (selectedCategory === 'pets') {
+        // Redirect to pet ads page for pet sales
+        router.push('/search?category=pets')
+        return
+      }
       params.set('category', selectedCategory)
     }
     
@@ -322,6 +329,12 @@ export const HeroSection = () => {
                 limit={8}
               />
             )), [])}
+            
+            {/* Pet Ads Section */}
+            <PetAdsSection
+              title="Gyvūnai pardavimui"
+              limit={8}
+            />
           </div>
         </div>
       </div>

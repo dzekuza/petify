@@ -1,11 +1,16 @@
 'use client'
 
 import { Star, Clock, Users, PawPrint, Euro, Phone, Mail, Globe, MapPin } from 'lucide-react'
-import { ServiceProvider, Service, Review, PetAd, Pet } from '@/types'
+import { ServiceProvider, Service, Review, PetAd, PetType, IndividualPet } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
 import Map, { Marker } from 'react-map-gl/mapbox'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
+import { petAdoptionApi } from '@/lib/pet-adoption-profiles'
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Function to calculate time since joining
@@ -34,14 +39,42 @@ interface ProviderInfoProps {
   services: Service[]
   reviews: Review[]
   petAd?: PetAd | null
-  userPets: Pet[]
-  onPetsUpdate: (pets: Pet[]) => void
   isMobile?: boolean
   onBookService?: (serviceId: string) => void
   preSelectedServiceId?: string | null
 }
 
-export function ProviderInfo({ provider, services, reviews, petAd, userPets, onPetsUpdate, isMobile = false, onBookService, preSelectedServiceId }: ProviderInfoProps) {
+export function ProviderInfo({ provider, services, reviews, petAd, isMobile = false, onBookService, preSelectedServiceId }: ProviderInfoProps) {
+  const [petTypes, setPetTypes] = useState<PetType[]>([])
+  const [individualPets, setIndividualPets] = useState<IndividualPet[]>([])
+  const [loadingPets, setLoadingPets] = useState(false)
+  
+  // Check if this is an adoption provider
+  const isAdoptionProvider = provider.businessType === 'adoption' || 
+    services.some(service => service.category === 'adoption')
+  
+  // Fetch pet types and individual pets for adoption providers
+  useEffect(() => {
+    if (isAdoptionProvider && provider.userId) {
+      const fetchPetData = async () => {
+        try {
+          setLoadingPets(true)
+          const [petTypesData, individualPetsData] = await Promise.all([
+            petAdoptionApi.getPetTypesByProvider(provider.userId),
+            petAdoptionApi.getIndividualPetsByProvider(provider.userId)
+          ])
+          setPetTypes(petTypesData)
+          setIndividualPets(individualPetsData)
+        } catch (error) {
+          console.error('Error fetching pet data:', error)
+        } finally {
+          setLoadingPets(false)
+        }
+      }
+      
+      fetchPetData()
+    }
+  }, [isAdoptionProvider, provider.userId])
   
   // List of scraped provider user IDs (from BookitNow.lt import)
   const scrapedProviderUserIds = [
@@ -63,7 +96,6 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
   
   const containerClass = isMobile ? 'space-y-6' : 'space-y-6'
   const titleClass = isMobile ? 'text-lg font-semibold' : 'text-xl font-semibold'
-  const descriptionClass = isMobile ? 'text-gray-600 leading-relaxed' : 'text-gray-600 leading-relaxed text-lg'
 
   const handleServiceBooking = (service: Service) => {
     // Instead of opening dialog, redirect to booking page with service pre-selected
@@ -368,136 +400,204 @@ export function ProviderInfo({ provider, services, reviews, petAd, userPets, onP
         </div>
       )}
 
-      {/* Pet Listings for Breeders */}
-      {provider.businessType === 'adoption' && services.length > 0 && (
+      {/* Pet Types and Individual Pets for Adoption Providers */}
+      {isAdoptionProvider && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>Gyvūnų sąrašas</h2>
-          <div className="space-y-4">
-            {services.map((service) => (
-              <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 mb-2`}>
-                      {service.name}
-                    </h4>
-                    <p className={`text-sm text-gray-600 mb-3`}>
-                      {service.description}
-                    </p>
-                    
-                    {/* Pet Details */}
-                    <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-                      {service.breed && (
+          <h2 className={`${titleClass} text-gray-900 mb-4`}>Gyvūnų tipai ir sąrašas</h2>
+          
+          {loadingPets ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-lg h-32 w-full"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Provider Profile Information */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Veislyno informacija</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Business Information Card */}
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Verslo informacija</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
                         <div>
-                          <span className="font-medium text-gray-900">Veislė:</span>
-                          <span className="text-gray-600 ml-2">{service.breed}</span>
+                          <span className="font-medium text-gray-900">Pavadinimas:</span>
+                          <p className="text-gray-600">{provider.businessName}</p>
                         </div>
-                      )}
-                      {service.generation && (
                         <div>
-                          <span className="font-medium text-gray-900">Kartos tipas:</span>
-                          <span className="text-gray-600 ml-2">{service.generation}</span>
+                          <span className="font-medium text-gray-900">Tipas:</span>
+                          <p className="text-gray-600">{provider.businessType}</p>
                         </div>
-                      )}
-                      {service.ageWeeks && (
                         <div>
-                          <span className="font-medium text-gray-900">Amžius:</span>
-                          <span className="text-gray-600 ml-2">
-                            {service.ageWeeks} sav. {service.ageDays ? `, ${service.ageDays} d.` : ''}
-                          </span>
+                          <span className="font-medium text-gray-900">Aprašymas:</span>
+                          <p className="text-gray-600 text-sm line-clamp-3">{provider.description}</p>
                         </div>
-                      )}
-                      {service.readyToLeave && (
-                        <div>
-                          <span className="font-medium text-gray-900">Paruošti išvežti:</span>
-                          <span className="text-gray-600 ml-2">
-                            {new Date(service.readyToLeave).toLocaleDateString('lt-LT')}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Health & Documentation */}
-                    <div className="mb-3">
-                      <span className="font-medium text-gray-900 text-sm">Sveikata ir dokumentai:</span>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {service.microchipped && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            Mikročipas
-                          </span>
-                        )}
-                        {service.vaccinated && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            Vakcinuotas
-                          </span>
-                        )}
-                        {service.wormed && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            Išvaryti parazitai
-                          </span>
-                        )}
-                        {service.healthChecked && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            Sveikatos patikra
-                          </span>
-                        )}
-                        {service.parentsTested && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            Tėvai patikrinti
-                          </span>
-                        )}
-                        {service.kcRegistered && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            KC registruotas
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Litter Information */}
-                    {(service.maleCount || service.femaleCount) && (
-                      <div className="mb-3">
-                        <span className="font-medium text-gray-900 text-sm">Vados informacija:</span>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {service.maleCount && `${service.maleCount} patinų`}
-                          {service.maleCount && service.femaleCount && ', '}
-                          {service.femaleCount && `${service.femaleCount} patelių`}
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {provider.rating > 0 ? `⭐ ${provider.rating.toFixed(1)}` : 'Naujas'}
+                          </Badge>
+                          <Badge variant={provider.availability ? "default" : "secondary"} className="text-xs">
+                            {provider.availability ? "Prieinamas" : "Neprieinamas"}
+                          </Badge>
                         </div>
                       </div>
-                    )}
-                  </div>
-                  
-                  <div className="text-right ml-4">
-                    <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900 mb-2`}>
-                      €{service.price}
-                    </div>
-                    <div className="text-sm text-gray-600">Kaina</div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Contact Information Card */}
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Kontaktinė informacija</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="font-medium text-gray-900">El. paštas:</span>
+                          <p className="text-gray-600">{provider.contactInfo?.email || 'Nenurodyta'}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-900">Telefonas:</span>
+                          <p className="text-gray-600">{provider.contactInfo?.phone || 'Nenurodyta'}</p>
+                        </div>
+                        {provider.contactInfo?.website && (
+                          <div>
+                            <span className="font-medium text-gray-900">Svetainė:</span>
+                            <p className="text-gray-600">
+                              <a 
+                                href={provider.contactInfo.website} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                {provider.contactInfo.website}
+                              </a>
+                            </p>
+                          </div>
+                        )}
+                        <div>
+                          <span className="font-medium text-gray-900">Adresas:</span>
+                          <p className="text-gray-600">
+                            {provider.location?.address || 'Nenurodyta'}, {provider.location?.city || 'Nenurodyta'}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* Pet Types Section */}
+              {petTypes.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Gyvūnų tipai</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {petTypes.map((petType) => (
+                      <Card key={petType.id} className="hover:shadow-md transition-shadow">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg">{petType.title}</CardTitle>
+                          <p className="text-sm text-gray-600 line-clamp-2">{petType.description}</p>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {petType.breedType}
+                            </Badge>
+                            <Badge variant={petType.isActive ? "default" : "secondary"} className="text-xs">
+                              {petType.isActive ? "Aktyvus" : "Neaktyvus"}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
+              )}
 
-                {/* Service Images */}
-                {service.images && service.images.length > 0 && (
-                  <div className="mt-4">
-                    <div className="grid grid-cols-3 gap-2">
-                      {service.images.slice(0, 3).map((image, index) => (
-                        <div key={index} className="aspect-square rounded-lg overflow-hidden">
-                          <img
-                            src={image}
-                            alt={`${service.name} ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                      {service.images.length > 3 && (
-                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                          <span className="text-sm text-gray-500">+{service.images.length - 3}</span>
-                        </div>
-                      )}
-                    </div>
+              {/* Individual Pets Section */}
+              {individualPets.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Atskiri gyvūnai</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {individualPets.map((pet) => (
+                      <Card key={pet.id} className="hover:shadow-md transition-shadow">
+                        {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
+                          <div className="relative h-48 w-full">
+                            <Image
+                              src={pet.gallery[0]}
+                              alt={pet.title}
+                              fill
+                              className="object-cover rounded-t-lg"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                              }}
+                            />
+                          </div>
+                        )}
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg line-clamp-1">{pet.title}</CardTitle>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {pet.sexType === 'male' ? 'Patinas' : 'Patelė'}
+                            </Badge>
+                            <Badge variant="secondary" className="text-xs">
+                              {pet.age} sav.
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Euro className="h-4 w-4" />
+                              <span className="font-semibold text-lg">{pet.price}€</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Clock className="h-4 w-4" />
+                              <span>Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}</span>
+                            </div>
+
+                            {pet.features && pet.features.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {pet.features.slice(0, 2).map((feature) => (
+                                  <Badge key={feature} variant="secondary" className="text-xs">
+                                    {feature === 'microchipped' ? 'Mikročipas' :
+                                     feature === 'vaccinated' ? 'Vakcinuotas' :
+                                     feature === 'wormed' ? 'Nuparazitintas' :
+                                     feature === 'health_checked' ? 'Sveikatos patikra' :
+                                     feature === 'parents_tested' ? 'Tėvai patikrinti' : feature}
+                                  </Badge>
+                                ))}
+                                {pet.features.length > 2 && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    +{pet.features.length - 2}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {petTypes.length === 0 && individualPets.length === 0 && (
+                <div className="text-center py-8">
+                  <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">Šiuo metu nėra gyvūnų pardavimui.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

@@ -13,8 +13,7 @@ import {
   Star,
   Plus,
   Clock,
-  CheckCircle,
-  AlertCircle
+  CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
 

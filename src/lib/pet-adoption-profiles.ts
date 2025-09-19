@@ -214,36 +214,44 @@ export const petAdoptionApi = {
           throw new Error('Age must be between 0 and 200 weeks')
         }
 
-        // Upload gallery images first
+        // Handle gallery images (files or URLs)
         let galleryUrls: string[] = []
         if (individualPetForm.gallery && individualPetForm.gallery.length > 0) {
-          try {
-            // Limit to 10 images per pet
-            const limitedGallery = individualPetForm.gallery.slice(0, 10)
-            
-            const uploadPromises = limitedGallery.map(async (file: File) => {
-              // Validate file size (max 5MB)
-              if (file.size > 5 * 1024 * 1024) {
-                throw new Error(`File ${file.name} is too large. Maximum size is 5MB.`)
-              }
+          // Check if gallery contains files or URLs
+          const firstItem = individualPetForm.gallery[0]
+          if (typeof firstItem === 'string') {
+            // Gallery contains URLs (from edit dialog or pre-uploaded)
+            galleryUrls = individualPetForm.gallery as unknown as string[]
+          } else {
+            // Gallery contains files (from new upload)
+            try {
+              // Limit to 10 images per pet
+              const limitedGallery = individualPetForm.gallery.slice(0, 10)
+              
+              const uploadPromises = limitedGallery.map(async (file: File) => {
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                  throw new Error(`File ${file.name} is too large. Maximum size is 5MB.`)
+                }
 
-              // Validate file type
-              if (!file.type.startsWith('image/')) {
-                throw new Error(`File ${file.name} is not an image.`)
-              }
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                  throw new Error(`File ${file.name} is not an image.`)
+                }
 
-              const uploadResult = await uploadPetAdImage(file, `pet-${Date.now()}-${Math.random()}`)
-              if (uploadResult.data) {
-                return getPetAdImageUrl(`pet-${Date.now()}-${Math.random()}`, uploadResult.data.path.split('/').pop() || '')
-              }
-              return null
-            })
+                const uploadResult = await uploadPetAdImage(file, `pet-${Date.now()}-${Math.random()}`)
+                if (uploadResult.data) {
+                  return getPetAdImageUrl(`pet-${Date.now()}-${Math.random()}`, uploadResult.data.path.split('/').pop() || '')
+                }
+                return null
+              })
 
-            const uploadedUrls = await Promise.all(uploadPromises)
-            galleryUrls = uploadedUrls.filter((url): url is string => url !== null)
-          } catch (uploadError) {
-            console.error('Error uploading gallery images:', uploadError)
-            throw new Error(`Failed to upload images: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`)
+              const uploadedUrls = await Promise.all(uploadPromises)
+              galleryUrls = uploadedUrls.filter((url): url is string => url !== null)
+            } catch (uploadError) {
+              console.error('Error uploading gallery images:', uploadError)
+              throw new Error(`Failed to upload images: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`)
+            }
           }
         }
 
@@ -501,5 +509,86 @@ export const petAdoptionApi = {
       console.error('Error deleting individual pet:', error)
       throw new Error('Failed to delete individual pet')
     }
+  },
+
+  // Get all individual pets for a provider
+  async getIndividualPetsByProvider(providerUserId: string): Promise<IndividualPet[]> {
+    const { data, error } = await supabase
+      .from('individual_pets')
+      .select(`
+        *,
+        pet_types!inner (
+          id,
+          provider_id,
+          providers!inner (
+            user_id
+          )
+        )
+      `)
+      .eq('pet_types.providers.user_id', providerUserId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching individual pets:', error)
+      throw new Error('Failed to fetch individual pets')
+    }
+
+    return data.map((pet: any) => ({
+      id: pet.id,
+      petTypeId: pet.pet_type_id,
+      title: pet.title,
+      price: pet.price,
+      gallery: pet.gallery,
+      sexType: pet.sex_type,
+      age: pet.age,
+      readyToLeave: pet.ready_to_leave,
+      features: pet.features,
+      createdAt: pet.created_at,
+      updatedAt: pet.updated_at
+    }))
+  },
+
+  // Get public individual pets for landing page
+  async getPublicIndividualPets(limit: number = 8): Promise<IndividualPet[]> {
+    const { data, error } = await supabase
+      .from('individual_pets')
+      .select(`
+        *,
+        pet_types!inner (
+          id,
+          title,
+          description,
+          breed_type,
+          provider_id,
+          providers!inner (
+            id,
+            business_name,
+            business_type,
+            location
+          )
+        )
+      `)
+      .eq('pet_types.is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error fetching public individual pets:', error)
+      throw new Error('Failed to fetch public individual pets')
+    }
+
+    return data.map((pet: any) => ({
+      id: pet.id,
+      petTypeId: pet.pet_type_id,
+      title: pet.title,
+      price: pet.price,
+      gallery: pet.gallery,
+      sexType: pet.sex_type,
+      age: pet.age,
+      readyToLeave: pet.ready_to_leave,
+      features: pet.features,
+      createdAt: pet.created_at,
+      updatedAt: pet.updated_at
+    }))
   }
 }
