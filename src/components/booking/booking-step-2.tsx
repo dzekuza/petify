@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
 import { BreedSelector } from '@/components/ui/breed-selector'
 import { 
@@ -15,6 +14,7 @@ import {
 import { ArrowLeft, ArrowRight, Plus, PawPrint } from 'lucide-react'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
+import { useDeviceDetection } from '@/lib/device-detection'
 import { toast } from 'sonner'
 import type { BookingStepProps, BookingFormData } from './types'
 
@@ -27,6 +27,7 @@ export function BookingStep2({
   loading = false 
 }: BookingStepProps) {
   const { user } = useAuth()
+  const { isMobile } = useDeviceDetection()
   const [addPetDrawerOpen, setAddPetDrawerOpen] = useState(false)
   const [addPetForm, setAddPetForm] = useState<BookingFormData>({
     name: '',
@@ -134,24 +135,40 @@ export function BookingStep2({
             ))}
           </div>
         ) : pets.length > 0 ? (
-          pets.map((pet) => (
-            <div key={pet.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50">
-              <div className="flex-shrink-0">
-                {getPetIcon(pet.species)}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-gray-900">{pet.name}</div>
-                <div className="text-sm text-gray-500">
-                  {pet.species} • {pet.age} metai
-                  {pet.breed && ` • ${pet.breed}`}
+          pets.map((pet) => {
+            const isSelected = selectedPets.includes(pet.id)
+            return (
+              <div 
+                key={pet.id} 
+                className={`flex items-center space-x-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                  isSelected 
+                    ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' 
+                    : 'hover:bg-gray-50'
+                }`}
+                onClick={() => onPetSelect(pet.id)}
+              >
+                <div className="flex-shrink-0">
+                  {getPetIcon(pet.species)}
                 </div>
+                <div className="flex-1">
+                  <div className="font-medium text-gray-900">{pet.name}</div>
+                  <div className="text-sm text-gray-500">
+                    {pet.species} • {pet.age} metai
+                    {pet.breed && ` • ${pet.breed}`}
+                  </div>
+                </div>
+                {isSelected && (
+                  <div className="flex-shrink-0">
+                    <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
               </div>
-              <Checkbox
-                checked={selectedPets.includes(pet.id)}
-                onCheckedChange={() => onPetSelect(pet.id)}
-              />
-            </div>
-          ))
+            )
+          })
         ) : (
           <div className="text-center py-8">
             <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -177,15 +194,19 @@ export function BookingStep2({
         )}
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrev}>
+      <div className={`flex justify-between pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 space-x-3' : ''}`}>
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className={isMobile ? 'flex-1' : ''}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Atgal
         </Button>
         <Button 
           onClick={onNext}
           disabled={selectedPets.length === 0 || loading}
-          className="flex items-center space-x-2"
+          className={`flex items-center space-x-2 ${isMobile ? 'flex-1' : ''}`}
         >
           <span>Tęsti</span>
           <ArrowRight className="h-4 w-4" />

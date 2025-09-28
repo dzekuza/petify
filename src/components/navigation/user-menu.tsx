@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Heart, User, Settings, LogOut, Calendar, Star } from 'lucide-react'
+import { Heart, User, Settings, LogOut, Calendar, Star, Dog } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 
@@ -120,6 +120,12 @@ export function UserMenu({ isProviderRoute, provider, onSignOut, className }: Us
                 <Link href="/favorites">
                   <Heart className="mr-2 h-4 w-4" />
                   <span>Mėgstami</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pets">
+                  <Dog className="mr-2 h-4 w-4" />
+                  <span>Mano augintiniai</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

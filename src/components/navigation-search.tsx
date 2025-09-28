@@ -133,7 +133,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
             <div className="flex flex-col md:flex-row items-center w-full md:space-y-0 space-y-4">
               {/* Location */}
               <div className="flex-1 px-6 py-4 hover:bg-gray-50 md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="address-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="address-input" className="text-sm font-semibold text-gray-900 block">
                   {t('landing.hero.search.where')}
                 </Label>
                 <div className="relative">
@@ -149,7 +149,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                     }}
                     onFocus={() => setShowLocationSuggestions(location.length > 0)}
                     onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 text-sm"
                   />
                   
                   {/* Location Suggestions */}
@@ -176,7 +176,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
 
               {/* Provider */}
               <div className="flex-1 px-6 py-4 hover:bg-gray-50 rounded-lg md:rounded-none transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="provider-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="provider-input" className="text-sm font-semibold text-gray-900 block">
                   Teikėjas
                 </Label>
                 <div className="relative">
@@ -191,7 +191,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                     }}
                     onFocus={() => setShowProviderSuggestions(providerName.length > 0)}
                     onBlur={() => setTimeout(() => setShowProviderSuggestions(false), 200)}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 text-sm"
                   />
                   
                   {/* Provider Suggestions */}
@@ -218,14 +218,14 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
 
               {/* Date */}
               <div className="flex-1 px-6 py-4 hover:bg-gray-50 md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="date-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="date-input" className="text-sm font-semibold text-gray-900 block">
                   {t('landing.hero.search.date')}
                 </Label>
                 <div className="relative">
                   <Button
                     id="date-input"
                     variant="ghost"
-                    className="w-full text-lg text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
+                    className="w-full text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
                     onClick={() => setShowDateSuggestions(!showDateSuggestions)}
                     onBlur={() => setTimeout(() => setShowDateSuggestions(false), 200)}
                   >
@@ -282,7 +282,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                   onClick={handleSearch}
                 >
                   <Search className="h-6 w-6 md:mr-0 mr-2" aria-hidden="true" />
-                  <span className="md:hidden text-lg font-medium">Ieškoti</span>
+                  <span className="md:hidden font-medium">Ieškoti</span>
                 </button>
               </div>
             </div>
@@ -311,7 +311,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
           <div className="p-4 space-y-4">
             {/* Location */}
             <div>
-              <Label htmlFor="popover-address-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+              <Label htmlFor="popover-address-input" className="text-sm font-semibold text-gray-900 block">
                 {t('landing.hero.search.where')}
               </Label>
               <Input
@@ -319,7 +319,7 @@ export const NavigationSearch = ({ className, onFiltersClick }: NavigationSearch
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder={t('landing.hero.search.wherePlaceholder')}
-                className="text-lg"
+                className="text-sm"
               />
             </div>
 

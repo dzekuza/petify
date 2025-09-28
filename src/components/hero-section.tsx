@@ -164,7 +164,7 @@ export const HeroSection = () => {
             <div className="flex flex-col md:flex-row items-center w-full md:space-y-0 space-y-4">
               {/* Location */}
               <div className="flex-1 px-4 py-4 hover:bg-gray-50 md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="address-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="address-input" className="text-sm font-semibold text-gray-900 block">
                   {t('landing.hero.search.where')}
                 </Label>
                 <div className="relative">
@@ -178,7 +178,7 @@ export const HeroSection = () => {
                     onFocus={handleLocationFocus}
                     onBlur={handleLocationBlur}
                     onKeyDown={handleKeyPress}
-                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0"
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm px-0"
                     aria-describedby="location-suggestions"
                   />
                   
@@ -210,12 +210,12 @@ export const HeroSection = () => {
 
               {/* Service Category */}
               <div className="flex-1 px-4 py-4 hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="category-select" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="category-select" className="text-sm font-semibold text-gray-900 block">
                   Paslaugos
                 </Label>
                 <div className="relative">
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-lg px-0 h-auto py-0">
+                    <SelectTrigger className="border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm px-0 h-auto py-0">
                       <SelectValue placeholder="Pasirinkite paslaugą" />
                     </SelectTrigger>
                     <SelectContent>
@@ -231,14 +231,14 @@ export const HeroSection = () => {
 
               {/* Date */}
               <div className="flex-1 px-4 py-4  hover:bg-gray-50 md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative">
-                <Label htmlFor="date-input" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="date-input" className="text-sm font-semibold text-gray-900 block">
                   {t('landing.hero.search.date')}
                 </Label>
                 <div className="relative">
                   <Button
                     id="date-input"
                     variant="ghost"
-                    className="w-full text-lg text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
+                    className="w-full text-sm text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
                     onClick={handleDateFocus}
                     onBlur={handleDateBlur}
                     aria-describedby="date-suggestions"
@@ -305,7 +305,7 @@ export const HeroSection = () => {
                   type="button"
                 >
                   <Search className="h-6 w-6 md:mr-0 mr-2" aria-hidden="true" />
-                  <span className="md:hidden text-lg font-medium">Ieškoti</span>
+                  <span className="md:hidden text-sm font-medium">Ieškoti</span>
                 </button>
               </div>
             </div>

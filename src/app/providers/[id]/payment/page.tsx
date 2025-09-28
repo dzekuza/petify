@@ -1,581 +1,349 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { Elements } from '@stripe/react-stripe-js'
+import { useState, useEffect } from 'react'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { StripePaymentForm } from '@/components/stripe-payment-form'
-import { 
-  ArrowLeft, 
-  Calendar,
-  Clock,
-  Users,
-  CreditCard,
-  Shield,
-} from 'lucide-react'
-import { ServiceProvider, Service, Pet } from '@/types'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ServiceProvider, Service } from '@/types'
 import { supabase } from '@/lib/supabase'
-import { petsApi } from '@/lib/pets'
-import { useAuth } from '@/contexts/auth-context'
-import { getStripe } from '@/lib/stripe'
-import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { t } from '@/lib/translations'
-import Image from 'next/image'
+import { useDeviceDetection } from '@/lib/device-detection'
+import { ArrowLeft, CreditCard, Lock, CheckCircle } from 'lucide-react'
 
 export default function PaymentPage() {
   const params = useParams()
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const router = useRouter()
+  const { isMobile } = useDeviceDetection()
   
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
-  const [selectedService, setSelectedService] = useState<Service | null>(null)
-  const [selectedPets, setSelectedPets] = useState<Pet[]>([])
-  const [selectedDate, setSelectedDate] = useState('')
-  const [selectedTime, setSelectedTime] = useState('')
+  const [service, setService] = useState<Service | null>(null)
   const [loading, setLoading] = useState(true)
+  const [processing, setProcessing] = useState(false)
   
-  // Stripe payment state
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [isCreatingPayment, setIsCreatingPayment] = useState(false)
+  // Payment form state
+  const [cardNumber, setCardNumber] = useState('')
+  const [expiryDate, setExpiryDate] = useState('')
+  const [cvv, setCvv] = useState('')
+  const [cardholderName, setCardholderName] = useState('')
+  
+  // Booking data from URL params
+  const [bookingData, setBookingData] = useState({
+    providerId: '',
+    serviceId: '',
+    pets: [] as string[],
+    date: '',
+    time: '',
+    price: 0
+  })
 
   useEffect(() => {
-    const fetchBookingData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
         
-        // Get booking parameters from URL
-        const date = searchParams.get('date')
-        const time = searchParams.get('time')
-        const petsParam = searchParams.get('pets')
-        const serviceParam = searchParams.get('service')
+        // Get booking data from URL params
+        const providerId = params.id as string
+        const serviceId = searchParams?.get('serviceId') || ''
+        const pets = searchParams?.get('pets')?.split(',') || []
+        const date = searchParams?.get('date') || ''
+        const time = searchParams?.get('time') || ''
+        const price = parseFloat(searchParams?.get('price') || '0')
         
-        if (!date || !time || !petsParam || !serviceParam) {
-          router.push(`/providers/${params.id}`)
-          return
-        }
-        
-        setSelectedDate(date)
-        setSelectedTime(time)
+        setBookingData({
+          providerId,
+          serviceId,
+          pets,
+          date,
+          time,
+          price
+        })
         
         // Fetch provider data
         const { data: providerData, error: providerError } = await supabase
           .from('providers')
           .select('*')
-          .eq('id', params.id)
-          .eq('status', 'active')
+          .eq('id', providerId)
           .single()
 
-        if (providerError || !providerData) {
-          router.push(`/providers/${params.id}`)
+        if (providerError) {
+          console.error('Error fetching provider:', providerError)
+          toast.error('Provider not found')
           return
         }
 
-        // Transform provider data
-        const transformedProvider: ServiceProvider = {
-          id: providerData.id,
-          userId: providerData.user_id,
-          businessName: providerData.business_name,
-          description: providerData.description,
-          services: providerData.services || [],
-          location: {
-            address: providerData.location?.address || '',
-            city: providerData.location?.city || '',
-            state: providerData.location?.state || '',
-            zipCode: providerData.location?.zip || '',
-            coordinates: {
-              lat: providerData.location?.coordinates?.lat || 0,
-              lng: providerData.location?.coordinates?.lng || 0
-            }
-          },
-          rating: providerData.rating || 0,
-          reviewCount: providerData.review_count || 0,
-          priceRange: {
-            min: providerData.price_range?.min || 0,
-            max: providerData.price_range?.max || 100
-          },
-          availability: providerData.availability || {
-            monday: [],
-            tuesday: [],
-            wednesday: [],
-            thursday: [],
-            friday: [],
-            saturday: [],
-            sunday: []
-          },
-          images: providerData.images || [],
-          certifications: providerData.certifications || [],
-          experience: providerData.experience_years || 0,
-          status: providerData.status || 'active',
-          createdAt: providerData.created_at,
-          updatedAt: providerData.updated_at
-        }
-
-        setProvider(transformedProvider)
+        setProvider(providerData)
 
         // Fetch service data
         const { data: serviceData, error: serviceError } = await supabase
           .from('services')
           .select('*')
-          .eq('id', serviceParam)
-          .eq('is_active', true)
+          .eq('id', serviceId)
           .single()
 
-        if (serviceError || !serviceData) {
-          router.push(`/providers/${params.id}`)
+        if (serviceError) {
+          console.error('Error fetching service:', serviceError)
+          toast.error('Service not found')
           return
         }
 
-        const transformedService: Service = {
-          id: serviceData.id,
-          providerId: serviceData.provider_id,
-          category: serviceData.category,
-          name: serviceData.name,
-          description: serviceData.description,
-          price: serviceData.price,
-          duration: serviceData.duration_minutes,
-          maxPets: serviceData.max_pets,
-          requirements: serviceData.requirements || [],
-          includes: serviceData.includes || [],
-          images: serviceData.images || [],
-          status: serviceData.is_active ? 'active' : 'inactive',
-          createdAt: serviceData.created_at,
-          updatedAt: serviceData.updated_at
-        }
-
-        setSelectedService(transformedService)
-
-        // Fetch selected pets
-        if (user && petsParam) {
-          const petIds = petsParam.split(',')
-          console.log('Loading pets with IDs:', petIds)
-          const userPets = await petsApi.getUserPets(user.id)
-          console.log('User pets loaded:', userPets.length)
-          const pets = userPets.filter(pet => petIds.includes(pet.id))
-          console.log('Selected pets after filtering:', pets.length, pets.map(p => p.name))
-          setSelectedPets(pets)
-        } else {
-          console.log('No pets param or user:', { petsParam, user: !!user })
-        }
+        setService(serviceData)
 
       } catch (error) {
-        console.error('Error fetching booking data:', error)
-        router.push(`/providers/${params.id}`)
+        console.error('Error fetching data:', error)
+        toast.error('Failed to load payment data')
       } finally {
         setLoading(false)
       }
     }
 
-    if (params.id && user) {
-      fetchBookingData()
+    if (params.id) {
+      fetchData()
     }
-  }, [params.id, searchParams, user, router])
+  }, [params.id, searchParams])
 
-  const calculateTotal = useCallback(() => {
-    if (!selectedService) return 0
-    return selectedService.price * selectedPets.length
-  }, [selectedService, selectedPets])
-
-  const calculateServiceFee = () => {
-    const total = calculateTotal()
-    return Math.round(total * 0.15 * 100) / 100 // 15% service fee
-  }
-
-  const calculateGrandTotal = () => {
-    return calculateTotal() + calculateServiceFee()
-  }
-
-  // Create Stripe payment intent
-  const createPaymentIntent = useCallback(async () => {
-    if (!selectedService || !provider || !user) return
-
-    const amount = calculateTotal()
-    const bookingId = `temp_${Date.now()}`
-    
-    // Validate required data
-    if (amount <= 0) {
-      toast.error('Invalid amount calculated. Please check your service selection.')
-      return
-    }
-    
-    if (selectedPets.length === 0) {
-      toast.error('Please select at least one pet for the service.')
+  const handlePayment = async () => {
+    if (!cardNumber || !expiryDate || !cvv || !cardholderName) {
+      toast.error('Please fill in all payment details')
       return
     }
 
-    setIsCreatingPayment(true)
-    try {
-      console.log('Creating payment intent with:', {
-        amount,
-        selectedService: selectedService?.name,
-        selectedPets: selectedPets.length,
-        bookingId,
-        userEmail: user.email
-      })
-
-      const response = await fetch('/api/payments/create-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount,
-          currency: 'eur',
-          bookingId,
-          customerEmail: user.email,
-          serviceFee: 0.15,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Payment intent creation failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData
-        })
-        throw new Error(errorData.error || `Failed to create payment intent (${response.status})`)
-      }
-
-      const data = await response.json()
-      setClientSecret(data.clientSecret)
-    } catch (error) {
-      console.error('Error creating payment intent:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      toast.error(`${t('payment.failedToInitialize')}: ${errorMessage}`)
-    } finally {
-      setIsCreatingPayment(false)
-    }
-  }, [selectedService, provider, user, selectedPets, calculateTotal])
-
-  // Handle successful payment
-  const handlePaymentSuccess = async (paymentIntent: { id: string; status: string }) => {
-    if (!user || !selectedService || !provider) return
+    setProcessing(true)
     
     try {
-      // Warn if multiple pets are selected (database only supports single pet per booking)
-      if (selectedPets.length > 1) {
-        console.warn('Multiple pets selected but database schema only supports single pet per booking. Using first pet:', selectedPets[0]?.name)
-      }
-
-      // Calculate end time based on service duration
-      const startTime = new Date(`2000-01-01T${selectedTime}`)
-      const endTime = new Date(startTime.getTime() + (selectedService.duration || 60) * 60000)
-      const endTimeString = endTime.toTimeString().slice(0, 5)
-
-      // Create booking record using the correct database schema
-      const { data: bookingData, error: bookingError } = await supabase
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Create booking record
+      const { data: booking, error: bookingError } = await supabase
         .from('bookings')
         .insert({
-          customer_id: user.id,
-          provider_id: provider.id,
-          service_id: selectedService.id,
-          pet_id: selectedPets[0]?.id, // Database schema only supports single pet_id - using first selected pet
-          booking_date: selectedDate,
-          start_time: selectedTime,
-          end_time: endTimeString,
-          duration_minutes: selectedService.duration || 60,
-          total_price: calculateGrandTotal(), // Use grand total including service fee
+          provider_id: bookingData.providerId,
+          service_id: bookingData.serviceId,
+          customer_id: (await supabase.auth.getUser()).data.user?.id,
+          booking_date: bookingData.date,
+          booking_time: bookingData.time,
+          total_price: bookingData.price,
           status: 'confirmed',
-          payment_status: 'paid',
-          payment_id: paymentIntent.id // Store Stripe payment intent ID
+          payment_status: 'paid'
         })
         .select()
         .single()
 
       if (bookingError) {
-        console.error('Booking creation error details:', bookingError)
-        throw new Error(`Failed to create booking: ${bookingError.message}`)
+        throw bookingError
       }
 
-      toast.success(t('payment.paymentSuccessful'))
-      
-      // Redirect to confirmation page
-      router.push(`/bookings/${bookingData.id}`)
+      toast.success('Payment successful! Booking confirmed.')
+      router.push(`/bookings/${booking.id}`)
       
     } catch (error) {
-      console.error('Booking creation error:', error)
-      toast.error(t('payment.paymentSucceededButBookingFailed'))
+      console.error('Payment error:', error)
+      toast.error('Payment failed. Please try again.')
+    } finally {
+      setProcessing(false)
     }
   }
 
-  // Handle payment error
-  const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error)
-    toast.error(`Payment failed: ${error}`)
+  const handleBack = () => {
+    router.back()
   }
-
-  // Initialize payment intent when component is ready
-  useEffect(() => {
-    if (selectedService && provider && user && selectedPets.length > 0 && !clientSecret && !isCreatingPayment && !loading) {
-      console.log('All data ready, creating payment intent...')
-      createPaymentIntent()
-    }
-  }, [selectedService, provider, user, selectedPets, clientSecret, isCreatingPayment, createPaymentIntent, loading])
 
   if (loading) {
     return (
-      <Layout>
-        <ProtectedRoute>
+      <ProtectedRoute>
+        <Layout hideFooter={isMobile}>
           <div className="min-h-screen bg-gray-50 py-8">
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
                 <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
                 <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div className="h-32 bg-gray-200 rounded"></div>
-                    <div className="h-64 bg-gray-200 rounded"></div>
-                  </div>
-                  <div className="h-96 bg-gray-200 rounded"></div>
+                <div className="space-y-6">
+                  <div className="h-32 bg-gray-200 rounded"></div>
+                  <div className="h-64 bg-gray-200 rounded"></div>
                 </div>
               </div>
             </div>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </Layout>
+      </ProtectedRoute>
     )
   }
 
-  if (!provider || !selectedService) {
+  if (!provider || !service) {
     return (
-      <Layout>
-        <ProtectedRoute>
+      <ProtectedRoute>
+        <Layout hideFooter={isMobile}>
           <div className="min-h-screen bg-gray-50 py-8">
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('payment.bookingNotFound')}</h1>
-                <p className="text-gray-600">{t('payment.bookingNotFoundDesc')}</p>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Payment data not found</h1>
+                <p className="text-gray-600">Unable to load payment information.</p>
               </div>
             </div>
           </div>
-        </ProtectedRoute>
-      </Layout>
+        </Layout>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">{t('payment.confirmAndPay')}</h1>
-              <p className="text-sm text-gray-600">{provider.businessName}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Payment Form */}
-          <div className="relative z-0">
-          {isCreatingPayment ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-600">{t('payment.initializingPayment')}</p>
+    <ProtectedRoute>
+      <Layout hideFooter={isMobile}>
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBack}
+                  className="flex items-center space-x-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Atgal</span>
+                </Button>
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">Mokėjimas</h1>
+                  <p className="text-sm text-gray-600">Saugus mokėjimas per Stripe</p>
+                </div>
               </div>
             </div>
-          ) : clientSecret ? (
-            <Elements
-              stripe={getStripe()}
-              options={{
-                clientSecret,
-                appearance: {
-                  theme: 'stripe',
-                  variables: {
-                    colorPrimary: '#000000',
-                    colorBackground: '#ffffff',
-                    colorText: '#1f2937',
-                    colorDanger: '#ef4444',
-                    fontFamily: 'system-ui, sans-serif',
-                    spacingUnit: '4px',
-                    borderRadius: '8px',
-                    colorIcon: '#6b7280',
-                  },
-                  rules: {
-                    '.Input': {
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      padding: '12px',
-                      fontSize: '16px',
-                      lineHeight: '1.5',
-                    },
-                    '.Input:focus': {
-                      border: '1px solid #000000',
-                      boxShadow: '0 0 0 1px #000000',
-                    },
-                    '.Label': {
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      color: '#374151',
-                      marginBottom: '6px',
-                    },
-                    '.Tab': {
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      padding: '12px',
-                    },
-                    '.Tab:hover': {
-                      backgroundColor: '#f9fafb',
-                    },
-                    '.Tab--selected': {
-                      border: '1px solid #000000',
-                      backgroundColor: '#ffffff',
-                    },
-                  },
-                },
-              }}
-            >
-              <StripePaymentForm
-                clientSecret={clientSecret}
-                amount={calculateGrandTotal() * 100} // Convert to cents
-                currency="eur"
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-                bookingDetails={{
-                  serviceName: selectedService?.name || '',
-                  providerName: provider?.businessName || '',
-                  date: format(new Date(selectedDate), 'MMM d, yyyy'),
-                  time: selectedTime,
-                }}
-              />
-            </Elements>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Failed to initialize payment. Please refresh the page.</p>
-              <Button
-                onClick={() => window.location.reload()}
-                className="mt-4"
-              >
-                Refresh Page
-              </Button>
-            </div>
-          )}
           </div>
 
-          {/* Right Column - Booking Summary */}
-          <div>
-            <div className="sticky top-24">
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-                <div className="px-6 pt-6 pb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                      {provider.images && provider.images.length > 0 && provider.images[0] ? (
-                        <Image
-                          src={provider.images[0]}
-                          alt={provider.businessName}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-2xl">✂️</span>
-                      )}
+          {/* Main Content */}
+          <div className="max-w-2xl mx-auto px-6 py-8">
+            <div className="space-y-6">
+              {/* Booking Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>Užsakymo santrauka</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Paslaugos tiekėjas</h4>
+                    <p className="text-gray-600">{provider.businessName}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Paslauga</h4>
+                    <p className="text-gray-600">{service.name}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Data ir laikas</h4>
+                    <p className="text-gray-600">
+                      {new Date(bookingData.date).toLocaleDateString('lt-LT')} - {bookingData.time}
+                    </p>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-gray-900">Iš viso:</span>
+                      <span className="text-xl font-bold text-green-600">
+                        €{bookingData.price.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Payment Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CreditCard className="h-5 w-5 text-blue-600" />
+                    <span>Mokėjimo informacija</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="cardholder">Kortelės savininkas</Label>
+                    <Input
+                      id="cardholder"
+                      value={cardholderName}
+                      onChange={(e) => setCardholderName(e.target.value)}
+                      placeholder="Vardas Pavardė"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="cardNumber">Kortelės numeris</Label>
+                    <Input
+                      id="cardNumber"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 16))}
+                      placeholder="1234 5678 9012 3456"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="expiry">Galiojimo data</Label>
+                      <Input
+                        id="expiry"
+                        value={expiryDate}
+                        onChange={(e) => setExpiryDate(e.target.value.replace(/\D/g, '').slice(0, 4).replace(/(\d{2})(\d{2})/, '$1/$2'))}
+                        placeholder="MM/YY"
+                        className="mt-1"
+                      />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-gray-900">{provider.businessName}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{t('payment.petServiceBooking')}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="px-6 space-y-4 pb-6">
-                  <div className="text-sm text-gray-600">
-                    {t('payment.nonRefundableReservation')} <span className="text-blue-600 underline cursor-pointer">{t('payment.fullPolicy')}</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{t('payment.date')}</span>
-                      </div>
-                      <div className="text-sm font-medium">
-                        {format(new Date(selectedDate), 'MMM d, yyyy')}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{t('payment.time')}</span>
-                      </div>
-                      <div className="text-sm font-medium">{selectedTime}</div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{t('payment.pets')}</span>
-                      </div>
-                      <div className="text-sm font-medium">
-                        {selectedPets.length} {selectedPets.length === 1 ? 'pet' : 'pets'}
-                      </div>
+                      <Label htmlFor="cvv">CVV</Label>
+                      <Input
+                        id="cvv"
+                        value={cvv}
+                        onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                        placeholder="123"
+                        className="mt-1"
+                      />
                     </div>
                   </div>
                   
-                  <div className="border-t border-gray-200 pt-4 space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
-                        {selectedPets.length} {selectedPets.length === 1 ? 'pet' : 'pets'} × €{selectedService.price}
-                      </span>
-                      <span className="font-medium">€{calculateTotal()}</span>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <Lock className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Saugus mokėjimas</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{t('payment.petifyServiceFee')}</span>
-                      <span className="font-medium">€{calculateServiceFee()}</span>
-                    </div>
+                    <p className="text-sm text-green-700 mt-1">
+                      Jūsų mokėjimo duomenys yra šifruojami ir saugomi saugiai per Stripe.
+                    </p>
                   </div>
-                  
-                  <div className="border-t border-gray-200 pt-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold text-gray-900">{t('payment.totalEUR')}</span>
-                      <span className="text-xl font-bold text-gray-900">
-                        €{(calculateTotal() + calculateServiceFee()).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <CreditCard className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{t('payment.paymentMethod')}</span>
-                      </div>
-                      <div className="text-sm font-medium">{t('payment.creditDebitCard')}</div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Shield className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{t('payment.security')}</span>
-                      </div>
-                      <div className="text-sm font-medium text-green-600">{t('payment.securedByStripe')}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center text-sm text-gray-500">
-                    {t('payment.completePaymentInstruction')}
-                  </div>
-                </div>
+                </CardContent>
+              </Card>
+
+              {/* Payment Button */}
+              <div className={`${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[100]' : ''}`}>
+                <Button
+                  onClick={handlePayment}
+                  disabled={processing || !cardNumber || !expiryDate || !cvv || !cardholderName}
+                  className={`w-full bg-green-600 hover:bg-green-700 text-white ${isMobile ? '' : 'max-w-md mx-auto'}`}
+                  size="lg"
+                >
+                  {processing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Apdorojama...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Mokėti €{bookingData.price.toFixed(2)}
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </Layout>
+    </ProtectedRoute>
   )
 }

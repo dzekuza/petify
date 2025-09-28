@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 import { providerApi } from '@/lib/providers'
+import { useDeviceDetection } from '@/lib/device-detection'
 import { BookingStep1 } from './booking-step-1'
 import { BookingStep2 } from './booking-step-2'
 import { BookingStep3 } from './booking-step-3'
@@ -14,10 +15,12 @@ import { toast } from 'sonner'
 interface BookingWizardProps {
   provider: any
   services: any[]
+  onStepChange?: (step: number) => void
 }
 
-export function BookingWizard({ provider, services }: BookingWizardProps) {
+export function BookingWizard({ provider, services, onStepChange }: BookingWizardProps) {
   const { user } = useAuth()
+  const { isMobile } = useDeviceDetection()
   const params = useParams()
   const searchParams = useSearchParams()
   
@@ -48,6 +51,12 @@ export function BookingWizard({ provider, services }: BookingWizardProps) {
   useEffect(() => {
     fetchPets()
   }, [fetchPets])
+
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(currentStep)
+    }
+  }, [currentStep, onStepChange])
 
   useEffect(() => {
     const fetchProviderData = async () => {
@@ -118,8 +127,28 @@ export function BookingWizard({ provider, services }: BookingWizardProps) {
   }
 
   const handleComplete = () => {
-    // Handle booking completion
-    toast.success('Booking completed successfully!')
+    // Create booking data
+    const bookingData = {
+      providerId: provider.id,
+      serviceId: selectedService.id,
+      selectedPets,
+      selectedDate,
+      selectedTimeSlot,
+      totalPrice: selectedService.price * selectedPets.length
+    }
+    
+    // Redirect to payment page with booking data
+    const params = new URLSearchParams({
+      providerId: provider.id,
+      serviceId: selectedService.id,
+      pets: selectedPets.join(','),
+      date: selectedDate?.toISOString() || '',
+      time: selectedTimeSlot,
+      price: (selectedService.price * selectedPets.length).toString()
+    })
+    
+    // Navigate to payment page
+    window.location.href = `/providers/${provider.id}/payment?${params.toString()}`
   }
 
   const stepProps = {
@@ -167,35 +196,7 @@ export function BookingWizard({ provider, services }: BookingWizardProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Progress Indicator */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {[1, 2, 3, 4].map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                step <= currentStep 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 text-gray-600'
-              }`}>
-                {step}
-              </div>
-              {step < 4 && (
-                <div className={`w-16 h-1 mx-2 ${
-                  step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-between mt-2 text-sm text-gray-600">
-          <span>Paslauga</span>
-          <span>Augintiniai</span>
-          <span>Data/Laikas</span>
-          <span>Patvirtinimas</span>
-        </div>
-      </div>
-
+    <div className={`max-w-4xl mx-auto ${isMobile ? 'pb-24' : ''}`}>
       {/* Step Content */}
       {renderStep()}
     </div>

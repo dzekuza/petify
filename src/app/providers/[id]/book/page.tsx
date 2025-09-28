@@ -1,19 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { BookingWizard } from '@/components/booking/booking-wizard'
+import { Button } from '@/components/ui/button'
 import { ServiceProvider, Service } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
+import { useDeviceDetection } from '@/lib/device-detection'
+import { X } from 'lucide-react'
 
 export default function BookingPage() {
   const params = useParams()
+  const router = useRouter()
+  const { isMobile } = useDeviceDetection()
   const [provider, setProvider] = useState<ServiceProvider | null>(null)
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentStep, setCurrentStep] = useState(1)
+
+  const handleCancel = () => {
+    router.back()
+  }
+
+  const getProgressWidth = () => {
+    return `${(currentStep / 4) * 100}%`
+  }
 
   useEffect(() => {
     const fetchProviderData = async () => {
@@ -134,7 +148,7 @@ export default function BookingPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <Layout>
+        <Layout hideFooter={isMobile}>
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
@@ -158,7 +172,7 @@ export default function BookingPage() {
   if (!provider) {
     return (
       <ProtectedRoute>
-        <Layout>
+        <Layout hideFooter={isMobile}>
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
@@ -174,7 +188,7 @@ export default function BookingPage() {
 
   return (
     <ProtectedRoute>
-      <Layout>
+      <Layout hideFooter={isMobile}>
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
@@ -185,12 +199,34 @@ export default function BookingPage() {
                   <p className="text-sm text-gray-600">Užsakymo formos užpildymas</p>
                 </div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+                className="flex items-center space-x-2"
+              >
+                <X className="h-4 w-4" />
+                <span>Atšaukti rezervaciją</span>
+              </Button>
+            </div>
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
+                  style={{ width: getProgressWidth() }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="max-w-4xl mx-auto px-6 py-8">
-            <BookingWizard provider={provider} services={services} />
+            <BookingWizard 
+              provider={provider} 
+              services={services} 
+              onStepChange={setCurrentStep}
+            />
           </div>
         </div>
       </Layout>

@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react'
+import { useDeviceDetection } from '@/lib/device-detection'
 import type { BookingStepProps } from './types'
 
 export function BookingStep3({ 
@@ -15,11 +16,7 @@ export function BookingStep3({
   onPrev, 
   loading = false 
 }: BookingStepProps) {
-  const timeSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'
-  ]
+  const { isMobile } = useDeviceDetection()
 
   return (
     <div className="space-y-6">
@@ -32,45 +29,14 @@ export function BookingStep3({
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        {/* Date Selection */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-semibold">Pasirinkite datą</h3>
-          </div>
-          
-          <DateTimePicker
-            selectedDate={selectedDate}
-            onDateSelect={onDateSelect}
-            selectedTime={selectedTimeSlot}
-            onTimeSelect={onTimeSelect}
-            disabled={(date) => date < new Date()}
-          />
-        </div>
-
-        {/* Time Selection */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-green-600" />
-            <h3 className="text-lg font-semibold">Pasirinkite laiką</h3>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-2">
-            {timeSlots.map((time) => (
-              <Button
-                key={time}
-                variant={selectedTimeSlot === time ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => onTimeSelect(time)}
-                disabled={loading}
-                className="text-sm"
-              >
-                {time}
-              </Button>
-            ))}
-          </div>
-        </div>
+      <div className="space-y-4">
+        <DateTimePicker
+          selectedDate={selectedDate}
+          onDateSelect={onDateSelect}
+          selectedTime={selectedTimeSlot}
+          onTimeSelect={onTimeSelect}
+          disabled={(date) => date < new Date()}
+        />
       </div>
 
       {/* Selected Information */}
@@ -93,15 +59,19 @@ export function BookingStep3({
         </div>
       )}
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrev}>
+      <div className={`flex justify-between pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 space-x-3' : ''}`}>
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className={isMobile ? 'flex-1' : ''}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Atgal
         </Button>
         <Button 
           onClick={onNext}
           disabled={!selectedDate || !selectedTimeSlot || loading}
-          className="flex items-center space-x-2"
+          className={`flex items-center space-x-2 ${isMobile ? 'flex-1' : ''}`}
         >
           <span>Tęsti</span>
           <ArrowRight className="h-4 w-4" />

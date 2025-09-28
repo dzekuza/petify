@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, CheckCircle, PawPrint } from 'lucide-react'
 import { format } from 'date-fns'
 import { lt } from 'date-fns/locale'
+import { useDeviceDetection } from '@/lib/device-detection'
 import type { BookingStepProps } from './types'
 
 export function BookingStep4({ 
@@ -15,11 +16,14 @@ export function BookingStep4({
   selectedTimeSlot, 
   pets, 
   onPrev, 
+  onComplete,
   loading = false 
 }: BookingStepProps) {
+  const { isMobile } = useDeviceDetection()
   const selectedPetsData = pets.filter(pet => selectedPets.includes(pet.id))
   
   const totalPrice = selectedService ? selectedService.price * selectedPets.length : 0
+
 
   return (
     <div className="space-y-6">
@@ -136,15 +140,20 @@ export function BookingStep4({
         </Card>
       </div>
 
-      <div className="flex justify-between pt-6">
-        <Button variant="outline" onClick={onPrev}>
+      <div className={`flex justify-between pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[100] space-x-3' : ''}`}>
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className={isMobile ? 'flex-1' : ''}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Atgal
         </Button>
         <Button 
           size="lg"
           disabled={loading}
-          className="flex items-center space-x-2 bg-green-600 hover:bg-green-700"
+          onClick={onComplete}
+          className={`flex items-center space-x-2 bg-green-600 hover:bg-green-700 ${isMobile ? 'flex-1' : ''}`}
         >
           <span>Patvirtinti ir mokėti</span>
           <CheckCircle className="h-4 w-4" />
