@@ -138,7 +138,9 @@ class ChatService {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create conversation')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Failed to create conversation:', errorData)
+        throw new Error(`Failed to create conversation: ${errorData.error || 'Unknown error'}`)
       }
 
       const data = await response.json()

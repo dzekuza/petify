@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check rate limit
-    if (checkRateLimit(user.id, 5, 60000)) { // 5 conversations per minute
+    // Check rate limit - more permissive for development
+    if (checkRateLimit(user.id, 20, 60000)) { // 20 conversations per minute for development
       return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
     }
 

@@ -104,6 +104,20 @@ export function validateProviderId(providerId: string): boolean {
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
 /**
+ * Clear rate limit for a specific user (for development/testing)
+ */
+export function clearRateLimit(userId: string): void {
+  rateLimitStore.delete(userId)
+}
+
+/**
+ * Clear all rate limits (for development/testing)
+ */
+export function clearAllRateLimits(): void {
+  rateLimitStore.clear()
+}
+
+/**
  * Checks if a user has exceeded rate limits
  * @param userId - User ID to check
  * @param maxRequests - Maximum requests allowed

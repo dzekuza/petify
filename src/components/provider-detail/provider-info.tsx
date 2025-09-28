@@ -1,6 +1,6 @@
 'use client'
 
-import { Star, Clock, Users, PawPrint, Euro, Phone, Mail, Globe, MapPin } from 'lucide-react'
+import { Star, Clock, Users, PawPrint, Euro, Phone, Mail, Globe, MapPin, MessageCircle } from 'lucide-react'
 import { ServiceProvider, Service, Review, PetAd, PetType, IndividualPet } from '@/types'
 import { t } from '@/lib/translations'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { chatService } from '@/lib/chat'
+import { useAuth } from '@/contexts/auth-context'
+import { toast } from 'sonner'
 
 // Function to calculate time since joining
 const getTimeSinceJoining = (createdAt: string): string => {
@@ -48,6 +51,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
   const [petTypes, setPetTypes] = useState<PetType[]>([])
   const [individualPets, setIndividualPets] = useState<IndividualPet[]>([])
   const [loadingPets, setLoadingPets] = useState(false)
+  const { user } = useAuth()
   
   // Check if this is an adoption provider
   const isAdoptionProvider = provider.businessType === 'adoption' || 
@@ -75,6 +79,55 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       fetchPetData()
     }
   }, [isAdoptionProvider, provider.userId])
+
+  // Handle sending adoption request
+  const handleAdoptionRequest = async (pet: IndividualPet) => {
+    if (!user) {
+      toast.error('Turite prisijungti, kad galėtumėte siųsti užklausą')
+      return
+    }
+
+    try {
+      // Create conversation with provider
+      const conversation = await chatService.createConversation(user.id, provider.id)
+      
+      if (conversation) {
+        // Send message about interest in the pet
+        const petType = petTypes.find(pt => pt.id === pet.petTypeId)
+        const petTypeName = petType ? petType.title : 'gyvūnas'
+        const message = `${user.user_metadata?.full_name || user.email} domisi ${pet.title} (${petTypeName})`
+        
+        await chatService.sendMessage(conversation.id, message)
+        toast.success('Užklausa išsiųsta! Galite peržiūrėti atsakymą chat puslapyje.')
+      } else {
+        toast.error('Nepavyko sukurti pokalbio')
+      }
+    } catch (error) {
+      console.error('Error sending adoption request:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Nepavyko išsiųsti užklausos'
+      
+      // If it's a rate limit error, provide a way to clear it in development
+      if (errorMessage.includes('Rate limit exceeded')) {
+        toast.error('Per daug užklausų per trumpą laiką. Palaukite arba išvalykite limitą (dev mode).', {
+          action: process.env.NODE_ENV === 'development' ? {
+            label: 'Išvalyti limitą',
+            onClick: async () => {
+              try {
+                await fetch('/api/dev/clear-rate-limits', { method: 'POST' })
+                toast.success('Limitai išvalyti! Bandykite dar kartą.')
+              } catch (err) {
+                toast.error('Nepavyko išvalyti limitų')
+              }
+            }
+          } : undefined
+        })
+      } else {
+        toast.error(errorMessage.includes('Failed to create conversation') ? 
+          'Nepavyko sukurti pokalbio. Bandykite dar kartą.' : 
+          'Nepavyko išsiųsti užklausos. Bandykite dar kartą.')
+      }
+    }
+  }
   
   // List of scraped provider user IDs (from BookitNow.lt import)
   const scrapedProviderUserIds = [
@@ -486,6 +539,18 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                                 )}
                               </div>
                             )}
+
+                            {/* Send Request Button */}
+                            <div className="mt-4">
+                              <Button
+                                onClick={() => handleAdoptionRequest(pet)}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                size="sm"
+                              >
+                                <MessageCircle className="h-4 w-4 mr-2" />
+                                Siųsti užklausą
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
