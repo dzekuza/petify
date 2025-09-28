@@ -403,7 +403,6 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Pet Types and Individual Pets for Adoption Providers */}
       {isAdoptionProvider && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>Gyvūnų tipai ir sąrašas</h2>
           
           {loadingPets ? (
             <div className="space-y-4">
@@ -415,109 +414,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Provider Profile Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Veislyno informacija</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Business Information Card */}
-                  <Card className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Verslo informacija</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div>
-                          <span className="font-medium text-gray-900">Pavadinimas:</span>
-                          <p className="text-gray-600">{provider.businessName}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-900">Tipas:</span>
-                          <p className="text-gray-600">{provider.businessType}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-900">Aprašymas:</span>
-                          <p className="text-gray-600 text-sm line-clamp-3">{provider.description}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {provider.rating > 0 ? `⭐ ${provider.rating.toFixed(1)}` : 'Naujas'}
-                          </Badge>
-                          <Badge variant={provider.availability ? "default" : "secondary"} className="text-xs">
-                            {provider.availability ? "Prieinamas" : "Neprieinamas"}
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
 
-                  {/* Contact Information Card */}
-                  <Card className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Kontaktinė informacija</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div>
-                          <span className="font-medium text-gray-900">El. paštas:</span>
-                          <p className="text-gray-600">{provider.contactInfo?.email || 'Nenurodyta'}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-900">Telefonas:</span>
-                          <p className="text-gray-600">{provider.contactInfo?.phone || 'Nenurodyta'}</p>
-                        </div>
-                        {provider.contactInfo?.website && (
-                          <div>
-                            <span className="font-medium text-gray-900">Svetainė:</span>
-                            <p className="text-gray-600">
-                              <a 
-                                href={provider.contactInfo.website} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline"
-                              >
-                                {provider.contactInfo.website}
-                              </a>
-                            </p>
-                          </div>
-                        )}
-                        <div>
-                          <span className="font-medium text-gray-900">Adresas:</span>
-                          <p className="text-gray-600">
-                            {provider.location?.address || 'Nenurodyta'}, {provider.location?.city || 'Nenurodyta'}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Pet Types Section */}
-              {petTypes.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Gyvūnų tipai</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {petTypes.map((petType) => (
-                      <Card key={petType.id} className="hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg">{petType.title}</CardTitle>
-                          <p className="text-sm text-gray-600 line-clamp-2">{petType.description}</p>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {petType.breedType}
-                            </Badge>
-                            <Badge variant={petType.isActive ? "default" : "secondary"} className="text-xs">
-                              {petType.isActive ? "Aktyvus" : "Neaktyvus"}
-                            </Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Individual Pets Section */}
               {individualPets.length > 0 && (
@@ -549,6 +446,14 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                             <Badge variant="secondary" className="text-xs">
                               {pet.age} sav.
                             </Badge>
+                            {(() => {
+                              const petType = petTypes.find(pt => pt.id === pet.petTypeId)
+                              return petType ? (
+                                <Badge variant="outline" className="text-xs">
+                                  {petType.title}
+                                </Badge>
+                              ) : null
+                            })()}
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">

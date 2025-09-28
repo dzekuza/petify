@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/drawer'
 import { Heart, User, Settings, LogOut, Calendar, Star } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { NavigationSearch } from './navigation-search'
 import { ServiceCategories } from './service-categories'
 import { providerApi } from '@/lib/providers'
 
@@ -61,27 +60,9 @@ export function MobileMenu({
         </DrawerHeader>
         
         <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
-          {/* Search */}
-          <NavigationSearch isMobile className="mt-4" />
-          
           {/* Service Categories */}
           <ServiceCategories isMobile />
           
-          {/* Navigation Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Navigacija</h3>
-            <div className="space-y-2">
-              <Button variant="ghost" asChild className="w-full justify-start">
-                <Link href="/search">Paieška</Link>
-              </Button>
-              <Button variant="ghost" asChild className="w-full justify-start">
-                <Link href="/providers">Tiekėjai</Link>
-              </Button>
-              <Button variant="ghost" asChild className="w-full justify-start">
-                <Link href="/how-it-works">Kaip tai veikia</Link>
-              </Button>
-            </div>
-          </div>
 
           {/* User Section */}
           {user ? (

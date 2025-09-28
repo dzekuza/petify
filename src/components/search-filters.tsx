@@ -185,7 +185,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                   {/* Mobile: Horizontal scrollable filters - no labels */}
                   <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                     {/* Service Category - No label */}
-                    <div className="flex-shrink-0 w-[66.67%]">
+                    <div className="flex-shrink-0 w-48">
                       <Select 
                         value={filters.category || 'all'} 
                         onValueChange={(value) => handleFilterChange('category', value)}
@@ -205,7 +205,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                     </div>
 
                     {/* Location - No label */}
-                    <div className="flex-shrink-0 w-[66.67%]">
+                    <div className="flex-shrink-0 w-48">
                       <LocationAutocomplete
                         value={filters.location ?? ''}
                         onChange={(location) => handleFilterChange('location', location)}
@@ -216,7 +216,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
 
                     {/* Pet Selection - No label */}
                     {userPets.length > 0 && (
-                      <div className="flex-shrink-0 w-[66.67%]">
+                      <div className="flex-shrink-0 w-48">
                         <Select 
                           value={filters.petId || 'all'} 
                           onValueChange={(value) => handleFilterChange('petId', value)}
