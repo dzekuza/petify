@@ -16,6 +16,8 @@ export interface FavoriteWithProvider extends Favorite {
     review_count: number | null
     location: { address?: string } | null
     contact_info: { phone?: string } | null
+    avatar_url?: string | null
+    images?: string[] | null
   } | null
 }
 
@@ -36,7 +38,9 @@ export const favoritesApi = {
           rating,
           review_count,
           location,
-          contact_info
+          contact_info,
+          avatar_url,
+          images
         )
       `)
       .eq('user_id', userId)

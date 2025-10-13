@@ -117,13 +117,30 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                 </div>
 
                 {/* Location */}
-                <LocationAutocomplete
-                  value={filters.location || ''}
-                  onChange={(value) => handleFilterChange('location', value)}
-                  suggestions={locationSuggestions}
-                  placeholder="Įveskite vietą"
-                  label="Vieta"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="location">Vieta</Label>
+                  <Select 
+                    value={filters.location || 'all'} 
+                    onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Visos vietovės" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[200]">
+                      <SelectItem value="all">Visos vietovės</SelectItem>
+                      <SelectItem value="Vilnius">Vilnius</SelectItem>
+                      <SelectItem value="Kaunas">Kaunas</SelectItem>
+                      <SelectItem value="Klaipėda">Klaipėda</SelectItem>
+                      <SelectItem value="Šiauliai">Šiauliai</SelectItem>
+                      <SelectItem value="Panevėžys">Panevėžys</SelectItem>
+                      <SelectItem value="Alytus">Alytus</SelectItem>
+                      <SelectItem value="Marijampolė">Marijampolė</SelectItem>
+                      <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
+                      <SelectItem value="Jonava">Jonava</SelectItem>
+                      <SelectItem value="Utena">Utena</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {/* Distance */}
                 <div className="space-y-2">
@@ -190,7 +207,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                         value={filters.category || 'all'} 
                         onValueChange={(value) => handleFilterChange('category', value)}
                       >
-                        <SelectTrigger className="w-full h-8 text-xs">
+                        <SelectTrigger className="w-full h-8" hideIcon>
                           <SelectValue placeholder="Visos paslaugos" />
                         </SelectTrigger>
                         <SelectContent className="z-[200]">
@@ -206,12 +223,27 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
 
                     {/* Location - No label */}
                     <div className="flex-shrink-0 w-48">
-                      <LocationAutocomplete
-                        value={filters.location ?? ''}
-                        onChange={(location) => handleFilterChange('location', location)}
-                        placeholder="Vieta"
-                        className="h-8 text-xs"
-                      />
+                      <Select 
+                        value={filters.location || 'all'} 
+                        onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
+                      >
+                        <SelectTrigger className="w-full h-8" hideIcon>
+                          <SelectValue placeholder="Vieta" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          <SelectItem value="all">Visos vietovės</SelectItem>
+                          <SelectItem value="Vilnius">Vilnius</SelectItem>
+                          <SelectItem value="Kaunas">Kaunas</SelectItem>
+                          <SelectItem value="Klaipėda">Klaipėda</SelectItem>
+                          <SelectItem value="Šiauliai">Šiauliai</SelectItem>
+                          <SelectItem value="Panevėžys">Panevėžys</SelectItem>
+                          <SelectItem value="Alytus">Alytus</SelectItem>
+                          <SelectItem value="Marijampolė">Marijampolė</SelectItem>
+                          <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
+                          <SelectItem value="Jonava">Jonava</SelectItem>
+                          <SelectItem value="Utena">Utena</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Pet Selection - No label */}
@@ -221,7 +253,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                           value={filters.petId || 'all'} 
                           onValueChange={(value) => handleFilterChange('petId', value)}
                         >
-                          <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectTrigger className="w-full h-8" hideIcon>
                             <SelectValue placeholder="Visi gyvūnai" />
                           </SelectTrigger>
                           <SelectContent className="z-[200]">
@@ -242,7 +274,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
                         variant="outline"
                         size="sm"
                         onClick={clearFilters}
-                        className="h-8 text-xs"
+                        className="h-8"
                         disabled={!hasActiveFilters}
                       >
                         <X className="h-3 w-3 mr-1" />

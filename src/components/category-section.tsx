@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { ServiceProvider } from '@/types'
 import { providerApi } from '@/lib/providers'
-import { ProviderSlider } from '@/components/provider-slider'
+import { ServiceSlider } from '@/components/service-slider'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,7 @@ export const CategorySection = ({
   showViewAll = true,
   className 
 }: CategorySectionProps) => {
-  const [providers, setProviders] = useState<ServiceProvider[]>([])
+  const [services, setServices] = useState<Array<{ service: any; provider: ServiceProvider }>>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -45,16 +45,28 @@ export const CategorySection = ({
           verifiedOnly: false 
         })
         
-        // Transform and limit results
-        const transformedProviders = results
-          .map(result => result.provider)
-          .slice(0, limit)
+        // Flatten all services from all providers
+        const allServices: Array<{ service: any; provider: ServiceProvider }> = []
         
-        setProviders(transformedProviders)
+        results.forEach(result => {
+          if (result.services && result.services.length > 0) {
+            result.services.forEach((service: any) => {
+              allServices.push({
+                service,
+                provider: result.provider
+              })
+            })
+          }
+        })
+        
+        // Limit the total number of services shown
+        const limitedServices = allServices.slice(0, limit)
+        
+        setServices(limitedServices)
       } catch (err) {
         // Error handling - could be logged to monitoring service in production
-        setError('Failed to load providers')
-        setProviders([])
+        setError('Failed to load services')
+        setServices([])
       } finally {
         setLoading(false)
       }
@@ -98,7 +110,7 @@ export const CategorySection = ({
       slider.addEventListener('scroll', updateScrollState)
       return () => slider.removeEventListener('scroll', updateScrollState)
     }
-  }, [providers])
+  }, [services])
 
   const scrollToIndex = (index: number) => {
     if (sliderRef.current) {
@@ -123,7 +135,7 @@ export const CategorySection = ({
   const scrollRight = () => {
     if (sliderRef.current) {
       const itemWidth = sliderRef.current.clientWidth / itemsPerView
-      const maxIndex = Math.max(0, providers.length - itemsPerView)
+      const maxIndex = Math.max(0, services.length - itemsPerView)
       const newIndex = Math.min(maxIndex, currentIndex + 1)
       setCurrentIndex(newIndex)
       scrollToIndex(newIndex)
@@ -147,7 +159,7 @@ export const CategorySection = ({
     )
   }
 
-  if (error || providers.length === 0) {
+  if (error || services.length === 0) {
     return null
   }
 
@@ -164,7 +176,7 @@ export const CategorySection = ({
             <ChevronRightIcon className="h-5 w-5" />
           </Link>
           {/* Navigation Buttons - Only show if there are more items than can fit */}
-          {providers.length > itemsPerView && (
+          {services.length > itemsPerView && (
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
@@ -190,8 +202,8 @@ export const CategorySection = ({
         </div>
       </div>
 
-      {/* Provider Slider */}
-      <ProviderSlider providers={providers} showNavigation={false} ref={sliderRef} />
+      {/* Service Slider */}
+      <ServiceSlider services={services} showNavigation={false} ref={sliderRef} />
 
     </div>
   )

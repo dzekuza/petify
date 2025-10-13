@@ -76,18 +76,20 @@ export const ListingsGrid = ({
 
   return (
     <div className={cn("w-full", className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-        {showViewAll && (
-          <Link 
-            href="/search" 
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            Peržiūrėti visus →
-          </Link>
-        )}
-      </div>
+      {/* Header - Only show if title is provided */}
+      {title && (
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          {showViewAll && (
+            <Link 
+              href="/search" 
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Peržiūrėti visus →
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* Listings Grid */}
       <div className={cn("grid gap-6", gridCols)}>

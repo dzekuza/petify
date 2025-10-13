@@ -196,17 +196,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     if (isProviderArea) load()
   }, [user?.id, isProviderArea])
 
-  const servicesLabel = (() => {
-    switch (businessType) {
-      case 'grooming': return 'Gyvūnų šukavimo paslaugos'
-      case 'training': return 'Gyvūnų treniruočių paslaugos'
-      case 'veterinary': return t('serviceCategories.veterinary')
-      case 'boarding': return 'Prieglaudos paslaugos'
-      case 'adoption': return t('serviceCategories.adoption')
-      case 'sitting': return 'Gyvūnų prižiūrėjimo paslaugos'
-      default: return t('navigation.services')
-    }
-  })()
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -241,15 +230,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/chat">
                 <MessageCircle />
-                <span>Customer Messages</span>
-              </SidebarMenuItemWithAutoClose>
-              <SidebarMenuItemWithAutoClose href="/provider/dashboard/services">
-                <BookOpen />
-                <span>{servicesLabel}</span>
-              </SidebarMenuItemWithAutoClose>
-              <SidebarMenuItemWithAutoClose href="/provider/dashboard/pet-ads">
-                <Heart />
-                <span>Gyvūnų adopcija</span>
+                <span>Žinutės</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/calendar">
                 <BookOpen />

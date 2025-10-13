@@ -30,67 +30,68 @@ const providerTypes = [
       'Nail trimming and care',
       'Professional pet beauty'
     ]
-  },
-  {
-    id: 'training',
-    name: 'Dresūra',
-    description: 'Pet training and behavior services',
-    icon: '/image (8).png',
-    features: [
-      'Obedience training',
-      'Behavior modification',
-      'Puppy training programs',
-      'Specialized training services'
-    ]
-  },
-  {
-    id: 'veterinary',
-    name: 'Veterinarijos',
-    description: 'Veterinary and medical services',
-    icon: '/image (8).png',
-    features: [
-      'Health checkups and exams',
-      'Vaccinations and treatments',
-      'Emergency care services',
-      'Medical consultations'
-    ]
-  },
-  {
-    id: 'boarding',
-    name: 'Prieglauda',
-    description: 'Pet boarding and accommodation services',
-    icon: '/image (8).png',
-    features: [
-      'Overnight pet care',
-      'Pet accommodation',
-      'Boarding facilities',
-      'Pet sitting services'
-    ]
-  },
-  {
-    id: 'adoption',
-    name: 'Veislynai',
-    description: 'Pet breeding and sales services',
-    icon: '/image (8).png',
-    features: [
-      'Pet adoption listings',
-      'Pet sales advertisements',
-      'Breeding announcements',
-      'Pet rehoming services'
-    ]
-  },
-  {
-    id: 'sitting',
-    name: 'Prižiūrėjimas',
-    description: 'In-home pet care services',
-    icon: '/image (8).png',
-    features: [
-      'In-home pet sitting',
-      'Pet care services',
-      'Daily pet visits',
-      'Pet companionship'
-    ]
   }
+  // Other business types hidden - only showing grooming
+  // {
+  //   id: 'training',
+  //   name: 'Dresūra',
+  //   description: 'Pet training and behavior services',
+  //   icon: '/image (8).png',
+  //   features: [
+  //     'Obedience training',
+  //     'Behavior modification',
+  //     'Puppy training programs',
+  //     'Specialized training services'
+  //   ]
+  // },
+  // {
+  //   id: 'veterinary',
+  //   name: 'Veterinarijos',
+  //   description: 'Veterinary and medical services',
+  //   icon: '/image (8).png',
+  //   features: [
+  //     'Health checkups and exams',
+  //     'Vaccinations and treatments',
+  //     'Emergency care services',
+  //     'Medical consultations'
+  //   ]
+  // },
+  // {
+  //   id: 'boarding',
+  //   name: 'Prieglauda',
+  //   description: 'Pet boarding and accommodation services',
+  //   icon: '/image (8).png',
+  //   features: [
+  //     'Overnight pet care',
+  //     'Pet accommodation',
+  //     'Boarding facilities',
+  //     'Pet sitting services'
+  //   ]
+  // },
+  // {
+  //   id: 'adoption',
+  //   name: 'Veislynai',
+  //   description: 'Pet breeding and sales services',
+  //   icon: '/image (8).png',
+  //   features: [
+  //     'Pet adoption listings',
+  //     'Pet sales advertisements',
+  //     'Breeding announcements',
+  //     'Pet rehoming services'
+  //   ]
+  // },
+  // {
+  //   id: 'sitting',
+  //   name: 'Prižiūrėjimas',
+  //   description: 'In-home pet care services',
+  //   icon: '/image (8).png',
+  //   features: [
+  //     'In-home pet sitting',
+  //     'Pet care services',
+  //     'Daily pet visits',
+  //     'Pet companionship'
+  //   ]
+  // }
 ]
 
 export default function ProviderTypeStep({ data, onUpdate, onNext, onPrevious, isEditMode, onSave, onExitEdit }: ProviderTypeStepProps) {

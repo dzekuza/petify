@@ -7,13 +7,15 @@ import { useAuth } from '@/contexts/auth-context'
 import { dashboardApi } from '@/lib/dashboard'
 import { serviceApi } from '@/lib/services'
 import { t } from '@/lib/translations'
-import { Plus, Scissors } from 'lucide-react'
+import { Plus, Scissors, X, Upload } from 'lucide-react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { uploadServiceImages } from '@/lib/image-upload'
+import Image from 'next/image'
 
 
 interface ServiceItem {
@@ -47,6 +49,9 @@ export default function ProviderServicesPage() {
   const [maxPets, setMaxPets] = useState<number>(1)
   const [requirements, setRequirements] = useState('')
   const [includes, setIncludes] = useState('')
+  const [galleryImages, setGalleryImages] = useState<File[]>([])
+  const [existingImages, setExistingImages] = useState<string[]>([])
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   // Pet type form state
   const [isAddPetTypeOpen, setIsAddPetTypeOpen] = useState(false)
@@ -115,6 +120,15 @@ export default function ProviderServicesPage() {
     try {
       setFormError(null)
       setIsSubmitting(true)
+      
+      // Upload gallery images first if any
+      let uploadedImageUrls: string[] = []
+      if (galleryImages.length > 0 && user?.id) {
+        setUploadingImages(true)
+        uploadedImageUrls = await uploadServiceImages(user.id, galleryImages)
+        setUploadingImages(false)
+      }
+      
       const created = await serviceApi.createService({
         providerId,
         category,
@@ -131,7 +145,9 @@ export default function ProviderServicesPage() {
           .split(',')
           .map(s => s.trim())
           .filter(Boolean),
+        images: uploadedImageUrls
       })
+      
       // Optimistically update list
       if (created) {
         setServices(prev => [
@@ -140,11 +156,12 @@ export default function ProviderServicesPage() {
             name,
             description,
             price,
-            images: [],
+            images: uploadedImageUrls,
           },
           ...prev,
         ])
       }
+      
       // Reset and close
       setIsAddOpen(false)
       setName('')
@@ -154,17 +171,38 @@ export default function ProviderServicesPage() {
       setMaxPets(1)
       setRequirements('')
       setIncludes('')
+      setGalleryImages([])
+      setExistingImages([])
     } catch (e) {
       setFormError('Failed to create service')
     } finally {
       setIsSubmitting(false)
+      setUploadingImages(false)
     }
+  }
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length + galleryImages.length + existingImages.length > 10) {
+      setFormError('Maximum 10 images allowed')
+      return
+    }
+    setGalleryImages(prev => [...prev, ...files])
+  }
+
+  const handleRemoveNewImage = (index: number) => {
+    setGalleryImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const handleRemoveExistingImage = (imageUrl: string) => {
+    setExistingImages(prev => prev.filter(url => url !== imageUrl))
   }
 
   const handleEditService = (service: ServiceItem) => {
     setEditingService(service)
     setName(service.name)
     setDescription(service.description)
+    setExistingImages(service.images || [])
     setPrice(service.price)
     setDuration(60) // Default duration
     setMaxPets(1) // Default max pets
@@ -242,6 +280,17 @@ export default function ProviderServicesPage() {
       setIsSubmitting(true)
       setFormError(null)
       
+      // Upload new gallery images if any
+      let uploadedImageUrls: string[] = []
+      if (galleryImages.length > 0 && user?.id) {
+        setUploadingImages(true)
+        uploadedImageUrls = await uploadServiceImages(user.id, galleryImages)
+        setUploadingImages(false)
+      }
+      
+      // Combine existing images with newly uploaded ones
+      const allImages = [...existingImages, ...uploadedImageUrls]
+      
       // Update service data
       const serviceData = {
         id: editingService.id,
@@ -251,7 +300,8 @@ export default function ProviderServicesPage() {
         duration,
         maxPets,
         requirements: requirements.split(',').map(r => r.trim()).filter(Boolean),
-        includes: includes.split(',').map(i => i.trim()).filter(Boolean)
+        includes: includes.split(',').map(i => i.trim()).filter(Boolean),
+        images: allImages
       }
       
       // Call API to update service
@@ -267,6 +317,8 @@ export default function ProviderServicesPage() {
       setMaxPets(1)
       setRequirements('')
       setIncludes('')
+      setGalleryImages([])
+      setExistingImages([])
       
       // Reload services
       await loadServices()
@@ -274,6 +326,7 @@ export default function ProviderServicesPage() {
       setFormError('Failed to update service')
     } finally {
       setIsSubmitting(false)
+      setUploadingImages(false)
     }
   }
 
@@ -341,8 +394,84 @@ export default function ProviderServicesPage() {
                   <Label htmlFor="includes">{t('common.includes')} ({t('common.commaSeparated')})</Label>
                   <Input id="includes" value={includes} onChange={(e) => setIncludes(e.target.value)} placeholder={t('providerDashboard.includesPlaceholder')} />
                 </div>
+
+                {/* Gallery Upload */}
+                <div className="grid gap-2">
+                  <Label htmlFor="gallery">Galerija (iki 10 nuotraukų)</Label>
+                  <div className="space-y-3">
+                    {/* Upload Button */}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="gallery"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageSelect}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('gallery')?.click()}
+                        disabled={galleryImages.length + existingImages.length >= 10}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Įkelti nuotraukas
+                      </Button>
+                      <span className="text-xs text-gray-500">
+                        {galleryImages.length + existingImages.length}/10
+                      </span>
+                    </div>
+
+                    {/* Image Previews */}
+                    {(galleryImages.length > 0 || existingImages.length > 0) && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* Existing Images */}
+                        {existingImages.map((imageUrl, index) => (
+                          <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
+                            <Image
+                              src={imageUrl}
+                              alt={`Service image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveExistingImage(imageUrl)}
+                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {/* New Images */}
+                        {galleryImages.map((file, index) => (
+                          <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Upload ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveNewImage(index)}
+                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {formError && (
                   <p className="text-sm text-red-600">{formError}</p>
+                )}
+                {uploadingImages && (
+                  <p className="text-sm text-blue-600">Įkeliamos nuotraukos...</p>
                 )}
               </div>
               <DialogFooter>
@@ -398,8 +527,84 @@ export default function ProviderServicesPage() {
                 <Label htmlFor="edit-includes">{t('common.includes')} ({t('common.commaSeparated')})</Label>
                 <Input id="edit-includes" value={includes} onChange={(e) => setIncludes(e.target.value)} placeholder={t('providerDashboard.includesPlaceholder')} />
               </div>
+
+              {/* Gallery Upload for Edit */}
+              <div className="grid gap-2">
+                <Label htmlFor="edit-gallery">Galerija (iki 10 nuotraukų)</Label>
+                <div className="space-y-3">
+                  {/* Upload Button */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="edit-gallery"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('edit-gallery')?.click()}
+                      disabled={galleryImages.length + existingImages.length >= 10}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Įkelti nuotraukas
+                    </Button>
+                    <span className="text-xs text-gray-500">
+                      {galleryImages.length + existingImages.length}/10
+                    </span>
+                  </div>
+
+                  {/* Image Previews */}
+                  {(galleryImages.length > 0 || existingImages.length > 0) && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {/* Existing Images */}
+                      {existingImages.map((imageUrl, index) => (
+                        <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
+                          <Image
+                            src={imageUrl}
+                            alt={`Service image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExistingImage(imageUrl)}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                      
+                      {/* New Images */}
+                      {galleryImages.map((file, index) => (
+                        <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Upload ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveNewImage(index)}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {formError && (
                 <p className="text-sm text-red-600">{formError}</p>
+              )}
+              {uploadingImages && (
+                <p className="text-sm text-blue-600">Įkeliamos nuotraukos...</p>
               )}
             </div>
             <DialogFooter>

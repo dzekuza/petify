@@ -313,6 +313,7 @@ export const providerApi = {
           users(id, full_name, email, avatar_url)
         `)
         .eq('status', 'active')
+        .eq('business_type', 'grooming') // Only show grooming providers
 
       if (filters?.services && filters.services.length > 0) {
         query = query.overlaps('services', filters.services)
@@ -502,6 +503,7 @@ export const providerApi = {
         .from('providers')
         .select('*')
         .eq('status', 'active')
+        .eq('business_type', 'grooming') // Only show grooming providers
       
       // Only filter by verification if explicitly requested (default to show all active providers)
       if (filters?.verifiedOnly === true) {

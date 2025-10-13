@@ -16,8 +16,8 @@ export const Layout = ({ children, hideServiceCategories = false, onFiltersClick
       <Suspense fallback={<div className="px-4 py-2 text-sm text-gray-500">Loading...</div>}>
         <Navigation hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
       </Suspense>
-      {/* Add bottom padding on mobile to avoid overlap with bottom nav */}
-      <main className="flex-1  md:pb-0">
+      {/* Add padding for fixed header and bottom nav */}
+      <main className="flex-1 pt-16 md:pb-0">
         {children}
       </main>
       <Suspense fallback={<div className="h-16 bg-white border-t"></div>}>

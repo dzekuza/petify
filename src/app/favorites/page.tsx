@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { useFavorites } from '@/contexts/favorites-context'
 import { Heart, Star, MapPin, Phone, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function FavoritesPage() {
   const { user } = useAuth()
@@ -56,69 +57,83 @@ export default function FavoritesPage() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
                 {favorites.map((fav) => (
-                  <Card key={`favorite-${fav.id}-${fav.provider_id}`}>
+                  <Card key={`favorite-${fav.id}-${fav.provider_id}`} className="overflow-hidden">
+                    {/* Provider Logo/Image Header */}
+                    <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200">
+                      {fav.provider?.avatar_url || (fav.provider?.images && fav.provider.images.length > 0) ? (
+                        <Image
+                          src={fav.provider.avatar_url || fav.provider.images?.[0] || ''}
+                          alt={fav.provider?.business_name || 'Provider'}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                            if (fallback) {
+                              fallback.style.display = 'flex'
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className="w-full h-full flex items-center justify-center" style={{ display: fav.provider?.avatar_url || (fav.provider?.images && fav.provider.images.length > 0) ? 'none' : 'flex' }}>
+                        <span className="text-6xl">✂️</span>
+                      </div>
+                    </div>
+
                     <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <span className="text-2xl">🏥</span>
-                        </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {fav.provider?.business_name || 'Provider'}
+                        </h3>
+                        <p className="text-gray-600 mb-2">{fav.provider?.services?.[0] || 'Service'}</p>
                         
-                        <div className="flex-1">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                              {fav.provider?.business_name || 'Provider'}
-                            </h3>
-                            <p className="text-gray-600 mb-2">{fav.provider?.services?.[0] || 'Service'}</p>
-                            
-                            <div className="flex items-center space-x-4 text-sm text-gray-600">
-                              <div className="flex items-center space-x-1">
-                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                <span>{fav.provider?.rating ?? 0}</span>
-                                <span>({fav.provider?.review_count ?? 0} reviews)</span>
-                              </div>
-                            </div>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span>{fav.provider?.rating ?? 0}</span>
+                            <span>({fav.provider?.review_count ?? 0} reviews)</span>
                           </div>
-                          
-                          <div className="mt-3 pt-3 border-t border-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                              <div className="flex items-center space-x-2">
-                                <MapPin className="h-4 w-4" />
-                                <span>{fav.provider?.location && typeof fav.provider.location === 'object' && 'address' in fav.provider.location ? (fav.provider.location as { address: string }).address : ''}</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Phone className="h-4 w-4" />
-                                <span>{fav.provider?.contact_info && typeof fav.provider.contact_info === 'object' && 'phone' in fav.provider.contact_info ? (fav.provider.contact_info as { phone: string }).phone : ''}</span>
-                              </div>
-                            </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>{fav.provider?.location && typeof fav.provider.location === 'object' && 'address' in fav.provider.location ? (fav.provider.location as { address: string }).address : ''}</span>
                           </div>
-                          
-                          <div className="mt-4 pt-3 border-t border-gray-100">
-                            <div className="flex space-x-2">
-                              <Link href={`/providers/${fav.provider?.id || ''}`}>
-                                <Button variant="outline" size="sm">
-                                  View Profile
-                                </Button>
-                              </Link>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="text-red-600 hover:text-red-700" 
-                                onClick={() => handleRemove(fav.provider_id)}
-                                disabled={removingId === fav.provider_id}
-                              >
-                                {removingId === fav.provider_id ? (
-                                  <>
-                                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                                    Removing...
-                                  </>
-                                ) : (
-                                  'Remove'
-                                )}
-                              </Button>
-                            </div>
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4" />
+                            <span>{fav.provider?.contact_info && typeof fav.provider.contact_info === 'object' && 'phone' in fav.provider.contact_info ? (fav.provider.contact_info as { phone: string }).phone : ''}</span>
                           </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 pt-3 border-t border-gray-100">
+                        <div className="flex space-x-2">
+                          <Link href={`/providers/${fav.provider?.id || ''}`}>
+                            <Button variant="outline" size="sm">
+                              View Profile
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-red-600 hover:text-red-700" 
+                            onClick={() => handleRemove(fav.provider_id)}
+                            disabled={removingId === fav.provider_id}
+                          >
+                            {removingId === fav.provider_id ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                                Removing...
+                              </>
+                            ) : (
+                              'Remove'
+                            )}
+                          </Button>
                         </div>
                       </div>
                     </CardContent>

@@ -19,13 +19,15 @@ interface ProviderCardProps {
   distance?: number
   showActions?: boolean
   className?: string
+  services?: any[] // Service data with images
 }
 
 export const ProviderCard = ({ 
   provider, 
   distance, 
   showActions = true,
-  className 
+  className,
+  services
 }: ProviderCardProps) => {
   const { user } = useAuth()
   const { isFavorited, toggleFavorite } = useFavorites()
@@ -123,14 +125,26 @@ export const ProviderCard = ({
 
   const availability = getAvailabilityStatus()
 
+  // Get the cover image - prioritize first service's first image, fallback to provider image
+  const getCoverImage = () => {
+    // Try to get first service's first image
+    if (services && services.length > 0 && services[0].images && services[0].images.length > 0) {
+      return services[0].images[0]
+    }
+    // Fallback to provider's first image
+    return provider.images && provider.images.length > 0 ? provider.images[0] : null
+  }
+
+  const coverImage = getCoverImage()
+
   return (
     <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden", className)}>
       {/* Image Section */}
       <div className="relative">
         <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
-          {!imageError && provider.images[0] ? (
+          {!imageError && coverImage ? (
             <Image
-              src={provider.images[0]}
+              src={coverImage}
               alt={provider.businessName}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-200"

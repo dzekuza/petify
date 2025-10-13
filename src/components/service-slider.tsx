@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, forwardRef } from 'react'
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react'
+import { Service } from '@/types'
 import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -12,14 +13,13 @@ import Link from 'next/link'
 import { useFavorites } from '@/contexts/favorites-context'
 import { useAuth } from '@/contexts/auth-context'
 
-interface ProviderSliderProps {
-  providers: ServiceProvider[]
+interface ServiceSliderProps {
+  services: Array<{ service: Service; provider: ServiceProvider }>
   className?: string
   showNavigation?: boolean
-  providerServices?: Map<string, any[]>
 }
 
-export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({ providers, className, showNavigation = true, providerServices }, ref) => {
+export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ services, className, showNavigation = true }, ref) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerView, setItemsPerView] = useState(4)
   const [isMobile, setIsMobile] = useState(false)
@@ -68,7 +68,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
       slider.addEventListener('scroll', updateScrollState)
       return () => slider.removeEventListener('scroll', updateScrollState)
     }
-  }, [providers])
+  }, [services])
 
   const scrollToIndex = (index: number) => {
     if (sliderRef.current) {
@@ -84,19 +84,25 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
   const scrollLeft = () => {
     if (sliderRef.current) {
       const itemWidth = sliderRef.current.clientWidth / itemsPerView
-      const newIndex = Math.max(0, currentIndex - 1)
-      setCurrentIndex(newIndex)
-      scrollToIndex(newIndex)
+      const currentScroll = sliderRef.current.scrollLeft
+      const targetScroll = Math.max(0, currentScroll - itemWidth)
+      sliderRef.current.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      })
     }
   }
 
   const scrollRight = () => {
     if (sliderRef.current) {
       const itemWidth = sliderRef.current.clientWidth / itemsPerView
-      const maxIndex = Math.max(0, providers.length - itemsPerView)
-      const newIndex = Math.min(maxIndex, currentIndex + 1)
-      setCurrentIndex(newIndex)
-      scrollToIndex(newIndex)
+      const currentScroll = sliderRef.current.scrollLeft
+      const maxScroll = sliderRef.current.scrollWidth - sliderRef.current.clientWidth
+      const targetScroll = Math.min(maxScroll, currentScroll + itemWidth)
+      sliderRef.current.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      })
     }
   }
 
@@ -148,14 +154,14 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
     }
   }
 
-  if (providers.length === 0) {
+  if (services.length === 0) {
     return null
   }
 
   return (
     <div className={cn("relative w-full", className)}>
       {/* Navigation Buttons - Only show if there are more items than can fit and showNavigation is true */}
-      {showNavigation && providers.length > itemsPerView && (
+      {showNavigation && services.length > itemsPerView && (
         <div className="flex items-center justify-end mb-4 space-x-2">
           <Button
             variant="outline"
@@ -185,22 +191,21 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
         onScroll={handleScroll}
         className={cn(
           "flex gap-4 scrollbar-hide scroll-smooth",
-          providers.length > itemsPerView ? "overflow-x-auto" : "overflow-x-visible"
+          services.length > itemsPerView ? "overflow-x-auto" : "overflow-x-visible"
         )}
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }}
       >
-        {providers.map((provider) => {
+        {services.map(({ service, provider }) => {
           const isFavorite = isFavorited(provider.id)
           const isToggling = togglingFavorites.has(provider.id)
           
-          // Get cover image - prioritize first service's first image
+          // Get cover image - prioritize service images
           const getCoverImage = () => {
-            const services = providerServices?.get(provider.id)
-            if (services && services.length > 0 && services[0].images && services[0].images.length > 0) {
-              return services[0].images[0]
+            if (service.images && service.images.length > 0) {
+              return service.images[0]
             }
             return provider.images && provider.images.length > 0 ? provider.images[0] : null
           }
@@ -209,7 +214,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
           
           return (
             <div
-              key={provider.id}
+              key={service.id}
               className="flex-shrink-0 group cursor-pointer"
               style={{ 
                 width: isMobile 
@@ -217,7 +222,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                   : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
               }}
             >
-              <Link href={`/providers/${provider.id}`}>
+              <Link href={`/providers/${provider.id}/book?service=${service.id}`}>
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
                   {/* Image Section */}
                   <div className="relative overflow-hidden">
@@ -225,22 +230,22 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                       {coverImage ? (
                         <Image
                           src={coverImage}
-                          alt={provider.businessName}
+                          alt={service.name}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-4xl">{getServiceCategoryIcon(provider.services[0])}</span>
+                          <span className="text-4xl">{getServiceCategoryIcon(service.category)}</span>
                         </div>
                       )}
                     </div>
                     
-                    {/* Guest Favorite Badge */}
+                    {/* Service Category Badge */}
                     <div className="absolute top-3 left-3">
                       <div className="bg-white/90 px-2 py-1 rounded-md text-xs font-medium text-gray-900">
-                        Svečių favoritas
+                        Kirpykla
                       </div>
                     </div>
 
@@ -265,34 +270,33 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                     </button>
                   </div>
 
-                  {/* Card Content - No top/bottom padding */}
+                  {/* Content Section */}
                   <CardContent className="px-4 pt-4 pb-0">
-                    {/* Business Name */}
-                    <CardTitle className="text-sm mb-1 truncate">
-                      {provider.businessName}
-                    </CardTitle>
-
-                    {/* Service Type and Location */}
-                    <CardDescription className="text-sm mb-1">
-                      {provider.services[0] === 'grooming' ? 'Kirpykla' :
-                       provider.services[0] === 'veterinary' ? 'Veterinarija' :
-                       provider.services[0] === 'boarding' ? 'Prieglauda' :
-                       provider.services[0] === 'training' ? 'Dresūra' :
-                       provider.services[0] === 'adoption' ? 'Veislynai' :
-                       provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
-                       'Paslaugos'} • {provider.location.city}
-                    </CardDescription>
-
-                    {/* Price and Rating */}
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium text-gray-900">
-                        €{provider.priceRange.min}-€{provider.priceRange.max}
+                    <div className="space-y-2">
+                      {/* Service Name */}
+                      <CardTitle className="font-semibold text-sm mb-1 line-clamp-1">
+                        {service.name}
+                      </CardTitle>
+                      
+                      {/* Provider Name */}
+                      <CardDescription className="text-muted-foreground text-sm mb-1 line-clamp-1">
+                        {provider.businessName}
+                      </CardDescription>
+                      
+                      {/* Location */}
+                      <div className="text-muted-foreground text-sm mb-1">
+                        {provider.location.city}
                       </div>
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium text-gray-900">★ {provider.rating}</span>
-                        {provider.reviewCount > 0 && (
-                          <span className="text-xs text-gray-500 ml-1">({provider.reviewCount})</span>
-                        )}
+
+                      {/* Price and Duration */}
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-medium text-gray-900">
+                          €{service.price}
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm font-medium text-gray-900">★ {provider.rating || 0}</span>
+                          <span className="text-xs text-gray-500 ml-1">({provider.reviewCount || 0})</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -302,9 +306,8 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
           )
         })}
       </div>
-
     </div>
   )
 })
 
-ProviderSlider.displayName = 'ProviderSlider'
+ServiceSlider.displayName = 'ServiceSlider'

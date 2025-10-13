@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { UserMenu } from './user-menu'
@@ -32,7 +32,7 @@ export function NavigationHeader({
   const { user } = useAuth()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="fixed top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="w-full flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -107,20 +107,40 @@ export function NavigationHeader({
           </div>
         )}
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Actions */}
         {isMobile && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMobileMenuToggle}
-            className="md:hidden"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
+          <div className="flex items-center gap-2">
+            {/* Favorites Heart Icon */}
+            {user && (
+              <Link href="/favorites">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="Favorites"
+                >
+                  <Heart className={cn(
+                    "h-5 w-5",
+                    pathname === '/favorites' ? "fill-current text-red-500" : ""
+                  )} />
+                </Button>
+              </Link>
             )}
-          </Button>
+            
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMobileMenuToggle}
+              className="md:hidden"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         )}
       </div>
     </header>

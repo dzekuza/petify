@@ -48,7 +48,7 @@ export default function PaymentPage() {
         
         // Get booking data from URL params
         const providerId = params.id as string
-        const serviceId = searchParams?.get('serviceId') || ''
+        const serviceId = searchParams?.get('service') || searchParams?.get('serviceId') || ''
         const pets = searchParams?.get('pets')?.split(',') || []
         const date = searchParams?.get('date') || ''
         const time = searchParams?.get('time') || ''
@@ -78,20 +78,22 @@ export default function PaymentPage() {
 
         setProvider(providerData)
 
-        // Fetch service data
-        const { data: serviceData, error: serviceError } = await supabase
-          .from('services')
-          .select('*')
-          .eq('id', serviceId)
-          .single()
+        // Fetch service data only if serviceId is provided
+        if (serviceId) {
+          const { data: serviceData, error: serviceError } = await supabase
+            .from('services')
+            .select('*')
+            .eq('id', serviceId)
+            .single()
 
-        if (serviceError) {
-          console.error('Error fetching service:', serviceError)
-          toast.error('Service not found')
-          return
+          if (serviceError) {
+            console.error('Error fetching service:', serviceError)
+            toast.error('Service not found')
+            return
+          }
+
+          setService(serviceData)
         }
-
-        setService(serviceData)
 
       } catch (error) {
         console.error('Error fetching data:', error)

@@ -25,13 +25,14 @@ export const HeroSection = () => {
 
   // Memoize static data to prevent unnecessary re-renders
   const businessTypes = useMemo(() => [
-    { value: 'grooming', label: 'Kirpyklos' },
-    { value: 'veterinary', label: 'Veterinarija' },
-    { value: 'boarding', label: 'Prieglauda' },
-    { value: 'training', label: 'Dresūra' },
-    { value: 'sitting', label: 'Prižiūrėjimas' },
-    { value: 'adoption', label: 'Veislynai' },
-    { value: 'pets', label: 'Gyvūnai pardavimui' },
+    { value: 'grooming', label: 'Kirpyklos' }
+    // Other business types hidden - only showing grooming
+    // { value: 'veterinary', label: 'Veterinarija' },
+    // { value: 'boarding', label: 'Prieglauda' },
+    // { value: 'training', label: 'Dresūra' },
+    // { value: 'sitting', label: 'Prižiūrėjimas' },
+    // { value: 'adoption', label: 'Veislynai' },
+    // { value: 'pets', label: 'Gyvūnai pardavimui' },
   ], [])
 
   const citySuggestions = useMemo(() => [
@@ -312,27 +313,33 @@ export const HeroSection = () => {
           </div>
 
 
-          {/* Category Sections */}
+          {/* Category Sections - Multiple grooming sections */}
           <div className="w-full space-y-12">
-            {useMemo(() => [
-              { title: "Kirpyklos", category: "grooming" },
-              { title: "Jūsų šuniui", category: "boarding" },
-              { title: "Veterinarija", category: "veterinary" },
-              { title: "Dresūra", category: "training" },
-              { title: "Prižiūrėjimas", category: "sitting" },
-              { title: "Veislynai", category: "adoption" }
-            ].map((section) => (
-              <CategorySection
-                key={section.category}
-                title={section.title}
-                category={section.category}
-                limit={8}
-              />
-            )), [])}
+            {/* Popular Grooming Services */}
+            <CategorySection
+              title="Populiarūs gyvūnų kirpimo salonai"
+              category="grooming"
+              limit={8}
+            />
             
-            {/* Pet Ads Section */}
-            <PetAdsSection
-              title="Gyvūnai pardavimui"
+            {/* Top Rated Grooming Services */}
+            <CategorySection
+              title="Geriausiai įvertinti kirpėjai"
+              category="grooming"
+              limit={8}
+            />
+            
+            {/* New Grooming Services */}
+            <CategorySection
+              title="Nauji gyvūnų kirpimo salonai"
+              category="grooming"
+              limit={8}
+            />
+            
+            {/* Featured Grooming Services */}
+            <CategorySection
+              title="Rekomenduojami kirpėjai"
+              category="grooming"
               limit={8}
             />
           </div>

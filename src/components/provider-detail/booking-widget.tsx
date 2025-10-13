@@ -13,6 +13,7 @@ import { ServiceProvider, Service, Pet, PetAd } from '@/types'
 import { petsApi } from '@/lib/pets'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -292,13 +293,13 @@ export function BookingWidget({
     setAddPetForm(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleBookService = () => {
+  const handleBookService = async () => {
     // For mobile, allow booking without pre-selections (will be made in next step)
     // For desktop, require all selections and redirect to checkout
     const isMobileDevice = window.innerWidth < 1024
     
     if (!isMobileDevice) {
-      // Desktop: require all selections and redirect to checkout
+      // Desktop: require all selections and redirect to Stripe Checkout
       if (!selectedDate || !selectedTime || !selectedService || selectedPets.length === 0) {
         toast.error('Please fill in all required fields')
         return
@@ -310,27 +311,47 @@ export function BookingWidget({
       const day = String(selectedDate.getDate()).padStart(2, '0')
       const dateString = `${year}-${month}-${day}`
 
-      // Debug logging
-      console.log('Booking data:', {
-        date: dateString,
-        time: selectedTime,
-        pets: selectedPets,
-        service: selectedService,
-        providerId: provider.id
-      })
+      // Get price - use a default price since services are categories, not individual services
+      const price = 50 // Default price - individual service prices would need to be fetched separately
 
-      // Redirect to payment page with all parameters
-      const bookingParams = new URLSearchParams()
-      bookingParams.set('date', dateString)
-      bookingParams.set('time', selectedTime)
-      bookingParams.set('pets', selectedPets.join(','))
-      bookingParams.set('service', selectedService)
-      
-      const paymentUrl = `/providers/${provider.id}/payment?${bookingParams.toString()}`
-      console.log('Redirecting to:', paymentUrl)
-      
-      // Redirect to payment page
-      window.location.href = paymentUrl
+      try {
+        // Get auth session
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          toast.error('Please sign in to continue')
+          return
+        }
+
+        // Create Stripe Checkout session
+        const response = await fetch('/api/checkout/create-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            providerId: provider.id,
+            serviceId: selectedService,
+            pets: selectedPets,
+            date: dateString,
+            time: selectedTime,
+            price: price
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to create checkout session')
+        }
+
+        const { url } = await response.json()
+        
+        // Redirect to Stripe Checkout
+        window.location.href = url
+      } catch (error) {
+        console.error('Error creating checkout session:', error)
+        toast.error('Failed to start checkout')
+      }
       return
     }
 

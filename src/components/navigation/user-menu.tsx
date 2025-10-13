@@ -13,9 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Heart, User, Settings, LogOut, Calendar, Star, Dog } from 'lucide-react'
+import { Heart, User, Settings, LogOut, Calendar, Star, Dog, Briefcase } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
+import { supabase } from '@/lib/supabase'
+import { useEffect } from 'react'
 
 interface UserMenuProps {
   isProviderRoute: boolean
@@ -28,6 +30,24 @@ export function UserMenu({ isProviderRoute, provider, onSignOut, className }: Us
   const { user } = useAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isProvider, setIsProvider] = useState(false)
+
+  // Check if user is a provider
+  useEffect(() => {
+    const checkProviderStatus = async () => {
+      if (!user) return
+      
+      const { data } = await supabase
+        .from('providers')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+      
+      setIsProvider(!!data)
+    }
+    
+    checkProviderStatus()
+  }, [user])
 
   const handleSignOut = async () => {
     setIsLoading(true)
@@ -128,6 +148,24 @@ export function UserMenu({ isProviderRoute, provider, onSignOut, className }: Us
                   <span>Mano augintiniai</span>
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              
+              {/* Provider Options */}
+              {isProvider ? (
+                <DropdownMenuItem asChild>
+                  <Link href="/provider/dashboard">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Tiekėjo skydelis</span>
+                  </Link>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem asChild>
+                  <Link href="/provider/onboarding">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Tapti tiekėju</span>
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
             </>
           )}

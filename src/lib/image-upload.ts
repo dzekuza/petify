@@ -130,3 +130,14 @@ export function extractPathFromUrl(url: string): string {
   }
 }
 
+// Helper function to upload service images
+export async function uploadServiceImages(userId: string, files: File[]): Promise<string[]> {
+  try {
+    const results = await ImageUploadService.uploadMultipleImages(files, 'services', userId)
+    return results.map(result => result.url)
+  } catch (error) {
+    console.error('Error uploading service images:', error)
+    throw error
+  }
+}
+

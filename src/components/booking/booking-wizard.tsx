@@ -11,6 +11,7 @@ import { BookingStep2 } from './booking-step-2'
 import { BookingStep3 } from './booking-step-3'
 import { BookingStep4 } from './booking-step-4'
 import { toast } from 'sonner'
+import { supabase } from '@/lib/supabase'
 
 interface BookingWizardProps {
   provider: any
@@ -126,29 +127,55 @@ export function BookingWizard({ provider, services, onStepChange }: BookingWizar
     }
   }
 
-  const handleComplete = () => {
-    // Create booking data
-    const bookingData = {
-      providerId: provider.id,
-      serviceId: selectedService.id,
-      selectedPets,
-      selectedDate,
-      selectedTimeSlot,
-      totalPrice: selectedService.price * selectedPets.length
+  const handleComplete = async () => {
+    // Format date
+    if (!selectedDate) return
+    
+    const year = selectedDate.getFullYear()
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
+    const day = String(selectedDate.getDate()).padStart(2, '0')
+    const dateString = `${year}-${month}-${day}`
+    
+    const totalPrice = selectedService.price * selectedPets.length
+
+    try {
+      // Get auth session
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('Please sign in to continue')
+        return
+      }
+
+      // Create Stripe Checkout session
+      const response = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          providerId: provider.id,
+          serviceId: selectedService.id,
+          pets: selectedPets,
+          date: dateString,
+          time: selectedTimeSlot,
+          price: totalPrice
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session')
+      }
+
+      const { url } = await response.json()
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      toast.error('Failed to start checkout')
     }
-    
-    // Redirect to payment page with booking data
-    const params = new URLSearchParams({
-      providerId: provider.id,
-      serviceId: selectedService.id,
-      pets: selectedPets.join(','),
-      date: selectedDate?.toISOString() || '',
-      time: selectedTimeSlot,
-      price: (selectedService.price * selectedPets.length).toString()
-    })
-    
-    // Navigate to payment page
-    window.location.href = `/providers/${provider.id}/payment?${params.toString()}`
   }
 
   const stepProps = {

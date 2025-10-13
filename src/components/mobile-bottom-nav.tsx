@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Search, Heart, Calendar, User, MessageCircle } from 'lucide-react'
+import { Home, Search, Calendar, User, MessageCircle } from 'lucide-react'
 
 // Mobile bottom navigation with main app sections
 export function MobileBottomNav() {
@@ -17,7 +17,6 @@ export function MobileBottomNav() {
   const items = [
     { id: 'home', name: 'Pradžia', href: '/', icon: Home },
     { id: 'search', name: 'Paieška', href: '/search', icon: Search },
-    { id: 'favorites', name: 'Mėgstami', href: '/favorites', icon: Heart },
     { id: 'chat', name: 'Pokalbiai', href: '/chat', icon: MessageCircle },
     { id: 'bookings', name: 'Rezervacijos', href: '/bookings', icon: Calendar },
     { id: 'profile', name: 'Profilis', href: '/profile', icon: User },
@@ -29,7 +28,7 @@ export function MobileBottomNav() {
       role="navigation"
       aria-label="Main navigation"
     >
-      <ul className="grid grid-cols-6 items-stretch px-4 py-2">
+      <ul className="grid grid-cols-5 items-stretch px-4 py-2">
         {items.map(item => {
           const isActive = pathname === item.href || 
             (item.id === 'search' && pathname?.startsWith('/search')) ||
