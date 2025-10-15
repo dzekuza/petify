@@ -26,7 +26,7 @@ interface BookingWithDetails {
   // Joined data from API
   customer?: {
     id: string
-    full_name?: string
+    fullName?: string
     email?: string
     phone?: string
   }
@@ -305,7 +305,7 @@ export default function ProviderSchedulePage() {
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm font-medium">
-                                  {booking.customer?.full_name || t('providerDashboard.customer')}
+                                  {booking.customer?.fullName || t('providerDashboard.customer')}
                                 </span>
                               </div>
                               

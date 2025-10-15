@@ -43,6 +43,9 @@ export default function ProviderDetailPage() {
   const shouldOpenReview = searchParams.get('review') === 'true'
   const reviewBookingId = searchParams.get('bookingId')
   
+  // Check if we should preselect a service
+  const serviceParam = searchParams.get('service')
+  
 
   const isFavorite = provider ? isFavorited(provider.id) : false
 
@@ -172,6 +175,26 @@ export default function ProviderDetailPage() {
       setReviewDialogOpen(true)
     }
   }, [shouldOpenReview, provider, loading])
+
+  // Preselect service if URL parameter is provided
+  useEffect(() => {
+    if (serviceParam && services.length > 0 && !loading) {
+      // Find the service by ID
+      const service = services.find(s => s.id === serviceParam)
+      if (service) {
+        setPreSelectedServiceId(serviceParam)
+        // Scroll to booking widget on desktop
+        if (window.innerWidth >= 1024) {
+          setTimeout(() => {
+            const bookingWidget = document.getElementById('booking-widget')
+            if (bookingWidget) {
+              bookingWidget.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          }, 100)
+        }
+      }
+    }
+  }, [serviceParam, services, loading])
 
   // Fetch user pets
   const fetchUserPets = async () => {

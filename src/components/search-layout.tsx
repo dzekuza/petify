@@ -252,14 +252,6 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
           // Apply filters logic here
           console.log('Applying filters:', { rating, providerType })
         }}
-        onClearAll={() => {
-          setRating(0)
-          setProviderType('any')
-          onFiltersChange({
-            ...filters,
-            priceRange: { min: 0, max: 5000 }
-          })
-        }}
         resultsCount={results.length}
       />
     </div>

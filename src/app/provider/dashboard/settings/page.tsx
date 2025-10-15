@@ -124,7 +124,7 @@ export default function BusinessSettingsPage() {
     <ProtectedRoute requiredRole="provider">
       <>
         {/* Header */}
-        <div className="mb-8">
+        
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
@@ -145,7 +145,7 @@ export default function BusinessSettingsPage() {
               </div>
             )}
           </div>
-        </div>
+        
 
         {/* Business Settings */}
         {businessType && providerData && (

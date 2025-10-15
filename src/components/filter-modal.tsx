@@ -18,7 +18,6 @@ interface FilterModalProps {
   providerType: string
   onProviderTypeChange: (type: string) => void
   onApplyFilters: () => void
-  onClearAll: () => void
   resultsCount: number
 }
 
@@ -44,7 +43,6 @@ export const FilterModal = ({
   providerType,
   onProviderTypeChange,
   onApplyFilters,
-  onClearAll,
   resultsCount
 }: FilterModalProps) => {
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(priceRange)
@@ -59,12 +57,6 @@ export const FilterModal = ({
     onClose()
   }
 
-  const handleClearAll = () => {
-    setLocalPriceRange([0, 5000])
-    setLocalRating(0)
-    setLocalProviderType('any')
-    onClearAll()
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -197,14 +189,7 @@ export const FilterModal = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between pt-6 border-t">
-          <Button
-            variant="outline"
-            onClick={handleClearAll}
-            className="px-6"
-          >
-            Išvalyti viską
-          </Button>
+        <div className="flex justify-end pt-6 border-t">
           <Button
             onClick={handleApplyFilters}
             className="px-6 bg-black hover:bg-gray-800 text-white"

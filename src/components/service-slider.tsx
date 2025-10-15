@@ -222,7 +222,7 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
                   : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
               }}
             >
-              <Link href={`/providers/${provider.id}/book?service=${service.id}`}>
+              <Link href={`/providers/${provider.id}?service=${service.id}`}>
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
                   {/* Image Section */}
                   <div className="relative overflow-hidden">

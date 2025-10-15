@@ -19,13 +19,13 @@ import {
   DrawerClose,
 } from '@/components/ui/drawer'
 
-const serviceCategories: { value: ServiceCategory; label: string }[] = [
-  { value: 'grooming', label: 'Gyvūnų šukavimas' },
-  { value: 'veterinary', label: 'Veterinarijos paslaugos' },
-  { value: 'boarding', label: 'Gyvūnų prieglauda' },
-  { value: 'training', label: 'Gyvūnų treniruotės' },
-  { value: 'adoption', label: 'Veislynai' },
-  { value: 'sitting', label: 'Gyvūnų prieglauda' },
+// Grooming-specific service types (since only groomers can use the app currently)
+const groomingServiceTypes: { value: string; label: string }[] = [
+  { value: 'basic-bath', label: 'Paprastas maudymas' },
+  { value: 'full-grooming', label: 'Pilnas kirpimas ir priežiūra' },
+  { value: 'nail-trimming', label: 'Nagų kirpimas' },
+  { value: 'ear-cleaning', label: 'Ausų valymas' },
+  { value: 'teeth-cleaning', label: 'Dantų valymas' },
 ]
 
 interface MobileFilterDrawerProps {
@@ -128,9 +128,9 @@ export const MobileFilterDrawer = ({
               </SelectTrigger>
               <SelectContent className="z-[200]">
                 <SelectItem value="all">Visos paslaugos</SelectItem>
-                {serviceCategories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
+                {groomingServiceTypes.map((serviceType) => (
+                  <SelectItem key={serviceType.value} value={serviceType.value}>
+                    {serviceType.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -276,8 +276,8 @@ export const MobileFilterDrawer = ({
               <Label>Aktyvūs filtrai</Label>
               <div className="flex flex-wrap gap-2">
                 {filters.category && (
-                  <Badge variant="secondary" className="flex items-center space-x-1">
-                    <span>Paslauga: {serviceCategories.find(c => c.value === filters.category)?.label}</span>
+                  <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
+                    <span>Paslauga: {groomingServiceTypes.find(c => c.value === filters.category)?.label}</span>
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => handleFilterChange('category', 'all')}
@@ -285,7 +285,7 @@ export const MobileFilterDrawer = ({
                   </Badge>
                 )}
                 {filters.location && (
-                  <Badge variant="secondary" className="flex items-center space-x-1">
+                  <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
                     <span>Vieta: {filters.location}</span>
                     <X 
                       className="h-3 w-3 cursor-pointer" 
@@ -294,7 +294,7 @@ export const MobileFilterDrawer = ({
                   </Badge>
                 )}
                 {filters.rating && filters.rating > 0 && (
-                  <Badge variant="secondary" className="flex items-center space-x-1">
+                  <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
                     <span>Įvertinimas: {filters.rating}+ žvaigždutės</span>
                     <X 
                       className="h-3 w-3 cursor-pointer" 

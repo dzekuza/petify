@@ -57,6 +57,17 @@ export function NavigationHeader({
             >
               Paieška
             </Link>
+            
+            <Link 
+              href="/search?category=grooming" 
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                pathname.startsWith('/search?category=grooming') ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              Kirpyklos
+            </Link>
+
             <Link 
               href="/providers" 
               className={cn(

@@ -267,7 +267,7 @@ If you have any questions or need help, please:
 
 1. Check the [Issues](https://github.com/your-repo/issues) page
 2. Create a new issue if your problem isn't already reported
-3. Contact us at support@petservices.com
+3. Contact us at info@petify.lt
 
 ## 🎯 Roadmap
 

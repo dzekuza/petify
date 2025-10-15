@@ -237,7 +237,7 @@ export default function ProviderProfilePage() {
     <ProtectedRoute requiredRole="provider">
       <>
           {/* Header */}
-          <div className="mb-8">
+         
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Profilis</h1>
@@ -247,7 +247,7 @@ export default function ProviderProfilePage() {
                 <Button onClick={handleEditProfile}>Redaguoti profilį</Button>
               </div>
             </div>
-          </div>
+        
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Profile Info */}

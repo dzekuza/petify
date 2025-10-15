@@ -39,15 +39,15 @@ export const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Mail className="h-4 w-4" />
-                <span>support@petservices.com</span>
+                <span>info@petify.lt</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Phone className="h-4 w-4" />
-                <span>1-800-PET-CARE</span>
+                <span>+37067312315</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <MapPin className="h-4 w-4" />
-                <span>San Francisco, CA</span>
+                <span>Vilnius, Lietuva</span>
               </div>
             </div>
           </div>

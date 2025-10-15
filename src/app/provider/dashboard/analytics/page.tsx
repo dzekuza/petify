@@ -53,38 +53,38 @@ export default function ProviderAnalyticsPage() {
         {/* KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <Card className="shadow-none">
-            <CardHeader className="p-0">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Pajamos (30 d.)</CardTitle>
               <CardDescription>€{metrics.totalRevenue.toFixed(2)}</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <MiniLineChart values={revenueTrend} color="#16a34a" />
             </CardContent>
           </Card>
-          <Card className=" shadow-none">
-            <CardHeader className="p-0">
+          <Card className="shadow-none">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Rezervacijos (30 d.)</CardTitle>
               <CardDescription>{metrics.totalBookings}</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <MiniLineChart values={bookingsTrend} color="#2563eb" />
             </CardContent>
           </Card>
           <Card className="shadow-none">
-            <CardHeader className="p-0">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Vid. užsakymo suma</CardTitle>
               <CardDescription>€{metrics.avgOrderValue.toFixed(2)}</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <MiniLineChart values={[28, 30, 31, 33, 32, 35, 34]} color="#7c3aed" />
             </CardContent>
           </Card>
-          <Card className=" shadow-none">
-            <CardHeader className="p-0">
+          <Card className="shadow-none">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Įvykdymo rodiklis</CardTitle>
               <CardDescription>{Math.round(metrics.completionRate * 100)}%</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <MiniLineChart values={[80, 82, 83, 85, 86, 90, 91]} color="#f59e0b" />
             </CardContent>
           </Card>
@@ -93,22 +93,22 @@ export default function ProviderAnalyticsPage() {
         {/* Trends */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="shadow-none lg:col-span-2">
-            <CardHeader className="p-0">
+            <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">Pajamų dinamika</CardTitle>
               <CardDescription>Paskutinių 12 savaičių</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <MiniLineChart values={revenueTrend} color="#16a34a" />
-              <div className="text-xs text-gray-500">Bendra: €{revenueTrend.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+              <div className="text-xs text-gray-500 mt-2">Bendra: €{revenueTrend.reduce((a, b) => a + b, 0).toFixed(2)}</div>
             </CardContent>
           </Card>
 
           <Card className="shadow-none">
-            <CardHeader className="p-0">
+            <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">Top paslaugos</CardTitle>
               <CardDescription>Pagal pajamas ir rezervacijas</CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="pt-0">
               <div className="space-y-3">
                 {topServices.map((s) => (
                   <div key={s.name} className="flex items-center justify-between p-3 border rounded-lg">

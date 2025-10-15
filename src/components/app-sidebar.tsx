@@ -4,9 +4,11 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
+  Calendar,
   Command,
   Frame,
   Heart,
+  LayoutDashboard,
   LifeBuoy,
   Map,
   MessageCircle,
@@ -14,6 +16,8 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  User,
+  Wrench,
 } from "lucide-react"
 
 import Link from "next/link"
@@ -221,11 +225,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {isProviderArea ? (
             <>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard">
-                <SquareTerminal />
+                <LayoutDashboard />
                 <span>{t('navigation.dashboard')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/bookings">
-                <Bot />
+                <BookOpen />
                 <span>{t('navigation.bookings')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/chat">
@@ -233,7 +237,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span>Žinutės</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/calendar">
-                <BookOpen />
+                <Calendar />
                 <span>{t('navigation.calendar')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/analytics">
@@ -241,7 +245,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span>{t('providerDashboard.analytics')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/services">
-                <BookOpen />
+                <Wrench />
                 <span>{t('navigation.services', 'Paslaugos')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/settings">
@@ -249,7 +253,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span>{t('navigation.settings', 'Nustatymai')}</span>
               </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/profile">
-                <Settings2 />
+                <User />
                 <span>{t('navigation.profile')}</span>
               </SidebarMenuItemWithAutoClose>
             </>
