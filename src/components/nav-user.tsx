@@ -87,35 +87,35 @@ export function NavUser({
               <DropdownMenuItem asChild>
                 <Link href="/profile">
                   <BadgeCheck />
-                  Account
+                  Paskyra
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/bookings">
                   <Bell />
-                  My Bookings
+                  Mano rezervacijos
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/provider/dashboard">
+                <Link href="/dashboard">
                   <Sparkles />
-                  Provider Dashboard
+                  Kliento skydas
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/favorites">
                   <CreditCard />
-                  Favorites
+                  Mėgstamiausi
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={async () => { await signOut() }}>
               <LogOut />
-              Log out
+              Atsijungti
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -160,7 +160,7 @@ export const ProviderCard = ({
         {/* Service Category Badge */}
         <div className="absolute top-2 left-2 flex flex-col space-y-1">
           <Badge variant="secondary" className="border-transparent bg-white/90 text-orange-700 text-xs">
-            {getServiceTypeDisplayName(provider.services[0])}
+            {getServiceTypeDisplayName(provider.businessType || provider.services[0])}
           </Badge>
         </div>
 

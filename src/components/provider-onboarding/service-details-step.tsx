@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
@@ -69,28 +69,28 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
   }
 
   const isFormValid = () => {
-    // For adoption/ads providers, only require experience
-    if (data.providerType === 'adoption') {
-      return data.experience
-    }
-    
-    // For other providers, require experience and pricing
-    return data.experience && data.basePrice > 0
+    // Pricing is no longer required; only require experience to proceed
+    return Boolean(data.experience)
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      bottom={
+        <BottomNavigation
+          currentStep={9}
+          totalSteps={12}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={!isFormValid()}
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-[522px]">
-          <div className="flex flex-col gap-6 items-start justify-start">
-            {/* Title */}
-            <h1 className="text-3xl font-bold text-black w-full">
-              Paslaugų detalės
-            </h1>
+      <div className="w-full max-w-[720px] mx-auto">
+        <div className="flex flex-col gap-6">
+          <h1 className="text-3xl font-bold text-black">Paslaugų detalės</h1>
               
               {/* Experience */}
               <div className="w-full">
@@ -112,36 +112,7 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
                 </Select>
               </div>
 
-              {/* Pricing - Only show for non-adoption providers */}
-              {data.providerType !== 'adoption' && (
-                <>
-                  {/* Base Price */}
-                  <InputField
-                    id="basePrice"
-                    label="Bazinė kaina (€)"
-                    type="number"
-                    value={data.basePrice || ''}
-                    onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
-                    placeholder="Įveskite bazinę kainą"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-
-                  {/* Price Per Hour */}
-                  <InputField
-                    id="pricePerHour"
-                    label="Kaina už valandą (€)"
-                    type="number"
-                    value={data.pricePerHour || ''}
-                    onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
-                    placeholder="Įveskite kainą už valandą"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </>
-              )}
+              {/* Pricing removed per requirements */}
 
               {/* Certifications */}
               <div className="w-full">
@@ -215,20 +186,8 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={9}
-        totalSteps={12}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!isFormValid()}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }

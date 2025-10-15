@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { InputWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import { InputField, TextareaField } from '@/components/ui/input-field'
 import { ServiceProvider } from '@/types'
 import { toast } from 'sonner'
 import { Building2, Mail } from 'lucide-react'
@@ -109,41 +109,41 @@ export function ClaimBusinessWidget({
                     </p>
                   </div>
 
-                  <InputWithLabel
+                  <InputField
                     id="claim-name"
                     label="Jūsų vardas"
                     placeholder="Įveskite savo vardą"
                     value={formData.name}
-                    onChange={(value) => handleInputChange('name', value)}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                     required
                   />
 
-                  <InputWithLabel
+                  <InputField
                     id="claim-email"
                     label="El. paštas"
                     type="email"
                     placeholder="jūsų@email.lt"
                     value={formData.email}
-                    onChange={(value) => handleInputChange('email', value)}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     required
                   />
 
-                  <InputWithLabel
+                  <InputField
                     id="claim-phone"
                     label="Telefono numeris"
                     type="tel"
                     placeholder="+370 6XX XXXXX"
                     value={formData.phone}
-                    onChange={(value) => handleInputChange('phone', value)}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
                     required
                   />
 
-                  <TextareaWithLabel
+                  <TextareaField
                     id="claim-message"
                     label="Papildoma informacija"
                     placeholder="Papasakokite apie savo verslą, patirtį ar kitą svarbią informaciją..."
                     value={formData.message}
-                    onChange={(value) => handleInputChange('message', value)}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
                     rows={4}
                   />
                 </div>

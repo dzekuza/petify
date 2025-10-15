@@ -498,40 +498,15 @@ export const providerApi = {
   }) {
     try {
       
-      // Start with a simple query to get all providers
+      // Start with a simple query to get all active providers
       let query = supabase
         .from('providers')
         .select('*')
         .eq('status', 'active')
-        .eq('business_type', 'grooming') // Only show grooming providers
       
       // Only filter by verification if explicitly requested (default to show all active providers)
       if (filters?.verifiedOnly === true) {
         query = query.eq('is_verified', true)
-      }
-
-      // Apply category filter
-      if (filters?.category && filters.category !== 'all') {
-        // For training and adoption categories, we need to check the services table
-        if (filters.category === 'training' || filters.category === 'adoption') {
-          // Get providers that have services in this category
-          const { data: categoryProviders } = await supabase
-            .from('services')
-            .select('provider_id')
-            .eq('category', filters.category)
-            .eq('is_active', true)
-          
-          if (categoryProviders && categoryProviders.length > 0) {
-            const providerIds = categoryProviders.map(p => p.provider_id)
-            query = query.in('id', providerIds)
-          } else {
-            // No providers found for this category, return empty result
-            query = query.eq('id', '00000000-0000-0000-0000-000000000000')
-          }
-        } else {
-          // Use overlaps to check if any service in the array matches the category
-          query = query.overlaps('services', [filters.category])
-        }
       }
 
       // Apply rating filter
@@ -554,6 +529,25 @@ export const providerApi = {
 
       // Apply location filter after getting providers
       let filteredProviders = providers || []
+
+      // Post-filter by category to include providers whose business_type matches
+      // even if their services array is empty, and vice-versa
+      if (filters?.category && filters.category !== 'all') {
+        if (filters.category === 'training' || filters.category === 'adoption') {
+          const { data: categoryProviders } = await supabase
+            .from('services')
+            .select('provider_id')
+            .eq('category', filters.category)
+            .eq('is_active', true)
+          const allowedIds = new Set((categoryProviders || []).map(p => p.provider_id))
+          filteredProviders = filteredProviders.filter(p => allowedIds.has(p.id))
+        } else {
+          const cat = filters.category
+          filteredProviders = filteredProviders.filter(p =>
+            p.business_type === cat || (Array.isArray(p.services) && p.services.includes(cat))
+          )
+        }
+      }
       
       if (filters?.location && filters.location.trim()) {
         const searchLocation = filters.location.toLowerCase().trim()

@@ -252,14 +252,14 @@ export default function ProviderProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Profile Info */}
             <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
+              <Card className=" shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>Verslo informacija</CardTitle>
                   <CardDescription>
                     Jūsų verslo pagrindinė informacija
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 p-0">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={profile.avatarUrl} alt={profile.businessName} />
@@ -329,14 +329,14 @@ export default function ProviderProfilePage() {
               </Card>
 
               {/* Business Stats */}
-              <Card>
-                <CardHeader>
+              <Card className=" shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>Verslo statistika</CardTitle>
                   <CardDescription>
                     Jūsų verslo veiklos rodikliai
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center space-x-3">
                       <Star className="h-5 w-5 text-yellow-400" />
@@ -360,11 +360,11 @@ export default function ProviderProfilePage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Profile Status */}
-              <Card>
-                <CardHeader>
+              <Card className=" shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>Profilio būsena</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Profilio užbaigimas</span>
@@ -383,11 +383,11 @@ export default function ProviderProfilePage() {
               </Card>
 
               {/* Quick Actions */}
-              <Card>
-                <CardHeader>
+              <Card className=" shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>Greiti veiksmai</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 p-0">
                   <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/dashboard/services')}>
                     Mano paslaugos
                   </Button>

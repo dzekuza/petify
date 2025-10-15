@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { providerApi } from '@/lib/providers'
 import { OnboardingData } from '@/types/onboarding'
 import { serviceApi } from '@/lib/services'
-import { uploadServiceImage, getPublicUrl } from '@/lib/storage'
+import { uploadServiceImage, getPublicUrl, uploadCoverImage, uploadProfilePicture } from '@/lib/storage'
 import { toast } from 'sonner'
 import Image from 'next/image'
 import WelcomeStep from '@/components/provider-onboarding/welcome-step'
@@ -214,6 +214,21 @@ function ProviderOnboardingPage() {
     if (!user?.id) return
     
     try {
+      // Compute cover/logo URLs (upload if new files provided)
+      let coverUrl: string | undefined = onboardingData.coverImageUrl || undefined
+      let logoUrl: string | undefined = onboardingData.logoImageUrl || undefined
+
+      if (isEditMode && editProviderId) {
+        if (onboardingData.coverImage) {
+          const uploaded = await uploadCoverImage(onboardingData.coverImage, editProviderId)
+          if (uploaded.data) coverUrl = getPublicUrl('provider-images', uploaded.data.path)
+        }
+        if (onboardingData.logoImage) {
+          const uploaded = await uploadProfilePicture(onboardingData.logoImage, editProviderId)
+          if (uploaded.data) logoUrl = getPublicUrl('provider-images', uploaded.data.path)
+        }
+      }
+
       // Prepare the provider data (same as in handleOnboardingComplete)
       const providerData = {
         userId: user?.id || '',
@@ -227,6 +242,11 @@ function ProviderOnboardingPage() {
           state: onboardingData.state || '',
           zip: onboardingData.addresses?.[0]?.zipCode || onboardingData.zipCode || '',
           coordinates: onboardingData.coordinates || { lat: 0, lng: 0 }
+        },
+        priceRange: {
+          min: Number.isFinite(onboardingData.basePrice) ? onboardingData.basePrice : 0,
+          max: Number.isFinite(onboardingData.pricePerHour) ? onboardingData.pricePerHour : (Number.isFinite(onboardingData.basePrice) ? onboardingData.basePrice : 0),
+          currency: onboardingData.currency || 'EUR'
         },
         serviceAreas: onboardingData.addresses?.map(addr => ({
           address: addr.address,
@@ -247,16 +267,11 @@ function ProviderOnboardingPage() {
           saturday: { start: onboardingData.workingHours?.saturday?.startTime || '09:00', end: onboardingData.workingHours?.saturday?.endTime || '17:00', available: onboardingData.workingHours?.saturday?.enabled || false },
           sunday: { start: onboardingData.workingHours?.sunday?.startTime || '09:00', end: onboardingData.workingHours?.sunday?.endTime || '17:00', available: onboardingData.workingHours?.sunday?.enabled || false }
         },
-        priceRange: {
-          min: Math.min(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
-          max: Math.max(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
-          currency: onboardingData.currency || 'EUR'
-        },
         availability: onboardingData.availability || {},
         certifications: onboardingData.certifications || [],
         experienceYears: parseInt(onboardingData.experience) || 0,
-        images: onboardingData.photos || [],
-        avatarUrl: onboardingData.profilePhoto || ''
+        images: coverUrl ? [coverUrl] : (onboardingData.photos || []),
+        avatarUrl: logoUrl || onboardingData.profilePhoto || ''
       }
       
       if (isEditMode && editProviderId) {
@@ -310,6 +325,10 @@ function ProviderOnboardingPage() {
 
   const handleOnboardingComplete = async () => {
     try {
+      // Upload cover/logo for new provider after provider id is known; for now just collect local URLs
+      let coverUrl: string | undefined
+      let logoUrl: string | undefined
+
       // Prepare the provider data
       const providerData = {
         userId: user?.id || '',
@@ -323,6 +342,11 @@ function ProviderOnboardingPage() {
           state: onboardingData.state || '',
           zip: onboardingData.addresses?.[0]?.zipCode || onboardingData.zipCode || '',
           coordinates: onboardingData.coordinates || { lat: 0, lng: 0 }
+        },
+        priceRange: {
+          min: Number.isFinite(onboardingData.basePrice) ? onboardingData.basePrice : 0,
+          max: Number.isFinite(onboardingData.pricePerHour) ? onboardingData.pricePerHour : (Number.isFinite(onboardingData.basePrice) ? onboardingData.basePrice : 0),
+          currency: onboardingData.currency || 'EUR'
         },
         serviceAreas: onboardingData.addresses?.map(addr => ({
           address: addr.address,
@@ -342,11 +366,6 @@ function ProviderOnboardingPage() {
           friday: { start: onboardingData.workingHours?.friday?.startTime || '09:00', end: onboardingData.workingHours?.friday?.endTime || '17:00', available: onboardingData.workingHours?.friday?.enabled || false },
           saturday: { start: onboardingData.workingHours?.saturday?.startTime || '09:00', end: onboardingData.workingHours?.saturday?.endTime || '17:00', available: onboardingData.workingHours?.saturday?.enabled || false },
           sunday: { start: onboardingData.workingHours?.sunday?.startTime || '09:00', end: onboardingData.workingHours?.sunday?.endTime || '17:00', available: onboardingData.workingHours?.sunday?.enabled || false }
-        },
-        priceRange: {
-          min: Math.min(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
-          max: Math.max(onboardingData.basePrice || 0, onboardingData.pricePerHour || 0),
-          currency: onboardingData.currency || 'EUR'
         },
         availability: onboardingData.availability || {},
         certifications: onboardingData.certifications || [],
@@ -412,6 +431,24 @@ function ProviderOnboardingPage() {
             } catch (e) {
               // Ignore single service failures to not block onboarding
             }
+          }
+        }
+
+        // If we have files, upload cover/logo now that provider id is known, then save URLs
+        if (provider?.id) {
+          if (onboardingData.coverImage) {
+            const uploaded = await uploadCoverImage(onboardingData.coverImage, provider.id)
+            if (uploaded.data) coverUrl = getPublicUrl('provider-images', uploaded.data.path)
+          }
+          if (onboardingData.logoImage) {
+            const uploaded = await uploadProfilePicture(onboardingData.logoImage, provider.id)
+            if (uploaded.data) logoUrl = getPublicUrl('provider-images', uploaded.data.path)
+          }
+          if (coverUrl || logoUrl) {
+            await providerApi.updateProvider(provider.id, {
+              images: coverUrl ? [coverUrl] : undefined,
+              avatarUrl: logoUrl
+            })
           }
         }
         router.push('/provider/dashboard')

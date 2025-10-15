@@ -120,6 +120,20 @@ export default function PaymentPage() {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000))
       
+      // Parse the time to get start and end times
+      let startTime, endTime
+      if (bookingData.time.includes('-')) {
+        const [start, end] = bookingData.time.split('-')
+        startTime = start.trim()
+        endTime = end.trim()
+      } else {
+        // If only start time provided, assume 1 hour duration
+        startTime = bookingData.time.trim()
+        const [hours, minutes] = startTime.split(':').map(Number)
+        const endHours = hours + 1
+        endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+      }
+
       // Create booking record
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
@@ -128,7 +142,9 @@ export default function PaymentPage() {
           service_id: bookingData.serviceId,
           customer_id: (await supabase.auth.getUser()).data.user?.id,
           booking_date: bookingData.date,
-          booking_time: bookingData.time,
+          start_time: startTime,
+          end_time: endTime,
+          duration_minutes: 60, // Default to 60 minutes
           total_price: bookingData.price,
           status: 'confirmed',
           payment_status: 'paid'

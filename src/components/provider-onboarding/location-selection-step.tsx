@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -39,21 +39,24 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      bottom={
+        <BottomNavigation
+          currentStep={3}
+          totalSteps={8}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={!selectedLocationType}
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-[522px]">
-            <div className="flex flex-col gap-6 items-start justify-start">
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-black w-full">
-                Paslaugų teikimo lokacijos
-              </h1>
-              
-              {/* Location Options */}
-              <div className="flex flex-col gap-2 w-full">
+      <div className="w-full max-w-[720px] mx-auto">
+        <div className="flex flex-col gap-6">
+          <h1 className="text-3xl font-bold text-black">Paslaugų teikimo lokacijos</h1>
+          <div className="flex flex-col gap-2 w-full">
                 {locationOptions.map((option) => (
                   <Card 
                     key={option.id}
@@ -78,21 +81,9 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
                     </CardContent>
                   </Card>
                 ))}
-              </div>
-            </div>
           </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={3}
-        totalSteps={8}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!selectedLocationType}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }

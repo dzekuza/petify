@@ -240,6 +240,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <PieChart />
                 <span>{t('providerDashboard.analytics')}</span>
               </SidebarMenuItemWithAutoClose>
+              <SidebarMenuItemWithAutoClose href="/provider/dashboard/services">
+                <BookOpen />
+                <span>{t('navigation.services', 'Paslaugos')}</span>
+              </SidebarMenuItemWithAutoClose>
               <SidebarMenuItemWithAutoClose href="/provider/dashboard/settings">
                 <Settings2 />
                 <span>{t('navigation.settings', 'Nustatymai')}</span>
@@ -278,8 +282,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/admin/listings">
-                    <Settings2 />
-                    <span>Listings</span>
+                    <BookOpen />
+                    <span>Services</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

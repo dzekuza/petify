@@ -402,9 +402,73 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             {services.slice(0, isMobile ? 3 : services.length).map((service) => (
               <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
                 <div>
+                  {/* Service Category badge - moved above title */}
+                  <div className="mb-2">
+                    {(() => {
+                      const name = (service.name || '').toLowerCase()
+                      const pick = name.includes('kirp') ? 'Kirpimas' :
+                        name.includes('maud') || name.includes('plov') ? 'Maudymas' :
+                        name.includes('šukav') ? 'Šukavimas' :
+                        name.includes('nag') ? 'Nagų priežiūra' :
+                        name.includes('aus') ? 'Ausų valymas' :
+                        name.includes('dant') ? 'Dantų valymas' :
+                        ''
+                      const label = pick || (service.category === 'grooming' ? 'Kirpykla' :
+                        service.category === 'veterinary' ? 'Veterinarija' :
+                        service.category === 'boarding' ? 'Prieglauda' :
+                        service.category === 'training' ? 'Dresūra' :
+                        service.category === 'adoption' ? 'Veislynai' :
+                        service.category === 'sitting' ? 'Prižiūrėjimas' : 'Paslaugos')
+                      return (
+                        <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-800">
+                          {label}
+                        </Badge>
+                      )
+                    })()}
+                  </div>
                   <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 ${isMobile ? '' : 'mb-2'}`}>
                     {service.name}
                   </h4>
+                  {/* Service Images Gallery */}
+                  {service.images && service.images.length > 0 && (
+                    <div className="mb-3">
+                      <div className="flex gap-2 overflow-x-auto pb-2 w-full">
+                        {service.images.slice(0, 4).map((image, index) => (
+                          <div 
+                            key={index} 
+                            className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => {
+                              // Create a simple image dialog
+                              const dialog = document.createElement('div')
+                              dialog.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50'
+                              dialog.onclick = () => document.body.removeChild(dialog)
+                              
+                              const img = document.createElement('img')
+                              img.src = image
+                              img.className = 'max-w-4xl max-h-4xl object-contain'
+                              img.onclick = (e) => e.stopPropagation()
+                              
+                              dialog.appendChild(img)
+                              document.body.appendChild(dialog)
+                            }}
+                          >
+                            <Image
+                              src={image}
+                              alt={`${service.name} ${index + 1}`}
+                              width={80}
+                              height={80}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                        {service.images.length > 4 && (
+                          <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
+                            <span className="text-xs text-gray-500">+{service.images.length - 4}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   <p className={`text-sm text-gray-600 ${isMobile ? 'mt-1' : 'mb-3'}`}>
                     {service.description}
                   </p>

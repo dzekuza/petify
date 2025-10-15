@@ -29,8 +29,8 @@ export default function BusinessSettingsPage() {
           setProviderData(provider)
         }
       } catch (error) {
-        console.error('Error fetching provider data:', error)
-        toast.error('Failed to load provider data')
+        console.error('Klaida gaunant teikėjo duomenis:', error)
+        toast.error('Nepavyko įkelti teikėjo duomenų')
       } finally {
         setLoading(false)
       }
@@ -98,10 +98,10 @@ export default function BusinessSettingsPage() {
       setProviderData((prev: Record<string, any> | null) => ({ ...prev, ...updateData }))
       setLastSaved(new Date())
       
-      toast.success('Settings saved successfully!')
+      toast.success('Nustatymai sėkmingai išsaugoti!')
     } catch (error) {
-      console.error('Error saving settings:', error)
-      toast.error('Failed to save settings')
+      console.error('Klaida išsaugant nustatymus:', error)
+      toast.error('Nepavyko išsaugoti nustatymų')
     } finally {
       setSaving(false)
     }
@@ -113,7 +113,7 @@ export default function BusinessSettingsPage() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading settings...</p>
+            <p className="mt-4 text-gray-600">Kraunamos nuostatos...</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -128,11 +128,11 @@ export default function BusinessSettingsPage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                <Settings className="h-8 w-8 mr-3 text-blue-600" />
-                Business Settings
+               
+                Verslo nustatymai
               </h1>
               <p className="mt-2 text-gray-600">
-                Configure your {businessType} business parameters and preferences
+                Konfigūruokite savo {businessType} verslo parametrus ir nuostatas
               </p>
             </div>
             
@@ -140,7 +140,7 @@ export default function BusinessSettingsPage() {
               <div className="flex justify-start md:justify-end">
                 <div className="flex items-center text-sm text-green-600">
                   <CheckCircle className="h-4 w-4 mr-1" />
-                  Last saved: {lastSaved.toLocaleTimeString()}
+                  Paskutinį kartą išsaugota: {lastSaved.toLocaleTimeString()}
                 </div>
               </div>
             )}
@@ -158,12 +158,10 @@ export default function BusinessSettingsPage() {
 
         {/* General Business Information */}
         {providerData && (
-          <div className="mt-8">
-            <GeneralBusinessInfo
-              providerData={providerData}
-              onUpdate={handleUpdate}
-            />
-          </div>
+          <GeneralBusinessInfo
+            providerData={providerData}
+            onUpdate={handleUpdate}
+          />
         )}
       </>
     </ProtectedRoute>

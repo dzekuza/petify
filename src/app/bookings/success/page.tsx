@@ -14,23 +14,31 @@ function BookingSuccessContent() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [bookingDetails, setBookingDetails] = useState<any>(null)
+  const [hasVerified, setHasVerified] = useState(false)
 
   useEffect(() => {
     const sessionId = searchParams?.get('session_id')
     
+    // Prevent multiple verifications
+    if (hasVerified || loading === false) {
+      return
+    }
+    
     if (!sessionId) {
-      toast.error('Invalid session')
+      toast.error('Netinkama sesija')
       router.push('/')
       return
     }
 
     const verifySession = async () => {
       try {
+        setHasVerified(true)
+        
         // Get the session from Supabase auth
         const { data: { session } } = await supabase.auth.getSession()
         
         if (!session) {
-          toast.error('Please sign in')
+          toast.error('Prašome prisijungti')
           router.push('/auth/signin')
           return
         }
@@ -46,21 +54,21 @@ function BookingSuccessContent() {
         })
 
         if (!response.ok) {
-          throw new Error('Failed to verify session')
+          throw new Error('Nepavyko patvirtinti sesijos')
         }
 
         const data = await response.json()
         setBookingDetails(data.booking)
       } catch (error) {
         console.error('Error verifying session:', error)
-        toast.error('Failed to verify payment')
+        toast.error('Nepavyko patvirtinti mokėjimo')
       } finally {
         setLoading(false)
       }
     }
 
     verifySession()
-  }, [searchParams, router])
+  }, [searchParams?.get('session_id'), hasVerified, loading])
 
   if (loading) {
     return (
@@ -82,22 +90,22 @@ function BookingSuccessContent() {
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
               <CardTitle className="text-3xl font-bold text-gray-900">
-                Booking Confirmed!
+                Rezervacija patvirtinta!
               </CardTitle>
               <p className="text-gray-600 mt-2">
-                Your payment was successful and your booking has been confirmed
+                Jūsų mokėjimas buvo sėkmingas ir rezervacija patvirtinta
               </p>
             </CardHeader>
 
             <CardContent className="space-y-6">
               {bookingDetails && (
                 <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-                  <h3 className="font-semibold text-lg text-gray-900">Booking Details</h3>
+                  <h3 className="font-semibold text-lg text-gray-900">Rezervacijos detalės</h3>
                   
                   <div className="space-y-3">
                     <div className="flex items-center text-sm">
                       <Calendar className="h-4 w-4 text-gray-400 mr-3" />
-                      <span className="text-gray-600">Date:</span>
+                      <span className="text-gray-600">Data:</span>
                       <span className="ml-auto font-medium text-gray-900">
                         {bookingDetails.booking_date}
                       </span>
@@ -105,23 +113,23 @@ function BookingSuccessContent() {
                     
                     <div className="flex items-center text-sm">
                       <Clock className="h-4 w-4 text-gray-400 mr-3" />
-                      <span className="text-gray-600">Time:</span>
+                      <span className="text-gray-600">Laikas:</span>
                       <span className="ml-auto font-medium text-gray-900">
-                        {bookingDetails.booking_time}
+                        {bookingDetails.start_time} - {bookingDetails.end_time}
                       </span>
                     </div>
                     
                     <div className="flex items-center text-sm">
-                      <span className="text-gray-600">Status:</span>
+                      <span className="text-gray-600">Būsena:</span>
                       <span className="ml-auto font-medium text-green-600">
-                        Confirmed
+                        Patvirtinta
                       </span>
                     </div>
                     
                     <div className="flex items-center text-sm">
-                      <span className="text-gray-600">Payment:</span>
+                      <span className="text-gray-600">Mokėjimas:</span>
                       <span className="ml-auto font-medium text-green-600">
-                        Paid
+                        Apmokėta
                       </span>
                     </div>
                   </div>
@@ -133,7 +141,7 @@ function BookingSuccessContent() {
                   onClick={() => router.push('/bookings')}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
-                  View My Bookings
+                  Peržiūrėti mano rezervacijas
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 
@@ -142,15 +150,15 @@ function BookingSuccessContent() {
                   variant="outline"
                   className="w-full"
                 >
-                  Back to Home
+                  Grįžti į pagrindinį
                 </Button>
               </div>
 
               <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-900">
-                <p className="font-medium mb-1">What's next?</p>
+                <p className="font-medium mb-1">Kas toliau?</p>
                 <p className="text-blue-700">
-                  A confirmation email has been sent to your email address. 
-                  You can view and manage your booking in the "My Bookings" section.
+                  Patvirtinimo el. laiškas išsiųstas į jūsų el. pašto adresą. 
+                  Galite peržiūrėti ir valdyti savo rezervaciją skyriuje "Mano rezervacijos".
                 </p>
               </div>
             </CardContent>
@@ -168,7 +176,7 @@ export default function BookingSuccessPage() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading booking details...</p>
+            <p className="text-gray-600">Kraunamos rezervacijos detalės...</p>
           </div>
         </div>
       </Layout>

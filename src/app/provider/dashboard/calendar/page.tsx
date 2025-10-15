@@ -165,8 +165,8 @@ export default function ProviderSchedulePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Calendar */}
             <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
+              <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="p-0">
                   <div className="flex items-center justify-between">
                     <CardTitle>{t('providerDashboard.calendarTitle')}</CardTitle>
                     <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function ProviderSchedulePage() {
                   </div>
                   <CardDescription>{t('providerDashboard.upcomingAppointments')}</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   {loading ? (
                     <div className="flex items-center justify-center py-10">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -253,8 +253,8 @@ export default function ProviderSchedulePage() {
 
             {/* Selected Date Bookings */}
             <div>
-              <Card>
-                <CardHeader>
+              <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>
                     {selectedDate ? (
                       <>
@@ -276,7 +276,7 @@ export default function ProviderSchedulePage() {
                       : t('providerDashboard.noAppointments')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   {selectedDate ? (
                     <div className="space-y-4">
                       {selectedDateBookings.length === 0 ? (

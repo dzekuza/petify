@@ -8,6 +8,8 @@ export interface CreateServiceData {
   description: string
   price: number
   duration: number
+  durationMin?: number
+  durationMax?: number
   maxPets: number
   requirements?: string[]
   includes?: string[]
@@ -34,6 +36,8 @@ export interface UpdateServiceData {
   description?: string
   price?: number
   duration?: number
+  durationMin?: number
+  durationMax?: number
   maxPets?: number
   requirements?: string[]
   includes?: string[]
@@ -68,6 +72,8 @@ export const serviceApi = {
         description: data.description,
         price: data.price,
         duration_minutes: data.duration,
+        duration_min_minutes: data.durationMin,
+        duration_max_minutes: data.durationMax,
         max_pets: data.maxPets,
         requirements: data.requirements || [],
         includes: data.includes || [],
@@ -101,9 +107,12 @@ export const serviceApi = {
         .select()
         .single()
 
-      // If schema not updated yet, retry without service_location
-      if (error && (error as any).code === 'PGRST204' && data.serviceLocation) {
-        const retryPayload = basePayload
+      // If schema not updated yet, retry without optional columns that might not exist
+      if (error) {
+        const retryPayload = { ...basePayload }
+        if (data.serviceLocation) delete (retryPayload as any).service_location
+        if (data.durationMin === undefined) delete (retryPayload as any).duration_min_minutes
+        if (data.durationMax === undefined) delete (retryPayload as any).duration_max_minutes
         const retry = await supabase
           .from('services')
           .insert([retryPayload])
@@ -176,6 +185,8 @@ export const serviceApi = {
         description: data.description,
         price: data.price,
         duration_minutes: data.duration,
+        duration_min_minutes: data.durationMin,
+        duration_max_minutes: data.durationMax,
         max_pets: data.maxPets,
         requirements: data.requirements,
         includes: data.includes,
@@ -199,12 +210,27 @@ export const serviceApi = {
       }
       if (data.serviceLocation) updatePayload.service_location = data.serviceLocation
 
-      const { data: service, error } = await supabase
+      let { data: service, error } = await supabase
         .from('services')
         .update(updatePayload)
         .eq('id', serviceId)
         .select()
         .single()
+
+      if (error) {
+        // Retry removing optional columns that might not exist in DB
+        const retryPayload = { ...updatePayload }
+        delete (retryPayload as any).duration_min_minutes
+        delete (retryPayload as any).duration_max_minutes
+        const retry = await supabase
+          .from('services')
+          .update(retryPayload)
+          .eq('id', serviceId)
+          .select()
+          .single()
+        service = retry.data
+        error = retry.error as any
+      }
 
       if (error) {
         console.error('Error updating service:', error)

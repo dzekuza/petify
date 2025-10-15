@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
@@ -133,14 +133,23 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      maxWidth="wide"
+      bottom={
+        <BottomNavigation
+          currentStep={4}
+          totalSteps={8}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={!isFormValid()}
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-6xl">
-            <div className="flex flex-col lg:flex-row gap-8 items-center justify-start">
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Left Side - Address Forms */}
               <div className="flex-1 max-w-[522px]">
                 <div className="flex flex-col gap-6 items-start justify-start">
@@ -267,20 +276,8 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={4}
-        totalSteps={8}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!isFormValid()}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }

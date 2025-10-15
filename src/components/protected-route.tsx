@@ -43,11 +43,7 @@ export const ProtectedRoute = ({
   }, [loading, user, roleMismatch, requiredRole, router])
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center bg-gray-50" style={{ minHeight: '100vh' }}>
-        <Loading />
-      </div>
-    )
+    return null
   }
 
   // During redirects, render nothing to prevent UI flicker and hook churn

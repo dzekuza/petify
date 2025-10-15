@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const { data: existingBooking } = await supabaseClient
       .from('bookings')
       .select('id')
-      .eq('payment_intent_id', session.payment_intent as string)
+      .eq('payment_id', session.payment_intent as string)
       .single()
 
     if (existingBooking) {
@@ -78,6 +78,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ booking, alreadyExists: true })
     }
 
+    // Parse the time to get start and end times
+    // Assuming time is in format "HH:MM" or "HH:MM-HH:MM"
+    let startTime, endTime
+    if (time.includes('-')) {
+      const [start, end] = time.split('-')
+      startTime = start.trim()
+      endTime = end.trim()
+    } else {
+      // If only start time provided, assume 1 hour duration
+      startTime = time.trim()
+      const [hours, minutes] = startTime.split(':').map(Number)
+      const endHours = hours + 1
+      endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+    }
+
+    // Parse pets from comma-separated string and get the first pet ID
+    const petIds = pets.split(',').map(id => id.trim()).filter(id => id)
+    const primaryPetId = petIds[0] || null
+
     // Create the booking
     const { data: booking, error: bookingError } = await supabaseClient
       .from('bookings')
@@ -85,13 +104,16 @@ export async function POST(request: NextRequest) {
         customer_id: user.id,
         provider_id: providerId,
         service_id: serviceId || null,
+        pet_id: primaryPetId,
         booking_date: date,
-        booking_time: time,
+        start_time: startTime,
+        end_time: endTime,
+        duration_minutes: 60, // Default to 60 minutes, can be calculated from start/end times
         total_price: (session.amount_total || 0) / 100, // Convert from cents
         status: 'confirmed',
         payment_status: 'paid',
-        payment_intent_id: session.payment_intent as string,
-        notes: `Pets: ${pets}`
+        payment_id: session.payment_intent as string,
+        special_instructions: petIds.length > 1 ? `Multiple pets: ${pets}` : null
       })
       .select()
       .single()

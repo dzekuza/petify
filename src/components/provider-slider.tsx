@@ -274,12 +274,12 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
 
                     {/* Service Type and Location */}
                     <CardDescription className="text-sm mb-1">
-                      {provider.services[0] === 'grooming' ? 'Kirpykla' :
-                       provider.services[0] === 'veterinary' ? 'Veterinarija' :
-                       provider.services[0] === 'boarding' ? 'Prieglauda' :
-                       provider.services[0] === 'training' ? 'Dresūra' :
-                       provider.services[0] === 'adoption' ? 'Veislynai' :
-                       provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
+                      {(provider.businessType || provider.services?.[0]) === 'grooming' ? 'Kirpykla' :
+                       (provider.businessType || provider.services?.[0]) === 'veterinary' ? 'Veterinarija' :
+                       (provider.businessType || provider.services?.[0]) === 'boarding' ? 'Prieglauda' :
+                       (provider.businessType || provider.services?.[0]) === 'training' ? 'Dresūra' :
+                       (provider.businessType || provider.services?.[0]) === 'adoption' ? 'Veislynai' :
+                       (provider.businessType || provider.services?.[0]) === 'sitting' ? 'Prižiūrėjimas' :
                        'Paslaugos'} • {provider.location.city}
                     </CardDescription>
 

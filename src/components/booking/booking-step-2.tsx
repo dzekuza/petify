@@ -2,7 +2,9 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { InputWithLabel, SelectWithLabel, TextareaWithLabel } from '@/components/ui/input-with-label'
+import { InputField, TextareaField } from '@/components/ui/input-field'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 import { BreedSelector } from '@/components/ui/breed-selector'
 import { 
   Drawer,
@@ -221,30 +223,37 @@ export function BookingStep2({
           </DrawerHeader>
           
           <form onSubmit={handleAddPet} className="flex-1 overflow-y-auto px-6 pb-6 space-y-4">
-            <InputWithLabel
+            <InputField
               id="petName"
               label="Augintinio vardas"
               value={addPetForm.name}
-              onChange={(value) => handleAddPetFormChange('name', value)}
+              onChange={(e) => handleAddPetFormChange('name', e.target.value)}
               placeholder="Įveskite augintinio vardą"
               required
             />
 
-            <SelectWithLabel
-              id="petSpecies"
-              label="Augintinio tipas"
-              value={addPetForm.species}
-              onValueChange={(value) => handleAddPetFormChange('species', value)}
-              placeholder="Pasirinkite tipą"
-              required
-              options={[
-                { value: 'dog', label: 'Šuo' },
-                { value: 'cat', label: 'Katė' },
-                { value: 'bird', label: 'Paukštis' },
-                { value: 'rabbit', label: 'Triušis' },
-                { value: 'other', label: 'Kitas' }
-              ]}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="petSpecies">
+                Augintinio tipas
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <Select
+                value={addPetForm.species}
+                onValueChange={(value) => handleAddPetFormChange('species', value)}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pasirinkite tipą" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dog">Šuo</SelectItem>
+                  <SelectItem value="cat">Katė</SelectItem>
+                  <SelectItem value="bird">Paukštis</SelectItem>
+                  <SelectItem value="rabbit">Triušis</SelectItem>
+                  <SelectItem value="other">Kitas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -259,42 +268,42 @@ export function BookingStep2({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <InputWithLabel
+              <InputField
                 id="petAge"
                 label="Amžius (metai)"
                 type="number"
                 value={addPetForm.age}
-                onChange={(value) => handleAddPetFormChange('age', value)}
+                onChange={(e) => handleAddPetFormChange('age', e.target.value)}
                 placeholder="0"
                 required
                 min={0}
                 max={30}
               />
-              <InputWithLabel
+              <InputField
                 id="petWeight"
                 label="Svoris (kg)"
                 type="number"
                 value={addPetForm.weight}
-                onChange={(value) => handleAddPetFormChange('weight', value)}
+                onChange={(e) => handleAddPetFormChange('weight', e.target.value)}
                 placeholder="0.0"
                 min={0}
                 step={0.1}
               />
             </div>
 
-            <InputWithLabel
+            <InputField
               id="specialNeeds"
               label="Ypatingi poreikiai"
               value={addPetForm.specialNeeds}
-              onChange={(value) => handleAddPetFormChange('specialNeeds', value)}
+              onChange={(e) => handleAddPetFormChange('specialNeeds', e.target.value)}
               placeholder="Kableliu atskirti sąrašas (neprivaloma)"
             />
 
-            <TextareaWithLabel
+            <TextareaField
               id="medicalNotes"
               label="Medicinos informacija"
               value={addPetForm.medicalNotes}
-              onChange={(value) => handleAddPetFormChange('medicalNotes', value)}
+              onChange={(e) => handleAddPetFormChange('medicalNotes', e.target.value)}
               placeholder="Bet kokia medicinos informacija (neprivaloma)"
               rows={3}
             />

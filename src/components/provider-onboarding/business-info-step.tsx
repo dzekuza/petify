@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
@@ -35,46 +35,28 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious, i
   }
 
   const isFormValid = () => {
-    const basicValidation = data.businessName && 
-           data.businessDescription && 
-           data.phone
-    
-    // For adoption/ads providers, don't require pricing
-    if (data.providerType === 'adoption') {
-      const adoptionValidation = basicValidation
-      
-      // In edit mode, don't require terms and privacy acceptance
-      if (isEditMode) {
-        return adoptionValidation
-      }
-      
-      // In new onboarding mode, require terms and privacy acceptance
-      return adoptionValidation && termsAccepted && privacyAccepted
-    }
-    
-    // For other providers, require pricing
-    const pricingValidation = basicValidation && 
-           data.basePrice > 0 &&
-           data.pricePerHour > 0
-    
-    // In edit mode, don't require terms and privacy acceptance
-    if (isEditMode) {
-      return pricingValidation
-    }
-    
-    // In new onboarding mode, require terms and privacy acceptance
-    return pricingValidation && termsAccepted && privacyAccepted
+    const basicValidation = data.businessName && data.businessDescription && data.phone
+    if (isEditMode) return !!basicValidation
+    return !!basicValidation && termsAccepted && privacyAccepted
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      bottom={
+        <BottomNavigation
+          currentStep={5}
+          totalSteps={8}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={!isFormValid()}
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-[522px]">
-          <div className="flex flex-col gap-6 items-start justify-start">
+      <div className="w-full max-w-[720px] mx-auto">
+        <div className="flex flex-col gap-6">
               {/* Title */}
               <h1 className="text-3xl font-bold text-black w-full">
                 Verslo informacija
@@ -123,35 +105,7 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious, i
                 helperText="Neprivaloma"
               />
 
-              {/* Pricing - Only show for non-adoption providers */}
-              {data.providerType !== 'adoption' && (
-                <div className="w-full space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField
-                      id="basePrice"
-                      label="Minimali kaina (€)"
-                      type="number"
-                      value={data.basePrice || ''}
-                      onChange={(e) => onUpdate({ basePrice: parseFloat(e.target.value) || 0 })}
-                      placeholder="20"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                    <InputField
-                      id="pricePerHour"
-                      label="Maksimali kaina (€)"
-                      type="number"
-                      value={data.pricePerHour || ''}
-                      onChange={(e) => onUpdate({ pricePerHour: parseFloat(e.target.value) || 0 })}
-                      placeholder="50"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                </div>
-              )}
+              {/* Pricing removed per new flow */}
 
               {/* Terms and Privacy - Only show in new onboarding, not in edit mode */}
               {!isEditMode && (
@@ -195,20 +149,8 @@ export default function BusinessInfoStep({ data, onUpdate, onNext, onPrevious, i
                   Patvirtinus galėsite pradėti teikti paslaugas klientams.
                 </p>
               </div>
-            </div>
-          </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={5}
-        totalSteps={8}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!isFormValid()}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }

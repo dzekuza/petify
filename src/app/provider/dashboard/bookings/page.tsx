@@ -46,22 +46,32 @@ export default function ProviderBookingsPage() {
     }
   }
 
+  const getStatusLabelLt = (s: RecentBooking['status']) => {
+    switch (s) {
+      case 'pending': return 'Laukiama'
+      case 'confirmed': return 'Patvirtinta'
+      case 'completed': return 'Įvykdyta'
+      case 'cancelled': return 'Atšaukta'
+      default: return s
+    }
+  }
+
   return (
     <ProtectedRoute requiredRole="provider">
       <>
-        <h1 className="text-2xl font-bold mb-6">Appointments</h1>
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Appointments</CardTitle>
-            <CardDescription>Latest bookings from your customers</CardDescription>
+        <h1 className="text-2xl font-bold mb-6">Rezervacijos</h1>
+        <Card className="bg-transparent border-0 shadow-none">
+          <CardHeader className="p-0">
+            <CardTitle>Naujausios rezervacijos</CardTitle>
+            <CardDescription>Naujausi klientų užsakymai</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {loading ? (
-              <div className="text-sm text-gray-600">Loading...</div>
+              <div className="text-sm text-gray-600">Įkeliama...</div>
             ) : error ? (
               <div className="text-sm text-red-600">{error}</div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-10 text-gray-600">No bookings yet</div>
+              <div className="text-center py-10 text-gray-600">Dar nėra rezervacijų</div>
             ) : (
               <div className="space-y-3">
                 {bookings.map(b => (
@@ -75,7 +85,7 @@ export default function ProviderBookingsPage() {
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-sm font-semibold">€{b.amount.toFixed(2)}</div>
-                      <Badge variant={getBadgeVariant(b.status)} className="capitalize">{b.status}</Badge>
+                      <Badge variant={getBadgeVariant(b.status)}>{getStatusLabelLt(b.status)}</Badge>
                     </div>
                   </div>
                 ))}

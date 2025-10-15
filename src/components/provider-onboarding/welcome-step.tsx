@@ -1,7 +1,7 @@
 'use client'
 
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 
 interface WelcomeStepProps {
@@ -15,10 +15,11 @@ const firstStepVideo = "/firststepvideo.mp4"
 
 export default function WelcomeStep({ onNext, onPrevious }: WelcomeStepProps) {
   return (
-    <PageLayout>
-      {/* Main Content */}
-      <PageContent>
-        <div className="flex flex-col lg:flex-row items-center justify-between w-full max-w-[1200px] gap-8">
+    <OnboardingLayout
+      maxWidth="wide"
+      bottom={<BottomNavigation currentStep={1} totalSteps={8} onNext={onNext} onPrevious={onPrevious} />}
+    >
+        <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-8">
           {/* Mobile: Video on top */}
           <div className="lg:hidden w-full max-w-[400px]">
             <video
@@ -60,15 +61,6 @@ export default function WelcomeStep({ onNext, onPrevious }: WelcomeStepProps) {
             />
           </div>
         </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={1}
-        totalSteps={8}
-        onNext={onNext}
-        onPrevious={onPrevious}
-      />
-    </PageLayout>
+    </OnboardingLayout>
   )
 }

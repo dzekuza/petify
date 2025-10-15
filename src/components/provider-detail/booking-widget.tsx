@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { SelectWithLabel } from '@/components/ui/input-with-label'
+import { Label } from '@/components/ui/label'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar as CalendarIcon, PawPrint } from 'lucide-react'
@@ -425,7 +425,7 @@ export function BookingWidget({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceTime')}</label>
           <Select value={selectedTime} onValueChange={setSelectedTime}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('provider.selectTime')} />
             </SelectTrigger>
             <SelectContent>
@@ -469,7 +469,7 @@ export function BookingWidget({
             </div>
           ) : (
             <div className="border border-gray-300 rounded-md p-3 text-center">
-              <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+                <p className="text-sm text-gray-500 mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
         </div>
@@ -477,7 +477,7 @@ export function BookingWidget({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceType')}</label>
           <Select value={selectedService} onValueChange={setSelectedService}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('provider.selectService')} />
             </SelectTrigger>
             <SelectContent>
@@ -529,35 +529,42 @@ export function BookingWidget({
           </Popover>
         </div>
         
-        <SelectWithLabel
-          id="serviceTime"
-          label={t('provider.serviceTime')}
-          value={selectedTime}
-          onValueChange={setSelectedTime}
-          placeholder={t('provider.selectTime')}
-          required
-          options={[
-            { value: "09:00", label: "9:00 AM" },
-            { value: "09:30", label: "9:30 AM" },
-            { value: "10:00", label: "10:00 AM" },
-            { value: "10:30", label: "10:30 AM" },
-            { value: "11:00", label: "11:00 AM" },
-            { value: "11:30", label: "11:30 AM" },
-            { value: "12:00", label: "12:00 PM" },
-            { value: "12:30", label: "12:30 PM" },
-            { value: "13:00", label: "1:00 PM" },
-            { value: "13:30", label: "1:30 PM" },
-            { value: "14:00", label: "2:00 PM" },
-            { value: "14:30", label: "2:30 PM" },
-            { value: "15:00", label: "3:00 PM" },
-            { value: "15:30", label: "3:30 PM" },
-            { value: "16:00", label: "4:00 PM" },
-            { value: "16:30", label: "4:30 PM" },
-            { value: "17:00", label: "5:00 PM" },
-            { value: "17:30", label: "5:30 PM" },
-            { value: "18:00", label: "6:00 PM" }
-          ]}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="serviceTime">
+            {t('provider.serviceTime')}
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
+          <Select
+            value={selectedTime}
+            onValueChange={setSelectedTime}
+            required
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t('provider.selectTime')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="09:00">9:00 AM</SelectItem>
+              <SelectItem value="09:30">9:30 AM</SelectItem>
+              <SelectItem value="10:00">10:00 AM</SelectItem>
+              <SelectItem value="10:30">10:30 AM</SelectItem>
+              <SelectItem value="11:00">11:00 AM</SelectItem>
+              <SelectItem value="11:30">11:30 AM</SelectItem>
+              <SelectItem value="12:00">12:00 PM</SelectItem>
+              <SelectItem value="12:30">12:30 PM</SelectItem>
+              <SelectItem value="13:00">1:00 PM</SelectItem>
+              <SelectItem value="13:30">1:30 PM</SelectItem>
+              <SelectItem value="14:00">2:00 PM</SelectItem>
+              <SelectItem value="14:30">2:30 PM</SelectItem>
+              <SelectItem value="15:00">3:00 PM</SelectItem>
+              <SelectItem value="15:30">3:30 PM</SelectItem>
+              <SelectItem value="16:00">4:00 PM</SelectItem>
+              <SelectItem value="16:30">4:30 PM</SelectItem>
+              <SelectItem value="17:00">5:00 PM</SelectItem>
+              <SelectItem value="17:30">5:30 PM</SelectItem>
+              <SelectItem value="18:00">6:00 PM</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.selectPets')}</label>
@@ -585,23 +592,33 @@ export function BookingWidget({
             </div>
           ) : (
             <div className="border border-gray-300 rounded-md p-3 text-center">
-              <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+                <p className="text-sm text-gray-500">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
         </div>
         
-        <SelectWithLabel
-          id="serviceType"
-          label={t('provider.serviceType')}
-          value={selectedService}
-          onValueChange={setSelectedService}
-          placeholder={t('provider.selectService')}
-          required
-          options={services.map((service) => ({
-            value: service.id,
-            label: `${service.name} - €${service.price}`
-          }))}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="serviceType">
+            {t('provider.serviceType')}
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
+          <Select
+            value={selectedService}
+            onValueChange={setSelectedService}
+            required
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t('provider.selectService')} />
+            </SelectTrigger>
+            <SelectContent>
+              {services.map((service) => (
+                <SelectItem key={service.id} value={service.id}>
+                  {service.name} - €{service.price}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Button 

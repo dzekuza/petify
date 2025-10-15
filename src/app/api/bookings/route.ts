@@ -61,51 +61,99 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Get all unique pet IDs that we need to fetch
+    const petIdsToFetch = new Set<string>()
+    bookings?.forEach(booking => {
+      let petId = booking.pet_id
+      if (!booking.pet_id && booking.special_instructions?.startsWith('Pets: ')) {
+        const petIdMatch = booking.special_instructions.match(/Pets: ([a-f0-9-]+)/)
+        if (petIdMatch) {
+          petId = petIdMatch[1]
+        }
+      }
+      if (petId && !booking.pet) {
+        petIdsToFetch.add(petId)
+      }
+    })
+
+    // Fetch missing pet data
+    let petsData: Record<string, any> = {}
+    if (petIdsToFetch.size > 0) {
+      const { data: pets } = await supabaseAdmin
+        .from('pets')
+        .select('id, name, species, breed, age, profile_picture')
+        .in('id', Array.from(petIdsToFetch))
+      
+      if (pets) {
+        petsData = pets.reduce((acc, pet) => {
+          acc[pet.id] = pet
+          return acc
+        }, {} as Record<string, any>)
+      }
+    }
+
     // Transform the data to match frontend expectations
-    const transformedBookings = bookings?.map(booking => ({
-      id: booking.id,
-      customerId: booking.customer_id,
-      providerId: booking.provider_id,
-      serviceId: booking.service_id,
-      petId: booking.pet_id,
-      date: booking.booking_date, // Transform booking_date to date
-      timeSlot: {
-        start: booking.start_time,
-        end: booking.end_time,
-        available: true
-      },
-      status: booking.status,
-      totalPrice: parseFloat(booking.total_price),
-      notes: booking.special_instructions,
-      createdAt: booking.created_at,
-      updatedAt: booking.updated_at,
-      // Include related data with proper names
-      customer: booking.customer ? {
-        id: booking.customer.id,
-        fullName: booking.customer.full_name,
-        email: booking.customer.email,
-        phone: booking.customer.phone
-      } : null,
-      provider: booking.provider ? {
-        id: booking.provider.id,
-        businessName: booking.provider.business_name,
-        userId: booking.provider.user_id
-      } : null,
-      service: booking.service ? {
-        id: booking.service.id,
-        name: booking.service.name,
-        price: booking.service.price,
-        description: booking.service.description
-      } : null,
-      pet: booking.pet ? {
-        id: booking.pet.id,
-        name: booking.pet.name,
-        species: booking.pet.species,
-        breed: booking.pet.breed,
-        age: booking.pet.age,
-        profilePicture: booking.pet.profile_picture
-      } : null
-    })) || []
+    const transformedBookings = bookings?.map(booking => {
+      // Extract pet ID from special_instructions if pet_id is null
+      let extractedPetId = booking.pet_id
+      let cleanNotes = booking.special_instructions
+      
+      if (!booking.pet_id && booking.special_instructions?.startsWith('Pets: ')) {
+        const petIdMatch = booking.special_instructions.match(/Pets: ([a-f0-9-]+)/)
+        if (petIdMatch) {
+          extractedPetId = petIdMatch[1]
+          cleanNotes = null // Don't show pet ID in notes
+        }
+      }
+
+      // Get pet data from booking.pet or fetched petsData
+      const petData = booking.pet || (extractedPetId ? petsData[extractedPetId] : null)
+
+      return {
+        id: booking.id,
+        customerId: booking.customer_id,
+        providerId: booking.provider_id,
+        serviceId: booking.service_id,
+        petId: extractedPetId,
+        date: booking.booking_date, // Transform booking_date to date
+        timeSlot: {
+          start: booking.start_time,
+          end: booking.end_time,
+          available: true
+        },
+        status: booking.status,
+        totalPrice: parseFloat(booking.total_price),
+        notes: cleanNotes,
+        createdAt: booking.created_at,
+        updatedAt: booking.updated_at,
+        // Include related data with proper names
+        customer: booking.customer ? {
+          id: booking.customer.id,
+          fullName: booking.customer.full_name,
+          email: booking.customer.email,
+          phone: booking.customer.phone
+        } : null,
+        provider: booking.provider ? {
+          id: booking.provider.id,
+          businessName: booking.provider.business_name,
+          userId: booking.provider.user_id
+        } : null,
+        service: booking.service ? {
+          id: booking.service.id,
+          name: booking.service.name,
+          price: booking.service.price,
+          description: booking.service.description
+        } : null,
+        pet: petData ? {
+          id: petData.id,
+          name: petData.name,
+          species: petData.species,
+          breed: petData.breed,
+          age: petData.age,
+          profilePicture: petData.profile_picture
+        } : null
+      }
+    }) || []
 
     console.log('Transformed bookings:', transformedBookings)
     return NextResponse.json({ bookings: transformedBookings })

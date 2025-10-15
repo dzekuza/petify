@@ -112,7 +112,7 @@ export default function BookingsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-white pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -195,30 +195,34 @@ export default function BookingsPage() {
                         
                         {/* Main booking details */}
                         <div className="bg-gray-50 rounded-lg p-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
                             <div className="flex items-center space-x-2 text-gray-600">
                               <User className="h-4 w-4" />
-                              <span>{booking.provider?.businessName || `${t('bookings.provider')} ${booking.providerId}`}</span>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {booking.provider?.businessName || `${t('bookings.provider')} ${booking.providerId}`}
+                                </p>
+                              </div>
                             </div>
                             <div className="flex items-center space-x-2 text-gray-600">
                               <Calendar className="h-4 w-4" />
-                              <span>{new Date(booking.date).toLocaleDateString()}</span>
+                              <span className="text-sm">{new Date(booking.date).toLocaleDateString()}</span>
                             </div>
                             <div className="flex items-center space-x-2 text-gray-600">
                               <Clock className="h-4 w-4" />
-                              <span>{booking.timeSlot.start} - {booking.timeSlot.end}</span>
+                              <span className="text-sm">{booking.timeSlot.start} - {booking.timeSlot.end}</span>
                             </div>
                             <div className="flex items-center space-x-2 text-gray-600">
-                              <span className="font-medium">€{booking.totalPrice}</span>
+                              <span className="text-sm font-medium">€{booking.totalPrice}</span>
                             </div>
                           </div>
                         </div>
                         
                         {/* Pet information with image */}
-                        {booking.pet && (
+                        {(booking.pet || booking.petId) && (
                           <div className="bg-gray-50 rounded-lg p-3">
                             <div className="flex items-center space-x-3">
-                              {booking.pet.profilePicture ? (
+                              {booking.pet?.profilePicture ? (
                                 <img 
                                   src={booking.pet.profilePicture} 
                                   alt={booking.pet.name}
@@ -230,20 +234,30 @@ export default function BookingsPage() {
                                 </div>
                               )}
                               <div>
-                                <p className="text-sm text-gray-600">
-                                  <span className="font-medium">{t('bookings.pet')}:</span> {booking.pet.name} ({booking.pet.species})
-                                  {booking.pet.breed && ` - ${booking.pet.breed}`}
-                                </p>
+                                {booking.pet ? (
+                                  <p className="text-sm text-gray-600">
+                                    <span className="font-medium">Augintinis:</span> {booking.pet.name} ({booking.pet.species})
+                                    {booking.pet.breed && ` - ${booking.pet.breed}`}
+                                  </p>
+                                ) : (
+                                  <p className="text-sm text-gray-600">
+                                    <span className="font-medium">Augintinis:</span> 
+                                    <span className="text-gray-500 italic">Augintinio informacija neprieinama</span>
+                                    {booking.petId && (
+                                      <span className="text-xs text-gray-400 ml-1">(ID: {booking.petId})</span>
+                                    )}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </div>
                         )}
                         
                         {/* Notes */}
-                        {booking.notes && (
+                        {booking.notes && !booking.notes.startsWith('Pets:') && (
                           <div className="bg-gray-50 rounded-lg p-3">
                             <p className="text-sm text-gray-600">
-                              <span className="font-medium">{t('bookings.notes')}:</span> {booking.notes}
+                              <span className="font-medium">Pastabos:</span> {booking.notes}
                             </p>
                           </div>
                         )}

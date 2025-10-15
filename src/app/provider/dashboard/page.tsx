@@ -190,14 +190,14 @@ export default function ProviderDashboard() {
 
             {/* Recent Bookings */}
             <div className="mt-6">
-              <Card>
-                <CardHeader>
+              <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle>{t('providerDashboard.recentBookings')}</CardTitle>
                   <CardDescription>
                     {t('providerDashboard.recentBookingsDesc')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <div className="space-y-4">
                     {recentBookings.length > 0 ? (
                       recentBookings.map((booking) => (
@@ -247,8 +247,8 @@ export default function ProviderDashboard() {
 
             {/* Notifications */}
             <div className="mt-6">
-              <Card>
-                <CardHeader>
+              <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="p-0">
                   <CardTitle className="flex items-center justify-between">
                     <span>Notifications</span>
                     {unreadCount > 0 && (
@@ -258,7 +258,7 @@ export default function ProviderDashboard() {
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <div className="space-y-3">
                     {notifications.slice(0, 5).length > 0 ? (
                       notifications.slice(0, 5).map((notification) => (

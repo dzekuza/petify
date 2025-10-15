@@ -389,7 +389,7 @@ export default function ProviderDetailPage() {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <DesktopHeader
             onBack={() => router.back()}
             onShare={handleShare}
@@ -423,7 +423,7 @@ export default function ProviderDetailPage() {
 
             {/* Right column - Booking widget */}
             <div className="col-span-1">
-              <div className="sticky top-8 space-y-4">
+              <div className="sticky top-24 space-y-4">
                 <BookingWidget
                   provider={provider}
                   services={services}

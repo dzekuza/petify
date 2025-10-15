@@ -868,7 +868,7 @@ export const translations = {
     description: 'Aprašymas',
     price: 'Kaina',
     duration: 'Trukmė',
-    maxPets: 'Maksimalus gyvūnų skaičius',
+    maxPets: 'Maks. gyvūnų skaičius',
     requirements: 'Reikalavimai',
     includes: 'Įskaičiuota',
     commaSeparated: 'atskirtos kableliais'

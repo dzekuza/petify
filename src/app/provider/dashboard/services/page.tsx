@@ -7,7 +7,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { dashboardApi } from '@/lib/dashboard'
 import { serviceApi } from '@/lib/services'
 import { t } from '@/lib/translations'
-import { Plus, Scissors, X, Upload } from 'lucide-react'
+import { Plus, Scissors, X, Upload, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { uploadServiceImages } from '@/lib/image-upload'
 import Image from 'next/image'
+import { ImageMultiUpload } from '@/components/ui/image-multi-upload'
 
 
 interface ServiceItem {
@@ -24,6 +26,7 @@ interface ServiceItem {
   description: string
   price: number
   images?: string[]
+  duration?: number
 }
 
 export default function ProviderServicesPage() {
@@ -37,11 +40,17 @@ export default function ProviderServicesPage() {
   const [editingService, setEditingService] = useState<ServiceItem | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [imageIndexByService, setImageIndexByService] = useState<Record<string, number>>({})
+  const [includesList, setIncludesList] = useState<string[]>([])
+  const [includeInput, setIncludeInput] = useState('')
+  const [durationFrom, setDurationFrom] = useState<number | ''>('')
+  const [durationTo, setDurationTo] = useState<number | ''>('')
 
 
   // Add service form state (optimized for groomers)
   const [category, setCategory] = useState<'grooming' | 'training' | 'veterinary' | 'boarding' | 'sitting' | 'adoption'>('grooming')
   const [businessType, setBusinessType] = useState<string>('grooming')
+  const [serviceCategory, setServiceCategory] = useState<string>('')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState<number>(0)
@@ -52,6 +61,44 @@ export default function ProviderServicesPage() {
   const [galleryImages, setGalleryImages] = useState<File[]>([])
   const [existingImages, setExistingImages] = useState<string[]>([])
   const [uploadingImages, setUploadingImages] = useState(false)
+
+  // Service subcategory options per business type (LT labels)
+  const SERVICE_OPTIONS_BY_TYPE: Record<string, string[]> = {
+    grooming: [
+      'Plovimas',
+      'Kirpimas',
+      'Šukavimas',
+      'Nagai',
+      'Ausų valymas',
+      'Dantų valymas',
+      'Lietas kailis',
+      'Kiti darbai'
+    ],
+    veterinary: [
+      'Sveikatos patikra',
+      'Vakcinos',
+      'Skubi pagalba',
+      'Tyrimai',
+      'Chirurgija'
+    ],
+    training: [
+      'Pagrindinis paklusnumas',
+      'Elgsenos korekcija',
+      'Specializuotas mokymas'
+    ],
+    boarding: [
+      'Dienos priežiūra',
+      'Nakvynė'
+    ],
+    sitting: [
+      'Apsilankymas namuose',
+      'Vedžiojimas',
+      'Maitinimas'
+    ],
+    adoption: [
+      'Gyvūnų tipas'
+    ]
+  }
 
   // Pet type form state
   const [isAddPetTypeOpen, setIsAddPetTypeOpen] = useState(false)
@@ -96,10 +143,18 @@ export default function ProviderServicesPage() {
       const bt = (provider as any).business_type || 'grooming'
       setBusinessType(bt)
       // Map business type to service category
-      const mapped = ['grooming','training','veterinary','boarding','sitting','adoption'].includes(bt) ? bt : 'grooming'
-      setCategory(mapped as any)
+      const mappedBt = ['grooming','training','veterinary','boarding','sitting','adoption'].includes(bt) ? bt : 'grooming'
+      setCategory(mappedBt as any)
       const list = await serviceApi.getServicesByProvider(provider.id)
-      setServices((list || []) as ServiceItem[])
+      const mappedServices: ServiceItem[] = (list || []).map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        images: s.images || [],
+        duration: s.duration_minutes
+      }))
+      setServices(mappedServices)
     } catch (e) {
       setError('Failed to load services')
     } finally {
@@ -141,10 +196,7 @@ export default function ProviderServicesPage() {
           .split(',')
           .map(s => s.trim())
           .filter(Boolean),
-        includes: includes
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean),
+        includes: includesList,
         images: uploadedImageUrls
       })
       
@@ -198,6 +250,24 @@ export default function ProviderServicesPage() {
     setExistingImages(prev => prev.filter(url => url !== imageUrl))
   }
 
+  const handleNextImage = (serviceId: string, images: string[]) => {
+    if (!images || images.length === 0) return
+    setImageIndexByService(prev => {
+      const current = prev[serviceId] ?? 0
+      const next = (current + 1) % images.length
+      return { ...prev, [serviceId]: next }
+    })
+  }
+
+  const handlePrevImage = (serviceId: string, images: string[]) => {
+    if (!images || images.length === 0) return
+    setImageIndexByService(prev => {
+      const current = prev[serviceId] ?? 0
+      const next = (current - 1 + images.length) % images.length
+      return { ...prev, [serviceId]: next }
+    })
+  }
+
   const handleEditService = (service: ServiceItem) => {
     setEditingService(service)
     setName(service.name)
@@ -208,6 +278,10 @@ export default function ProviderServicesPage() {
     setMaxPets(1) // Default max pets
     setRequirements('')
     setIncludes('')
+    setIncludesList((service as any).includes || [])
+    setIncludeInput('')
+    setDurationFrom(typeof service.duration === 'number' ? service.duration : '')
+    setDurationTo('')
     setIsEditOpen(true)
   }
 
@@ -298,9 +372,11 @@ export default function ProviderServicesPage() {
         description,
         price,
         duration,
+        durationMin: typeof durationFrom === 'number' ? durationFrom : undefined,
+        durationMax: typeof durationTo === 'number' ? durationTo : undefined,
         maxPets,
         requirements: requirements.split(',').map(r => r.trim()).filter(Boolean),
-        includes: includes.split(',').map(i => i.trim()).filter(Boolean),
+        includes: includesList,
         images: allImages
       }
       
@@ -319,6 +395,10 @@ export default function ProviderServicesPage() {
       setIncludes('')
       setGalleryImages([])
       setExistingImages([])
+      setIncludesList([])
+      setIncludeInput('')
+      setDurationFrom('')
+      setDurationTo('')
       
       // Reload services
       await loadServices()
@@ -352,7 +432,7 @@ export default function ProviderServicesPage() {
                   {t('providerDashboard.addNewService')}
                 </Button>
               </DialogTrigger>
-                <DialogContent aria-describedby="add-service-desc">
+                <DialogContent aria-describedby="add-service-desc" className="max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {t('providerDashboard.addNewService')}
@@ -362,7 +442,16 @@ export default function ProviderServicesPage() {
               <div className="grid gap-4 py-2">
                 <div className="grid gap-2">
                   <Label>{t('providerDashboard.category')}</Label>
-                  <Input value={businessType === 'adoption' ? t('providerDashboard.adoption') : businessType} readOnly aria-readonly />
+                  <Select value={serviceCategory} onValueChange={(value) => setServiceCategory(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pasirinkite paslaugos kategoriją" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(SERVICE_OPTIONS_BY_TYPE[businessType] || []).map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="name">{t('common.name')}</Label>
@@ -395,76 +484,22 @@ export default function ProviderServicesPage() {
                   <Input id="includes" value={includes} onChange={(e) => setIncludes(e.target.value)} placeholder={t('providerDashboard.includesPlaceholder')} />
                 </div>
 
-                {/* Gallery Upload */}
+                {/* Gallery Upload (Drag & Drop) */}
                 <div className="grid gap-2">
                   <Label htmlFor="gallery">Galerija (iki 10 nuotraukų)</Label>
-                  <div className="space-y-3">
-                    {/* Upload Button */}
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="gallery"
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleImageSelect}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => document.getElementById('gallery')?.click()}
-                        disabled={galleryImages.length + existingImages.length >= 10}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Įkelti nuotraukas
-                      </Button>
-                      <span className="text-xs text-gray-500">
-                        {galleryImages.length + existingImages.length}/10
-                      </span>
-                    </div>
-
-                    {/* Image Previews */}
-                    {(galleryImages.length > 0 || existingImages.length > 0) && (
-                      <div className="grid grid-cols-3 gap-2">
-                        {/* Existing Images */}
-                        {existingImages.map((imageUrl, index) => (
-                          <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
-                            <Image
-                              src={imageUrl}
-                              alt={`Service image ${index + 1}`}
-                              fill
-                              className="object-cover"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveExistingImage(imageUrl)}
-                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        ))}
-                        
-                        {/* New Images */}
-                        {galleryImages.map((file, index) => (
-                          <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Upload ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveNewImage(index)}
-                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <ImageMultiUpload
+                    files={galleryImages}
+                    onChange={setGalleryImages}
+                    existingImages={existingImages}
+                    onRemoveExisting={handleRemoveExistingImage}
+                    onReorder={(nextExisting, nextFiles) => {
+                      setExistingImages(nextExisting)
+                      setGalleryImages(nextFiles)
+                    }}
+                    maxFiles={10}
+                    accept="image/*"
+                    className="space-y-3"
+                  />
                 </div>
 
                 {formError && (
@@ -485,7 +520,7 @@ export default function ProviderServicesPage() {
 
         {/* Edit Service Dialog */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-          <DialogContent aria-describedby="edit-service-desc">
+          <DialogContent aria-describedby="edit-service-desc" className="max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {businessType === 'adoption' ? t('providerDashboard.addNewAnimalType') : t('providerDashboard.addNewService')}
@@ -495,7 +530,16 @@ export default function ProviderServicesPage() {
             <div className="grid gap-4 py-2">
               <div className="grid gap-2">
                 <Label>{t('providerDashboard.category')}</Label>
-                <Input value={businessType === 'adoption' ? t('providerDashboard.adoption') : businessType} readOnly aria-readonly />
+                <Select value={serviceCategory} onValueChange={(value) => setServiceCategory(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pasirinkite paslaugos kategoriją" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(SERVICE_OPTIONS_BY_TYPE[businessType] || []).map(option => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-name">{t('common.name')}</Label>
@@ -505,99 +549,79 @@ export default function ProviderServicesPage() {
                 <Label htmlFor="edit-description">{t('common.description')}</Label>
                 <Textarea id="edit-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t('providerDashboard.descriptionPlaceholder')} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="grid gap-2">
                   <Label htmlFor="edit-price">{t('common.price')} (€)</Label>
                   <Input id="edit-price" type="number" min={0} value={price} onChange={(e) => setPrice(Number(e.target.value))} placeholder={t('providerDashboard.pricePlaceholder')} />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-duration">{t('common.duration')} (min)</Label>
-                  <Input id="edit-duration" type="number" min={1} value={duration} onChange={(e) => setDuration(Number(e.target.value))} placeholder={t('providerDashboard.durationPlaceholder')} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-maxPets">{t('common.maxPets')}</Label>
                   <Input id="edit-maxPets" type="number" min={1} value={maxPets} onChange={(e) => setMaxPets(Number(e.target.value))} placeholder={t('providerDashboard.maxPetsPlaceholder')} />
                 </div>
               </div>
+
+              {/* Duration Row */}
               <div className="grid gap-2">
-                <Label htmlFor="edit-requirements">{t('common.requirements')} ({t('common.commaSeparated')})</Label>
-                <Input id="edit-requirements" value={requirements} onChange={(e) => setRequirements(e.target.value)} placeholder={t('providerDashboard.requirementsPlaceholder')} />
+                <Label htmlFor="edit-duration-from">{t('common.duration')} (min)</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Input id="edit-duration-from" type="number" min={1} value={durationFrom} onChange={(e) => setDurationFrom(e.target.value ? Number(e.target.value) : '')} placeholder={t('providerDashboard.durationPlaceholder')} />
+                  <Input id="edit-duration-to" type="number" min={1} value={durationTo} onChange={(e) => setDurationTo(e.target.value ? Number(e.target.value) : '')} placeholder={t('providerDashboard.durationPlaceholder')} />
+                </div>
+                <p className="text-xs text-gray-500">Nurodykite intervalą (nuo–iki)</p>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-includes">{t('common.includes')} ({t('common.commaSeparated')})</Label>
-                <Input id="edit-includes" value={includes} onChange={(e) => setIncludes(e.target.value)} placeholder={t('providerDashboard.includesPlaceholder')} />
+                <Label htmlFor="edit-includes">{t('common.includes')}</Label>
+                {includesList.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {includesList.map((inc, i) => (
+                      <span key={`${inc}-${i}`} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs">
+                        {inc}
+                        <button
+                          type="button"
+                          aria-label="Remove"
+                          className="rounded-full p-0.5 hover:bg-white/70"
+                          onClick={() => setIncludesList(prev => prev.filter((_, idx) => idx !== i))}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <Input
+                  id="edit-includes"
+                  value={includeInput}
+                  onChange={(e) => setIncludeInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const val = includeInput.trim()
+                      if (!val) return
+                      setIncludesList(prev => prev.includes(val) ? prev : [...prev, val])
+                      setIncludeInput('')
+                    }
+                  }}
+                  placeholder={t('providerDashboard.includesPlaceholder')}
+                />
+                <p className="text-xs text-gray-500">Spauskite Enter, kad pridėtumėte</p>
               </div>
 
-              {/* Gallery Upload for Edit */}
+              {/* Gallery Upload for Edit (Drag & Drop) */}
               <div className="grid gap-2">
                 <Label htmlFor="edit-gallery">Galerija (iki 10 nuotraukų)</Label>
-                <div className="space-y-3">
-                  {/* Upload Button */}
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="edit-gallery"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageSelect}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => document.getElementById('edit-gallery')?.click()}
-                      disabled={galleryImages.length + existingImages.length >= 10}
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Įkelti nuotraukas
-                    </Button>
-                    <span className="text-xs text-gray-500">
-                      {galleryImages.length + existingImages.length}/10
-                    </span>
-                  </div>
-
-                  {/* Image Previews */}
-                  {(galleryImages.length > 0 || existingImages.length > 0) && (
-                    <div className="grid grid-cols-3 gap-2">
-                      {/* Existing Images */}
-                      {existingImages.map((imageUrl, index) => (
-                        <div key={`existing-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
-                          <Image
-                            src={imageUrl}
-                            alt={`Service image ${index + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveExistingImage(imageUrl)}
-                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                      
-                      {/* New Images */}
-                      {galleryImages.map((file, index) => (
-                        <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden border">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={`Upload ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveNewImage(index)}
-                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ImageMultiUpload
+                  files={galleryImages}
+                  onChange={setGalleryImages}
+                  existingImages={existingImages}
+                  onRemoveExisting={handleRemoveExistingImage}
+                  onReorder={(nextExisting, nextFiles) => {
+                    setExistingImages(nextExisting)
+                    setGalleryImages(nextFiles)
+                  }}
+                  maxFiles={10}
+                  accept="image/*"
+                  className="space-y-3"
+                />
               </div>
 
               {formError && (
@@ -616,9 +640,7 @@ export default function ProviderServicesPage() {
 
 
 
-        {loading ? (
-          <div className="text-sm text-gray-600">Loading...</div>
-        ) : error ? (
+        {error ? (
           <div className="text-sm text-red-600">{error}</div>
         ) : services.length === 0 ? (
           <div className="text-center py-10">
@@ -640,25 +662,64 @@ export default function ProviderServicesPage() {
         ) : (
           // Regular Services Display
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {services.map(svc => (
-              <div key={svc.id} className="p-4 border rounded-lg bg-white">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-medium">{svc.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{svc.description}</p>
+            {services.map(svc => {
+              const images = svc.images || []
+              const idx = imageIndexByService[svc.id] ?? 0
+              const currentImage = images[idx]
+              return (
+                <div key={svc.id} className="p-4 border rounded-lg bg-white">
+                  {/* Cover/Gallery */}
+                  {images.length > 0 && (
+                    <div className="relative w-full overflow-hidden rounded-md aspect-video bg-gray-100">
+                      {currentImage && (
+                        <Image src={currentImage} alt={svc.name} fill className="object-cover" />
+                      )}
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Previous image"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 hover:bg-white shadow"
+                            onClick={() => handlePrevImage(svc.id, images)}
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Next image"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 hover:bg-white shadow"
+                            onClick={() => handleNextImage(svc.id, images)}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {images.map((_, i) => (
+                              <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === idx ? 'bg-white' : 'bg-white/60'}`} />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-end justify-between mt-3">
+                    <div>
+                      <h3 className="font-medium">{svc.name}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-2">{svc.description}</p>
+                    </div>
+                    <span className="text-sm font-semibold">€{(svc.price || 0).toFixed(2)}</span>
                   </div>
-                  <span className="text-sm font-semibold">€{(svc.price || 0).toFixed(2)}</span>
+                  <div className="mt-3 flex items-center justify-end gap-2">
+                    <Button variant="outline" size="sm" onClick={() => window.location.assign(`/providers/${providerId}`)}>
+                      {t('providerDashboard.view')}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleEditService(svc)}>
+                      {t('providerDashboard.edit')}
+                    </Button>
+                  </div>
                 </div>
-                <div className="mt-3 flex items-center justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={() => window.location.assign(`/providers/${providerId}`)}>
-                    {t('providerDashboard.view')}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleEditService(svc)}>
-                    {t('providerDashboard.edit')}
-                  </Button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </>

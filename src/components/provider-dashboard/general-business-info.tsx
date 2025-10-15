@@ -29,13 +29,13 @@ interface BusinessHours {
 }
 
 const DAYS_OF_WEEK = [
-  { value: 'monday', label: 'Monday' },
-  { value: 'tuesday', label: 'Tuesday' },
-  { value: 'wednesday', label: 'Wednesday' },
-  { value: 'thursday', label: 'Thursday' },
-  { value: 'friday', label: 'Friday' },
-  { value: 'saturday', label: 'Saturday' },
-  { value: 'sunday', label: 'Sunday' }
+  { value: 'monday', label: 'Pirmadienis' },
+  { value: 'tuesday', label: 'Antradienis' },
+  { value: 'wednesday', label: 'Trečiadienis' },
+  { value: 'thursday', label: 'Ketvirtadienis' },
+  { value: 'friday', label: 'Penktadienis' },
+  { value: 'saturday', label: 'Šeštadienis' },
+  { value: 'sunday', label: 'Sekmadienis' }
 ]
 
 export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessInfoProps) {
@@ -119,11 +119,11 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
     const file = event.target.files?.[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast.error('Logo file size must be less than 5MB')
+        toast.error('Logotipo failo dydis turi būti mažesnis nei 5MB')
         return
       }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file')
+        toast.error('Pasirinkite paveikslėlio failą')
         return
       }
       setLogo(file)
@@ -137,11 +137,11 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
     const file = event.target.files?.[0]
     if (file) {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        toast.error('Cover image file size must be less than 10MB')
+        toast.error('Viršelio failo dydis turi būti mažesnis nei 10MB')
         return
       }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file')
+        toast.error('Pasirinkite paveikslėlio failą')
         return
       }
       setCoverImage(file)
@@ -154,17 +154,17 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
   const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
     if (files.length + galleryImages.length > 10) {
-      toast.error('Maximum 10 gallery images allowed')
+      toast.error('Leidžiama iki 10 galerijos nuotraukų')
       return
     }
 
     const validFiles = files.filter(file => {
       if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} is too large (max 10MB)`)
+        toast.error(`${file.name} per didelis (maks. 10MB)`) 
         return false
       }
       if (!file.type.startsWith('image/')) {
-        toast.error(`${file.name} is not an image file`)
+        toast.error(`${file.name} nėra paveikslėlio failas`)
         return false
       }
       return true
@@ -216,10 +216,10 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       }
       
       onUpdate(updatedData)
-      toast.success('Business information saved successfully!')
+      toast.success('Verslo informacija sėkmingai išsaugota!')
     } catch (error) {
-      console.error('Error saving business info:', error)
-      toast.error('Failed to save business information')
+      console.error('Klaida saugant verslo informaciją:', error)
+      toast.error('Nepavyko išsaugoti verslo informacijos')
     }
   }
 
@@ -228,24 +228,24 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Basic Information */}
       <Card>
         <CardHeader>
-          <CardTitle>General Business Information</CardTitle>
+          <CardTitle>Bendroji verslo informacija</CardTitle>
           <CardDescription>
-            Update your basic business information
+            Atnaujinkite pagrindinę verslo informaciją
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="businessName">Business Name *</Label>
+              <Label htmlFor="businessName">Verslo pavadinimas *</Label>
               <Input
                 id="businessName"
                 value={formData.businessName}
                 onChange={(e) => handleInputChange('businessName', e.target.value)}
-                placeholder="Enter your business name"
+                placeholder="Įveskite verslo pavadinimą"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="businessType">Business Type</Label>
+              <Label htmlFor="businessType">Verslo tipas</Label>
               <Input
                 id="businessType"
                 value={providerData?.business_type || 'individual'}
@@ -256,12 +256,12 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="businessDescription">Business Description *</Label>
+            <Label htmlFor="businessDescription">Verslo aprašymas *</Label>
             <Textarea
               id="businessDescription"
               value={formData.businessDescription}
               onChange={(e) => handleInputChange('businessDescription', e.target.value)}
-              placeholder="Describe your business and services"
+              placeholder="Apibūdinkite savo verslą ir paslaugas"
               rows={3}
             />
           </div>
@@ -271,15 +271,15 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Contact Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Contact Information</CardTitle>
+          <CardTitle>Kontaktinė informacija</CardTitle>
           <CardDescription>
-            Update your contact details
+            Atnaujinkite kontaktinius duomenis
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
+              <Label htmlFor="phone">Telefono numeris *</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -289,7 +289,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address *</Label>
+              <Label htmlFor="email">El. paštas *</Label>
               <Input
                 id="email"
                 value={formData.email}
@@ -301,12 +301,12 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="website">Website (Optional)</Label>
+            <Label htmlFor="website">Svetainė (neprivaloma)</Label>
             <Input
               id="website"
               value={formData.website}
               onChange={(e) => handleInputChange('website', e.target.value)}
-              placeholder="https://www.yourwebsite.com"
+              placeholder="https://www.jusu-svetaine.lt"
               type="url"
             />
           </div>
@@ -316,25 +316,25 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Location Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Location Information</CardTitle>
+          <CardTitle>Vietos informacija</CardTitle>
           <CardDescription>
-            Update your business location
+            Atnaujinkite verslo vietą
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="address">Address *</Label>
+            <Label htmlFor="address">Adresas *</Label>
             <Input
               id="address"
               value={formData.address}
               onChange={(e) => handleInputChange('address', e.target.value)}
-              placeholder="Street address"
+              placeholder="Gatvė, namo nr."
             />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="city">City *</Label>
+              <Label htmlFor="city">Miestas *</Label>
               <Input
                 id="city"
                 value={formData.city}
@@ -343,7 +343,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="state">State/Region</Label>
+              <Label htmlFor="state">Apskritis / regionas</Label>
               <Input
                 id="state"
                 value={formData.state}
@@ -352,7 +352,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="zipCode">ZIP Code</Label>
+              <Label htmlFor="zipCode">Pašto kodas</Label>
               <Input
                 id="zipCode"
                 value={formData.zipCode}
@@ -363,7 +363,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
+            <Label htmlFor="country">Šalis</Label>
             <Select
               value={formData.country}
               onValueChange={(value) => handleInputChange('country', value)}
@@ -372,12 +372,12 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Lithuania">Lithuania</SelectItem>
-                <SelectItem value="Latvia">Latvia</SelectItem>
-                <SelectItem value="Estonia">Estonia</SelectItem>
-                <SelectItem value="Poland">Poland</SelectItem>
-                <SelectItem value="Germany">Germany</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="Lithuania">Lietuva</SelectItem>
+                <SelectItem value="Latvia">Latvija</SelectItem>
+                <SelectItem value="Estonia">Estija</SelectItem>
+                <SelectItem value="Poland">Lenkija</SelectItem>
+                <SelectItem value="Germany">Vokietija</SelectItem>
+                <SelectItem value="Other">Kita</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -387,9 +387,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Business Hours */}
       <Card>
         <CardHeader>
-          <CardTitle>Business Hours</CardTitle>
+          <CardTitle>Darbo valandos</CardTitle>
           <CardDescription>
-            Set your operating hours for each day
+            Nustatykite darbo laiką kiekvienai dienai
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -408,13 +408,13 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                     onChange={(e) => handleBusinessHoursChange(hour.day, 'closed', !e.target.checked)}
                     className="rounded"
                   />
-                  <Label className="text-sm">Open</Label>
+                  <Label className="text-sm">Dirbame</Label>
                 </div>
                 
                 {!hour.closed && (
                   <>
                     <div className="flex items-center space-x-2">
-                      <Label className="text-sm">From:</Label>
+                      <Label className="text-sm">Nuo:</Label>
                       <Input
                         type="time"
                         value={hour.open}
@@ -424,7 +424,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <Label className="text-sm">To:</Label>
+                      <Label className="text-sm">Iki:</Label>
                       <Input
                         type="time"
                         value={hour.close}
@@ -436,7 +436,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                 )}
                 
                 {hour.closed && (
-                  <Badge variant="secondary">Closed</Badge>
+                  <Badge variant="secondary">Nedirbame</Badge>
                 )}
               </div>
             ))}
@@ -446,9 +446,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Logo Upload */}
       <Card>
         <CardHeader>
-          <CardTitle>Business Logo</CardTitle>
+          <CardTitle>Įmonės logotipas</CardTitle>
           <CardDescription>
-            Upload your business logo (max 5MB, recommended: 200x200px)
+            Įkelkite įmonės logotipą (maks. 5MB, rekomenduojama: 200x200px)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -470,15 +470,15 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                 </Button>
               </div>
               <div>
-                <p className="text-sm font-medium">Logo uploaded</p>
-                <p className="text-xs text-gray-500">Click to change</p>
+                <p className="text-sm font-medium">Logotipas įkeltas</p>
+                <p className="text-xs text-gray-500">Spustelėkite, kad pakeistumėte</p>
               </div>
             </div>
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">No logo uploaded</p>
-              <p className="text-xs text-gray-500 mb-4">Upload a logo to represent your business</p>
+              <p className="text-sm text-gray-600 mb-2">Logotipas dar neįkeltas</p>
+              <p className="text-xs text-gray-500 mb-4">Įkelkite logotipą savo verslui</p>
             </div>
           )}
           
@@ -496,7 +496,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
             className="w-full"
           >
             <Upload className="h-4 w-4 mr-2" />
-            {logoPreview ? 'Change Logo' : 'Upload Logo'}
+            {logoPreview ? 'Pakeisti logotipą' : 'Įkelti logotipą'}
           </Button>
         </CardContent>
       </Card>
@@ -504,9 +504,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Cover Image Upload */}
       <Card>
         <CardHeader>
-          <CardTitle>Cover Image</CardTitle>
+          <CardTitle>Viršelio nuotrauka</CardTitle>
           <CardDescription>
-            Upload a cover image for your business (max 10MB, recommended: 1200x400px)
+            Įkelkite viršelio nuotrauką (maks. 10MB, rekomenduojama: 1200x400px)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -525,15 +525,15 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                   onClick={removeCover}
                 >
                   <X className="h-4 w-4 mr-1" />
-                  Remove
+                  Pašalinti
                 </Button>
               </div>
             </div>
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">No cover image uploaded</p>
-              <p className="text-xs text-gray-500 mb-4">Upload a cover image to showcase your business</p>
+              <p className="text-sm text-gray-600 mb-2">Viršelio nuotrauka dar neįkelta</p>
+              <p className="text-xs text-gray-500 mb-4">Įkelkite viršelio nuotrauką savo verslui</p>
             </div>
           )}
           
@@ -551,7 +551,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
             className="w-full"
           >
             <Upload className="h-4 w-4 mr-2" />
-            {coverPreview ? 'Change Cover Image' : 'Upload Cover Image'}
+            {coverPreview ? 'Pakeisti viršelį' : 'Įkelti viršelį'}
           </Button>
         </CardContent>
       </Card>
@@ -559,9 +559,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       {/* Gallery Upload */}
       <Card>
         <CardHeader>
-          <CardTitle>Gallery Images</CardTitle>
+          <CardTitle>Galerijos nuotraukos</CardTitle>
           <CardDescription>
-            Upload images to showcase your business (max 10 images, 10MB each)
+            Įkelkite nuotraukas savo verslui (iki 10 nuotraukų, po 10MB)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -590,8 +590,8 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           {galleryPreviews.length === 0 && (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">No gallery images uploaded</p>
-              <p className="text-xs text-gray-500 mb-4">Upload images to showcase your business</p>
+              <p className="text-sm text-gray-600 mb-2">Galerijos nuotraukos dar neįkeltos</p>
+              <p className="text-xs text-gray-500 mb-4">Įkelkite nuotraukas savo verslui</p>
             </div>
           )}
           
@@ -611,7 +611,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
             disabled={galleryImages.length >= 10}
           >
             <Upload className="h-4 w-4 mr-2" />
-            {galleryPreviews.length > 0 ? 'Add More Images' : 'Upload Gallery Images'}
+            {galleryPreviews.length > 0 ? 'Pridėti daugiau nuotraukų' : 'Įkelti galerijos nuotraukas'}
             {galleryImages.length > 0 && ` (${galleryImages.length}/10)`}
           </Button>
         </CardContent>
@@ -621,7 +621,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
       <div className="flex justify-end">
         <Button onClick={handleSave} size="lg">
           <Save className="h-4 w-4 mr-2" />
-          Save General Settings
+          Išsaugoti bendruosius nustatymus
         </Button>
       </div>
     </div>

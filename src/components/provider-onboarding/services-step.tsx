@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
@@ -151,25 +151,32 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
     onUpdate({ serviceDetails: details })
   }
 
+  const bottomNode = (
+    <BottomNavigation
+      currentStep={6}
+      totalSteps={9}
+      onNext={onNext}
+      onPrevious={onPrevious}
+      isNextDisabled={!isFormValid()}
+      isEditMode={isEditMode}
+      onSave={onSave}
+    />
+  )
+
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout maxWidth="wide" bottom={bottomNode}>
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-4xl">
-          <div className="flex flex-col gap-6 items-start justify-start">
-            {/* Title */}
-            <h1 className="text-3xl font-bold text-black">
-              {data.providerType === 'adoption' ? 'Pasirinkite gyvūnų tipus' : 'Pasirinkite paslaugas'}
-            </h1>
-            <p className="text-gray-600">
-              {data.providerType === 'adoption' 
-                ? 'Pasirinkite gyvūnų tipus, kuriuos veisiate ir parduosite'
-                : 'Pasirinkite paslaugas, kurias teikiate savo klientams'
-              }
-            </p>
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="flex flex-col gap-6">
+          <h1 className="text-3xl font-bold text-black">
+            {data.providerType === 'adoption' ? 'Pasirinkite gyvūnų tipus' : 'Pasirinkite paslaugas'}
+          </h1>
+          <p className="text-gray-600">
+            {data.providerType === 'adoption' 
+              ? 'Pasirinkite gyvūnų tipus, kuriuos veisiate ir parduosite'
+              : 'Pasirinkite paslaugas, kurias teikiate savo klientams'
+            }
+          </p>
 
             {/* Available Services */}
             <div className="w-full">
@@ -216,13 +223,13 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                   {selectedServices.map((serviceId) => {
                     const details = getServiceDetailsById(serviceId)
                     return (
-                      <Card key={`details-${serviceId}`} className="border-gray-200">
-                        <CardHeader>
+                      <Card key={`details-${serviceId}`} className="border-0">
+                        <CardHeader className="p-0">
                           <CardTitle>{getServiceName(serviceId)}</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-6 p-0">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-6">
+                            <div className="space-y-6 p-0">
                               <TextareaField
                                 label="Aprašymas"
                                 value={details?.description || ''}
@@ -470,7 +477,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                                 </div>
                               )}
                             </div>
-                            <div>
+                            <div className="p-0">
                               <Label className="text-sm font-medium text-gray-700">Galerija</Label>
                               <div className="flex flex-wrap gap-3 mt-2">
                                 {(details?.gallery || []).map((file, idx) => (
@@ -577,19 +584,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
               </div>
             )}
           </div>
-        </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={6}
-        totalSteps={9}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!isFormValid()}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+      </div>
+    </OnboardingLayout>
   )
 }

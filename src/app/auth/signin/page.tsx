@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { InputWithLabel } from '@/components/ui/input-with-label'
+import { InputField } from '@/components/ui/input-field'
 import { useAuth } from '@/contexts/auth-context'
 import { t } from '@/lib/translations'
 import { PawPrint, Eye, EyeOff } from 'lucide-react'
@@ -101,12 +101,12 @@ export default function SignInPage() {
                     </div>
                   )}
                   
-                  <InputWithLabel
+                  <InputField
                     id="email"
                     label={t('auth.signin.emailAddress')}
                     type="email"
                     value={email}
-                    onChange={(value) => setEmail(value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('auth.signin.enterEmail')}
                     required
                   />

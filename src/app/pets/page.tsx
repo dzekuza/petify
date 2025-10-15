@@ -460,7 +460,7 @@ export default function PetsPage() {
                     value={petForm.species}
                     onValueChange={handleSpeciesChange}
                   >
-                    <SelectTrigger className="mt-2">
+                    <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -481,8 +481,8 @@ export default function PetsPage() {
                     value={petForm.breed || undefined}
                     onValueChange={(value) => setPetForm(prev => ({ ...prev, breed: value }))}
                   >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="Pasirinkti veislę (neprivaloma)" />
+                    <SelectTrigger className="mt-2 w-full">
+                      <SelectValue placeholder="Pasirinkti veislę" />
                     </SelectTrigger>
                     <SelectContent>
                       {getAvailableBreeds().map((breed) => (

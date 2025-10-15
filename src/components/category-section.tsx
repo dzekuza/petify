@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { ServiceProvider } from '@/types'
 import { providerApi } from '@/lib/providers'
 import { ServiceSlider } from '@/components/service-slider'
+import { ProviderSlider } from '@/components/provider-slider'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ interface CategorySectionProps {
   limit?: number
   showViewAll?: boolean
   className?: string
+  mode?: 'providers' | 'services'
 }
 
 export const CategorySection = ({ 
@@ -22,9 +24,11 @@ export const CategorySection = ({
   category, 
   limit = 8,
   showViewAll = true,
-  className 
+  className,
+  mode = 'services'
 }: CategorySectionProps) => {
   const [services, setServices] = useState<Array<{ service: any; provider: ServiceProvider }>>([])
+  const [providers, setProviders] = useState<ServiceProvider[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -45,35 +49,32 @@ export const CategorySection = ({
           verifiedOnly: false 
         })
         
-        // Flatten all services from all providers
-        const allServices: Array<{ service: any; provider: ServiceProvider }> = []
-        
-        results.forEach(result => {
-          if (result.services && result.services.length > 0) {
-            result.services.forEach((service: any) => {
-              allServices.push({
-                service,
-                provider: result.provider
+        if (mode === 'providers') {
+          setProviders(results.map(r => r.provider))
+        } else {
+          // Flatten all services from all providers
+          const allServices: Array<{ service: any; provider: ServiceProvider }> = []
+          results.forEach(result => {
+            if (result.services && result.services.length > 0) {
+              result.services.forEach((service: any) => {
+                allServices.push({ service, provider: result.provider })
               })
-            })
-          }
-        })
-        
-        // Limit the total number of services shown
-        const limitedServices = allServices.slice(0, limit)
-        
-        setServices(limitedServices)
+            }
+          })
+          setServices(allServices)
+        }
       } catch (err) {
         // Error handling - could be logged to monitoring service in production
         setError('Failed to load services')
         setServices([])
+        setProviders([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchProviders()
-  }, [category, limit])
+  }, [category, limit, mode])
 
   // Calculate items per view based on screen size
   useEffect(() => {
@@ -159,7 +160,7 @@ export const CategorySection = ({
     )
   }
 
-  if (error || services.length === 0) {
+  if (error || (mode === 'services' ? services.length === 0 : providers.length === 0)) {
     return null
   }
 
@@ -202,8 +203,12 @@ export const CategorySection = ({
         </div>
       </div>
 
-      {/* Service Slider */}
-      <ServiceSlider services={services} showNavigation={false} ref={sliderRef} />
+      {/* Slider */}
+      {mode === 'providers' ? (
+        <ProviderSlider providers={providers} showNavigation={false} ref={sliderRef} />
+      ) : (
+        <ServiceSlider services={services} showNavigation={false} ref={sliderRef} />
+      )}
 
     </div>
   )

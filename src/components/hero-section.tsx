@@ -314,33 +314,34 @@ export const HeroSection = () => {
 
 
           {/* Category Sections - Multiple grooming sections */}
-          <div className="w-full space-y-12">
-            {/* Popular Grooming Services */}
+          <div className="w-full space-y-12 pt-24">
+            {/* Popular Providers (slider of providers) */}
             <CategorySection
               title="Populiarūs gyvūnų kirpimo salonai"
               category="grooming"
-              limit={8}
+              limit={16}
+              mode="providers"
             />
             
-            {/* Top Rated Grooming Services */}
+            {/* Top Rated Grooming Services (services for dogs) */}
             <CategorySection
               title="Geriausiai įvertinti kirpėjai"
               category="grooming"
-              limit={8}
+              limit={16}
             />
             
-            {/* New Grooming Services */}
+            {/* New Grooming Services (services for dogs) */}
             <CategorySection
               title="Nauji gyvūnų kirpimo salonai"
               category="grooming"
-              limit={8}
+              limit={16}
             />
             
-            {/* Featured Grooming Services */}
+            {/* Featured Grooming Services (services for dogs) */}
             <CategorySection
               title="Rekomenduojami kirpėjai"
               category="grooming"
-              limit={8}
+              limit={16}
             />
           </div>
         </div>

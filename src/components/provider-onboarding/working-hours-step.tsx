@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
@@ -90,26 +90,23 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      bottom={
+        <BottomNavigation
+          currentStep={7}
+          totalSteps={9}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={!isFormValid()}
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-2xl">
-          <div className="flex flex-col gap-8 items-center justify-center">
-            {/* Title */}
-            <h1 className="text-3xl font-bold text-black text-center">
-              Darbo valandos
-            </h1>
-              
-              {/* Description */}
-              <p className="text-base text-gray-600 text-center max-w-md">
-                Nurodykite, kada esate prieinamas klientams kiekvieną savaitės dieną
-              </p>
-              
-              {/* Working Hours Form */}
-              <div className="w-full space-y-4">
+      <h1 className="text-3xl font-bold text-black text-center mb-2">Darbo valandos</h1>
+      <p className="text-base text-gray-600 text-center mb-8 max-w-md mx-auto">Nurodykite, kada esate prieinamas klientams kiekvieną savaitės dieną</p>
+      <div className="w-full space-y-4">
                 {dayNames.map(({ key, label }) => {
                   const dayKey = key as keyof WorkingHours
                   const dayData = workingHours[dayKey]
@@ -136,6 +133,13 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                               value={dayData.startTime}
                               onChange={(e) => handleTimeChange(dayKey, 'startTime', e.target.value)}
                               className="w-24"
+                              lang="lt-LT"
+                              step={60}
+                              inputMode="numeric"
+                              pattern="^([01]\\d|2[0-3]):([0-5]\\d)$"
+                              placeholder="09:00"
+                              aria-label={`${label} pradžia (24h)`}
+                              title="Naudokite 24 val. formatą HH:MM"
                             />
                             <span className="text-sm text-gray-600">-</span>
                             <Input
@@ -144,6 +148,13 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                               value={dayData.endTime}
                               onChange={(e) => handleTimeChange(dayKey, 'endTime', e.target.value)}
                               className="w-24"
+                              lang="lt-LT"
+                              step={60}
+                              inputMode="numeric"
+                              pattern="^([01]\\d|2[0-3]):([0-5]\\d)$"
+                              placeholder="17:00"
+                              aria-label={`${label} pabaiga (24h)`}
+                              title="Naudokite 24 val. formatą HH:MM"
                             />
                           </div>
                         )}
@@ -151,10 +162,8 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                     </div>
                   )
                 })}
-              </div>
-              
-              {/* Quick Actions */}
-              <div className="flex gap-3 justify-center">
+      </div>
+      <div className="flex gap-3 justify-center mt-6">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -195,21 +204,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                 >
                   Visą savaitę
                 </Button>
-              </div>
-            </div>
-          </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={7}
-        totalSteps={9}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={!isFormValid()}
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+      </div>
+    </OnboardingLayout>
   )
 }

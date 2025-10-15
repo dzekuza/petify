@@ -1,12 +1,13 @@
 'use client'
 
 import { OnboardingData } from '@/types/onboarding'
-import { PageLayout, PageContent } from './page-layout'
+import OnboardingLayout from './onboarding-layout'
 import BottomNavigation from './bottom-navigation'
 import ExitButton from './exit-button'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Phone, Globe, Clock, Star, Euro } from 'lucide-react'
+import Image from 'next/image'
 
 interface ReviewStepProps {
   data: OnboardingData
@@ -34,18 +35,27 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
         return `${dayNames[index]}: ${hours.startTime} - ${hours.endTime}`
       }
       return null
-    }).filter(Boolean).join(', ')
+    }).filter(Boolean) as string[]
   }
 
   return (
-    <PageLayout>
-      {/* Exit Button */}
+    <OnboardingLayout
+      bottom={
+        <BottomNavigation
+          currentStep={9}
+          totalSteps={9}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          isNextDisabled={false}
+          nextText="Baigti registraciją"
+          isEditMode={isEditMode}
+          onSave={onSave}
+        />
+      }
+    >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
-      
-      {/* Main Content */}
-      <PageContent>
-        <div className="w-full max-w-[522px]">
-          <div className="flex flex-col gap-6 items-start justify-start">
+      <div className="w-full max-w-[720px] mx-auto">
+        <div className="flex flex-col gap-6">
             {/* Title */}
             <h1 className="text-3xl font-bold text-black w-full">
               Peržiūrėti informaciją
@@ -102,13 +112,54 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   <h2 className="text-xl font-semibold mb-4">
                     {data.providerType === 'adoption' ? 'Gyvūnų tipai' : 'Paslaugos'}
                   </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {data.services.map((service, index) => (
-                      <Badge key={index} variant="secondary">
-                        {service}
-                      </Badge>
-                    ))}
-                  </div>
+                  {data.providerType !== 'adoption' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {data.services.map((serviceIdOrName, index) => {
+                        const details = (data.serviceDetails || []).find(d => d.id === serviceIdOrName || d.name === serviceIdOrName)
+                        if (!details) {
+                          return (
+                            <Badge key={index} variant="secondary">{serviceIdOrName}</Badge>
+                          )
+                        }
+                        const firstImage = (details.gallery && details.gallery.length > 0) ? details.gallery[0] : null
+                        const imgSrc = firstImage ? URL.createObjectURL(firstImage as File) : null
+                        return (
+                          <div key={index} className="flex gap-3 items-start border rounded-lg p-3">
+                            {imgSrc ? (
+                              <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                                {/* Use next/image only when we have a string URL; Files need object URL */}
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={imgSrc} alt="service" className="w-16 h-16 object-cover" />
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 shrink-0 rounded-md bg-gray-100" />
+                            )}
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium truncate">{details.name}</h3>
+                                {details.price && (
+                                  <span className="text-sm text-gray-700 inline-flex items-center gap-1">
+                                    <Euro className="h-3 w-3" />{details.price}
+                                  </span>
+                                )}
+                              </div>
+                              {details.description && (
+                                <p className="text-sm text-gray-600 line-clamp-2 mt-1">{details.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {data.services.map((service, index) => (
+                        <Badge key={index} variant="secondary">
+                          {service}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -225,22 +276,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                 </div>
               ) : null}
 
-              {/* Pricing */}
-              {data.providerType !== 'adoption' && (
-                <div className="w-full bg-white p-6 rounded-lg border">
-                  <h2 className="text-xl font-semibold mb-4">Kainodara</h2>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Euro className="h-4 w-4 text-gray-500" />
-                      <span className="text-gray-600">Bazinė kaina: €{data.basePrice}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Euro className="h-4 w-4 text-gray-500" />
-                      <span className="text-gray-600">Kaina už valandą: €{data.pricePerHour}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Pricing removed per requirements */}
 
               {/* Experience & Certifications - Hidden for breeders */}
               {data.providerType !== 'adoption' && (
@@ -273,7 +309,11 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   <h2 className="text-xl font-semibold mb-4">Darbo laikas</h2>
                   <div className="flex items-start gap-2">
                     <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
-                    <p className="text-gray-600">{formatWorkingHours()}</p>
+                    <ul className="text-gray-600 space-y-1">
+                      {formatWorkingHours().map((line, idx) => (
+                        <li key={idx}>{line}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
@@ -287,21 +327,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-      </PageContent>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentStep={9}
-        totalSteps={9}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        isNextDisabled={false}
-        nextText="Baigti registraciją"
-        isEditMode={isEditMode}
-        onSave={onSave}
-      />
-    </PageLayout>
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }
