@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import { sendBookingUpdateEmail, sendOrderDetailsEmail } from '@/lib/email'
+import { authenticateRequest } from '@/lib/auth'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
+    }
+
     const { id } = await params
     const { status, reason } = await request.json()
 
@@ -19,8 +26,41 @@ export async function PATCH(
       )
     }
 
-    // Update booking status
     const supabaseAdmin = createSupabaseAdmin()
+    const userId = authResult.user!.id
+    const userRole = authResult.user!.role
+
+    // Fetch the booking first to check authorization
+    const { data: existingBooking, error: fetchError } = await supabaseAdmin
+      .from('bookings')
+      .select('customer_id, provider_id, provider:providers(user_id)')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !existingBooking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    // Authorization: Only the customer, provider, or admin can update the booking
+    const isCustomer = existingBooking.customer_id === userId
+    const isProvider = (existingBooking.provider as { user_id: string } | null)?.user_id === userId
+    const isAdmin = userRole === 'admin'
+
+    if (!isCustomer && !isProvider && !isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Customers can only cancel their own bookings
+    if (isCustomer && !isProvider && !isAdmin) {
+      if (status !== 'cancelled') {
+        return NextResponse.json(
+          { error: 'Customers can only cancel bookings' },
+          { status: 403 }
+        )
+      }
+    }
+
+    // Update booking status
     const { data: booking, error } = await supabaseAdmin
       .from('bookings')
       .update({ 
@@ -177,9 +217,38 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
+    }
 
+    const { id } = await params
     const supabaseAdmin = createSupabaseAdmin()
+    const userId = authResult.user!.id
+    const userRole = authResult.user!.role
+
+    // First fetch booking to check authorization
+    const { data: bookingCheck, error: checkError } = await supabaseAdmin
+      .from('bookings')
+      .select('customer_id, provider_id, provider:providers(user_id)')
+      .eq('id', id)
+      .single()
+
+    if (checkError || !bookingCheck) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    // Authorization: Only the customer, provider, or admin can view the booking
+    const isCustomer = bookingCheck.customer_id === userId
+    const isProvider = (bookingCheck.provider as { user_id: string } | null)?.user_id === userId
+    const isAdmin = userRole === 'admin'
+
+    if (!isCustomer && !isProvider && !isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Fetch full booking details
     const { data: booking, error } = await supabaseAdmin
       .from('bookings')
       .select(`

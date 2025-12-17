@@ -6,7 +6,7 @@ import { queryClient } from '@/lib/query-client'
 import { AuthProvider } from '@/contexts/auth-context'
 import { NotificationsProvider } from '@/contexts/notifications-context'
 import { FavoritesProvider } from '@/contexts/favorites-context'
-// import { Notifications } from '@/components/notifications'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -14,15 +14,17 @@ interface ProvidersProps {
 
 export const Providers = ({ children }: ProvidersProps) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FavoritesProvider>
-          <NotificationsProvider>
-            {children}
-            <ReactQueryDevtools initialIsOpen={false} />
-          </NotificationsProvider>
-        </FavoritesProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <FavoritesProvider>
+            <NotificationsProvider>
+              {children}
+              <ReactQueryDevtools initialIsOpen={false} />
+            </NotificationsProvider>
+          </FavoritesProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }

@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import { authenticateRequest } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
+    }
+
     const body = await request.json()
     const { providerId, bookingId, rating, title, comment } = body
 
@@ -22,14 +29,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user from request (you might need to implement authentication)
-    // For now, we'll use a placeholder - you should implement proper auth
-    const userId = 'temp-user-id' // This should come from your auth system
-
+    const userId = authResult.user!.id
     const supabaseAdmin = createSupabaseAdmin()
 
-    // Check if review already exists for this booking
+    // If bookingId is provided, verify user owns that booking and it's completed
     if (bookingId) {
+      const { data: booking, error: bookingError } = await supabaseAdmin
+        .from('bookings')
+        .select('id, customer_id, provider_id, status')
+        .eq('id', bookingId)
+        .single()
+
+      if (bookingError || !booking) {
+        return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+      }
+
+      // Verify user owns the booking
+      if (booking.customer_id !== userId) {
+        return NextResponse.json(
+          { error: 'Forbidden - You can only review your own bookings' },
+          { status: 403 }
+        )
+      }
+
+      // Verify booking is for the correct provider
+      if (booking.provider_id !== providerId) {
+        return NextResponse.json(
+          { error: 'Booking does not match the provider' },
+          { status: 400 }
+        )
+      }
+
+      // Verify booking is completed
+      if (booking.status !== 'completed') {
+        return NextResponse.json(
+          { error: 'Can only review completed bookings' },
+          { status: 400 }
+        )
+      }
+
+      // Check if review already exists for this booking
       const { data: existingReview } = await supabaseAdmin
         .from('reviews')
         .select('id')
@@ -76,7 +115,6 @@ export async function POST(request: NextRequest) {
 
     if (providerError) {
       console.error('Error fetching provider:', providerError)
-      // Don't fail the review creation if we can't update the provider stats
     } else {
       const currentRating = provider.rating || 0
       const currentCount = provider.review_count || 0
@@ -86,14 +124,14 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin
         .from('providers')
         .update({
-          rating: Math.round(newRating * 10) / 10, // Round to 1 decimal place
+          rating: Math.round(newRating * 10) / 10,
           review_count: newCount
         })
         .eq('id', providerId)
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       review: {
         id: review.id,
         rating: review.rating,
@@ -115,7 +153,13 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const providerId = searchParams.get('provider_id')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    let limit = parseInt(searchParams.get('limit') || '10')
+
+    // Cap limit to prevent excessive data retrieval
+    const MAX_LIMIT = 100
+    if (limit > MAX_LIMIT) {
+      limit = MAX_LIMIT
+    }
 
     if (!providerId) {
       return NextResponse.json(

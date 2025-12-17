@@ -1,28 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseAdmin } from '@/lib/supabase'
+import { authenticateRequest, isValidSelfAssignableRole } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const { role } = await request.json()
-    
-    // Get the user from the Authorization header
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'No authorization header' }, { status: 401 })
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
     }
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    const { role } = await request.json()
+
+    if (!role) {
+      return NextResponse.json({ error: 'Role is required' }, { status: 400 })
     }
+
+    // Validate role - users can only self-assign 'customer' or 'provider', never 'admin'
+    if (!isValidSelfAssignableRole(role)) {
+      return NextResponse.json(
+        { error: 'Invalid role. Allowed roles: customer, provider' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = createSupabaseAdmin()
+    const userId = authResult.user!.id
 
     // Update user role in the users table
     const { error: updateError } = await supabase
       .from('users')
       .update({ role })
-      .eq('id', user.id)
+      .eq('id', userId)
 
     if (updateError) {
       console.error('Error updating user role:', updateError)
@@ -30,13 +39,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Also update the user metadata in Supabase Auth
-    const { error: metadataError } = await supabase.auth.updateUser({
-      data: { role }
+    const { error: metadataError } = await supabase.auth.admin.updateUserById(userId, {
+      user_metadata: { role }
     })
 
     if (metadataError) {
       console.error('Error updating user metadata:', metadataError)
-      // Don't fail the request if metadata update fails, as the main role update succeeded
     }
 
     return NextResponse.json({ success: true })

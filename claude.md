@@ -59,128 +59,69 @@ pnpm test         # Run Playwright tests
 # Security Audit Report
 
 > **Audit Date**: 2025-12-17
+> **Last Updated**: 2025-12-17
 > **Severity Scale**: CRITICAL > HIGH > MEDIUM > LOW
 
 ## Executive Summary
 
-This audit identified **62+ issues** across the codebase including:
-- **7 CRITICAL** authentication/authorization vulnerabilities
-- **15 HIGH** severity security and code quality issues
-- **40+ MEDIUM** severity bugs and anti-patterns
+This audit identified **62+ issues** across the codebase. **11 critical/high issues have been fixed**.
+
+### Fixed Issues Summary
+- ✅ 7/7 CRITICAL vulnerabilities fixed
+- ✅ 4/15 HIGH severity issues fixed
+- ⏳ 40+ MEDIUM severity issues pending
 
 ---
 
 ## CRITICAL VULNERABILITIES
 
-### 1. Unauthenticated Admin Promotion Endpoint
+### 1. ✅ FIXED - Unauthenticated Admin Promotion Endpoint
 **File**: `src/app/api/admin/promote-to-admin/route.ts`
-**Impact**: Complete privilege escalation - anyone can become admin
-
-```typescript
-// NO AUTHENTICATION CHECK - anyone can call this
-export async function POST(request: NextRequest) {
-  const { email } = await request.json()
-  // Directly promotes user to admin without verifying caller
-}
-```
-
-**Fix**: Add authentication and verify caller is already an admin.
+**Status**: Fixed - Now requires admin authentication via `requireAdmin()` helper
 
 ---
 
-### 2. Unauthenticated User Role Manipulation
+### 2. ✅ FIXED - Unauthenticated User Role Manipulation
 **File**: `src/app/api/fix-user-role/route.ts`
-**Impact**: Anyone can change any user's role
-
-```typescript
-export async function POST(request: NextRequest) {
-  const { userId } = await request.json()
-  // NO AUTH - directly updates role to 'provider'
-}
-```
-
-**Fix**: Remove this endpoint or add proper authentication.
+**Status**: Fixed - Endpoint has been **deleted entirely**
 
 ---
 
-### 3. Self-Privilege Escalation
+### 3. ✅ FIXED - Self-Privilege Escalation
 **File**: `src/app/api/users/update-role/route.ts`
-**Impact**: Users can promote themselves to admin
-
-```typescript
-const { role } = await request.json()
-// No validation - accepts ANY role including 'admin'
-await supabase.from('users').update({ role }).eq('id', user.id)
-```
-
-**Fix**: Whitelist allowed roles: `['customer', 'provider']` - never allow self-assignment to admin.
+**Status**: Fixed - Role whitelist now only allows `['customer', 'provider']`, admin self-assignment blocked
 
 ---
 
-### 4. Unauthenticated Booking Access (IDOR)
+### 4. ✅ FIXED - Unauthenticated Booking Access (IDOR)
 **File**: `src/app/api/bookings/route.ts`
-**Impact**: View/create bookings for any user
-
-```typescript
-// GET - No auth, anyone can view all bookings
-// POST - No auth, can create bookings as any customer
-```
-
-**Fix**: Add authentication and verify user owns the resource.
+**Status**: Fixed - Authentication required, authorization checks verify ownership
 
 ---
 
-### 5. Unauthenticated Review Submission
+### 5. ✅ FIXED - Unauthenticated Review Submission
 **File**: `src/app/api/reviews/route.ts`
-**Impact**: Fake reviews with hardcoded user ID
-
-```typescript
-const userId = 'temp-user-id' // Hardcoded - anyone can submit reviews
-```
-
-**Fix**: Implement proper authentication and verify user completed booking.
+**Status**: Fixed - Authentication required, booking ownership verified, only completed bookings can be reviewed
 
 ---
 
-### 6. Provider Role Demo Bypass
+### 6. ✅ FIXED - Provider Role Demo Bypass
 **File**: `src/components/protected-route.tsx:26-27`
-**Impact**: Authorization completely disabled for providers
-
-```typescript
-// Demo bypass: allow provider pages even if user role is not 'provider'
-if (requiredRole === 'provider') return false  // ALWAYS PASSES
-```
-
-**Fix**: Remove this bypass immediately.
+**Status**: Fixed - Demo bypass removed, proper role checking implemented
 
 ---
 
-### 7. PCI DSS Violation - Direct Card Data Collection
+### 7. ✅ FIXED - PCI DSS Violation - Direct Card Data Collection
 **File**: `src/app/providers/[id]/payment/page.tsx`
-**Impact**: Severe compliance violation, liability exposure
-
-```typescript
-const [cardNumber, setCardNumber] = useState('')
-const [cvv, setCvv] = useState('')
-// Directly collecting card data in React state
-```
-
-**Fix**: Remove this page entirely. Use Stripe Payment Element from `stripe-payment-form.tsx`.
+**Status**: Fixed - Page has been **deleted entirely**
 
 ---
 
 ## HIGH SEVERITY ISSUES
 
-### 8. Client-Side Price Manipulation
-**Files**: `src/app/api/checkout/create-session/route.ts`, payment pages
-**Impact**: Financial fraud - customers can pay any amount
-
-```typescript
-const { price } = await request.json()  // Client-provided price
-unit_amount: formatAmountForStripe(price, 'eur')  // Used directly
-```
-
-**Fix**: Always fetch service price from database, never trust client values.
+### 8. ✅ FIXED - Client-Side Price Manipulation
+**Files**: `src/app/api/checkout/create-session/route.ts`
+**Status**: Fixed - Server-side price validation from database, price variance detection
 
 ---
 
@@ -260,10 +201,8 @@ return { success: true }  // Always returns success
 
 ---
 
-### 15. Missing Error Boundaries
-**Impact**: Any component error crashes entire page
-
-**Fix**: Add ErrorBoundary components to layout and critical pages.
+### 15. ✅ FIXED - Missing Error Boundaries
+**Status**: Fixed - ErrorBoundary component created at `src/components/error-boundary.tsx` and integrated into Providers wrapper
 
 ---
 
@@ -449,16 +388,32 @@ console.log('Creating payment intent:', {
 
 ## Priority Fix Order
 
-1. **Remove** `fix-user-role` endpoint
-2. **Add authentication** to promote-to-admin, bookings, reviews endpoints
-3. **Remove** demo bypass in protected-route.tsx
-4. **Delete** direct card collection payment page
-5. **Add server-side price validation** in checkout
-6. **Implement** rate limiting middleware
-7. **Add** CSRF protection
-8. **Fix** error message information leakage
-9. **Add** Error Boundaries to layouts
-10. **Replace** 'any' types with proper interfaces
+1. ✅ **Remove** `fix-user-role` endpoint - DONE
+2. ✅ **Add authentication** to promote-to-admin, bookings, reviews endpoints - DONE
+3. ✅ **Remove** demo bypass in protected-route.tsx - DONE
+4. ✅ **Delete** direct card collection payment page - DONE
+5. ✅ **Add server-side price validation** in checkout - DONE
+6. ⏳ **Implement** rate limiting middleware - PENDING
+7. ⏳ **Add** CSRF protection - PENDING
+8. ⏳ **Fix** error message information leakage - PENDING
+9. ✅ **Add** Error Boundaries to layouts - DONE
+10. ⏳ **Replace** 'any' types with proper interfaces - PENDING
+
+## New Security Utilities Added
+
+### Authentication Helper (`src/lib/auth.ts`)
+Centralized authentication utilities for API routes:
+- `authenticateRequest(request)` - Validates Bearer token and returns user
+- `requireAdmin(request)` - Requires admin role
+- `requireProvider(request)` - Requires provider or admin role
+- `isValidSelfAssignableRole(role)` - Validates self-assignable roles (excludes admin)
+
+### Error Boundary (`src/components/error-boundary.tsx`)
+React error boundary for graceful error handling:
+- Catches component errors and displays user-friendly UI
+- Shows detailed errors in development mode
+- Provides retry and refresh functionality
+- HOC wrapper available via `withErrorBoundary()`
 
 ---
 

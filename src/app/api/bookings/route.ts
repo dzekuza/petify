@@ -1,15 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import { sendBookingConfirmationEmail, sendOrderDetailsEmail, sendProviderNotificationEmail } from '@/lib/email'
+import { authenticateRequest } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
+    }
+
     const { searchParams } = new URL(request.url)
     const providerId = searchParams.get('provider_id')
     const customerId = searchParams.get('customer_id')
     const status = searchParams.get('status')
-    
+
     const supabaseAdmin = createSupabaseAdmin()
+    const userId = authResult.user!.id
+    const userRole = authResult.user!.role
+
+    // Authorization: Users can only view their own bookings unless they're admin
+    // Providers can view bookings for their provider profile
+    if (userRole !== 'admin') {
+      // If customerId is specified, it must match the authenticated user
+      if (customerId && customerId !== userId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+
+      // If providerId is specified, verify user owns that provider profile
+      if (providerId) {
+        const { data: providerData } = await supabaseAdmin
+          .from('providers')
+          .select('user_id')
+          .or(`id.eq.${providerId},user_id.eq.${providerId}`)
+          .single()
+
+        if (!providerData || providerData.user_id !== userId) {
+          // If not the provider, must be viewing as customer
+          if (!customerId) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+          }
+        }
+      }
+
+      // If no filters specified, default to user's own bookings
+      if (!customerId && !providerId) {
+        // Will be filtered below
+      }
+    }
     let query = supabaseAdmin
       .from('bookings')
       .select(`
@@ -169,6 +208,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication
+    const authResult = await authenticateRequest(request)
+    if (authResult.error) {
+      return authResult.error
+    }
+
     const body = await request.json()
     const {
       customer_id,
@@ -191,6 +236,43 @@ export async function POST(request: NextRequest) {
     }
 
     const supabaseAdmin = createSupabaseAdmin()
+    const userId = authResult.user!.id
+
+    // Authorization: Users can only create bookings for themselves
+    if (customer_id !== userId && authResult.user!.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden - Cannot create bookings for other users' }, { status: 403 })
+    }
+
+    // Verify user owns the pet
+    const { data: pet, error: petError } = await supabaseAdmin
+      .from('pets')
+      .select('owner_id')
+      .eq('id', pet_id)
+      .single()
+
+    if (petError || !pet) {
+      return NextResponse.json({ error: 'Pet not found' }, { status: 404 })
+    }
+
+    if (pet.owner_id !== userId && authResult.user!.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden - Cannot book with a pet you do not own' }, { status: 403 })
+    }
+
+    // Verify service exists and get actual price for validation
+    const { data: service, error: serviceError } = await supabaseAdmin
+      .from('services')
+      .select('id, price, provider_id')
+      .eq('id', service_id)
+      .single()
+
+    if (serviceError || !service) {
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 })
+    }
+
+    // Verify service belongs to the specified provider
+    if (service.provider_id !== provider_id) {
+      return NextResponse.json({ error: 'Service does not belong to this provider' }, { status: 400 })
+    }
 
     // Create the booking
     const { data: booking, error } = await supabaseAdmin
