@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import { requireAdmin } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // Require admin authentication
+    const authResult = await requireAdmin(request)
+    if (authResult.error) {
+      return authResult.error
+    }
+
     const { email } = await request.json()
 
     if (!email) {
@@ -29,6 +36,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (updateError) {
+      console.error('Failed to update user role:', updateError)
       return NextResponse.json({ error: 'Failed to update user role' }, { status: 500 })
     }
 
@@ -38,12 +46,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (metadataError) {
-      // Don't fail the request if metadata update fails
       console.error('Failed to update user metadata:', metadataError)
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: `User ${user.full_name} (${user.email}) has been promoted to admin`,
       user: {
         id: user.id,
@@ -54,6 +61,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
+    console.error('Error in promote-to-admin:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

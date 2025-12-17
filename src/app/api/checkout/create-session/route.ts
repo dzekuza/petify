@@ -38,21 +38,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Provider not found' }, { status: 404 })
     }
 
-    // Fetch service data if serviceId is provided
+    // Fetch service data and validate price from database
     let serviceName = 'Grooming Service'
+    let verifiedPrice = price
+
     if (serviceId) {
-      const { data: serviceData } = await supabase
+      const { data: serviceData, error: serviceError } = await supabase
         .from('services')
-        .select('name')
+        .select('name, price, provider_id')
         .eq('id', serviceId)
         .single()
-      
-      if (serviceData) {
-        serviceName = serviceData.name
+
+      if (serviceError || !serviceData) {
+        return NextResponse.json({ error: 'Service not found' }, { status: 404 })
+      }
+
+      // Verify service belongs to the provider
+      if (serviceData.provider_id !== providerId) {
+        return NextResponse.json(
+          { error: 'Service does not belong to this provider' },
+          { status: 400 }
+        )
+      }
+
+      serviceName = serviceData.name
+
+      // Use the price from database, not from client
+      // Allow small variance for rounding (e.g., for multiple pets)
+      const expectedBasePrice = serviceData.price
+      const numberOfPets = pets.length || 1
+
+      // Validate that client price is reasonable (within expected range)
+      const minExpected = expectedBasePrice * numberOfPets * 0.9 // Allow 10% variance
+      const maxExpected = expectedBasePrice * numberOfPets * 1.5 // Allow for multi-pet pricing
+
+      if (price < minExpected || price > maxExpected) {
+        console.warn('Price mismatch detected:', {
+          clientPrice: price,
+          expectedBasePrice,
+          numberOfPets,
+          minExpected,
+          maxExpected
+        })
+        // Use the calculated price instead of client-provided price
+        verifiedPrice = expectedBasePrice * numberOfPets
       }
     }
 
-    // Create Stripe Checkout session
+    // Create Stripe Checkout session with verified price
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -63,7 +96,7 @@ export async function POST(request: NextRequest) {
               name: serviceName,
               description: `${providerData.business_name} - ${date} at ${time}`,
             },
-            unit_amount: formatAmountForStripe(price, 'eur'),
+            unit_amount: formatAmountForStripe(verifiedPrice, 'eur'),
           },
           quantity: 1,
         },

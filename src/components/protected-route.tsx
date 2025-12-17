@@ -23,9 +23,11 @@ export const ProtectedRoute = ({
   const roleMismatch = useMemo(() => {
     if (!requiredRole) return false
     if (!user) return false
-    // Demo bypass: allow provider pages even if user role is not 'provider'
-    if (requiredRole === 'provider') return false
-    return user.user_metadata?.role !== requiredRole
+    // Check user role from metadata
+    const userRole = user.user_metadata?.role
+    // Admin can access all roles
+    if (userRole === 'admin') return false
+    return userRole !== requiredRole
   }, [requiredRole, user])
 
   useEffect(() => {
