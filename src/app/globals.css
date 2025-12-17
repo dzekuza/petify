@@ -27,8 +27,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Light.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Light.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Light.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Light.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -37,8 +37,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-LightItalic.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-LightItalic.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-LightItalic.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-LightItalic.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-LightItalic.ttf') format('truetype');
   font-weight: 300;
   font-style: italic;
   font-display: swap;
@@ -47,8 +47,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Regular.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Regular.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Regular.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Regular.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -57,8 +57,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Italic.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Italic.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Italic.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Italic.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Italic.ttf') format('truetype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -67,8 +67,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Medium.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Medium.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Medium.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Medium.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -77,8 +77,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-MediumItalic.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-MediumItalic.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-MediumItalic.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-MediumItalic.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-MediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
   font-display: swap;
@@ -87,8 +87,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Bold.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Bold.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Bold.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Bold.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -97,8 +97,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BoldItalic.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BoldItalic.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BoldItalic.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BoldItalic.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BoldItalic.ttf') format('truetype');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
@@ -107,8 +107,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Black.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Black.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Black.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Black.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -117,8 +117,8 @@
 @font-face {
   font-family: 'Satoshi';
   src: url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BlackItalic.woff2') format('woff2'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BlackItalic.woff') format('woff'),
-       url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BlackItalic.ttf') format('truetype');
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BlackItalic.woff') format('woff'),
+    url('/Satoshi_Complete 2/Fonts/WEB/fonts/Satoshi-BlackItalic.ttf') format('truetype');
   font-weight: 900;
   font-style: italic;
   font-display: swap;
@@ -162,6 +162,47 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Enhanced Primary Colors - Red */
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #f87171;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
+  --color-primary-800: #991b1b;
+  --color-primary-900: #7f1d1d;
+
+  /* Accent Colors */
+  --color-accent-blue-50: #eff6ff;
+  --color-accent-blue-500: #3b82f6;
+  --color-accent-blue-600: #2563eb;
+  --color-accent-purple-50: #faf5ff;
+  --color-accent-purple-500: #8b5cf6;
+  --color-accent-purple-600: #7c3aed;
+  --color-accent-green-50: #f0fdf4;
+  --color-accent-green-500: #10b981;
+  --color-accent-green-600: #059669;
+  --color-accent-yellow-50: #fefce8;
+  --color-accent-yellow-500: #eab308;
+  --color-accent-yellow-600: #ca8a04;
+  --color-accent-pink-500: #ec4899;
+  --color-accent-pink-600: #db2777;
+
+  /* Neutral Depth */
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+  --color-neutral-950: #030712;
 }
 
 :root {
@@ -237,6 +278,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -281,9 +323,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -380,4 +424,287 @@
 
 .__PrivateStripeElement * {
   pointer-events: auto !important;
+}
+
+/* ========================================
+   PETIFY UI MODERNIZATION - Custom Styles
+   ======================================== */
+
+/* Custom Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation Utility Classes */
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right,
+      #f3f4f6 0%,
+      #e5e7eb 20%,
+      #f3f4f6 40%,
+      #f3f4f6 100%);
+  background-size: 1000px 100%;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Stagger Animation Delays */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply backdrop-blur-xl bg-white/80 border border-white/20;
+}
+
+.glass-dark {
+  @apply backdrop-blur-xl bg-black/20 border border-white/10;
+}
+
+/* Gradient Text */
+.gradient-text {
+  @apply bg-gradient-to-r from-primary-600 via-primary-500 to-pink-500 bg-clip-text text-transparent;
+}
+
+.gradient-text-blue {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Gradient Backgrounds */
+.gradient-bg-primary {
+  @apply bg-gradient-to-r from-primary-500 to-pink-500;
+}
+
+.gradient-bg-subtle {
+  @apply bg-gradient-to-br from-primary-50 via-white to-blue-50;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+}
+
+/* Card Styles */
+.card-modern {
+  @apply rounded-2xl bg-white shadow-md hover:shadow-2xl transition-all duration-300;
+}
+
+/* Focus Visible Improvements */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary-500/20 ring-offset-2;
+}
+
+button:focus-visible {
+  @apply ring-2 ring-primary-500/50 ring-offset-2;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  @apply ring-2 ring-primary-500/20 border-primary-500;
+}
+
+/* Improved Text Rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection Styling */
+::selection {
+  @apply bg-primary-500/20 text-primary-900;
+}
+
+/* Disable tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Loading State */
+.loading-skeleton {
+  @apply bg-neutral-200 rounded;
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right,
+      #f3f4f6 0%,
+      #e5e7eb 20%,
+      #f3f4f6 40%,
+      #f3f4f6 100%);
+  background-size: 1000px 100%;
+}
+
+/* Status Indicator Dot */
+.status-dot {
+  @apply inline-block w-2 h-2 rounded-full;
+}
+
+.status-dot-online {
+  @apply bg-green-500;
+}
+
+.status-dot-offline {
+  @apply bg-neutral-400;
+}
+
+.status-dot-busy {
+  @apply bg-yellow-500;
+}
+
+/* Badge Styles */
+.badge-modern {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md bg-white/90 border border-white/20 shadow-lg;
+}
+
+/* Hero Background Pattern */
+.hero-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(229 231 235 / 0.3) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Gradient Border Effect */
+.gradient-border {
+  @apply relative;
+}
+
+.gradient-border::before {
+  content: '';
+  @apply absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-pink-500 rounded-2xl opacity-0 blur transition-opacity duration-300;
+  z-index: -1;
+}
+
+.gradient-border:hover::before {
+  @apply opacity-100;
+}
+
+/* Responsive Typography */
+.text-responsive-xl {
+  @apply text-3xl md:text-4xl lg:text-5xl;
+}
+
+.text-responsive-2xl {
+  @apply text-4xl md:text-5xl lg:text-6xl;
+}
+
+.text-responsive-3xl {
+  @apply text-5xl md:text-6xl lg:text-7xl;
+}
+
+/* Improved Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }

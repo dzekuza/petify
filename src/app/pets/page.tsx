@@ -18,6 +18,7 @@ import { Pet } from '@/types'
 import { uploadPetProfilePicture, uploadPetGalleryImage, validateFile, getPublicUrl } from '@/lib/storage'
 import { getBreedsBySpecies } from '@/lib/breeds'
 import { translations } from '@/lib/translations'
+import { supabase } from '@/lib/supabase'
 import { Dog, Plus, Edit, Trash2, Loader2, X, Camera, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
@@ -96,25 +97,25 @@ export default function PetsPage() {
   }
 
   const handleSavePet = async () => {
-    try {
-      const petData = {
-        name: petForm.name,
-        species: petForm.species,
-        breed: petForm.breed || undefined,
-        age: parseFloat(petForm.age), // Now in years
-        weight: petForm.weight ? parseFloat(petForm.weight) : undefined,
-        specialNeeds: petForm.specialNeeds ? petForm.specialNeeds.split(',').map(s => s.trim()) : [],
-        medicalNotes: petForm.medicalNotes || undefined,
-        profilePicture: petForm.profilePicture || undefined,
-        galleryImages: petForm.galleryImages
-      }
+    const petData = {
+      name: petForm.name,
+      species: petForm.species,
+      breed: petForm.breed || undefined,
+      age: parseFloat(petForm.age), // Now in years
+      weight: petForm.weight ? parseFloat(petForm.weight) : undefined,
+      specialNeeds: petForm.specialNeeds ? petForm.specialNeeds.split(',').map(s => s.trim()) : [],
+      medicalNotes: petForm.medicalNotes || undefined,
+      profilePicture: petForm.profilePicture || undefined,
+      galleryImages: petForm.galleryImages
+    }
 
+    try {
       if (editingPet) {
         const updatedPet = await petsApi.updatePet({
           id: editingPet.id,
           ...petData
         })
-        setPets(prev => prev.map(pet => 
+        setPets(prev => prev.map(pet =>
           pet.id === editingPet.id ? updatedPet : pet
         ))
         setEditingPet(null)
@@ -123,9 +124,49 @@ export default function PetsPage() {
         setPets(prev => [...prev, newPet])
         setAddPetOpen(false)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving pet:', err)
-      alert('Failed to save pet')
+
+      // Self-healing: If foreign key constraint fails, it means the public.users record is missing.
+      // Try to create it and retry.
+      if (err.message && err.message.includes('foreign key constraint')) {
+        try {
+          console.log('Attempting to fix missing user record...')
+          const { error: userError } = await supabase.from('users').upsert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+            role: user.user_metadata?.role || 'customer',
+            updated_at: new Date().toISOString()
+          })
+
+          if (!userError) {
+            console.log('User record fixed, retrying pet creation...')
+            // Retry operation
+            if (editingPet) {
+              const updatedPet = await petsApi.updatePet({
+                id: editingPet.id,
+                ...petData
+              })
+              setPets(prev => prev.map(pet =>
+                pet.id === editingPet.id ? updatedPet : pet
+              ))
+              setEditingPet(null)
+            } else {
+              const newPet = await petsApi.createPet(petData, user.id)
+              setPets(prev => [...prev, newPet])
+              setAddPetOpen(false)
+            }
+            return // Success on retry
+          } else {
+            console.error('Failed to fix user record:', userError)
+          }
+        } catch (retryErr) {
+          console.error('Retry failed:', retryErr)
+        }
+      }
+
+      alert('Failed to save pet: ' + (err.message || 'Unknown error'))
     }
   }
 
@@ -161,8 +202,8 @@ export default function PetsPage() {
   }
 
   const handleSpeciesChange = (species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other') => {
-    setPetForm(prev => ({ 
-      ...prev, 
+    setPetForm(prev => ({
+      ...prev,
       species,
       breed: '' // Reset breed when species changes
     }))
@@ -215,7 +256,7 @@ export default function PetsPage() {
     setUploadingImages(true)
     try {
       const newImages: string[] = []
-      
+
       for (const file of Array.from(files)) {
         const validation = validateFile(file, 5)
         if (!validation.valid) {
@@ -242,10 +283,10 @@ export default function PetsPage() {
           newImages.push(dataUrl)
         }
       }
-      
-      setPetForm(prev => ({ 
-        ...prev, 
-        galleryImages: [...prev.galleryImages, ...newImages] 
+
+      setPetForm(prev => ({
+        ...prev,
+        galleryImages: [...prev.galleryImages, ...newImages]
       }))
     } catch (error) {
       console.error('Error uploading gallery images:', error)
@@ -320,7 +361,7 @@ export default function PetsPage() {
                             {getSpeciesIcon(pet.species)}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="flex-1">
                           <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-1">
@@ -332,19 +373,19 @@ export default function PetsPage() {
                               <span>{getAgeText(pet.age)}</span>
                               {pet.weight && <span>{pet.weight} kg</span>}
                             </div>
-                            
+
                             <div className="flex space-x-2">
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
                                 onClick={() => handleEditPet(pet)}
                               >
                                 <Edit className="h-4 w-4 mr-1" />
                                 Redaguoti
                               </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 className="text-red-600 hover:text-red-700"
                                 onClick={() => handleDeletePet(pet.id)}
                               >
@@ -353,7 +394,7 @@ export default function PetsPage() {
                               </Button>
                             </div>
                           </div>
-                          
+
                           {pet.specialNeeds && pet.specialNeeds.length > 0 && (
                             <div className="mt-3">
                               <p className="text-sm font-medium text-gray-900 mb-1">Specialūs poreikiai:</p>
@@ -366,7 +407,7 @@ export default function PetsPage() {
                               </div>
                             </div>
                           )}
-                          
+
                           {pet.medicalNotes && (
                             <div className="mt-3">
                               <p className="text-sm font-medium text-gray-900 mb-1">Medicinos pastabos:</p>
@@ -473,7 +514,7 @@ export default function PetsPage() {
                   </Select>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="petBreed" className="text-base font-medium">Veislė</Label>
@@ -506,7 +547,7 @@ export default function PetsPage() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="petWeight" className="text-base font-medium">Svoris (kg)</Label>
                 <Input
@@ -519,7 +560,7 @@ export default function PetsPage() {
                   className="mt-2"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="petSpecialNeeds" className="text-base font-medium">Specialūs poreikiai</Label>
                 <Input
@@ -530,7 +571,7 @@ export default function PetsPage() {
                   className="mt-2"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="petMedicalNotes" className="text-base font-medium">Medicinos pastabos</Label>
                 <Textarea
@@ -568,7 +609,7 @@ export default function PetsPage() {
                       if (files) handleGalleryImageUpload(files)
                     }}
                   />
-                  
+
                   {petForm.galleryImages.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {petForm.galleryImages.map((image, index) => (
@@ -595,10 +636,10 @@ export default function PetsPage() {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setAddPetOpen(false)
                     setEditingPet(null)

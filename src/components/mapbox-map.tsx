@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
-import Map, { 
-  Marker, 
-  Popup, 
+import Map, {
+  Marker,
+  Popup,
   MapRef,
   ViewState
 } from 'react-map-gl/mapbox'
@@ -14,6 +14,7 @@ import Image from 'next/image'
 import { MAPBOX_CONFIG } from '@/lib/mapbox'
 import { SearchResult } from '@/types'
 import { t } from '@/lib/translations'
+import Link from 'next/link'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Custom styles for mapbox popup and responsive canvas
@@ -72,9 +73,9 @@ interface MapboxMapProps {
   showControls?: boolean
 }
 
-export const MapboxMap = ({ 
-  results, 
-  onMarkerClick, 
+export const MapboxMap = ({
+  results,
+  onMarkerClick,
   selectedProviderId,
   className = ''
 }: MapboxMapProps) => {
@@ -91,25 +92,25 @@ export const MapboxMap = ({
     // Calculate bounds of all markers
     const lats = results.map(r => r.provider.location.coordinates.lat)
     const lngs = results.map(r => r.provider.location.coordinates.lng)
-    
+
     const minLat = Math.min(...lats)
     const maxLat = Math.max(...lats)
     const minLng = Math.min(...lngs)
     const maxLng = Math.max(...lngs)
-    
+
     // Calculate center point
     const centerLat = (minLat + maxLat) / 2
     const centerLng = (minLng + maxLng) / 2
-    
+
     // Calculate zoom level based on bounds with padding
     const latDiff = maxLat - minLat
     const lngDiff = maxLng - minLng
     const maxDiff = Math.max(latDiff, lngDiff)
-    
+
     // Add padding to ensure all markers are visible
     const padding = 0.02 // Add 0.02 degrees padding
     const paddedDiff = maxDiff + padding
-    
+
     let zoom = MAPBOX_CONFIG.minZoom // Start with minimum zoom
     if (paddedDiff > 0.5) zoom = 8   // Very wide area
     else if (paddedDiff > 0.2) zoom = 9
@@ -118,10 +119,10 @@ export const MapboxMap = ({
     else if (paddedDiff > 0.02) zoom = 12
     else if (paddedDiff > 0.01) zoom = 13
     else zoom = 14 // Maximum zoom for tight clusters
-    
+
     // Ensure zoom is within bounds
     zoom = Math.max(MAPBOX_CONFIG.minZoom, Math.min(zoom, MAPBOX_CONFIG.maxZoom))
-    
+
     return {
       longitude: centerLng,
       latitude: centerLat,
@@ -147,14 +148,14 @@ export const MapboxMap = ({
       // Calculate bounds of all markers
       const lats = results.map(r => r.provider.location.coordinates.lat)
       const lngs = results.map(r => r.provider.location.coordinates.lng)
-      
+
       const bounds = {
         north: Math.max(...lats),
         south: Math.min(...lats),
         east: Math.max(...lngs),
         west: Math.min(...lngs)
       }
-      
+
       // Use fitBounds to ensure all markers are visible with padding
       mapRef.current.fitBounds(
         [[bounds.west, bounds.south], [bounds.east, bounds.north]],
@@ -175,7 +176,7 @@ export const MapboxMap = ({
       }))
     }
   }, [results, calculateMapCenter])
-  
+
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
   const [popupImageIndex, setPopupImageIndex] = useState(0)
@@ -187,10 +188,10 @@ export const MapboxMap = ({
     const checkScreenSize = () => {
       setIsDesktop(window.innerWidth >= 1024)
     }
-    
+
     checkScreenSize()
     window.addEventListener('resize', checkScreenSize)
-    
+
     return () => {
       window.removeEventListener('resize', checkScreenSize)
     }
@@ -201,7 +202,7 @@ export const MapboxMap = ({
     const styleElement = document.createElement('style')
     styleElement.textContent = popupStyles
     document.head.appendChild(styleElement)
-    
+
     return () => {
       document.head.removeChild(styleElement)
     }
@@ -211,7 +212,7 @@ export const MapboxMap = ({
     setSelectedResult(result)
     setPopupImageIndex(0) // Reset to first image when selecting new marker
     onMarkerClick?.(result)
-    
+
     // Center map on marker
     setViewState(prev => ({
       ...prev,
@@ -297,8 +298,8 @@ export const MapboxMap = ({
         mapStyle={MAPBOX_CONFIG.style}
         attributionControl={false}
         logoPosition="bottom-right"
-        style={{ 
-          width: '100%', 
+        style={{
+          width: '100%',
           height: '100%',
           minHeight: '100%'
         }}
@@ -345,7 +346,7 @@ export const MapboxMap = ({
             offset={[0, -10]}
             className="mapbox-popup"
           >
-            <div className="w-72 bg-white rounded-xl shadow-xl overflow-hidden">
+            <Link href={`/providers/${selectedResult.provider.id}`} className="block w-72 bg-white rounded-xl shadow-xl overflow-hidden hover:opacity-95 transition-opacity">
               {/* Cover Image Section */}
               <div className="relative aspect-video w-full overflow-hidden">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
@@ -353,14 +354,13 @@ export const MapboxMap = ({
                     {selectedResult.provider.images.map((image, index) => (
                       <div
                         key={index}
-                        className={`absolute inset-0 transition-all duration-300 ease-in-out ${
-                          index === popupImageIndex
+                        className={`absolute inset-0 transition-all duration-300 ease-in-out ${index === popupImageIndex
                             ? 'opacity-100 scale-100'
                             : 'opacity-0 scale-105'
-                        }`}
+                          }`}
                       >
-                        <Image 
-                          src={image} 
+                        <Image
+                          src={image}
                           alt={selectedResult.provider.businessName}
                           fill
                           className="object-cover"
@@ -375,7 +375,7 @@ export const MapboxMap = ({
                     </span>
                   </div>
                 )}
-                
+
                 {/* Overlay Badges */}
                 <div className="absolute top-2 left-2 flex flex-col space-y-1">
                   <Badge variant="secondary" className="border-transparent bg-white/90 text-orange-700 text-xs">
@@ -388,24 +388,8 @@ export const MapboxMap = ({
                     </Badge>
                   )}
                 </div>
-                
-                {/* Overlay Icons */}
-                <div className="absolute top-2 right-2 flex items-center space-x-1">
-                  {/* Heart Icon */}
-                  <button className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
-                    <Heart className="w-3 h-3 text-gray-700" />
-                  </button>
-                  
-                  {/* Close Icon */}
-                  <button 
-                    onClick={handleClosePopup}
-                    className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
-                  >
-                    <X className="w-3 h-3 text-gray-700" />
-                  </button>
-                </div>
               </div>
-              
+
               {/* Content Section */}
               <div className="p-3">
                 {/* Title and Rating */}
@@ -423,56 +407,28 @@ export const MapboxMap = ({
                     </span>
                   </div>
                 </div>
-                
-                {/* Description */}
-                <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                  {selectedResult.provider.description}
-                </p>
-                
-                {/* Services - Moved to overlay */}
-                
-                {/* Location and Experience */}
+
+                {/* Location */}
                 <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
                   <div className="flex items-center">
                     <MapPin className="h-3 w-3 mr-1" />
                     {selectedResult.provider.location.city}
                   </div>
-                  <div className="flex items-center">
-                    <Users className="h-3 w-3 mr-1" />
-                    {selectedResult.provider.experience} {t('search.yearsExperience')}
-                  </div>
                 </div>
-                
-                {/* Price and Actions */}
+
+                {/* Price */}
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-gray-900">
                     {formatPrice(selectedResult.provider.priceRange)}
                     <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
                   </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex space-x-1">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-xs px-2 py-1 h-6"
-                    >
-                      {t('search.viewProfile')}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="text-xs px-2 py-1 h-6"
-                    >
-                      {t('common.book')}
-                    </Button>
-                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </Popup>
         )}
       </Map>
-      
+
       {/* Mobile Listing Card - Shows when marker is selected */}
       {selectedResult && (
         <div className="lg:hidden absolute bottom-16 left-4 right-4 z-20">
@@ -481,8 +437,8 @@ export const MapboxMap = ({
               {/* Image Section */}
               <div className="relative w-20 h-20 flex-shrink-0">
                 {selectedResult.provider.images && selectedResult.provider.images.length > 0 ? (
-                  <Image 
-                    src={selectedResult.provider.images[0]} 
+                  <Image
+                    src={selectedResult.provider.images[0]}
                     alt={selectedResult.provider.businessName}
                     fill
                     className="object-cover"
@@ -494,17 +450,17 @@ export const MapboxMap = ({
                     </span>
                   </div>
                 )}
-                
-                
+
+
                 {/* Close Button */}
-                <button 
+                <button
                   onClick={handleClosePopup}
                   className="absolute top-1 right-1 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
                 >
                   <X className="w-3 h-3 text-gray-700" />
                 </button>
               </div>
-              
+
               {/* Content Section */}
               <div className="flex-1 p-3 min-w-0">
                 <div className="flex items-start justify-between mb-1">
@@ -515,9 +471,9 @@ export const MapboxMap = ({
                     <Heart className="w-3 h-3 text-gray-400" />
                   </button>
                 </div>
-                
+
                 {/* Services - Moved to overlay */}
-                
+
                 {/* Location and Experience */}
                 <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
                   <div className="flex items-center">
@@ -529,13 +485,13 @@ export const MapboxMap = ({
                     {selectedResult.provider.experience} {t('search.yearsExperience')}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-gray-900">
                     {formatPrice(selectedResult.provider.priceRange)}
                     <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Star className="w-3 h-3 text-yellow-400 fill-current" />
                     <span className="text-xs font-medium text-gray-900 ml-1">
@@ -551,7 +507,7 @@ export const MapboxMap = ({
           </div>
         </div>
       )}
-      
+
       {/* Map attribution - Desktop only */}
       {isDesktop && (
         <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">

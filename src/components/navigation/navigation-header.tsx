@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Menu, X, Heart } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { UserMenu } from './user-menu'
 import { useAuth } from '@/contexts/auth-context'
@@ -19,86 +19,71 @@ interface NavigationHeaderProps {
   onSignOut: () => void
 }
 
-export function NavigationHeader({ 
-  isMobile, 
-  mobileMenuOpen, 
-  onMobileMenuToggle, 
+export function NavigationHeader({
+  isMobile,
+  mobileMenuOpen,
+  onMobileMenuToggle,
   showSearchBar = false,
   isProviderRoute,
   provider,
   onSignOut
 }: NavigationHeaderProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user } = useAuth()
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="w-full flex h-16 items-center justify-between px-4">
+    <header className="fixed top-0 z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-xl shadow-sm">
+      <div className="w-full flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center group">
           <Image
             src="/PetiFy.svg"
             alt="Petify"
-            width={24}
-            height={24}
-            className="h-6 w-auto"
+            width={32}
+            height={32}
+            className="h-8 w-auto transition-transform group-hover:scale-105"
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        {!isMobile && (
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link 
-              href="/search" 
+        {/* Navigation - Desktop only */}
+        <nav className="hidden md:flex items-center gap-2">
+          {[
+            { id: 'simple_bath', label: 'Paprastas maudymas' },
+            { id: 'full_grooming', label: 'Pilnas kirpimas ir priežiūra' },
+            { id: 'nail_trimming', label: 'Nagų kirpimas' },
+            { id: 'ear_cleaning', label: 'Ausų valymas' },
+            { id: 'teeth_cleaning', label: 'Dantų valymas' },
+          ].map((service) => (
+            <Link
+              key={service.id}
+              href={`/search?category=grooming&serviceType=${service.id}`}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === '/search' ? "text-primary" : "text-muted-foreground"
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
+                pathname.includes(`serviceType=${service.id}`)
+                  ? "bg-red-50 text-red-600"
+                  : "text-gray-700 hover:bg-gray-100"
               )}
             >
-              Paieška
+              {service.label}
             </Link>
-            
-            <Link 
-              href="/search?category=grooming" 
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname.startsWith('/search?category=grooming') ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              Kirpyklos
-            </Link>
+          ))}
 
-            <Link 
-              href="/providers" 
+          {!isProviderRoute && (
+            <Link
+              href="/favorites"
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname.startsWith('/providers') ? "text-primary" : "text-muted-foreground"
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                pathname === '/favorites'
+                  ? "bg-red-50 text-red-600"
+                  : "text-gray-700 hover:bg-gray-100"
               )}
             >
-              Tiekėjai
+              <Heart className="h-4 w-4" />
+              Mėgstami
             </Link>
-            <Link 
-              href="/how-it-works" 
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === '/how-it-works' ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              Kaip tai veikia
-            </Link>
-            {user && !isProviderRoute && (
-              <Link 
-                href="/favorites" 
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === '/favorites' ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                Mėgstami
-              </Link>
-            )}
-          </nav>
-        )}
+          )}
+        </nav>
 
         {/* Search Bar - Desktop */}
         {!isMobile && showSearchBar && (
@@ -107,52 +92,14 @@ export function NavigationHeader({
           </div>
         )}
 
-        {/* Desktop Actions */}
-        {!isMobile && (
-          <div className="flex items-center space-x-4">
-            <UserMenu 
-              isProviderRoute={isProviderRoute}
-              provider={provider}
-              onSignOut={onSignOut}
-            />
-          </div>
-        )}
-
-        {/* Mobile Actions */}
-        {isMobile && (
-          <div className="flex items-center gap-2">
-            {/* Favorites Heart Icon */}
-            {user && (
-              <Link href="/favorites">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  aria-label="Favorites"
-                >
-                  <Heart className={cn(
-                    "h-5 w-5",
-                    pathname === '/favorites' ? "fill-current text-red-500" : ""
-                  )} />
-                </Button>
-              </Link>
-            )}
-            
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onMobileMenuToggle}
-              className="md:hidden"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
-        )}
+        {/* User Actions */}
+        <div className="flex items-center space-x-4">
+          <UserMenu
+            isProviderRoute={isProviderRoute}
+            provider={provider}
+            onSignOut={onSignOut}
+          />
+        </div>
       </div>
     </header>
   )

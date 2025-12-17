@@ -18,12 +18,12 @@ function BookingSuccessContent() {
 
   useEffect(() => {
     const sessionId = searchParams?.get('session_id')
-    
+
     // Prevent multiple verifications
     if (hasVerified || loading === false) {
       return
     }
-    
+
     if (!sessionId) {
       toast.error('Netinkama sesija')
       router.push('/')
@@ -33,10 +33,10 @@ function BookingSuccessContent() {
     const verifySession = async () => {
       try {
         setHasVerified(true)
-        
+
         // Get the session from Supabase auth
         const { data: { session } } = await supabase.auth.getSession()
-        
+
         if (!session) {
           toast.error('Prašome prisijungti')
           router.push('/auth/signin')
@@ -87,7 +87,10 @@ function BookingSuccessContent() {
           <Card className="border-green-200 shadow-lg">
             <CardHeader className="text-center pb-6">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="h-10 w-10 text-green-600" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-check-big h-10 w-10 text-green-600" aria-hidden="true">
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                  <path d="m9 11 3 3L22 4"></path>
+                </svg>
               </div>
               <CardTitle className="text-3xl font-bold text-gray-900">
                 Rezervacija patvirtinta!
@@ -101,7 +104,7 @@ function BookingSuccessContent() {
               {bookingDetails && (
                 <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                   <h3 className="font-semibold text-lg text-gray-900">Rezervacijos detalės</h3>
-                  
+
                   <div className="space-y-3">
                     <div className="flex items-center text-sm">
                       <Calendar className="h-4 w-4 text-gray-400 mr-3" />
@@ -110,7 +113,7 @@ function BookingSuccessContent() {
                         {bookingDetails.booking_date}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <Clock className="h-4 w-4 text-gray-400 mr-3" />
                       <span className="text-gray-600">Laikas:</span>
@@ -118,14 +121,14 @@ function BookingSuccessContent() {
                         {bookingDetails.start_time} - {bookingDetails.end_time}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <span className="text-gray-600">Būsena:</span>
                       <span className="ml-auto font-medium text-green-600">
                         Patvirtinta
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <span className="text-gray-600">Mokėjimas:</span>
                       <span className="ml-auto font-medium text-green-600">
@@ -144,7 +147,7 @@ function BookingSuccessContent() {
                   Peržiūrėti mano rezervacijas
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                
+
                 <Button
                   onClick={() => router.push('/')}
                   variant="outline"
@@ -157,7 +160,7 @@ function BookingSuccessContent() {
               <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-900">
                 <p className="font-medium mb-1">Kas toliau?</p>
                 <p className="text-blue-700">
-                  Patvirtinimo el. laiškas išsiųstas į jūsų el. pašto adresą. 
+                  Patvirtinimo el. laiškas išsiųstas į jūsų el. pašto adresą.
                   Galite peržiūrėti ir valdyti savo rezervaciją skyriuje "Mano rezervacijos".
                 </p>
               </div>

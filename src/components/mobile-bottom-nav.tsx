@@ -11,7 +11,7 @@ export function MobileBottomNav() {
 
   // Hide on provider routes, booking routes and certain flows where bottom nav is undesirable
   const isProviderRoute = pathname?.startsWith('/provider/')
-  const isBookingRoute = pathname?.includes('/book')
+  const isBookingRoute = pathname?.includes('/book') && !pathname?.startsWith('/bookings')
   if (isProviderRoute || isBookingRoute) return null
 
   const items = [
@@ -30,7 +30,7 @@ export function MobileBottomNav() {
     >
       <ul className="grid grid-cols-5 items-stretch px-4 py-2">
         {items.map(item => {
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.id === 'search' && pathname?.startsWith('/search')) ||
             (item.id === 'home' && pathname === '/') ||
             (item.id === 'chat' && pathname?.startsWith('/chat'))

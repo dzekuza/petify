@@ -18,7 +18,7 @@ export default function FavoritesPage() {
 
   const handleRemove = async (providerId: string) => {
     if (!providerId || removingId) return
-    
+
     setRemovingId(providerId)
     try {
       await removeFromFavorites(providerId)
@@ -33,7 +33,7 @@ export default function FavoritesPage() {
     <Layout hideFooter={true}>
       <ProtectedRoute>
         <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900">My Favorites</h1>
@@ -57,10 +57,9 @@ export default function FavoritesPage() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {favorites.map((fav) => (
-                  <Card key={`favorite-${fav.id}-${fav.provider_id}`} className="overflow-hidden">
-                    {/* Provider Logo/Image Header */}
+                  <div key={`favorite-${fav.id}-${fav.provider_id}`} data-slot="card" className="bg-card text-card-foreground space-y-4 flex flex-col rounded-xl border shadow-sm transition-all duration-300 hover:shadow-lg overflow-hidden">
                     <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200">
                       {fav.provider?.avatar_url || (fav.provider?.images && fav.provider.images.length > 0) ? (
                         <Image
@@ -82,13 +81,10 @@ export default function FavoritesPage() {
                       </div>
                     </div>
 
-                    <CardContent className="p-6">
+                    <div data-slot="card-content" className="p-6">
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          {fav.provider?.business_name || 'Provider'}
-                        </h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{fav.provider?.business_name || 'Provider'}</h3>
                         <p className="text-gray-600 mb-2">{fav.provider?.services?.[0] || 'Service'}</p>
-                        
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -97,7 +93,7 @@ export default function FavoritesPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="mt-3 pt-3 border-t border-gray-100">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                           <div className="flex items-center space-x-2">
@@ -110,18 +106,16 @@ export default function FavoritesPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4 pt-3 border-t border-gray-100">
                         <div className="flex space-x-2">
                           <Link href={`/providers/${fav.provider?.id || ''}`}>
-                            <Button variant="outline" size="sm">
+                            <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-2 bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 hover:border-primary/20 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5">
                               View Profile
-                            </Button>
+                            </button>
                           </Link>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="text-red-600 hover:text-red-700" 
+                          <button
+                            className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-2 bg-background shadow-xs hover:bg-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50 hover:border-primary/20 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-red-600 hover:text-red-700"
                             onClick={() => handleRemove(fav.provider_id)}
                             disabled={removingId === fav.provider_id}
                           >
@@ -133,11 +127,11 @@ export default function FavoritesPage() {
                             ) : (
                               'Remove'
                             )}
-                          </Button>
+                          </button>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

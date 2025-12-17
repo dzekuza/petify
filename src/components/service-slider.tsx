@@ -172,7 +172,7 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="outline"
             size="icon"
@@ -201,7 +201,7 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
         {services.map(({ service, provider }) => {
           const isFavorite = isFavorited(provider.id)
           const isToggling = togglingFavorites.has(provider.id)
-          
+
           // Get cover image - prioritize service images
           const getCoverImage = () => {
             if (service.images && service.images.length > 0) {
@@ -209,18 +209,13 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
             }
             return provider.images && provider.images.length > 0 ? provider.images[0] : null
           }
-          
+
           const coverImage = getCoverImage()
-          
+
           return (
             <div
               key={service.id}
-              className="flex-shrink-0 group cursor-pointer"
-              style={{ 
-                width: isMobile 
-                  ? 'calc(80% - 0.5rem)' 
-                  : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
-              }}
+              className="flex-shrink-0 group cursor-pointer w-[85%] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)]"
             >
               <Link href={`/providers/${provider.id}?service=${service.id}`}>
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
@@ -241,7 +236,7 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Service Category Badge */}
                     <div className="absolute top-3 left-3">
                       <div className="bg-white/90 px-2 py-1 rounded-md text-xs font-medium text-gray-900">
@@ -260,12 +255,12 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
                       className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
                       aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
                     >
-                      <Heart 
+                      <Heart
                         className={cn(
                           "h-4 w-4",
                           isFavorite ? "text-red-500 fill-current" : "text-gray-400",
                           isToggling && "animate-pulse"
-                        )} 
+                        )}
                       />
                     </button>
                   </div>
@@ -277,12 +272,12 @@ export const ServiceSlider = forwardRef<HTMLDivElement, ServiceSliderProps>(({ s
                       <CardTitle className="font-semibold text-sm mb-1 line-clamp-1">
                         {service.name}
                       </CardTitle>
-                      
+
                       {/* Provider Name */}
                       <CardDescription className="text-muted-foreground text-sm mb-1 line-clamp-1">
                         {provider.businessName}
                       </CardDescription>
-                      
+
                       {/* Location */}
                       <div className="text-muted-foreground text-sm mb-1">
                         {provider.location.city}

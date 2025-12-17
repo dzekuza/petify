@@ -26,10 +26,17 @@ interface SearchFiltersProps {
   filters: SearchFiltersType
   onFiltersChange: (filters: SearchFiltersType) => void
   isMobile?: boolean
+  resultsCount?: number
+  mobileFiltersExpanded?: boolean
 }
 
-export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: SearchFiltersProps) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resultsCount, mobileFiltersExpanded }: SearchFiltersProps) => {
+  const [internalIsExpanded, setInternalIsExpanded] = useState(false)
+
+  // Use controlled state if provided, otherwise internal state
+  const isExpanded = mobileFiltersExpanded !== undefined ? mobileFiltersExpanded : internalIsExpanded
+  const setIsExpanded = (value: boolean) => setInternalIsExpanded(value)
+
   const [userPets, setUserPets] = useState<Pet[]>([])
   const [loadingPets, setLoadingPets] = useState(false)
   // Memoize empty suggestions array to prevent re-renders
@@ -40,7 +47,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
   useEffect(() => {
     const fetchUserPets = async () => {
       if (!user) return
-      
+
       try {
         setLoadingPets(true)
         const pets = await petsApi.getUserPets(user.id)
@@ -78,7 +85,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
   }
 
   const hasActiveFilters = filters.category || filters.location || (filters.rating && filters.rating > 0) || filters.petId
-  
+
   const getActiveFiltersCount = () => {
     let count = 0
     if (filters.category) count++
@@ -92,329 +99,384 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false }: Se
     <div className="space-y-4">
       {/* Main Search Row */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {/* Desktop: Show all filters */}
-            {!isMobile && (
-              <>
-                {/* Service Category */}
-                <div className="space-y-2">
-                  <Label htmlFor="category">Paslaugos tipas</Label>
-                  <Select 
-                    value={filters.category || 'all'} 
-                    onValueChange={(value) => handleFilterChange('category', value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Visos paslaugos" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="all">Visos paslaugos</SelectItem>
-                      {groomingServiceTypes.map((serviceType) => (
-                        <SelectItem key={serviceType.value} value={serviceType.value}>
-                          {serviceType.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+        {/* Desktop: Show all filters */}
+        {!isMobile && (
+          <>
+            {/* Service Category */}
+            <div className="space-y-2">
+              <Label htmlFor="category">Paslaugos tipas</Label>
+              <Select
+                value={filters.category || 'all'}
+                onValueChange={(value) => handleFilterChange('category', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Visos paslaugos" />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="all">Visos paslaugos</SelectItem>
+                  {groomingServiceTypes.map((serviceType) => (
+                    <SelectItem key={serviceType.value} value={serviceType.value}>
+                      {serviceType.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                {/* Location */}
-                <div className="space-y-2">
-                  <Label htmlFor="location">Vieta</Label>
-                  <Select 
-                    value={filters.location || 'all'} 
-                    onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Visos vietovės" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="all">Visos vietovės</SelectItem>
-                      <SelectItem value="Vilnius">Vilnius</SelectItem>
-                      <SelectItem value="Kaunas">Kaunas</SelectItem>
-                      <SelectItem value="Klaipėda">Klaipėda</SelectItem>
-                      <SelectItem value="Šiauliai">Šiauliai</SelectItem>
-                      <SelectItem value="Panevėžys">Panevėžys</SelectItem>
-                      <SelectItem value="Alytus">Alytus</SelectItem>
-                      <SelectItem value="Marijampolė">Marijampolė</SelectItem>
-                      <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
-                      <SelectItem value="Jonava">Jonava</SelectItem>
-                      <SelectItem value="Utena">Utena</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* Location */}
+            <div className="space-y-2">
+              <Label htmlFor="location">Vieta</Label>
+              <Select
+                value={filters.location || 'all'}
+                onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Visos vietovės" />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="all">Visos vietovės</SelectItem>
+                  <SelectItem value="Vilnius">Vilnius</SelectItem>
+                  <SelectItem value="Kaunas">Kaunas</SelectItem>
+                  <SelectItem value="Klaipėda">Klaipėda</SelectItem>
+                  <SelectItem value="Šiauliai">Šiauliai</SelectItem>
+                  <SelectItem value="Panevėžys">Panevėžys</SelectItem>
+                  <SelectItem value="Alytus">Alytus</SelectItem>
+                  <SelectItem value="Marijampolė">Marijampolė</SelectItem>
+                  <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
+                  <SelectItem value="Jonava">Jonava</SelectItem>
+                  <SelectItem value="Utena">Utena</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                {/* Distance */}
-                <div className="space-y-2">
-                  <Label htmlFor="distance">Atstumas</Label>
-                  <Select 
-                    value={filters.distance?.toString() || '25'} 
-                    onValueChange={(value) => handleFilterChange('distance', parseInt(value))}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="5">Per 5 km</SelectItem>
-                      <SelectItem value="10">Per 10 km</SelectItem>
-                      <SelectItem value="25">Per 25 km</SelectItem>
-                      <SelectItem value="50">Per 50 km</SelectItem>
-                      <SelectItem value="100">Per 100 km</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* Distance */}
+            <div className="space-y-2">
+              <Label htmlFor="distance">Atstumas</Label>
+              <Select
+                value={filters.distance?.toString() || '25'}
+                onValueChange={(value) => handleFilterChange('distance', parseInt(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="5">Per 5 km</SelectItem>
+                  <SelectItem value="10">Per 10 km</SelectItem>
+                  <SelectItem value="25">Per 25 km</SelectItem>
+                  <SelectItem value="50">Per 50 km</SelectItem>
+                  <SelectItem value="100">Per 100 km</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                {/* Pet Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="pet">Gyvūnas</Label>
-                  <Select 
-                    value={filters.petId || 'all'} 
-                    onValueChange={(value) => handleFilterChange('petId', value === 'all' ? undefined : value)}
-                    disabled={loadingPets || !user}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="all">Visi gyvūnai</SelectItem>
-                      {userPets.map((pet) => (
-                        <SelectItem key={pet.id} value={pet.id}>
-                          <div className="flex items-center space-x-2">
-                            <User className="h-4 w-4" />
-                            <span>{pet.name}</span>
-                            <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                      {user && userPets.length === 0 && !loadingPets && (
-                        <SelectItem value="no-pets" disabled>
-                          Nėra pridėtų gyvūnų
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
-            )}
-
-            {/* Filter Toggle - Full width on mobile, normal on desktop */}
-            <div className={`flex items-end space-x-2 ${isMobile ? 'col-span-1' : ''}`}>
-              {isMobile ? (
-                <div className="w-full">
-                  {/* Mobile: Horizontal scrollable filters - no labels */}
-                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                    {/* Service Category - No label */}
-                    <div className="flex-shrink-0 w-48">
-                      <Select 
-                        value={filters.category || 'all'} 
-                        onValueChange={(value) => handleFilterChange('category', value)}
-                      >
-                        <SelectTrigger className="w-full h-8" hideIcon>
-                          <SelectValue placeholder="Visos paslaugos" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[200]">
-                          <SelectItem value="all">Visos paslaugos</SelectItem>
-                          {groomingServiceTypes.map((serviceType) => (
-                            <SelectItem key={serviceType.value} value={serviceType.value}>
-                              {serviceType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Location - No label */}
-                    <div className="flex-shrink-0 w-48">
-                      <Select 
-                        value={filters.location || 'all'} 
-                        onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
-                      >
-                        <SelectTrigger className="w-full h-8" hideIcon>
-                          <SelectValue placeholder="Vieta" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[200]">
-                          <SelectItem value="all">Visos vietovės</SelectItem>
-                          <SelectItem value="Vilnius">Vilnius</SelectItem>
-                          <SelectItem value="Kaunas">Kaunas</SelectItem>
-                          <SelectItem value="Klaipėda">Klaipėda</SelectItem>
-                          <SelectItem value="Šiauliai">Šiauliai</SelectItem>
-                          <SelectItem value="Panevėžys">Panevėžys</SelectItem>
-                          <SelectItem value="Alytus">Alytus</SelectItem>
-                          <SelectItem value="Marijampolė">Marijampolė</SelectItem>
-                          <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
-                          <SelectItem value="Jonava">Jonava</SelectItem>
-                          <SelectItem value="Utena">Utena</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Pet Selection - No label */}
-                    {userPets.length > 0 && (
-                      <div className="flex-shrink-0 w-48">
-                        <Select 
-                          value={filters.petId || 'all'} 
-                          onValueChange={(value) => handleFilterChange('petId', value)}
-                        >
-                          <SelectTrigger className="w-full h-8" hideIcon>
-                            <SelectValue placeholder="Visi gyvūnai" />
-                          </SelectTrigger>
-                          <SelectContent className="z-[200]">
-                            <SelectItem value="all">Visi gyvūnai</SelectItem>
-                            {userPets.map((pet) => (
-                              <SelectItem key={pet.id} value={pet.id}>
-                                {pet.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+            {/* Pet Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="pet">Gyvūnas</Label>
+              <Select
+                value={filters.petId || 'all'}
+                onValueChange={(value) => handleFilterChange('petId', value === 'all' ? undefined : value)}
+                disabled={loadingPets || !user}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="all">Visi gyvūnai</SelectItem>
+                  {userPets.map((pet) => (
+                    <SelectItem key={pet.id} value={pet.id}>
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span>{pet.name}</span>
+                        <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
                       </div>
-                    )}
+                    </SelectItem>
+                  ))}
+                  {user && userPets.length === 0 && !loadingPets && (
+                    <SelectItem value="no-pets" disabled>
+                      Nėra pridėtų gyvūnų
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
 
-                    {/* Clear Filters - No label */}
-                    <div className="flex-shrink-0">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={clearFilters}
-                        className="h-8"
-                        disabled={!hasActiveFilters}
+        {/* Filter Toggle - Full width on mobile, normal on desktop */}
+        <div className={`flex items-end space-x-2 ${isMobile ? 'col-span-1' : ''}`}>
+          {isMobile ? (
+            <div className="w-full space-y-4">
+              {/* Show local toggle only if not controlled from parent */}
+              {mobileFiltersExpanded === undefined && (
+                <div className="flex items-center justify-end">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className={isExpanded ? "bg-accent" : ""}
+                  >
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Expanded Filters for Mobile */}
+              {isExpanded && (
+                <div className="space-y-4 animate-in slide-in-from-top-2 duration-200 max-h-[60vh] overflow-y-auto pr-2">
+                  {/* Service Category */}
+                  <div className="space-y-2">
+                    <Label>Paslaugos tipas</Label>
+                    <Select
+                      value={filters.category || 'all'}
+                      onValueChange={(value) => handleFilterChange('category', value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Visos paslaugos" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[200]">
+                        <SelectItem value="all">Visos paslaugos</SelectItem>
+                        {groomingServiceTypes.map((serviceType) => (
+                          <SelectItem key={serviceType.value} value={serviceType.value}>
+                            {serviceType.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Location */}
+                  <div className="space-y-2">
+                    <Label>Vieta</Label>
+                    <Select
+                      value={filters.location || 'all'}
+                      onValueChange={(value) => handleFilterChange('location', value === 'all' ? '' : value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Visos vietovės" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[200]">
+                        <SelectItem value="all">Visos vietovės</SelectItem>
+                        <SelectItem value="Vilnius">Vilnius</SelectItem>
+                        <SelectItem value="Kaunas">Kaunas</SelectItem>
+                        <SelectItem value="Klaipėda">Klaipėda</SelectItem>
+                        <SelectItem value="Šiauliai">Šiauliai</SelectItem>
+                        <SelectItem value="Panevėžys">Panevėžys</SelectItem>
+                        <SelectItem value="Alytus">Alytus</SelectItem>
+                        <SelectItem value="Marijampolė">Marijampolė</SelectItem>
+                        <SelectItem value="Mažeikiai">Mažeikiai</SelectItem>
+                        <SelectItem value="Jonava">Jonava</SelectItem>
+                        <SelectItem value="Utena">Utena</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pet Selection */}
+                  <div className="space-y-2">
+                    <Label>Gyvūnas</Label>
+                    <Select
+                      value={filters.petId || 'all'}
+                      onValueChange={(value) => handleFilterChange('petId', value === 'all' ? undefined : value)}
+                      disabled={loadingPets || !user}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={loadingPets ? "Kraunama..." : user ? "Pasirinkite gyvūną" : "Prisijunkite"} />
+                      </SelectTrigger>
+                      <SelectContent className="z-[200]">
+                        <SelectItem value="all">Visi gyvūnai</SelectItem>
+                        {userPets.map((pet) => (
+                          <SelectItem key={pet.id} value={pet.id}>
+                            <div className="flex items-center space-x-2">
+                              <User className="h-4 w-4" />
+                              <span>{pet.name}</span>
+                              <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Include existing expanded filters (Price, Rating, Sort) */}
+                  <div className="border-t pt-4 space-y-4">
+                    {/* Price Range */}
+                    <div className="space-y-2">
+                      <Label>Kainų intervalas</Label>
+                      <div className="flex space-x-2">
+                        <Input
+                          type="number"
+                          placeholder="Min"
+                          value={filters.priceRange?.min || ''}
+                          onChange={(e) => handleFilterChange('priceRange', {
+                            ...filters.priceRange,
+                            min: parseInt(e.target.value) || 0
+                          })}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Maks"
+                          value={filters.priceRange?.max || ''}
+                          onChange={(e) => handleFilterChange('priceRange', {
+                            ...filters.priceRange,
+                            max: parseInt(e.target.value) || 5000
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="space-y-2">
+                      <Label>Minimalus įvertinimas</Label>
+                      <Select
+                        value={filters.rating?.toString() || '0'}
+                        onValueChange={(value) => handleFilterChange('rating', parseFloat(value))}
                       >
-                        <X className="h-3 w-3 mr-1" />
-                        Išvalyti
-                      </Button>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          <SelectItem value="0">Bet koks įvertinimas</SelectItem>
+                          <SelectItem value="3">3+ žvaigždutės</SelectItem>
+                          <SelectItem value="4">4+ žvaigždutės</SelectItem>
+                          <SelectItem value="4.5">4.5+ žvaigždutės</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="flex items-center space-x-2"
-                >
-                  <Filter className="h-4 w-4" />
-                  <span>Daugiau filtrų</span>
-                  {hasActiveFilters && getActiveFiltersCount() > 0 && (
-                    <Badge variant="secondary" className="ml-1">
-                      {getActiveFiltersCount()}
-                    </Badge>
-                  )}
-                </Button>
-              )}
-              {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  <X className="h-4 w-4" />
-                </Button>
               )}
             </div>
-          </div>
-
-          {/* Expanded Filters */}
-          {isExpanded && (
-            <div className="border-t pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Price Range */}
-                <div className="space-y-2">
-                  <Label>Kainų intervalas</Label>
-                  <div className="flex space-x-2">
-                    <Input
-                      type="number"
-                      placeholder="Min"
-                      value={filters.priceRange?.min || ''}
-                      onChange={(e) => handleFilterChange('priceRange', {
-                        ...filters.priceRange,
-                        min: parseInt(e.target.value) || 0
-                      })}
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Maks"
-                      value={filters.priceRange?.max || ''}
-                      onChange={(e) => handleFilterChange('priceRange', {
-                        ...filters.priceRange,
-                        max: parseInt(e.target.value) || 5000
-                      })}
-                    />
-                  </div>
-                </div>
-
-                {/* Rating */}
-                <div className="space-y-2">
-                  <Label>Minimalus įvertinimas</Label>
-                  <Select 
-                    value={filters.rating?.toString() || '0'} 
-                    onValueChange={(value) => handleFilterChange('rating', parseFloat(value))}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="0">Bet koks įvertinimas</SelectItem>
-                      <SelectItem value="3">3+ žvaigždutės</SelectItem>
-                      <SelectItem value="4">4+ žvaigždutės</SelectItem>
-                      <SelectItem value="4.5">4.5+ žvaigždutės</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Sort By */}
-                <div className="space-y-2">
-                  <Label>Rūšiuoti pagal</Label>
-                  <Select value="relevance" onValueChange={() => {}}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      <SelectItem value="relevance">Reikšmingumą</SelectItem>
-                      <SelectItem value="rating">Įvertinimą</SelectItem>
-                      <SelectItem value="price-low">Kainą: nuo žemiausios</SelectItem>
-                      <SelectItem value="price-high">Kainą: nuo aukščiausios</SelectItem>
-                      <SelectItem value="distance">Atstumą</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center space-x-2"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Daugiau filtrų</span>
+              {hasActiveFilters && getActiveFiltersCount() > 0 && (
+                <Badge variant="secondary" className="ml-1">
+                  {getActiveFiltersCount()}
+                </Badge>
+              )}
+            </Button>
           )}
-
-          {/* Active Filters */}
           {hasActiveFilters && (
-            <div className="flex flex-wrap gap-2">
-              {filters.category && (
-                <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
-                  <span>Paslauga: {groomingServiceTypes.find(c => c.value === filters.category)?.label}</span>
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('category', 'all')}
-                  />
-                </Badge>
-              )}
-              {filters.location && (
-                <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
-                  <span>Vieta: {filters.location}</span>
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('location', '')}
-                  />
-                </Badge>
-              )}
-              {filters.rating && filters.rating > 0 && (
-                <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
-                  <span>Įvertinimas: {filters.rating}+ žvaigždutės</span>
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('rating', 0)}
-                  />
-                </Badge>
-              )}
-              {filters.petId && (
-                <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
-                  <span>Gyvūnas: {userPets.find(pet => pet.id === filters.petId)?.name || 'Pasirinktas'}</span>
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('petId', undefined)}
-                  />
-                </Badge>
-              )}
-            </div>
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="h-4 w-4" />
+            </Button>
           )}
         </div>
+      </div>
+
+      {/* Expanded Filters */}
+      {isExpanded && (
+        <div className="border-t pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Price Range */}
+            <div className="space-y-2">
+              <Label>Kainų intervalas</Label>
+              <div className="flex space-x-2">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.priceRange?.min || ''}
+                  onChange={(e) => handleFilterChange('priceRange', {
+                    ...filters.priceRange,
+                    min: parseInt(e.target.value) || 0
+                  })}
+                />
+                <Input
+                  type="number"
+                  placeholder="Maks"
+                  value={filters.priceRange?.max || ''}
+                  onChange={(e) => handleFilterChange('priceRange', {
+                    ...filters.priceRange,
+                    max: parseInt(e.target.value) || 5000
+                  })}
+                />
+              </div>
+            </div>
+
+            {/* Rating */}
+            <div className="space-y-2">
+              <Label>Minimalus įvertinimas</Label>
+              <Select
+                value={filters.rating?.toString() || '0'}
+                onValueChange={(value) => handleFilterChange('rating', parseFloat(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="0">Bet koks įvertinimas</SelectItem>
+                  <SelectItem value="3">3+ žvaigždutės</SelectItem>
+                  <SelectItem value="4">4+ žvaigždutės</SelectItem>
+                  <SelectItem value="4.5">4.5+ žvaigždutės</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort By */}
+            <div className="space-y-2">
+              <Label>Rūšiuoti pagal</Label>
+              <Select value="relevance" onValueChange={() => { }}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[200]">
+                  <SelectItem value="relevance">Reikšmingumą</SelectItem>
+                  <SelectItem value="rating">Įvertinimą</SelectItem>
+                  <SelectItem value="price-low">Kainą: nuo žemiausios</SelectItem>
+                  <SelectItem value="price-high">Kainą: nuo aukščiausios</SelectItem>
+                  <SelectItem value="distance">Atstumą</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Active Filters */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap gap-2">
+          {filters.category && (
+            <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
+              <span>Paslauga: {groomingServiceTypes.find(c => c.value === filters.category)?.label}</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => handleFilterChange('category', 'all')}
+              />
+            </Badge>
+          )}
+          {filters.location && (
+            <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
+              <span>Vieta: {filters.location}</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => handleFilterChange('location', '')}
+              />
+            </Badge>
+          )}
+          {filters.rating && filters.rating > 0 && (
+            <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
+              <span>Įvertinimas: {filters.rating}+ žvaigždutės</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => handleFilterChange('rating', 0)}
+              />
+            </Badge>
+          )}
+          {filters.petId && (
+            <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
+              <span>Gyvūnas: {userPets.find(pet => pet.id === filters.petId)?.name || 'Pasirinktas'}</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => handleFilterChange('petId', undefined)}
+              />
+            </Badge>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

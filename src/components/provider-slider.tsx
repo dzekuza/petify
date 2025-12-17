@@ -166,7 +166,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="outline"
             size="icon"
@@ -195,7 +195,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
         {providers.map((provider) => {
           const isFavorite = isFavorited(provider.id)
           const isToggling = togglingFavorites.has(provider.id)
-          
+
           // Get cover image - prioritize first service's first image
           const getCoverImage = () => {
             const services = providerServices?.get(provider.id)
@@ -204,18 +204,13 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
             }
             return provider.images && provider.images.length > 0 ? provider.images[0] : null
           }
-          
+
           const coverImage = getCoverImage()
-          
+
           return (
             <div
               key={provider.id}
-              className="flex-shrink-0 group cursor-pointer"
-              style={{ 
-                width: isMobile 
-                  ? 'calc(80% - 0.5rem)' 
-                  : `calc((100% - ${(itemsPerView - 1) * 1}rem) / ${itemsPerView})` 
-              }}
+              className="flex-shrink-0 group cursor-pointer w-[85%] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)]"
             >
               <Link href={`/providers/${provider.id}`}>
                 <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
@@ -236,7 +231,7 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Guest Favorite Badge */}
                     <div className="absolute top-3 left-3">
                       <div className="bg-white/90 px-2 py-1 rounded-md text-xs font-medium text-gray-900">
@@ -255,12 +250,12 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                       className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
                       aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
                     >
-                      <Heart 
+                      <Heart
                         className={cn(
                           "h-4 w-4",
                           isFavorite ? "text-red-500 fill-current" : "text-gray-400",
                           isToggling && "animate-pulse"
-                        )} 
+                        )}
                       />
                     </button>
                   </div>
@@ -275,12 +270,12 @@ export const ProviderSlider = forwardRef<HTMLDivElement, ProviderSliderProps>(({
                     {/* Service Type and Location */}
                     <CardDescription className="text-sm mb-1">
                       {(provider.businessType || provider.services?.[0]) === 'grooming' ? 'Kirpykla' :
-                       (provider.businessType || provider.services?.[0]) === 'veterinary' ? 'Veterinarija' :
-                       (provider.businessType || provider.services?.[0]) === 'boarding' ? 'Prieglauda' :
-                       (provider.businessType || provider.services?.[0]) === 'training' ? 'Dresūra' :
-                       (provider.businessType || provider.services?.[0]) === 'adoption' ? 'Veislynai' :
-                       (provider.businessType || provider.services?.[0]) === 'sitting' ? 'Prižiūrėjimas' :
-                       'Paslaugos'} • {provider.location.city}
+                        (provider.businessType || provider.services?.[0]) === 'veterinary' ? 'Veterinarija' :
+                          (provider.businessType || provider.services?.[0]) === 'boarding' ? 'Prieglauda' :
+                            (provider.businessType || provider.services?.[0]) === 'training' ? 'Dresūra' :
+                              (provider.businessType || provider.services?.[0]) === 'adoption' ? 'Veislynai' :
+                                (provider.businessType || provider.services?.[0]) === 'sitting' ? 'Prižiūrėjimas' :
+                                  'Paslaugos'} • {provider.location.city}
                     </CardDescription>
 
                     {/* Price and Rating */}

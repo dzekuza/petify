@@ -3,6 +3,8 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Analytics } from "@vercel/analytics/next";
 
+import { DefenceOverlay } from "@/components/defence-overlay";
+
 export const metadata: Metadata = {
   title: "Petify - Pet Care Marketplace",
   description: "Find trusted pet service providers in your area - grooming, veterinary, boarding, training, and more.",
@@ -16,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        <DefenceOverlay />
         <Providers>
           {children}
         </Providers>
