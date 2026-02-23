@@ -277,7 +277,7 @@ export const MapboxMap = ({
 
   if (!MAPBOX_CONFIG.accessToken) {
     return (
-      <div className={`h-96 bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`h-96 bg-muted rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center">
           <h3 className="text-lg font-semibold text-foreground mb-2">Map Unavailable</h3>
           <p className="text-muted-foreground">
@@ -432,7 +432,7 @@ export const MapboxMap = ({
       {/* Mobile Listing Card - Shows when marker is selected */}
       {selectedResult && (
         <div className="lg:hidden absolute bottom-16 left-4 right-4 z-20">
-          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-lg border border-border overflow-hidden">
             <div className="flex">
               {/* Image Section */}
               <div className="relative w-20 h-20 flex-shrink-0">

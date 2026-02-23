@@ -80,11 +80,11 @@ export default function ProviderAvailabilityPage() {
     return (
       <Layout hideServiceCategories={true}>
         <ProtectedRoute>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-                <div className="h-64 bg-gray-200 rounded"></div>
+                <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+                <div className="h-64 bg-muted rounded"></div>
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ export default function ProviderAvailabilityPage() {
     return (
       <Layout hideServiceCategories={true}>
         <ProtectedRoute>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-foreground mb-4">Provider Not Found</h1>
@@ -116,7 +116,7 @@ export default function ProviderAvailabilityPage() {
   return (
     <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-muted py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">

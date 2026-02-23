@@ -268,7 +268,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                 h-16 border rounded-lg cursor-pointer transition-all duration-200
                 ${isPast ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}
                 ${isToday ? 'ring-2 ring-blue-500' : ''}
-                ${dayAvailability.available ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}
+                ${dayAvailability.available ? 'bg-green-50 border-green-200' : 'bg-muted border-border'}
               `}
               whileHover={!isPast ? { scale: 1.02 } : {}}
               whileTap={!isPast ? { scale: 0.98 } : {}}
@@ -328,7 +328,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                       p-3 border rounded-lg text-sm font-medium transition-all duration-200
                       ${slot.available 
                         ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200' 
-                        : 'bg-gray-100 border-gray-300 text-muted-foreground hover:bg-gray-200'
+                        : 'bg-muted border-border text-muted-foreground hover:bg-muted'
                       }
                     `}
                     whileHover={{ scale: 1.02 }}

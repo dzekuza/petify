@@ -152,7 +152,7 @@ export const CategorySection = ({
         <div className="flex gap-6">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="flex-shrink-0 w-64">
-              <div className="bg-gray-200 animate-pulse rounded-xl h-48"></div>
+              <div className="bg-muted animate-pulse rounded-xl h-48"></div>
             </div>
           ))}
         </div>

@@ -158,7 +158,7 @@ function SearchPageContent() {
             variant="ghost"
             size="sm"
             onClick={() => router.push('/')}
-            className="lg:hidden absolute top-4 left-4 z-[100] h-12 w-12 p-0 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50"
+            className="lg:hidden absolute top-4 left-4 z-[100] h-12 w-12 p-0 bg-white/90 backdrop-blur-sm shadow-lg border border-border/50"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -196,7 +196,7 @@ function SearchPageContent() {
                       <div className="text-center">
                         <DrawerTitle className="text-lg font-semibold text-foreground">
                           {loading ? (
-                            <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
+                            <div className="animate-pulse bg-muted h-6 w-32 rounded mx-auto"></div>
                           ) : filters.category === 'pets' ? (
                             `${individualPets.length} Gyvūnai pardavimui`
                           ) : filters.category === 'adoption' ? (
@@ -217,7 +217,7 @@ function SearchPageContent() {
                 <div className="flex flex-col gap-0.5 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left">
                   <DrawerTitle className="text-foreground font-semibold">
                     {loading ? (
-                      <div className="animate-pulse bg-gray-200 h-6 w-32 rounded"></div>
+                      <div className="animate-pulse bg-muted h-6 w-32 rounded"></div>
                     ) : filters.category === 'pets' ? (
                       `${individualPets.length} Gyvūnai pardavimui`
                     ) : filters.category === 'adoption' ? (
@@ -266,7 +266,7 @@ function SearchPageContent() {
                   <div className="space-y-4">
                     {[...Array(6)].map((_, i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
+                        <div className="bg-muted rounded-lg h-64 w-full"></div>
                       </div>
                     ))}
                   </div>
@@ -274,10 +274,10 @@ function SearchPageContent() {
                   individualPets.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
                       {individualPets.map((pet) => (
-                        <div key={pet.id} className="bg-white rounded-lg border border-gray-200 p-4">
+                        <div key={pet.id} className="bg-white rounded-lg border border-border p-4">
                           <div className="flex gap-4">
                             {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
-                              <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                                 <img
                                   src={pet.gallery[0]}
                                   alt={pet.title}

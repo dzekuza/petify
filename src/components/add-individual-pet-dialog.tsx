@@ -319,7 +319,7 @@ export function AddIndividualPetDialog({
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {uploadedUrls.map((image, imageIndex) => (
                     <div key={imageIndex} className="relative group">
-                      <div className="w-full h-20 bg-gray-200 rounded-lg overflow-hidden">
+                      <div className="w-full h-20 bg-muted rounded-lg overflow-hidden">
                         <Image
                           src={image}
                           alt={`Gallery ${imageIndex + 1}`}

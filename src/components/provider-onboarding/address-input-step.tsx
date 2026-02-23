@@ -179,7 +179,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                     {/* Show summary for completed addresses, full form for current */}
                     {address.address && address.city && address.zipCode && index !== currentAddressIndex ? (
                       <div
-                        className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:border-gray-300 transition-colors"
+                        className="bg-white rounded-xl border border-border p-4 cursor-pointer hover:border-border transition-colors"
                         onClick={() => selectAddressForEditing(index)}
                       >
                         <div className="flex justify-between items-start">
@@ -238,7 +238,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                 <Button
                   variant="default"
                   onClick={addAnotherAddress}
-                  className="bg-black hover:bg-gray-800 w-fit"
+                  className="bg-black hover:bg-foreground w-fit"
                 >
                   Pridėti dar vieną adresą
                 </Button>
@@ -248,7 +248,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
 
           {/* Right Side - Map */}
           <div className="w-full lg:flex-1 lg:max-w-[500px]">
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ height: '400px' }}>
+            <div className="bg-white rounded-xl border border-border overflow-hidden" style={{ height: '400px' }}>
               {mapCenter ? (
                 <Map
                   mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}

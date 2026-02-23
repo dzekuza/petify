@@ -574,7 +574,7 @@ export default function ProviderServicesPage() {
                 {includesList.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {includesList.map((inc, i) => (
-                      <span key={`${inc}-${i}`} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs">
+                      <span key={`${inc}-${i}`} className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
                         {inc}
                         <button
                           type="button"
@@ -670,7 +670,7 @@ export default function ProviderServicesPage() {
                 <div key={svc.id} className="p-4 border rounded-lg bg-white">
                   {/* Cover/Gallery */}
                   {images.length > 0 && (
-                    <div className="relative w-full overflow-hidden rounded-md aspect-video bg-gray-100">
+                    <div className="relative w-full overflow-hidden rounded-md aspect-video bg-muted">
                       {currentImage && (
                         <Image src={currentImage} alt={svc.name} fill className="object-cover" />
                       )}

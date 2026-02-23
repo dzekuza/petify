@@ -179,7 +179,7 @@ export const MapView = ({ filters }: MapViewProps) => {
 
   if (loading) {
     return (
-      <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="h-96 bg-muted rounded-lg flex items-center justify-center">
         <div className="text-muted-foreground">Loading map...</div>
       </div>
     )

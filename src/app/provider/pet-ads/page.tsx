@@ -267,7 +267,7 @@ export default function ProviderPetAdsPage() {
   return (
     <Layout>
       <ProtectedRoute requiredRole="provider">
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
@@ -290,7 +290,7 @@ export default function ProviderPetAdsPage() {
               {petAds.length > 0 ? (
                 petAds.map((petAd) => (
                   <Card key={petAd.id} className="overflow-hidden">
-                    <div className="aspect-square relative bg-gray-100">
+                    <div className="aspect-square relative bg-muted">
                       {petAd.images.length > 0 ? (
                         <Image
                           src={petAd.images[0]}

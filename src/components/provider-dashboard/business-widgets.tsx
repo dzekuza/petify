@@ -76,8 +76,8 @@ const getBusinessTypeInfo = (businessType: string) => {
         title: 'Service Dashboard',
         description: 'Manage your pet services',
         color: 'text-muted-foreground',
-        bgColor: 'bg-gray-50',
-        borderColor: 'border-gray-200'
+        bgColor: 'bg-muted',
+        borderColor: 'border-border'
       }
   }
 }

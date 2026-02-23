@@ -168,7 +168,7 @@ export default function ProviderSignupPage() {
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                       formData.services.includes(category.value)
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-border hover:border-border'
                     }`}
                     onClick={() => handleServiceToggle(category.value)}
                   >
@@ -344,7 +344,7 @@ export default function ProviderSignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -378,7 +378,7 @@ export default function ProviderSignupPage() {
                         <div
                           key={stepNumber}
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                            step >= stepNumber ? 'bg-blue-600 text-white' : 'bg-gray-200 text-muted-foreground'
+                            step >= stepNumber ? 'bg-blue-600 text-white' : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           {stepNumber}
@@ -390,7 +390,7 @@ export default function ProviderSignupPage() {
                 <CardContent>
                   {renderStepContent()}
 
-                  <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
+                  <div className="flex justify-between pt-6 border-t border-border mt-6">
                     <Button
                       variant="outline"
                       onClick={step === 1 ? () => router.back() : handleBack}

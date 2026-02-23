@@ -152,7 +152,7 @@ export default function ProviderBookings() {
       case 'cancelled':
         return 'bg-red-100 text-red-800'
       default:
-        return 'bg-gray-100 text-foreground'
+        return 'bg-muted text-foreground'
     }
   }
 
@@ -169,16 +169,16 @@ export default function ProviderBookings() {
     return (
       <Layout hideServiceCategories={true}>
         <ProtectedRoute requiredRole="provider">
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+                <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-24 bg-gray-200 rounded"></div>
+                    <div key={i} className="h-24 bg-muted rounded"></div>
                   ))}
                 </div>
-                <div className="h-96 bg-gray-200 rounded"></div>
+                <div className="h-96 bg-muted rounded"></div>
               </div>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function ProviderBookings() {
   return (
     <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute requiredRole="provider">
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-muted py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -221,7 +221,7 @@ export default function ProviderBookings() {
                         <select
                           value={filterStatus}
                           onChange={(e) => setFilterStatus(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus-visible:border-neutral-400"
+                          className="px-3 py-2 border border-border rounded-md focus-visible:border-neutral-400"
                         >
                           <option value="all">All Status</option>
                           <option value="pending">Pending</option>
@@ -386,7 +386,7 @@ export default function ProviderBookings() {
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
                   {selectedBooking.pet ? (
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-muted-foreground">Pet Name</p>
@@ -535,7 +535,7 @@ export default function ProviderBookings() {
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
                   {selectedBooking.pet ? (
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-muted p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-muted-foreground">Pet Name</p>

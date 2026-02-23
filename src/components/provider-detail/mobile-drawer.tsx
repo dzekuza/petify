@@ -44,7 +44,7 @@ export function MobileDrawer({
             isMobile={true} 
           />
           
-          <div className="border-t border-gray-200 pt-6 mb-6">
+          <div className="border-t border-border pt-6 mb-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">{t('common.bookThisService')}</h2>
             <BookingWidget
               provider={provider}
@@ -58,7 +58,7 @@ export function MobileDrawer({
         </div>
 
         {/* Fixed Bottom Bar */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
+        <div className="sticky bottom-0 bg-white border-t border-border p-4 mt-6">
           <div className="flex items-center justify-between mx-auto">
             <div>
               <div className="text-lg font-semibold text-foreground">

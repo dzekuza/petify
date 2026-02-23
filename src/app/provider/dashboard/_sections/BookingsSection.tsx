@@ -41,7 +41,7 @@ const getStatusColor = (status: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-800'
     default:
-      return 'bg-gray-100 text-foreground'
+      return 'bg-muted text-foreground'
   }
 }
 
@@ -59,7 +59,7 @@ export default function BookingsSection({ bookings, services, onView, onAccept, 
   return (
     <div className="space-y-4">
       {bookings.map((booking) => (
-        <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
+        <div key={booking.id} className="border border-border rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">

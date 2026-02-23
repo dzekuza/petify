@@ -46,7 +46,7 @@ export function OnboardingStepper({
         <Button 
           variant="ghost"
           onClick={onPrevious}
-          className="text-black hover:bg-gray-100"
+          className="text-black hover:bg-muted"
         >
           {previousText}
         </Button>
@@ -58,7 +58,7 @@ export function OnboardingStepper({
             variant="outline"
             onClick={onSave}
             disabled={isSaveDisabled}
-            className="border-gray-300 text-foreground hover:bg-gray-50"
+            className="border-border text-foreground hover:bg-muted"
           >
             Išsaugoti
           </Button>
@@ -67,7 +67,7 @@ export function OnboardingStepper({
           variant="default"
           onClick={onNext}
           disabled={isNextDisabled}
-          className="bg-black hover:bg-gray-800 text-white"
+          className="bg-black hover:bg-foreground text-white"
         >
           {nextText}
         </Button>

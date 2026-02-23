@@ -62,7 +62,7 @@ export function NavigationHeader({
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
                 pathname.includes(`serviceType=${service.id}`)
                   ? "bg-red-50 text-red-600"
-                  : "text-foreground hover:bg-gray-100"
+                  : "text-foreground hover:bg-muted"
               )}
             >
               {service.label}
@@ -76,7 +76,7 @@ export function NavigationHeader({
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
                 pathname === '/favorites'
                   ? "bg-red-50 text-red-600"
-                  : "text-foreground hover:bg-gray-100"
+                  : "text-foreground hover:bg-muted"
               )}
             >
               <Heart className="h-4 w-4" />

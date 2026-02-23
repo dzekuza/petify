@@ -203,7 +203,7 @@ export default function ProviderPetAdsPage() {
               <Plus className="h-4 w-4 mr-2" />
               Pridėti tipą
             </Button>
-            <Button onClick={handleAddIndividualPet} className="bg-black text-white hover:bg-gray-800">
+            <Button onClick={handleAddIndividualPet} className="bg-black text-white hover:bg-foreground">
               <Plus className="h-4 w-4 mr-2" />
               Pridėti gyvūną
             </Button>

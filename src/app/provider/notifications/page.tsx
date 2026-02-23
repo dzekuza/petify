@@ -60,7 +60,7 @@ const getNotificationColor = (type: Notification['type']) => {
     case 'review_received':
       return 'bg-yellow-50 border-yellow-200'
     default:
-      return 'bg-gray-50 border-gray-200'
+      return 'bg-muted border-border'
   }
 }
 
@@ -98,7 +98,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
   return (
     <div
       className={cn(
-        "p-4 border-l-4 cursor-pointer transition-colors hover:bg-gray-50 rounded-lg",
+        "p-4 border-l-4 cursor-pointer transition-colors hover:bg-muted rounded-lg",
         getNotificationColor(notification.type),
         !notification.read && "bg-blue-50/50"
       )}
@@ -200,7 +200,7 @@ export default function ProviderNotificationsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-screen bg-muted pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">

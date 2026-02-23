@@ -103,7 +103,7 @@ export function ImageUpload({
       <div
         className={`
           border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
-          ${isDragOver ? 'border-black bg-gray-50' : 'border-gray-300 hover:border-black'}
+          ${isDragOver ? 'border-black bg-muted' : 'border-border hover:border-black'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${error ? 'border-red-300 bg-red-50' : ''}
         `}

@@ -155,16 +155,16 @@ function CheckoutContent() {
     return (
       <ProtectedRoute requiredRole="customer">
         <Layout>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
+                <div className="h-8 bg-muted rounded w-1/3 mb-6"></div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="h-32 bg-gray-200 rounded"></div>
-                    <div className="h-24 bg-gray-200 rounded"></div>
+                    <div className="h-32 bg-muted rounded"></div>
+                    <div className="h-24 bg-muted rounded"></div>
                   </div>
-                  <div className="h-96 bg-gray-200 rounded"></div>
+                  <div className="h-96 bg-muted rounded"></div>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@ function CheckoutContent() {
     return (
       <ProtectedRoute requiredRole="customer">
         <Layout>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-foreground mb-4">Booking Not Found</h1>
@@ -199,7 +199,7 @@ function CheckoutContent() {
   return (
     <ProtectedRoute requiredRole="customer">
       <Layout>
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-muted py-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
@@ -289,7 +289,7 @@ function CheckoutContent() {
                   <CardContent>
                     <div className="space-y-3">
                       {pets.map((pet) => (
-                        <div key={pet.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={pet.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <div>
                             <h4 className="font-medium">{pet.name}</h4>
                             <p className="text-sm text-muted-foreground">
@@ -338,7 +338,7 @@ function CheckoutContent() {
                       <Button 
                         onClick={handleConfirmBooking}
                         disabled={processing}
-                        className="w-full bg-black hover:bg-gray-800 text-white"
+                        className="w-full bg-black hover:bg-foreground text-white"
                         size="lg"
                       >
                         {processing ? 'Processing...' : 'Confirm Booking'}

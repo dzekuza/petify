@@ -129,7 +129,7 @@ export const StripePaymentForm = ({
 
       {/* Booking Summary */}
       {bookingDetails && (
-        <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+        <div className="bg-muted p-4 rounded-lg space-y-2">
           <h4 className="font-medium text-sm">{t('payment.bookingSummary')}</h4>
           <div className="text-sm text-muted-foreground space-y-1">
             <div>{t('payment.service')}: {bookingDetails.serviceName}</div>
@@ -137,7 +137,7 @@ export const StripePaymentForm = ({
             <div>{t('payment.date')}: {bookingDetails.date}</div>
             <div>{t('payment.time')}: {bookingDetails.time}</div>
           </div>
-          <div className="pt-2 border-t border-gray-200">
+          <div className="pt-2 border-t border-border">
             <div className="flex justify-between items-center">
               <span className="font-medium">{t('payment.totalAmount')}:</span>
               <span className="font-bold text-lg">{formatAmount(amount, currency)}</span>

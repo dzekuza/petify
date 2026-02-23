@@ -119,7 +119,7 @@ const faqs = [
 export default function HowItWorksPage() {
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,7 +175,7 @@ export default function HowItWorksPage() {
                     
                     {/* Connector Line */}
                     {index < steps.length - 1 && (
-                      <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gray-300 transform -translate-y-1/2" />
+                      <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-secondary transform -translate-y-1/2" />
                     )}
                   </div>
                 )
@@ -185,7 +185,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-16 bg-gray-50">
+        <section className="py-16 bg-muted">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

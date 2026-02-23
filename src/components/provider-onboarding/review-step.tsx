@@ -126,13 +126,13 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         return (
                           <div key={index} className="flex gap-3 items-start border rounded-lg p-3">
                             {imgSrc ? (
-                              <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                              <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-md bg-muted">
                                 {/* Use next/image only when we have a string URL; Files need object URL */}
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={imgSrc} alt="service" className="w-16 h-16 object-cover" />
                               </div>
                             ) : (
-                              <div className="w-16 h-16 shrink-0 rounded-md bg-gray-100" />
+                              <div className="w-16 h-16 shrink-0 rounded-md bg-muted" />
                             )}
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   <h2 className="text-xl font-semibold mb-4">Gyvūnų tipų detalizacija</h2>
                   <div className="space-y-6">
                     {data.serviceDetails.map((service, index) => (
-                      <div key={index} className="border-b border-gray-100 pb-6 last:border-b-0">
+                      <div key={index} className="border-b border-border/50 pb-6 last:border-b-0">
                         <h3 className="font-medium text-lg mb-3">{service.name}</h3>
                         
                         {/* Basic Info */}
@@ -257,7 +257,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   <h2 className="text-xl font-semibold mb-4">Detalios paslaugos</h2>
                   <div className="space-y-4">
                     {data.detailedServices.map((service, index) => (
-                      <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div key={index} className="border-b border-border/50 pb-4 last:border-b-0">
                         <h3 className="font-medium">{service.name}</h3>
                         <p className="text-sm text-muted-foreground mb-2">{service.description}</p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">

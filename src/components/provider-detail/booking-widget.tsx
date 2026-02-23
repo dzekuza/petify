@@ -68,7 +68,7 @@ function BreederRequestWidget({
               value={requestMessage}
               onChange={(e) => setRequestMessage(e.target.value)}
               placeholder="Papasakokite veislininkui apie savo susidomėjimą jų gyvūnais..."
-              className="w-full p-3 border border-gray-300 rounded-md focus-visible:border-neutral-400"
+              className="w-full p-3 border border-border rounded-md focus-visible:border-neutral-400"
               rows={4}
             />
           </div>
@@ -94,7 +94,7 @@ function BreederRequestWidget({
   )
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6">
+    <div className="bg-white border border-border rounded-2xl p-6">
       <div className="text-2xl font-bold text-foreground mb-2">
         Šiuo metu prieinama
       </div>
@@ -105,7 +105,7 @@ function BreederRequestWidget({
           <label className="block text-sm font-medium text-foreground mb-2">Pasirinkti gyvūnų tipą</label>
           {services.length > 0 ? (
             <div className="space-y-2">
-              <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+              <div className="max-h-32 overflow-y-auto border border-border rounded-md p-3 space-y-2">
                 {services.map((service) => (
                   <div key={service.id} className="flex items-center space-x-3">
                     <input
@@ -115,7 +115,7 @@ function BreederRequestWidget({
                       value={service.id}
                       checked={selectedService === service.id}
                       onChange={(e) => setSelectedService(e.target.value)}
-                      className="h-4 w-4 text-red-600 focus-visible:border-neutral-400 border-gray-300"
+                      className="h-4 w-4 text-red-600 focus-visible:border-neutral-400 border-border"
                     />
                     <label
                       htmlFor={`service-${service.id}`}
@@ -133,7 +133,7 @@ function BreederRequestWidget({
               </div>
             </div>
           ) : (
-            <div className="border border-gray-300 rounded-md p-3 text-center">
+            <div className="border border-border rounded-md p-3 text-center">
               <p className="text-sm text-muted-foreground mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
@@ -447,7 +447,7 @@ export function BookingWidget({
           <label className="block text-sm font-medium text-foreground mb-2">{t('provider.selectPets')}</label>
           {userPets.length > 0 ? (
             <div className="space-y-2">
-              <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+              <div className="max-h-32 overflow-y-auto border border-border rounded-md p-3 space-y-2">
                 {userPets.map((pet) => (
                   <div key={pet.id} className="flex items-center space-x-3">
                     <Checkbox
@@ -468,7 +468,7 @@ export function BookingWidget({
               </div>
             </div>
           ) : (
-            <div className="border border-gray-300 rounded-md p-3 text-center">
+            <div className="border border-border rounded-md p-3 text-center">
                 <p className="text-sm text-muted-foreground mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
@@ -495,7 +495,7 @@ export function BookingWidget({
 
   // Desktop layout
   return (
-    <div id="booking-widget" className="bg-white border border-gray-200 rounded-2xl p-6">
+    <div id="booking-widget" className="bg-white border border-border rounded-2xl p-6">
       <div className="text-2xl font-bold text-foreground mb-2">
         €{provider.priceRange.min}-€{provider.priceRange.max}
       </div>
@@ -570,7 +570,7 @@ export function BookingWidget({
           <label className="block text-sm font-medium text-foreground mb-2">{t('provider.selectPets')}</label>
           {userPets.length > 0 ? (
             <div className="space-y-2">
-              <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+              <div className="max-h-32 overflow-y-auto border border-border rounded-md p-3 space-y-2">
                 {userPets.map((pet) => (
                   <div key={pet.id} className="flex items-center space-x-3">
                     <Checkbox
@@ -591,7 +591,7 @@ export function BookingWidget({
               </div>
             </div>
           ) : (
-            <div className="border border-gray-300 rounded-md p-3 text-center">
+            <div className="border border-border rounded-md p-3 text-center">
                 <p className="text-sm text-muted-foreground">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}

@@ -56,7 +56,7 @@ export default function BookingsPage() {
       case 'completed':
         return 'bg-blue-100 text-blue-800'
       default:
-        return 'bg-gray-100 text-foreground'
+        return 'bg-muted text-foreground'
     }
   }
 
@@ -113,7 +113,7 @@ export default function BookingsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gradient-to-br from-gray-50 to-white pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gradient-to-br from-muted to-white pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -214,7 +214,7 @@ export default function BookingsPage() {
                         </div>
 
                         {/* Main booking details */}
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="bg-muted rounded-lg p-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
                             <div className="flex items-center space-x-2 text-muted-foreground">
                               <User className="h-4 w-4" aria-hidden="true" />
@@ -240,7 +240,7 @@ export default function BookingsPage() {
 
                         {/* Pet information with image */}
                         {(booking.pet || booking.petId) && (
-                          <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="bg-muted rounded-lg p-3">
                             <div className="flex items-center space-x-3">
                               {booking.pet?.profilePicture ? (
                                 <img
@@ -249,7 +249,7 @@ export default function BookingsPage() {
                                   className="w-12 h-12 rounded-full object-cover aspect-square"
                                 />
                               ) : (
-                                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                                   <User className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
                                 </div>
                               )}
@@ -275,7 +275,7 @@ export default function BookingsPage() {
 
                         {/* Notes */}
                         {booking.notes && !booking.notes.startsWith('Pets:') && (
-                          <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="bg-muted rounded-lg p-3">
                             <p className="text-sm text-muted-foreground">
                               <span className="font-medium">Pastabos:</span> {booking.notes}
                             </p>

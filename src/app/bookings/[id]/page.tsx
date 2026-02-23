@@ -195,7 +195,7 @@ export default function BookingDetailPage() {
       case 'completed':
         return 'bg-blue-100 text-blue-800'
       default:
-        return 'bg-gray-100 text-foreground'
+        return 'bg-muted text-foreground'
     }
   }
 
@@ -216,11 +216,11 @@ export default function BookingDetailPage() {
                   />
                 </div>
                 <div className="animate-pulse space-y-4 w-full">
-                  <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                  <div className="h-8 bg-muted rounded w-1/3 mx-auto"></div>
+                  <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
                   <div className="space-y-6 mt-8">
-                    <div className="h-32 bg-gray-200 rounded"></div>
-                    <div className="h-64 bg-gray-200 rounded"></div>
+                    <div className="h-32 bg-muted rounded"></div>
+                    <div className="h-64 bg-muted rounded"></div>
                   </div>
                 </div>
               </div>
@@ -297,28 +297,28 @@ export default function BookingDetailPage() {
                   </CardHeader>
                   <CardContent className="space-y-4 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                         <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="text-sm text-muted-foreground">{t('bookings.confirmation.provider')}</p>
                           <p className="font-medium">{provider?.businessName || t('bookings.confirmation.myBusiness')}</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                         <Clock className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="text-sm text-muted-foreground">{t('bookings.confirmation.dateAndTime')}</p>
                           <p className="font-medium">{format(new Date(booking.date), 'MMMM d, yyyy', { locale: lt })} {booking.timeSlot.start}</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                         <Users className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="text-sm text-muted-foreground">{t('bookings.confirmation.pets')}</p>
                           <p className="font-medium">1 {t('bookings.confirmation.pet')}</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                         <CreditCard className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="text-sm text-muted-foreground">{t('bookings.confirmation.servicePrice')}</p>
@@ -327,7 +327,7 @@ export default function BookingDetailPage() {
                       </div>
                     </div>
 
-                    <div className="border-t border-gray-200 pt-4">
+                    <div className="border-t border-border pt-4">
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-semibold text-foreground">{t('bookings.confirmation.total')}</span>
                         <span className="text-xl font-bold text-foreground">€{booking.totalPrice}</span>
@@ -338,7 +338,7 @@ export default function BookingDetailPage() {
                       <div className="border-t pt-4 pb-8">
                         <h4 className="font-medium mb-2">{t('bookings.confirmation.petInformation')}</h4>
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                             <span className="text-lg">🐕</span>
                           </div>
                           <div>
@@ -440,7 +440,7 @@ END:VCALENDAR`
                     <CardContent className="pt-0 pb-8">
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                             <span className="text-lg">🏢</span>
                           </div>
                           <div>

@@ -38,7 +38,7 @@ export function BookingStep1({
         ))}
       </div>
 
-      <div className={`flex justify-center pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50' : ''}`}>
+      <div className={`flex justify-center pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-border p-4 z-50' : ''}`}>
         <Button 
           onClick={onNext}
           disabled={!selectedService || loading}

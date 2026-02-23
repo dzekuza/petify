@@ -72,11 +72,11 @@ export function MobileLayout({
         <div className="bg-white rounded-t-3xl relative z-[50]">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+            <div className="w-12 h-1 bg-secondary rounded-full"></div>
           </div>
 
           {/* Header */}
-          <div className="px-6 pb-4 border-b border-gray-100">
+          <div className="px-6 pb-4 border-b border-border/50">
             <h1 className="text-xl font-bold text-foreground">{provider.businessName}</h1>
             <p className="text-sm text-muted-foreground mt-1">
               {provider.location.city}, {provider.location.state}
@@ -97,7 +97,7 @@ export function MobileLayout({
 
           {/* Fixed Bottom Bar - Only show for claimed providers (not unclaimed scraped providers) */}
           {!isUnclaimedScrapedProvider && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[70]">
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border p-4 z-[70]">
               {provider.businessType === 'adoption' ? (
                 // Breeder interface
                 <div className="flex items-center justify-between gap-2">

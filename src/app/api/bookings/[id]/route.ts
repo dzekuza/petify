@@ -43,7 +43,7 @@ export async function PATCH(
 
     // Authorization: Only the customer, provider, or admin can update the booking
     const isCustomer = existingBooking.customer_id === userId
-    const isProvider = (existingBooking.provider as { user_id: string } | null)?.user_id === userId
+    const isProvider = (existingBooking.provider as unknown as { user_id: string } | null)?.user_id === userId
     const isAdmin = userRole === 'admin'
 
     if (!isCustomer && !isProvider && !isAdmin) {
@@ -241,7 +241,7 @@ export async function GET(
 
     // Authorization: Only the customer, provider, or admin can view the booking
     const isCustomer = bookingCheck.customer_id === userId
-    const isProvider = (bookingCheck.provider as { user_id: string } | null)?.user_id === userId
+    const isProvider = (bookingCheck.provider as unknown as { user_id: string } | null)?.user_id === userId
     const isAdmin = userRole === 'admin'
 
     if (!isCustomer && !isProvider && !isAdmin) {

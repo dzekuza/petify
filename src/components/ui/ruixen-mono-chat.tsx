@@ -114,14 +114,14 @@ export default function RuixenCard04({
 
     return (
         <div className={cn(
-            "w-full h-full bg-white dark:bg-black flex flex-col border border-gray-300 dark:border-gray-700",
+            "w-full h-full bg-white dark:bg-black flex flex-col border border-border dark:border-border",
             className
         )}>
 
             {/* Body */}
-            <main className="flex flex-1 overflow-hidden border-t border-gray-300 dark:border-gray-700">
+            <main className="flex flex-1 overflow-hidden border-t border-border dark:border-border">
                 {/* Participants List */}
-                <aside className="w-56 bg-gray-50 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 overflow-y-auto">
+                <aside className="w-56 bg-muted dark:bg-foreground border-r border-border dark:border-border p-4 overflow-y-auto">
                     {participants.map((participant) => {
                         const isSelected = selectedConversation?.id === participant.id;
                         return (
@@ -132,7 +132,7 @@ export default function RuixenCard04({
                                     "flex items-center gap-3 w-full p-3 mb-3 rounded-lg transition-colors",
                                     isSelected
                                         ? "bg-black dark:bg-white text-white dark:text-black"
-                                        : "hover:bg-gray-200 dark:hover:bg-gray-800 text-foreground dark:text-muted-foreground/60"
+                                        : "hover:bg-muted dark:hover:bg-muted text-foreground dark:text-muted-foreground/60"
                                 )}
                             >
                                 <div className="relative">
@@ -141,14 +141,14 @@ export default function RuixenCard04({
                                         alt={participant.name}
                                         width={40}
                                         height={40}
-                                        className="rounded-full ring-1 ring-gray-400 dark:ring-gray-600"
+                                        className="rounded-full ring-1 ring-border dark:ring-border"
                                     />
                                     <span
                                         className={cn(
                                             "absolute bottom-0 right-0 w-3 h-3 rounded-full ring-2 ring-white dark:ring-black",
                                             participant.isOnline
                                                 ? "bg-green-500"
-                                                : "bg-gray-400"
+                                                : "bg-secondary"
                                         )}
                                     />
                                 </div>
@@ -170,7 +170,7 @@ export default function RuixenCard04({
                         filteredMessages.map((message) => (
                             <div
                                 key={message.id}
-                                className="mb-6 last:mb-0 group border-b border-gray-200 dark:border-gray-800 pb-4"
+                                className="mb-6 last:mb-0 group border-b border-border dark:border-foreground/30 pb-4"
                             >
                                 <div className="flex items-center gap-4 mb-2">
                                     <Image
@@ -178,7 +178,7 @@ export default function RuixenCard04({
                                         alt={message.sender.name}
                                         width={40}
                                         height={40}
-                                        className="rounded-full ring-1 ring-gray-400 dark:ring-gray-600"
+                                        className="rounded-full ring-1 ring-border dark:ring-border"
                                     />
                                     <div>
                                         <p className="font-semibold text-black dark:text-white">
@@ -210,9 +210,9 @@ export default function RuixenCard04({
                                                 className={cn(
                                                     "px-2 py-1 rounded-md text-sm transition-colors",
                                                     reaction.reacted
-                                                        ? "bg-gray-300 dark:bg-gray-700 text-black dark:text-white"
-                                                        : "bg-gray-100 dark:bg-gray-800 text-foreground dark:text-muted-foreground",
-                                                    "hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                        ? "bg-secondary dark:bg-foreground/20 text-black dark:text-white"
+                                                        : "bg-muted dark:bg-muted text-foreground dark:text-muted-foreground",
+                                                    "hover:bg-muted dark:hover:bg-secondary"
                                                 )}
                                             >
                                                 {reaction.emoji} {reaction.count}
@@ -227,10 +227,10 @@ export default function RuixenCard04({
             </main>
 
             {/* Footer */}
-            <footer className="flex items-center gap-4 border-t border-gray-300 dark:border-gray-700 p-4">
+            <footer className="flex items-center gap-4 border-t border-border dark:border-border p-4">
                 <button
                     aria-label="Add emoji"
-                    className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                    className="p-3 rounded-full bg-muted dark:bg-muted hover:bg-secondary dark:hover:bg-secondary transition"
                 >
                     <SmilePlus className="w-6 h-6 text-muted-foreground dark:text-muted-foreground/60" />
                 </button>
@@ -241,8 +241,8 @@ export default function RuixenCard04({
                     onKeyPress={handleKeyPress}
                     placeholder="Write your message..."
                     className={cn(
-                        "flex-1 px-5 py-3 rounded-full border border-gray-300 dark:border-gray-700",
-                        "bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400",
+                        "flex-1 px-5 py-3 rounded-full border border-border dark:border-border",
+                        "bg-white dark:bg-black text-black dark:text-white placeholder-muted-foreground dark:placeholder-muted-foreground",
                         "focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition"
                     )}
                 />

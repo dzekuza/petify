@@ -191,7 +191,7 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
                     {/* Gallery Upload */}
                     <div className="space-y-2">
                       <Label>Pridėkite darbų galeriją</Label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
                         <input
                           type="file"
                           multiple
@@ -247,7 +247,7 @@ export default function DetailedServiceStep({ data, onUpdate, onNext, onPrevious
                 <Button 
                   variant="default"
                   onClick={addAnotherService}
-                  className="bg-black hover:bg-gray-800 w-fit"
+                  className="bg-black hover:bg-foreground w-fit"
                 >
                   Pridėti naują paslaugą
                 </Button>

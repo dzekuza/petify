@@ -189,8 +189,8 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                   key={service.id}
                   data-slot="card"
                   className={`bg-card text-card-foreground space-y-4 flex flex-col rounded-xl border duration-300 cursor-pointer transition-all ${selectedServices.includes(service.id)
-                    ? 'border-black bg-gray-50'
-                    : 'border-gray-200 hover:border-black'
+                    ? 'border-black bg-muted'
+                    : 'border-border hover:border-black'
                     }`}
                   onClick={() => handleServiceToggle(service.id)}
                 >
@@ -519,7 +519,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                                   placeholder="Įkelti nuotrauką"
                                   description="PNG/JPG iki 5MB"
                                   previewClassName="w-full h-full object-cover rounded-lg"
-                                  className="w-full h-full border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer border-gray-300 hover:border-black"
+                                  className="w-full h-full border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer border-border hover:border-black"
                                 />
                               </div>
                             </div>
@@ -568,7 +568,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
               </h2>
               <div className="space-y-2">
                 {customServices.map((service) => (
-                  <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={service.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <span className="font-medium">{service.name}</span>
                     <Button
                       variant="outline"

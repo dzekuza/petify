@@ -67,7 +67,7 @@ export function ClaimBusinessWidget({
 
   return (
     <div className="sticky top-8 space-y-4">
-      <div className="bg-white border border-gray-200 rounded-2xl p-6">
+      <div className="bg-white border border-border rounded-2xl p-6">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="p-3 bg-blue-50 rounded-full">
@@ -100,7 +100,7 @@ export function ClaimBusinessWidget({
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-4">
-                  <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="p-3 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">
                       <strong>Verslas:</strong> {provider.businessName}
                     </p>

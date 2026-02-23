@@ -317,7 +317,7 @@ export function EditIndividualPetDialog({
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {gallery.map((image, index) => (
                     <div key={index} className="relative group">
-                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                      <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                         <img
                           src={image}
                           alt={`Pet image ${index + 1}`}
@@ -356,7 +356,7 @@ export function EditIndividualPetDialog({
           <Button 
             onClick={handleSave}
             disabled={loading || !formData.title || !formData.readyToLeave}
-            className="bg-black text-white hover:bg-gray-800"
+            className="bg-black text-white hover:bg-foreground"
           >
             {loading ? 'Išsaugoma...' : 'Išsaugoti'}
           </Button>

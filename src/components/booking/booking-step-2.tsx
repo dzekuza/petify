@@ -128,10 +128,10 @@ export function BookingStep2({
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center space-x-4 p-4 border rounded-lg animate-pulse">
-                <div className="h-10 w-10 bg-gray-200 rounded-full" />
+                <div className="h-10 w-10 bg-muted rounded-full" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-1/3" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  <div className="h-4 bg-muted rounded w-1/3" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
                 </div>
               </div>
             ))}
@@ -145,7 +145,7 @@ export function BookingStep2({
                 className={`flex items-center space-x-4 p-4 border rounded-lg cursor-pointer transition-colors ${
                   isSelected 
                     ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' 
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-muted'
                 }`}
                 onClick={() => onPetSelect(pet.id)}
               >
@@ -196,7 +196,7 @@ export function BookingStep2({
         )}
       </div>
 
-      <div className={`flex justify-between pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 space-x-3' : ''}`}>
+      <div className={`flex justify-between pt-6 ${isMobile ? 'fixed bottom-0 left-0 right-0 bg-white border-t border-border p-4 z-50 space-x-3' : ''}`}>
         <Button 
           variant="outline" 
           onClick={onPrev}

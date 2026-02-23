@@ -23,14 +23,14 @@ export function DesktopHeader({ onBack, onShare, isFavorite, onToggleFavorite }:
       <div className="flex items-center space-x-4">
         <button
           onClick={onShare}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
         >
           <Share2 className="w-4 h-4" />
           <span>{t('provider.share')}</span>
         </button>
         <button
           onClick={onToggleFavorite}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
         >
           <Heart className={`w-4 h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-muted-foreground'}`} />
           <span>{t('provider.save')}</span>

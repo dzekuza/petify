@@ -167,7 +167,7 @@ export function QuickBookingDialog({
 
         <div className="space-y-4">
           {/* Service Info */}
-          <div className="bg-gray-50 p-3 rounded-lg">
+          <div className="bg-muted p-3 rounded-lg">
             <h3 className="font-medium text-foreground">{service.name}</h3>
             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
               <span className="flex items-center gap-1">
@@ -234,7 +234,7 @@ export function QuickBookingDialog({
             </label>
             {userPets.length > 0 ? (
               <div className="space-y-2">
-                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
+                <div className="max-h-32 overflow-y-auto border border-border rounded-md p-3 space-y-2">
                   {userPets.map((pet) => (
                     <div key={pet.id} className="flex items-center space-x-3">
                       <Checkbox
@@ -255,13 +255,13 @@ export function QuickBookingDialog({
                 </div>
                 <button 
                   onClick={() => setAddPetDialogOpen(true)}
-                  className="w-full text-sm text-muted-foreground hover:text-foreground py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors"
+                  className="w-full text-sm text-muted-foreground hover:text-foreground py-2 border border-dashed border-border rounded-md hover:border-border transition-colors"
                 >
                   + Add another pet
                 </button>
               </div>
             ) : (
-              <div className="border border-gray-300 rounded-md p-3 text-center">
+              <div className="border border-border rounded-md p-3 text-center">
                 <p className="text-sm text-muted-foreground mb-2">No pets added yet</p>
                 <button 
                   onClick={() => setAddPetDialogOpen(true)}
@@ -284,7 +284,7 @@ export function QuickBookingDialog({
           <Button
             onClick={handleBook}
             disabled={!canBook}
-            className="bg-black hover:bg-gray-800"
+            className="bg-black hover:bg-foreground"
           >
             Book Service
           </Button>
@@ -304,7 +304,7 @@ export function QuickBookingDialog({
                   value={addPetForm.name}
                   onChange={(e) => setAddPetForm(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Enter pet name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
               </div>
@@ -338,7 +338,7 @@ export function QuickBookingDialog({
                     placeholder="0"
                     min={0}
                     max={30}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                     required
                   />
                 </div>
@@ -351,7 +351,7 @@ export function QuickBookingDialog({
                     placeholder="0.0"
                     min={0}
                     step={0.1}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
               </div>

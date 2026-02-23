@@ -63,7 +63,7 @@ export default function LocationSelectionStep({ data, onUpdate, onNext, onPrevio
                     className={`cursor-pointer transition-all hover:shadow-md ${
                       selectedLocationType === option.id
                         ? 'border-2 border-black'
-                        : 'border border-gray-200'
+                        : 'border border-border'
                     }`}
                     onClick={() => handleLocationTypeSelect(option.id)}
                   >

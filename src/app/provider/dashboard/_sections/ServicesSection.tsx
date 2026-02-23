@@ -38,7 +38,7 @@ export default function ServicesSection({ services, onAdd, onEdit, onDelete }: P
   return (
     <div className="space-y-4">
       {services.map((service) => (
-        <div key={service.id} className="border border-gray-200 rounded-lg p-4">
+        <div key={service.id} className="border border-border rounded-lg p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h4 className="font-medium text-foreground mb-2">{service.name}</h4>

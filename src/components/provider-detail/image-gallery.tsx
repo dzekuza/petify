@@ -271,7 +271,7 @@ export function ImageGallery({
         </div>
       ))}
       {validImages.length > 5 && (
-        <div className="relative overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+        <div className="relative overflow-hidden rounded-xl bg-muted flex items-center justify-center cursor-pointer hover:bg-muted transition-colors">
           <div className="text-center">
             <div className="text-2xl font-semibold text-muted-foreground">+{validImages.length - 5}</div>
             <div className="text-sm text-muted-foreground">More images</div>

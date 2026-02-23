@@ -250,7 +250,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                 id="businessType"
                 value={providerData?.business_type || 'individual'}
                 disabled
-                className="bg-gray-50 text-muted-foreground"
+                className="bg-muted text-muted-foreground"
               />
             </div>
           </div>
@@ -475,7 +475,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               </div>
             </div>
           ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
               <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-sm text-muted-foreground mb-2">Logotipas dar neįkeltas</p>
               <p className="text-xs text-muted-foreground mb-4">Įkelkite logotipą savo verslui</p>
@@ -530,7 +530,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               </div>
             </div>
           ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
               <ImageIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <p className="text-sm text-muted-foreground mb-2">Viršelio nuotrauka dar neįkelta</p>
               <p className="text-xs text-muted-foreground mb-4">Įkelkite viršelio nuotrauką savo verslui</p>
@@ -588,7 +588,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           )}
           
           {galleryPreviews.length === 0 && (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
               <ImageIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <p className="text-sm text-muted-foreground mb-2">Galerijos nuotraukos dar neįkeltos</p>
               <p className="text-xs text-muted-foreground mb-4">Įkelkite nuotraukas savo verslui</p>

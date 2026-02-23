@@ -24,8 +24,8 @@ export function ServiceCard({
       className={cn(
         "cursor-pointer transition-all",
         isSelected
-          ? "border-black bg-gray-50"
-          : "border-gray-200 hover:border-gray-300"
+          ? "border-black bg-muted"
+          : "border-border hover:border-border"
       )}
       onClick={onClick}
     >

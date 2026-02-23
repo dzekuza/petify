@@ -112,7 +112,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                   const dayData = workingHours[dayKey]
                   
                   return (
-                    <div key={dayKey} className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div key={dayKey} className="bg-white rounded-xl border border-border p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <Checkbox

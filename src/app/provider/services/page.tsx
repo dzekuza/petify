@@ -305,13 +305,13 @@ export default function ProviderServicesPage() {
     return (
       <Layout hideServiceCategories={true}>
         <ProtectedRoute requiredRole="provider">
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+                <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-64 bg-gray-200 rounded"></div>
+                    <div key={i} className="h-64 bg-muted rounded"></div>
                   ))}
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function ProviderServicesPage() {
     return (
       <Layout hideServiceCategories={true}>
         <ProtectedRoute requiredRole="provider">
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center py-12">
                 <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -346,7 +346,7 @@ export default function ProviderServicesPage() {
   return (
     <Layout hideServiceCategories={true} hideFooter={true}>
       <ProtectedRoute requiredRole="provider">
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-muted py-8">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -482,7 +482,7 @@ export default function ProviderServicesPage() {
                         type="text"
                         value={provider?.services?.[0] ? provider.services[0].charAt(0).toUpperCase() + provider.services[0].slice(1) : 'Grooming'}
                         disabled
-                        className="mt-1 bg-gray-100"
+                        className="mt-1 bg-muted"
                       />
                       <p className="text-xs text-muted-foreground mt-1">Category is set based on your provider profile</p>
                     </div>
@@ -684,7 +684,7 @@ export default function ProviderServicesPage() {
                         type="text"
                         value={provider?.services?.[0] ? provider.services[0].charAt(0).toUpperCase() + provider.services[0].slice(1) : 'Grooming'}
                         disabled
-                        className="mt-1 bg-gray-100"
+                        className="mt-1 bg-muted"
                       />
                       <p className="text-xs text-muted-foreground mt-1">Category is set based on your provider profile</p>
                     </div>

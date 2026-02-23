@@ -49,7 +49,7 @@ const getNotificationColor = (type: Notification['type']) => {
     case 'review_received':
       return 'bg-yellow-50 border-yellow-200'
     default:
-      return 'bg-gray-50 border-gray-200'
+      return 'bg-muted border-border'
   }
 }
 
@@ -68,7 +68,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
   return (
     <div
       className={cn(
-        "p-3 border-l-4 cursor-pointer transition-colors hover:bg-gray-50",
+        "p-3 border-l-4 cursor-pointer transition-colors hover:bg-muted",
         getNotificationColor(notification.type),
         !notification.read && "bg-blue-50/50"
       )}
@@ -170,7 +170,7 @@ export const NotificationsDropdown = () => {
               <p>Nėra pranešimų</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-border/50">
               {notifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
@@ -183,7 +183,7 @@ export const NotificationsDropdown = () => {
         </ScrollArea>
         
         {notifications.length > 0 && (
-          <div className="p-3 border-t bg-gray-50">
+          <div className="p-3 border-t bg-muted">
             <Button
               variant="ghost"
               size="sm"

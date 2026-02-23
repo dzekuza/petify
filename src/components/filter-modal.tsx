@@ -192,7 +192,7 @@ export const FilterModal = ({
         <div className="flex justify-end pt-6 border-t">
           <Button
             onClick={handleApplyFilters}
-            className="px-6 bg-black hover:bg-gray-800 text-white"
+            className="px-6 bg-black hover:bg-foreground text-white"
           >
             Rodyti {resultsCount}+ vietų
           </Button>

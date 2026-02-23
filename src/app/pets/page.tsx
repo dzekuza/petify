@@ -306,7 +306,7 @@ export default function PetsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

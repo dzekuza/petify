@@ -19,7 +19,7 @@ export function ServiceCategories({ isMobile = false, className }: ServiceCatego
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex flex-col items-center p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <Image
                 src={item.icon}
@@ -44,9 +44,9 @@ export function ServiceCategories({ isMobile = false, className }: ServiceCatego
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-col items-center p-6 border border-gray-200 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
+            className="flex flex-col items-center p-6 border border-border rounded-xl hover:bg-muted hover:shadow-md transition-all duration-200 group"
           >
-            <div className="mb-4 p-4 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors">
+            <div className="mb-4 p-4 bg-muted rounded-full group-hover:bg-blue-50 transition-colors">
               <Image
                 src={item.icon}
                 alt={item.name}

@@ -112,7 +112,7 @@ export const ServiceCategories = () => {
 
         {/* CTA Section */}
         <div className="mt-16 text-center">
-          <div className="bg-gray-50 rounded-2xl p-8">
+          <div className="bg-muted rounded-2xl p-8">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               {t('landing.serviceCategories.cta.title')}
             </h3>
@@ -126,7 +126,7 @@ export const ServiceCategories = () => {
                 </button>
               </Link>
               <Link href="/contact">
-                <button className="border border-gray-300 text-foreground px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                <button className="border border-border text-foreground px-6 py-3 rounded-lg font-medium hover:bg-muted transition-colors">
                   {t('landing.serviceCategories.cta.requestService')}
                 </button>
               </Link>

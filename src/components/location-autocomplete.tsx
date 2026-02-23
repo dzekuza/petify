@@ -130,14 +130,14 @@ export const LocationAutocomplete = ({
       {isOpen && filteredSuggestions.length > 0 && (
         <div
           ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-border rounded-md max-h-60 overflow-y-auto"
         >
           {filteredSuggestions.map((suggestion, index) => (
             <div
               key={suggestion.id}
               className={cn(
-                "px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50",
-                index === selectedIndex && "bg-gray-50"
+                "px-4 py-3 cursor-pointer border-b border-border/50 last:border-b-0 hover:bg-muted",
+                index === selectedIndex && "bg-muted"
               )}
               onClick={() => handleSuggestionClick(suggestion)}
             >
@@ -159,7 +159,7 @@ export const LocationAutocomplete = ({
 
       {/* No results message */}
       {isOpen && value.trim() && filteredSuggestions.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-border rounded-md">
           <div className="px-4 py-3 text-sm text-muted-foreground text-center">
             Nerasta vietų su "{value}"
           </div>

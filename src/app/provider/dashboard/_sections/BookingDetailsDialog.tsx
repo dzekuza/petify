@@ -33,7 +33,7 @@ const getStatusColor = (status: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-800'
     default:
-      return 'bg-gray-100 text-foreground'
+      return 'bg-muted text-foreground'
   }
 }
 
@@ -90,7 +90,7 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
             <div className="border-t pt-4">
               <h3 className="font-semibold text-lg mb-3">Pet Information</h3>
               {booking.pet ? (
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-muted p-4 rounded-lg">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground">Pet Name</p>
@@ -123,7 +123,7 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
 
             <div className="border-t pt-4">
               <h3 className="font-semibold text-lg mb-3">Customer Information</h3>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-muted p-4 rounded-lg">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Customer ID</p>

@@ -17,10 +17,10 @@ export function AdminStats({ stats, loading }: AdminStatsProps) {
           <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Loading...</CardTitle>
-              <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+              <div className="h-4 w-4 bg-muted rounded animate-pulse" />
             </CardHeader>
             <CardContent>
-              <div className="h-8 bg-gray-200 rounded animate-pulse" />
+              <div className="h-8 bg-muted rounded animate-pulse" />
             </CardContent>
           </Card>
         ))}

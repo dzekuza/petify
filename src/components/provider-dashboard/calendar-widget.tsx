@@ -142,7 +142,7 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
       case 'confirmed': return 'bg-green-100 text-green-800'
       case 'completed': return 'bg-blue-100 text-blue-800'
       case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-foreground'
+      default: return 'bg-muted text-foreground'
     }
   }
 
@@ -224,9 +224,9 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
                     key={index}
                     className={`
                       p-2 min-h-[60px] cursor-pointer border rounded-lg
-                      ${isToday ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}
+                      ${isToday ? 'bg-blue-50 border-blue-200' : 'bg-white border-border'}
                       ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                      hover:bg-gray-50
+                      hover:bg-muted
                     `}
                     onClick={() => setSelectedDate(day.date!)}
                   >

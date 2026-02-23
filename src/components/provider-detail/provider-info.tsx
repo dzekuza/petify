@@ -185,7 +185,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       </div>
 
       {/* Host Information */}
-      <div className="border-t border-gray-200 pt-6 mb-6">
+      <div className="border-t border-border pt-6 mb-6">
         <div className="flex items-center space-x-3">
           {provider.avatarUrl ? (
             <img 
@@ -194,7 +194,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
               className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full object-cover`}
             />
           ) : (
-            <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} bg-gray-300 rounded-full flex items-center justify-center`}>
+            <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} bg-secondary rounded-full flex items-center justify-center`}>
               <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-muted-foreground`}>
                 {provider.businessName.charAt(0)}
               </span>
@@ -211,7 +211,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Contact Information */}
       {(provider.contactInfo?.phone || provider.contactInfo?.email || provider.contactInfo?.website) && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           <h3 className={`${titleClass} text-foreground mb-4`}>Kontaktinė informacija</h3>
           <div className="flex flex-wrap items-center gap-6">
             {provider.contactInfo?.phone && (
@@ -255,7 +255,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Location */}
       {provider.location.address && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           <h3 className={`${titleClass} text-foreground mb-4`}>Vieta</h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
@@ -266,7 +266,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             </div>
             
             {/* Mapbox Map */}
-            <div className="h-64 w-full rounded-lg overflow-hidden border border-gray-200">
+            <div className="h-64 w-full rounded-lg overflow-hidden border border-border">
               <Map
                 mapboxAccessToken={MAPBOX_CONFIG.accessToken}
                 initialViewState={{
@@ -292,9 +292,9 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Pet Ad Information */}
       {petAd && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           <h2 className={`${titleClass} text-foreground mb-4`}>Produktas</h2>
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-muted rounded-lg p-4">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{petAd.name}</h3>
@@ -396,11 +396,11 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Services - Hide for breeders */}
       {services.length > 0 && provider.businessType !== 'adoption' && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           <h2 className={`${titleClass} text-foreground mb-4`}>{t('provider.servicesAndPricing')}</h2>
           <div className="space-y-4">
             {services.slice(0, isMobile ? 3 : services.length).map((service) => (
-              <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
+              <div key={service.id} className={`border border-border rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
                 <div>
                   {/* Service Category badge - moved above title */}
                   <div className="mb-2">
@@ -420,7 +420,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                         service.category === 'adoption' ? 'Veislynai' :
                         service.category === 'sitting' ? 'Prižiūrėjimas' : 'Paslaugos')
                       return (
-                        <Badge variant="secondary" className="text-xs bg-gray-100 text-foreground">
+                        <Badge variant="secondary" className="text-xs bg-muted text-foreground">
                           {label}
                         </Badge>
                       )
@@ -436,7 +436,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                         {service.images.slice(0, 4).map((image, index) => (
                           <div 
                             key={index} 
-                            className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                            className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => {
                               // Create a simple image dialog
                               const dialog = document.createElement('div')
@@ -462,7 +462,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                           </div>
                         ))}
                         {service.images.length > 4 && (
-                          <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
+                          <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-border bg-muted flex items-center justify-center">
                             <span className="text-xs text-muted-foreground">+{service.images.length - 4}</span>
                           </div>
                         )}
@@ -491,8 +491,8 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                     <Button
                       onClick={() => handleServiceBooking(service)}
                       className={preSelectedServiceId === service.id 
-                        ? "bg-gray-400 text-white w-auto px-4 cursor-not-allowed" 
-                        : "bg-black hover:bg-gray-800 text-white w-auto px-4"
+                        ? "bg-secondary text-white w-auto px-4 cursor-not-allowed" 
+                        : "bg-black hover:bg-foreground text-white w-auto px-4"
                       }
                       size="sm"
                       disabled={preSelectedServiceId === service.id}
@@ -519,13 +519,13 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Pet Types and Individual Pets for Adoption Providers */}
       {isAdoptionProvider && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           
           {loadingPets ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 rounded-lg h-32 w-full"></div>
+                  <div className="bg-muted rounded-lg h-32 w-full"></div>
                 </div>
               ))}
             </div>
@@ -638,11 +638,11 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
 
       {/* Reviews */}
       {reviews.length > 0 && (
-        <div className="border-t border-gray-200 pt-6 mb-6">
+        <div className="border-t border-border pt-6 mb-6">
           <h2 className={`${titleClass} text-foreground mb-4`}>{t('provider.reviews')} ({provider.reviewCount})</h2>
           <div className="space-y-4">
             {reviews.slice(0, isMobile ? 2 : 3).map((review) => (
-              <div key={review.id} className={`border-b border-gray-100 pb-4 last:border-b-0 ${isMobile ? '' : 'pb-6'}`}>
+              <div key={review.id} className={`border-b border-border/50 pb-4 last:border-b-0 ${isMobile ? '' : 'pb-6'}`}>
                 <div className="flex items-center space-x-2 mb-2">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (

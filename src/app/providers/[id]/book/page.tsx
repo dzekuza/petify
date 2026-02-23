@@ -149,17 +149,17 @@ export default function BookingPage() {
     return (
       <ProtectedRoute>
         <Layout hideFooter={isMobile}>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="animate-pulse">
-                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+                <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+                <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 space-y-6">
-                    <div className="h-32 bg-gray-200 rounded"></div>
-                    <div className="h-64 bg-gray-200 rounded"></div>
+                    <div className="h-32 bg-muted rounded"></div>
+                    <div className="h-64 bg-muted rounded"></div>
                   </div>
-                  <div className="h-96 bg-gray-200 rounded"></div>
+                  <div className="h-96 bg-muted rounded"></div>
                 </div>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function BookingPage() {
     return (
       <ProtectedRoute>
         <Layout hideFooter={isMobile}>
-          <div className="min-h-screen bg-gray-50 py-8">
+          <div className="min-h-screen bg-muted py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-foreground mb-4">Provider not found</h1>
@@ -191,7 +191,7 @@ export default function BookingPage() {
       <Layout hideFooter={isMobile}>
         <div className="min-h-screen bg-white">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+          <div className="sticky top-0 bg-white border-b border-border px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div>
@@ -211,7 +211,7 @@ export default function BookingPage() {
             </div>
             {/* Progress Bar */}
             <div className="mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
                   style={{ width: getProgressWidth() }}

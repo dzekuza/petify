@@ -32,7 +32,7 @@ export default function FavoritesPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
@@ -94,7 +94,7 @@ export default function FavoritesPage() {
                         </div>
                       </div>
 
-                      <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="mt-3 pt-3 border-t border-border/50">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
                           <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function FavoritesPage() {
                         </div>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-gray-100">
+                      <div className="mt-4 pt-3 border-t border-border/50">
                         <div className="flex space-x-2">
                           <Link href={`/providers/${fav.provider?.id || ''}`}>
                             <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-neutral-400 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-2 bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 hover:border-primary/20 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5">

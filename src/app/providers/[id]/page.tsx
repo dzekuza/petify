@@ -351,25 +351,25 @@ export default function ProviderDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-muted py-8">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
                 <div className="flex gap-2 overflow-hidden rounded-3xl">
-                  <div className="flex-1 aspect-square bg-gray-200 rounded-3xl"></div>
+                  <div className="flex-1 aspect-square bg-muted rounded-3xl"></div>
                   <div className="flex-1 grid grid-cols-2 gap-2">
-                    <div className="aspect-square bg-gray-200 rounded-2xl"></div>
-                    <div className="aspect-square bg-gray-200 rounded-2xl"></div>
-                    <div className="aspect-square bg-gray-200 rounded-2xl"></div>
-                    <div className="aspect-square bg-gray-200 rounded-2xl"></div>
+                    <div className="aspect-square bg-muted rounded-2xl"></div>
+                    <div className="aspect-square bg-muted rounded-2xl"></div>
+                    <div className="aspect-square bg-muted rounded-2xl"></div>
+                    <div className="aspect-square bg-muted rounded-2xl"></div>
                   </div>
                 </div>
-                <div className="h-32 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-muted rounded"></div>
               </div>
-              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-muted rounded"></div>
             </div>
           </div>
         </div>
@@ -379,7 +379,7 @@ export default function ProviderDetailPage() {
 
   if (!provider) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-muted py-8">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">{t('provider.notFound')}</h1>

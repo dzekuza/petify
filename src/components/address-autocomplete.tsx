@@ -316,12 +316,12 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-border rounded-md max-h-60 overflow-y-auto"
         >
           {suggestions.map((suggestion, index) => (
             <div
               key={suggestion.id}
-              className={`px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
+              className={`px-4 py-3 cursor-pointer border-b border-border/50 last:border-b-0 hover:bg-muted ${
                 index === selectedIndex ? 'bg-blue-50' : ''
               }`}
               onClick={() => handleSuggestionSelect(suggestion)}

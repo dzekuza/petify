@@ -82,7 +82,7 @@ function BookingSuccessContent() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-muted py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <Card className="border-green-200">
             <CardHeader className="text-center pb-6">
@@ -102,7 +102,7 @@ function BookingSuccessContent() {
 
             <CardContent className="space-y-6">
               {bookingDetails && (
-                <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+                <div className="bg-muted rounded-lg p-6 space-y-4">
                   <h3 className="font-semibold text-lg text-foreground">Rezervacijos detalės</h3>
 
                   <div className="space-y-3">

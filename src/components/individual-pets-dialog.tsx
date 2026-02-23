@@ -204,7 +204,7 @@ export function IndividualPetsDialog({
           <Button onClick={addPet} size="sm">
             Pridėti gyvūną
           </Button>
-          <Button onClick={addPetWithType} size="sm" className="bg-black text-white hover:bg-gray-800">
+          <Button onClick={addPetWithType} size="sm" className="bg-black text-white hover:bg-foreground">
             Pridėti tipą
           </Button>
         </div>
@@ -264,7 +264,7 @@ export function IndividualPetsDialog({
                   </div>
                   
                   {editingPet === petIndex && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+                    <div className="mt-4 p-4 bg-muted rounded-lg space-y-3">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                           <Label>Gyvūno pavadinimas *</Label>
@@ -362,7 +362,7 @@ export function IndividualPetsDialog({
                               {pet.gallery.map((image, imageIndex) => (
                                 <div key={imageIndex} className="relative group">
                                   {image instanceof File ? (
-                                    <div className="w-full h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <div className="w-full h-20 bg-muted rounded-lg flex items-center justify-center">
                                       <span className="text-xs text-muted-foreground">
                                         {image.name}
                                       </span>
