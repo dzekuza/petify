@@ -31,13 +31,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A single canonical ProviderCard component exists; listings-grid.tsx no longer contains an inline card implementation
   4. No raw text-gray-*, bg-gray-*, or border-gray-* Tailwind classes appear anywhere in the codebase — semantic design tokens are used throughout
   5. booking/types.ts contains zero TypeScript `any` types — all interfaces reference named types from src/types/index.ts
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Audit and delete dead components; consolidate 8 chat variants into ChatButton + ChatDialog
-- [ ] 01-02: Unify ProviderCard — merge provider-card.tsx and listings-grid.tsx inline implementation into one canonical component
-- [ ] 01-03: Replace all raw gray Tailwind classes with semantic design tokens across the codebase
-- [ ] 01-04: Replace `any` types in booking/types.ts with proper TypeScript interfaces from src/types/index.ts
+- [ ] 01-01-PLAN.md — Delete dead components, consolidate chat to 2 entry points, fix booking `any` types, audit GLBL-01
+- [ ] 01-02-PLAN.md — Add brand accent tokens, validate warm gray neutrals, define canonical spacing utilities
+- [ ] 01-03-PLAN.md — Replace all raw gray Tailwind classes with semantic design tokens (~1,275 occurrences)
+- [ ] 01-04-PLAN.md — Unify ProviderCard with variant prop; update listings-grid.tsx to use it
 
 ### Phase 2: Navigation
 **Goal**: The header is modern, sticky, and visually correct on every page — it provides the correct visual frame for all subsequent phase work
@@ -132,7 +132,7 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 3 and 4 could run in para
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Not started | - |
+| 1. Foundation | 0/4 | Planned | - |
 | 2. Navigation | 0/2 | Not started | - |
 | 3. Landing Page | 0/2 | Not started | - |
 | 4. Provider Cards | 0/3 | Not started | - |
