@@ -117,7 +117,7 @@ export default function ServiceDetailsStep({ data, onUpdate, onNext, onPrevious,
               {/* Certifications */}
               <div className="w-full">
                 <Label>Certifikatai ir licencijos</Label>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Pasirinkite arba pridėkite savo sertifikatus ir licencijas
                 </p>
                 

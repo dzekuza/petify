@@ -100,10 +100,10 @@ function ResetPasswordContent() {
             <div className="flex justify-center">
               <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
             </div>
-            <h2 className="mt-6 text-2xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-bold text-foreground">
               {t('auth.resetPassword.checkingSession')}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t('auth.resetPassword.checkingSessionDescription')}
             </p>
           </div>
@@ -120,10 +120,10 @@ function ResetPasswordContent() {
             <div className="flex justify-center">
               <XCircle className="h-12 w-12 text-red-600" />
             </div>
-            <h2 className="mt-6 text-2xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-bold text-foreground">
               {t('auth.resetPassword.invalidSessionTitle')}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               {error || t('auth.resetPassword.invalidSessionDescription')}
             </p>
             <div className="mt-6 space-y-4">
@@ -152,10 +152,10 @@ function ResetPasswordContent() {
             <div className="flex justify-center">
               <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
-            <h2 className="mt-6 text-2xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-bold text-foreground">
               {t('auth.resetPassword.successTitle')}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t('auth.resetPassword.successDescription')}
             </p>
             <div className="mt-6">
@@ -164,7 +164,7 @@ function ResetPasswordContent() {
                   {t('auth.resetPassword.continueToApp')}
                 </Link>
               </Button>
-              <p className="mt-4 text-xs text-gray-500">
+              <p className="mt-4 text-xs text-muted-foreground">
                 {t('auth.resetPassword.redirecting')}
               </p>
             </div>
@@ -181,10 +181,10 @@ function ResetPasswordContent() {
           <div className="flex justify-center">
             <PawPrint className="h-12 w-12 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-3xl font-bold text-foreground">
             {t('auth.resetPassword.pageTitle')}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             {t('auth.resetPassword.pageDescription')}
           </p>
         </div>
@@ -222,13 +222,13 @@ function ResetPasswordContent() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {t('auth.signup.passwordMinLength')}
                 </p>
               </div>
@@ -251,9 +251,9 @@ function ResetPasswordContent() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
@@ -269,7 +269,7 @@ function ResetPasswordContent() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {t('auth.resetPassword.rememberPassword')}{' '}
                 <Link
                   href="/auth/signin"
@@ -295,10 +295,10 @@ export default function ResetPasswordPage() {
             <div className="flex justify-center">
               <PawPrint className="h-12 w-12 text-blue-600" />
             </div>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-3xl font-bold text-foreground">
               {t('auth.resetPassword.pageTitle')}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t('auth.resetPassword.pageDescription')}
             </p>
           </div>
@@ -313,7 +313,7 @@ export default function ResetPasswordPage() {
                   className="mx-auto mb-4 animate-pulse"
                   priority
                 />
-                <p className="text-gray-600">Loading...</p>
+                <p className="text-muted-foreground">Loading...</p>
               </div>
             </CardContent>
           </Card>

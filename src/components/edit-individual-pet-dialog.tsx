@@ -329,7 +329,7 @@ export function EditIndividualPetDialog({
                           }}
                         />
                         <div className="w-full h-full items-center justify-center hidden">
-                          <span className="text-xs text-gray-500">Image {index + 1}</span>
+                          <span className="text-xs text-muted-foreground">Image {index + 1}</span>
                         </div>
                       </div>
                       <Button

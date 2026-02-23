@@ -420,7 +420,7 @@ export default function ProviderServicesPage() {
             <h1 className="text-2xl font-bold">
               Paslaugos
             </h1>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-sm">
               Kurkite ir tvarkykite paslaugas, kurias teikiate
             </p>
           </div>
@@ -567,7 +567,7 @@ export default function ProviderServicesPage() {
                   <Input id="edit-duration-from" type="number" min={1} value={durationFrom} onChange={(e) => setDurationFrom(e.target.value ? Number(e.target.value) : '')} placeholder={t('providerDashboard.durationPlaceholder')} />
                   <Input id="edit-duration-to" type="number" min={1} value={durationTo} onChange={(e) => setDurationTo(e.target.value ? Number(e.target.value) : '')} placeholder={t('providerDashboard.durationPlaceholder')} />
                 </div>
-                <p className="text-xs text-gray-500">Nurodykite intervalą (nuo–iki)</p>
+                <p className="text-xs text-muted-foreground">Nurodykite intervalą (nuo–iki)</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-includes">{t('common.includes')}</Label>
@@ -603,7 +603,7 @@ export default function ProviderServicesPage() {
                   }}
                   placeholder={t('providerDashboard.includesPlaceholder')}
                 />
-                <p className="text-xs text-gray-500">Spauskite Enter, kad pridėtumėte</p>
+                <p className="text-xs text-muted-foreground">Spauskite Enter, kad pridėtumėte</p>
               </div>
 
               {/* Gallery Upload for Edit (Drag & Drop) */}
@@ -644,11 +644,11 @@ export default function ProviderServicesPage() {
           <div className="text-sm text-red-600">{error}</div>
         ) : services.length === 0 ? (
           <div className="text-center py-10">
-            <Scissors className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600">
+            <Scissors className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-muted-foreground">
               {businessType === 'adoption' ? 'Dar nėra gyvūnų tipų' : 'Dar nėra paslaugų'}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {businessType === 'adoption' 
                 ? 'Sukurkite pirmąjį gyvūnų tipą, kad pradėtumėte gauti užklausas.' 
                 : 'Sukurkite pirmąją paslaugą, kad pradėtumėte gauti rezervacijas.'
@@ -705,7 +705,7 @@ export default function ProviderServicesPage() {
                   <div className="flex items-end justify-between mt-3">
                     <div>
                       <h3 className="font-medium">{svc.name}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">{svc.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{svc.description}</p>
                     </div>
                     <span className="text-sm font-semibold">€{(svc.price || 0).toFixed(2)}</span>
                   </div>

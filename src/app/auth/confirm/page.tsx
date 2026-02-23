@@ -58,10 +58,10 @@ function EmailConfirmContent() {
             <div className="flex justify-center mb-6">
               <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               {t('auth.confirm.verifying')}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {t('auth.confirm.verifyingDescription')}
             </p>
           </div>
@@ -73,10 +73,10 @@ function EmailConfirmContent() {
             <div className="flex justify-center mb-6">
               <CheckCircle className="h-12 w-12 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               {t('auth.confirm.successTitle')}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               {t('auth.confirm.successDescription')}
             </p>
             <div className="space-y-4">
@@ -85,7 +85,7 @@ function EmailConfirmContent() {
                   {t('auth.confirm.continueToApp')}
                 </Link>
               </Button>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {t('auth.confirm.redirecting')}
               </p>
             </div>
@@ -98,10 +98,10 @@ function EmailConfirmContent() {
             <div className="flex justify-center mb-6">
               <XCircle className="h-12 w-12 text-red-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               {t('auth.confirm.errorTitle')}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               {error || t('auth.confirm.errorDescription')}
             </p>
             <div className="space-y-4">
@@ -125,10 +125,10 @@ function EmailConfirmContent() {
             <div className="flex justify-center mb-6">
               <XCircle className="h-12 w-12 text-yellow-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               {t('auth.confirm.expiredTitle')}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               {t('auth.confirm.expiredDescription')}
             </p>
             <div className="space-y-4">
@@ -158,7 +158,7 @@ function EmailConfirmContent() {
           <div className="flex justify-center">
             <PawPrint className="h-12 w-12 text-blue-600" />
           </div>
-          <h1 className="mt-6 text-3xl font-bold text-gray-900">
+          <h1 className="mt-6 text-3xl font-bold text-foreground">
             {t('auth.confirm.pageTitle')}
           </h1>
         </div>
@@ -190,7 +190,7 @@ export default function EmailConfirmPage() {
             <div className="flex justify-center">
               <PawPrint className="h-12 w-12 text-blue-600" />
             </div>
-            <h1 className="mt-6 text-3xl font-bold text-gray-900">
+            <h1 className="mt-6 text-3xl font-bold text-foreground">
               {t('auth.confirm.pageTitle')}
             </h1>
           </div>
@@ -205,7 +205,7 @@ export default function EmailConfirmPage() {
                   className="mx-auto mb-4 animate-pulse"
                   priority
                 />
-                <p className="text-gray-600">Loading...</p>
+                <p className="text-muted-foreground">Loading...</p>
               </div>
             </CardContent>
           </Card>

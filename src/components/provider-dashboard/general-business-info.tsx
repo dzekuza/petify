@@ -250,7 +250,7 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
                 id="businessType"
                 value={providerData?.business_type || 'individual'}
                 disabled
-                className="bg-gray-50 text-gray-500"
+                className="bg-gray-50 text-muted-foreground"
               />
             </div>
           </div>
@@ -471,14 +471,14 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
               </div>
               <div>
                 <p className="text-sm font-medium">Logotipas įkeltas</p>
-                <p className="text-xs text-gray-500">Spustelėkite, kad pakeistumėte</p>
+                <p className="text-xs text-muted-foreground">Spustelėkite, kad pakeistumėte</p>
               </div>
             </div>
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">Logotipas dar neįkeltas</p>
-              <p className="text-xs text-gray-500 mb-4">Įkelkite logotipą savo verslui</p>
+              <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground mb-2">Logotipas dar neįkeltas</p>
+              <p className="text-xs text-muted-foreground mb-4">Įkelkite logotipą savo verslui</p>
             </div>
           )}
           
@@ -531,9 +531,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
             </div>
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">Viršelio nuotrauka dar neįkelta</p>
-              <p className="text-xs text-gray-500 mb-4">Įkelkite viršelio nuotrauką savo verslui</p>
+              <ImageIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground mb-2">Viršelio nuotrauka dar neįkelta</p>
+              <p className="text-xs text-muted-foreground mb-4">Įkelkite viršelio nuotrauką savo verslui</p>
             </div>
           )}
           
@@ -589,9 +589,9 @@ export function GeneralBusinessInfo({ providerData, onUpdate }: GeneralBusinessI
           
           {galleryPreviews.length === 0 && (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">Galerijos nuotraukos dar neįkeltos</p>
-              <p className="text-xs text-gray-500 mb-4">Įkelkite nuotraukas savo verslui</p>
+              <ImageIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground mb-2">Galerijos nuotraukos dar neįkeltos</p>
+              <p className="text-xs text-muted-foreground mb-4">Įkelkite nuotraukas savo verslui</p>
             </div>
           )}
           

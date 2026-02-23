@@ -115,7 +115,7 @@ export function UserManagement({ users, loading, onUserUpdate, onPasswordChange 
                   </div>
                   <div>
                     <div className="font-medium">{user.full_name || 'No name'}</div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
+                    <div className="text-sm text-muted-foreground">{user.email}</div>
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                         {user.role}

@@ -106,7 +106,7 @@ export function VeterinarySettings({ providerData, onUpdate }: BusinessSettingsP
             <div className="flex items-center justify-between">
               <div>
                 <Label>Vaccination Reminders</Label>
-                <p className="text-sm text-gray-500">Send automatic reminders for vaccinations</p>
+                <p className="text-sm text-muted-foreground">Send automatic reminders for vaccinations</p>
               </div>
               <Switch
                 checked={settings.vaccinationReminders}
@@ -117,7 +117,7 @@ export function VeterinarySettings({ providerData, onUpdate }: BusinessSettingsP
             <div className="flex items-center justify-between">
               <div>
                 <Label>Prescription Management</Label>
-                <p className="text-sm text-gray-500">Enable digital prescription tracking</p>
+                <p className="text-sm text-muted-foreground">Enable digital prescription tracking</p>
               </div>
               <Switch
                 checked={settings.prescriptionManagement}
@@ -210,7 +210,7 @@ export function TrainingSettings({ providerData, onUpdate }: BusinessSettingsPro
                     }}
                     className="w-20"
                   />
-                  <span className="text-sm text-gray-500">€</span>
+                  <span className="text-sm text-muted-foreground">€</span>
                   <Input
                     type="number"
                     value={program.sessions}
@@ -221,7 +221,7 @@ export function TrainingSettings({ providerData, onUpdate }: BusinessSettingsPro
                     }}
                     className="w-16"
                   />
-                  <span className="text-sm text-gray-500">sessions</span>
+                  <span className="text-sm text-muted-foreground">sessions</span>
                 </div>
               ))}
             </div>
@@ -305,7 +305,7 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
             <div className="flex items-center justify-between">
               <div>
                 <Label>Home Visit Required</Label>
-                <p className="text-sm text-gray-500">Require home visit before sale</p>
+                <p className="text-sm text-muted-foreground">Require home visit before sale</p>
               </div>
               <Switch
                 checked={settings.homeVisitRequired}
@@ -316,7 +316,7 @@ export function AdoptionSettings({ providerData, onUpdate }: BusinessSettingsPro
             <div className="flex items-center justify-between">
               <div>
                 <Label>Sales Contract</Label>
-                <p className="text-sm text-gray-500">Require signed sales contract</p>
+                <p className="text-sm text-muted-foreground">Require signed sales contract</p>
               </div>
               <Switch
                 checked={settings.adoptionContract}

@@ -55,7 +55,7 @@ export function IndividualPetCard({
               </Badge>
             </div>
             
-            <div className="space-y-2 text-sm text-gray-600">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Euro className="h-4 w-4" />
                 <span className="font-medium">{pet.price}€</span>

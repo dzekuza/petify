@@ -28,10 +28,10 @@ export function BookingStep4({
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
           Patvirtinkite užsakymą
         </h2>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Peržiūrėkite užsakymo detales ir patvirtinkite
         </p>
       </div>
@@ -48,9 +48,9 @@ export function BookingStep4({
           <CardContent className="space-y-4">
             {/* Service Provider */}
             <div>
-              <h4 className="font-medium text-gray-900">Paslaugos tiekėjas</h4>
-              <p className="text-gray-600">{provider.businessName}</p>
-              <p className="text-sm text-gray-500">
+              <h4 className="font-medium text-foreground">Paslaugos tiekėjas</h4>
+              <p className="text-muted-foreground">{provider.businessName}</p>
+              <p className="text-sm text-muted-foreground">
                 {provider.location?.city}, {provider.location?.state}
               </p>
             </div>
@@ -58,34 +58,34 @@ export function BookingStep4({
             {/* Service */}
             {selectedService && (
               <div>
-                <h4 className="font-medium text-gray-900">Paslauga</h4>
-                <p className="text-gray-600">{selectedService.name}</p>
-                <p className="text-sm text-gray-500">{selectedService.description}</p>
+                <h4 className="font-medium text-foreground">Paslauga</h4>
+                <p className="text-muted-foreground">{selectedService.name}</p>
+                <p className="text-sm text-muted-foreground">{selectedService.description}</p>
               </div>
             )}
 
             {/* Date and Time */}
             <div>
-              <h4 className="font-medium text-gray-900">Data ir laikas</h4>
+              <h4 className="font-medium text-foreground">Data ir laikas</h4>
               {selectedDate && (
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   {format(selectedDate, 'EEEE, MMMM d, yyyy', { locale: lt })}
                 </p>
               )}
               {selectedTimeSlot && (
-                <p className="text-gray-600">{selectedTimeSlot}</p>
+                <p className="text-muted-foreground">{selectedTimeSlot}</p>
               )}
             </div>
 
             {/* Selected Pets */}
             <div>
-              <h4 className="font-medium text-gray-900">Augintiniai</h4>
+              <h4 className="font-medium text-foreground">Augintiniai</h4>
               <div className="space-y-2">
                 {selectedPetsData.map((pet) => (
                   <div key={pet.id} className="flex items-center space-x-2">
                     <PawPrint className="h-4 w-4 text-blue-600" />
-                    <span className="text-gray-600">{pet.name}</span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-muted-foreground">{pet.name}</span>
+                    <span className="text-sm text-muted-foreground">
                       ({pet.species}, {pet.age} metai)
                     </span>
                   </div>
@@ -96,13 +96,13 @@ export function BookingStep4({
             {/* Price */}
             <div className="border-t pt-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-900">Iš viso:</span>
+                <span className="font-medium text-foreground">Iš viso:</span>
                 <span className="text-xl font-bold text-green-600">
                   €{totalPrice.toFixed(2)}
                 </span>
               </div>
               {selectedPets.length > 1 && (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   €{selectedService?.price} × {selectedPets.length} augintiniai
                 </p>
               )}

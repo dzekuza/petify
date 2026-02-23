@@ -161,15 +161,15 @@ export function QuickBookingDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span>Book Service</span>
-            <span className="text-lg font-semibold text-gray-600">€{service.price}</span>
+            <span className="text-lg font-semibold text-muted-foreground">€{service.price}</span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Service Info */}
           <div className="bg-gray-50 p-3 rounded-lg">
-            <h3 className="font-medium text-gray-900">{service.name}</h3>
-            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+            <h3 className="font-medium text-foreground">{service.name}</h3>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 {service.duration} min
@@ -180,7 +180,7 @@ export function QuickBookingDialog({
 
           {/* Date Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Service Date *
             </label>
             <Popover>
@@ -210,7 +210,7 @@ export function QuickBookingDialog({
 
           {/* Time Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Service Time *
             </label>
             <Select value={selectedTime} onValueChange={setSelectedTime}>
@@ -229,7 +229,7 @@ export function QuickBookingDialog({
 
           {/* Pet Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Select Pets *
             </label>
             {userPets.length > 0 ? (
@@ -247,22 +247,22 @@ export function QuickBookingDialog({
                         className="flex items-center space-x-2 cursor-pointer flex-1"
                       >
                         {getPetIcon(pet.species)}
-                        <span className="text-sm text-gray-900">{pet.name}</span>
-                        <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                        <span className="text-sm text-foreground">{pet.name}</span>
+                        <span className="text-xs text-muted-foreground">({pet.species}, {pet.age}y)</span>
                       </label>
                     </div>
                   ))}
                 </div>
                 <button 
                   onClick={() => setAddPetDialogOpen(true)}
-                  className="w-full text-sm text-gray-600 hover:text-gray-800 py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors"
+                  className="w-full text-sm text-muted-foreground hover:text-foreground py-2 border border-dashed border-gray-300 rounded-md hover:border-gray-400 transition-colors"
                 >
                   + Add another pet
                 </button>
               </div>
             ) : (
               <div className="border border-gray-300 rounded-md p-3 text-center">
-                <p className="text-sm text-gray-500 mb-2">No pets added yet</p>
+                <p className="text-sm text-muted-foreground mb-2">No pets added yet</p>
                 <button 
                   onClick={() => setAddPetDialogOpen(true)}
                   className="text-sm text-blue-600 hover:text-blue-800"
@@ -298,7 +298,7 @@ export function QuickBookingDialog({
             </DialogHeader>
             <form onSubmit={handleAddPet} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Pet Name *</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Pet Name *</label>
                 <input
                   type="text"
                   value={addPetForm.name}
@@ -310,7 +310,7 @@ export function QuickBookingDialog({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Species *</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Species *</label>
                 <Select 
                   value={addPetForm.species} 
                   onValueChange={(value: any) => setAddPetForm(prev => ({ ...prev, species: value }))}
@@ -330,7 +330,7 @@ export function QuickBookingDialog({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Age (years) *</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Age (years) *</label>
                   <input
                     type="number"
                     value={addPetForm.age}
@@ -343,7 +343,7 @@ export function QuickBookingDialog({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Weight (kg)</label>
                   <input
                     type="number"
                     value={addPetForm.weight}

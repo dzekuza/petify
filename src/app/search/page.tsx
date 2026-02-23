@@ -194,7 +194,7 @@ function SearchPageContent() {
                   >
                     <DrawerHeader className="pb-2 h-full flex items-center justify-center">
                       <div className="text-center">
-                        <DrawerTitle className="text-lg font-semibold text-gray-900">
+                        <DrawerTitle className="text-lg font-semibold text-foreground">
                           {loading ? (
                             <div className="animate-pulse bg-gray-200 h-6 w-32 rounded mx-auto"></div>
                           ) : filters.category === 'pets' ? (
@@ -274,7 +274,7 @@ function SearchPageContent() {
                   individualPets.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
                       {individualPets.map((pet) => (
-                        <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
+                        <div key={pet.id} className="bg-white rounded-lg border border-gray-200 p-4">
                           <div className="flex gap-4">
                             {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
                               <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
@@ -287,11 +287,11 @@ function SearchPageContent() {
                             )}
                             <div className="flex-1">
                               <h3 className="font-semibold text-lg">{pet.title}</h3>
-                              <p className="text-gray-600 text-sm">
+                              <p className="text-muted-foreground text-sm">
                                 {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
                               </p>
                               <p className="text-lg font-bold text-green-600">{pet.price}€</p>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-muted-foreground">
                                 Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
                               </p>
                             </div>
@@ -301,7 +301,7 @@ function SearchPageContent() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600">Šiuo metu nėra gyvūnų pardavimui.</p>
+                      <p className="text-muted-foreground">Šiuo metu nėra gyvūnų pardavimui.</p>
                     </div>
                   )
                 ) : filters.category === 'adoption' ? (
@@ -314,7 +314,7 @@ function SearchPageContent() {
                     />
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600">No pets available at the moment.</p>
+                      <p className="text-muted-foreground">No pets available at the moment.</p>
                     </div>
                   )
                 ) : (
@@ -327,7 +327,7 @@ function SearchPageContent() {
                     />
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600">No providers found in this area.</p>
+                      <p className="text-muted-foreground">No providers found in this area.</p>
                     </div>
                   )
                 )}

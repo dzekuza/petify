@@ -179,8 +179,8 @@ function CartContent() {
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Booking Not Found</h1>
-                <p className="text-gray-600 mb-6">The booking information could not be loaded.</p>
+                <h1 className="text-2xl font-bold text-foreground mb-4">Booking Not Found</h1>
+                <p className="text-muted-foreground mb-6">The booking information could not be loaded.</p>
                 <Button onClick={() => router.push('/search')}>
                   Back to Search
                 </Button>
@@ -210,7 +210,7 @@ function CartContent() {
                 <ArrowLeft className="h-4 w-4" />
                 Back
               </Button>
-              <h1 className="text-3xl font-bold text-gray-900">Review Your Booking</h1>
+              <h1 className="text-3xl font-bold text-foreground">Review Your Booking</h1>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -238,24 +238,24 @@ function CartContent() {
                   <CardContent className="space-y-4">
                     <div>
                       <h3 className="font-semibold text-lg">{service.name}</h3>
-                      <p className="text-gray-600">{service.description}</p>
+                      <p className="text-muted-foreground">{service.description}</p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span>{format(new Date(date!), 'PPP')}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
+                        <Clock className="h-4 w-4 text-muted-foreground" />
                         <span>{time}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-gray-500" />
+                        <Users className="h-4 w-4 text-muted-foreground" />
                         <span>{service.duration} minutes</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-500">€{service.price} per pet</span>
+                        <span className="text-muted-foreground">€{service.price} per pet</span>
                       </div>
                     </div>
                   </CardContent>
@@ -272,8 +272,8 @@ function CartContent() {
                   <CardContent>
                     <div>
                       <h3 className="font-semibold text-lg">{provider.businessName}</h3>
-                      <p className="text-gray-600">{provider.location.address}</p>
-                      <p className="text-gray-600">{provider.location.city}, {provider.location.state}</p>
+                      <p className="text-muted-foreground">{provider.location.address}</p>
+                      <p className="text-muted-foreground">{provider.location.city}, {provider.location.state}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -303,7 +303,7 @@ function CartContent() {
                         <div key={pet.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                           <div>
                             <h4 className="font-medium">{pet.name}</h4>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {pet.species} • {pet.age} years old
                               {pet.breed && ` • ${pet.breed}`}
                             </p>
@@ -338,11 +338,11 @@ function CartContent() {
                         <span>{service.name} × {pets.length} {pets.length > 1 ? 'pets' : 'pet'}</span>
                         <span>€{totalPrice}</span>
                       </div>
-                      <div className="flex justify-between text-sm text-gray-600">
+                      <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Duration</span>
                         <span>{service.duration} minutes</span>
                       </div>
-                      <div className="flex justify-between text-sm text-gray-600">
+                      <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Date & Time</span>
                         <span>{format(new Date(date!), 'MMM d')} at {time}</span>
                       </div>
@@ -373,7 +373,7 @@ function CartContent() {
                       </Button>
                     </div>
 
-                    <div className="text-center text-sm text-gray-600">
+                    <div className="text-center text-sm text-muted-foreground">
                       Secure booking • Payment not required in advance
                     </div>
                   </CardContent>

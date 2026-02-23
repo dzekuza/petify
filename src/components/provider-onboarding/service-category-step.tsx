@@ -84,8 +84,8 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
                 return (
                   <div
                     key={category.id}
-                    className={`relative bg-white rounded-xl shadow-sm py-6 transition-all ${
-                      isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
+                    className={`relative bg-white rounded-xl py-6 transition-all ${
+                      isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
                     } ${
                       selectedCategory === category.id ? 'border-2 border-black' : 'border border-gray-200'
                     }`}
@@ -97,7 +97,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
                   >
                     {/* Coming soon badge for disabled */}
                     {isDisabled && (
-                      <span className="absolute right-3 top-3 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                      <span className="absolute right-3 top-3 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-foreground">
                         Netrukus
                       </span>
                     )}
@@ -110,7 +110,7 @@ export default function ServiceCategoryStep({ data, onUpdate, onNext, onPrevious
                         <h3 className="font-semibold text-lg text-black">
                           {category.name}
                         </h3>
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                           {category.description}
                         </p>
                       </div>

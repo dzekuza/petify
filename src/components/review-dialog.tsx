@@ -111,14 +111,14 @@ export const ReviewDialog = ({
                     className={`h-8 w-8 ${
                       star <= rating
                         ? 'text-yellow-400 fill-current'
-                        : 'text-gray-300'
+                        : 'text-muted-foreground/60'
                     }`}
                   />
                 </button>
               ))}
             </div>
             {rating > 0 && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {rating === 1 && 'Poor'}
                 {rating === 2 && 'Fair'}
                 {rating === 3 && 'Good'}

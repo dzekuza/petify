@@ -256,7 +256,7 @@ export default function ProviderPetAdsPage() {
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading pet ads...</p>
+              <p className="mt-4 text-muted-foreground">Loading pet ads...</p>
             </div>
           </div>
         </ProtectedRoute>
@@ -273,8 +273,8 @@ export default function ProviderPetAdsPage() {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Pet Ads Management</h1>
-                  <p className="mt-2 text-gray-600">
+                  <h1 className="text-3xl font-bold text-foreground">Pet Ads Management</h1>
+                  <p className="mt-2 text-muted-foreground">
                     Manage your pet listings for sale
                   </p>
                 </div>
@@ -300,7 +300,7 @@ export default function ProviderPetAdsPage() {
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <PawPrint className="h-16 w-16 text-gray-400" />
+                          <PawPrint className="h-16 w-16 text-muted-foreground" />
                         </div>
                       )}
                       <div className="absolute top-2 right-2">
@@ -311,14 +311,14 @@ export default function ProviderPetAdsPage() {
                     </div>
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg text-gray-900">{petAd.name}</h3>
+                        <h3 className="font-semibold text-lg text-foreground">{petAd.name}</h3>
                         <div className="flex items-center text-green-600 font-semibold">
                           <Euro className="h-4 w-4 mr-1" />
                           {petAd.price}
                         </div>
                       </div>
                       
-                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                      <div className="space-y-1 text-sm text-muted-foreground mb-3">
                         <p><span className="font-medium">Species:</span> {getSpeciesLabel(petAd.species)}</p>
                         {petAd.breed && <p><span className="font-medium">Breed:</span> {petAd.breed}</p>}
                         {petAd.age && <p><span className="font-medium">Age:</span> {petAd.age} months</p>}
@@ -326,7 +326,7 @@ export default function ProviderPetAdsPage() {
                         <p><span className="font-medium">Size:</span> {getSizeLabel(petAd.size)}</p>
                       </div>
 
-                      <p className="text-sm text-gray-700 mb-4 line-clamp-2">
+                      <p className="text-sm text-foreground mb-4 line-clamp-2">
                         {petAd.description}
                       </p>
 
@@ -355,7 +355,7 @@ export default function ProviderPetAdsPage() {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           {new Date(petAd.createdAt).toLocaleDateString('lt-LT')}
                         </div>
                       </div>
@@ -364,9 +364,9 @@ export default function ProviderPetAdsPage() {
                 ))
               ) : (
                 <div className="col-span-full text-center py-12">
-                  <PawPrint className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No pet ads yet</h3>
-                  <p className="text-gray-600 mb-6">Start by creating your first pet ad to begin selling pets.</p>
+                  <PawPrint className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No pet ads yet</h3>
+                  <p className="text-muted-foreground mb-6">Start by creating your first pet ad to begin selling pets.</p>
                   <Button onClick={() => setShowAddPetAdModal(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create Your First Pet Ad
@@ -569,7 +569,7 @@ export default function ProviderPetAdsPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Upload up to 5 images of your pet. The first image will be used as the main photo.
                 </p>
               </div>
@@ -786,7 +786,7 @@ export default function ProviderPetAdsPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Upload up to 5 images of your pet. The first image will be used as the main photo.
                 </p>
               </div>

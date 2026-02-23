@@ -382,8 +382,8 @@ export default function ProviderDetailPage() {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('provider.notFound')}</h1>
-            <p className="text-gray-600">{t('provider.notFoundDescription')}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">{t('provider.notFound')}</h1>
+            <p className="text-muted-foreground">{t('provider.notFoundDescription')}</p>
           </div>
         </div>
       </div>

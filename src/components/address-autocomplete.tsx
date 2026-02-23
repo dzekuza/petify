@@ -307,7 +307,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         {/* Loading indicator */}
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         )}
       </div>
@@ -316,7 +316,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md max-h-60 overflow-y-auto"
         >
           {suggestions.map((suggestion, index) => (
             <div
@@ -329,11 +329,11 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
             >
               <div className="flex items-start">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">
+                  <div className="text-sm font-medium text-foreground truncate">
                     {suggestion.address}
                   </div>
                   {(suggestion.state || suggestion.zipCode) && (
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-muted-foreground mt-1">
                       {[suggestion.state, suggestion.zipCode]
                         .filter(Boolean)
                         .join(', ')}

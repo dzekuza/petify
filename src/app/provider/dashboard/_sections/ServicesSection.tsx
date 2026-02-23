@@ -24,9 +24,9 @@ export default function ServicesSection({ services, onAdd, onEdit, onDelete }: P
   if (services.length === 0) {
     return (
       <div className="text-center py-12">
-        <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('providerDashboard.emptyServicesTitle', 'No services yet')}</h3>
-        <p className="text-gray-600">{t('providerDashboard.emptyServicesDesc', 'Add your first service to start accepting bookings.')}</p>
+        <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">{t('providerDashboard.emptyServicesTitle', 'No services yet')}</h3>
+        <p className="text-muted-foreground">{t('providerDashboard.emptyServicesDesc', 'Add your first service to start accepting bookings.')}</p>
         <Button className="mt-4" onClick={onAdd}>
           <Plus className="h-4 w-4 mr-2" />
           {t('providerDashboard.addFirstService', 'Add Your First Service')}
@@ -41,9 +41,9 @@ export default function ServicesSection({ services, onAdd, onEdit, onDelete }: P
         <div key={service.id} className="border border-gray-200 rounded-lg p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900 mb-2">{service.name}</h4>
-              <p className="text-sm text-gray-600 mb-3">{service.description}</p>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <h4 className="font-medium text-foreground mb-2">{service.name}</h4>
+              <p className="text-sm text-muted-foreground mb-3">{service.description}</p>
+              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <span>€{service.price}</span>
                 <span>{service.duration} min</span>
                 <span>Max {service.maxPets} pet{service.maxPets > 1 ? 's' : ''}</span>

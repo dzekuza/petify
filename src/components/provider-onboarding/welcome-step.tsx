@@ -36,13 +36,13 @@ export default function WelcomeStep({ onNext, onPrevious }: WelcomeStepProps) {
           {/* Text Content */}
           <div className="w-full lg:w-[522px] text-center lg:text-left">
             <div className="flex flex-col gap-3.5 items-center lg:items-start justify-start text-black">
-              <div className="text-sm text-gray-600 w-full">
+              <div className="text-sm text-muted-foreground w-full">
                 Pirmas žingsnis
               </div>
               <h1 className="text-3xl font-bold w-full">
                 Papasakokite apie savo paslaugas
               </h1>
-              <p className="text-base text-gray-600 w-full">
+              <p className="text-base text-muted-foreground w-full">
                 Netrukus paklausime jusu papasakoti placiau apie savo teikiamas paslaugas, lokacijas, kainas ir kita
               </p>
             </div>

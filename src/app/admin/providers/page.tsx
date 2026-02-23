@@ -104,7 +104,7 @@ export default function AdminProvidersPage() {
               <CardContent>
                 <div className="space-y-4">
                   {providers.length === 0 ? (
-                    <p className="text-gray-600 text-center py-8">No providers found</p>
+                    <p className="text-muted-foreground text-center py-8">No providers found</p>
                   ) : (
                     providers.map((provider) => (
                       <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -112,8 +112,8 @@ export default function AdminProvidersPage() {
                           <div className="flex items-center gap-3">
                             <div>
                               <h3 className="font-medium">{provider.business_name}</h3>
-                              <p className="text-sm text-gray-600">{provider.users.full_name} ({provider.users.email})</p>
-                              <p className="text-sm text-gray-500">{provider.business_type} • {provider.location.city}, {provider.location.state}</p>
+                              <p className="text-sm text-muted-foreground">{provider.users.full_name} ({provider.users.email})</p>
+                              <p className="text-sm text-muted-foreground">{provider.business_type} • {provider.location.city}, {provider.location.state}</p>
                             </div>
                             <div className="flex gap-2">
                               <Badge variant={provider.status === 'active' ? 'default' : provider.status === 'pending_verification' ? 'secondary' : 'destructive'}>
@@ -125,9 +125,9 @@ export default function AdminProvidersPage() {
                             </div>
                           </div>
                           <div className="mt-2">
-                            <p className="text-sm text-gray-600">{provider.description}</p>
-                            <p className="text-xs text-gray-500 mt-1">Services: {provider.services.map(formatServiceName).join(', ')}</p>
-                            <p className="text-xs text-gray-500">Created: {new Date(provider.created_at).toLocaleDateString()}</p>
+                            <p className="text-sm text-muted-foreground">{provider.description}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Services: {provider.services.map(formatServiceName).join(', ')}</p>
+                            <p className="text-xs text-muted-foreground">Created: {new Date(provider.created_at).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="flex gap-2">

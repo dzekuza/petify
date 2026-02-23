@@ -21,10 +21,10 @@ export function BookingStep3({
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
           Pasirinkite datą ir laiką
         </h2>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Pasirinkite patogų laiką paslaugai
         </p>
       </div>

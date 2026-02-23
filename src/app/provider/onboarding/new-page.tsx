@@ -202,7 +202,7 @@ export default function NewProviderOnboardingPage() {
           <div className="bg-neutral-50 relative size-full min-h-screen flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">{currentStepData.title}</h2>
-              <p className="text-gray-600 mb-8">This step is coming soon...</p>
+              <p className="text-muted-foreground mb-8">This step is coming soon...</p>
               <button 
                 onClick={handleNext}
                 className="bg-black text-white px-6 py-2 rounded-lg"
@@ -228,7 +228,7 @@ export default function NewProviderOnboardingPage() {
             className="mx-auto mb-4 animate-pulse"
             priority
           />
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     )
@@ -240,7 +240,7 @@ export default function NewProviderOnboardingPage() {
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to sign in...</p>
+          <p className="text-muted-foreground">Redirecting to sign in...</p>
         </div>
       </div>
     )

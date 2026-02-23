@@ -241,7 +241,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       {/* Days of Week Header */}
       <div className="grid grid-cols-7 gap-2">
         {daysOfWeek.map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+          <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
             {day}
           </div>
         ))}
@@ -275,7 +275,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
               onClick={() => !isPast && handleDateClick(date)}
             >
               <div className="flex flex-col items-center justify-center h-full p-2">
-                <span className={`text-sm font-medium ${isPast ? 'text-gray-400' : 'text-gray-900'}`}>
+                <span className={`text-sm font-medium ${isPast ? 'text-muted-foreground' : 'text-foreground'}`}>
                   {day}
                 </span>
                 {dayAvailability.available && dayName && (() => {
@@ -315,7 +315,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           <div className="space-y-6">
             {/* Current Time Slots grid only */}
             {timeSlots.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p>Šiai dienai laiko intervalų nenustatyta</p>
               </div>
@@ -328,7 +328,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                       p-3 border rounded-lg text-sm font-medium transition-all duration-200
                       ${slot.available 
                         ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200' 
-                        : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
+                        : 'bg-gray-100 border-gray-300 text-muted-foreground hover:bg-gray-200'
                       }
                     `}
                     whileHover={{ scale: 1.02 }}
@@ -338,7 +338,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     <div className="text-center">
                       <div className="font-semibold">{slot.start}</div>
                       <div className="text-xs opacity-75">- {slot.end}</div>
-                      <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-gray-500'}`}>
+                      <div className={`text-xs mt-1 ${slot.available ? 'text-green-600' : 'text-muted-foreground'}`}>
                         {slot.available ? 'Prieinama' : 'Neprieinama'}
                       </div>
                     </div>
@@ -346,7 +346,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                 ))}
               </div>
             )}
-            <div className="text-sm text-gray-600 text-center">
+            <div className="text-sm text-muted-foreground text-center">
               Spustelėkite laiko blokus, kad perjungtumėte prieinamumą. Kiekvienas blokas reiškia 15 minučių intervalą.
             </div>
           </div>

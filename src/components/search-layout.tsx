@@ -51,9 +51,9 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center py-12">
             <div className="text-red-500 text-lg mb-4">{t('search.errorLoadingProviders')}</div>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <p className="text-muted-foreground mb-6">{error}</p>
+            <Button
+              onClick={() => window.location.reload()}
               variant="outline"
             >
               {t('search.tryAgain')}
@@ -64,11 +64,8 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
     )
   }
 
-  // Calculate map height based on drawer state
-  const mapHeight = isDrawerOpen ? 'h-[20vh]' : 'h-[84vh]'
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-neutral-50/60">
       {/* Mobile Layout - Full Screen Map */}
       <div className="lg:hidden h-screen">
         <MapboxMap
@@ -83,38 +80,48 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
       </div>
 
       {/* Desktop Layout - Side by Side */}
-      <div className="hidden lg:block mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="hidden lg:flex h-[calc(100vh-4.5rem)]">
         {viewMode === 'list' ? (
-          <div className="space-y-6 h-[calc(100vh-8rem)]">
-            {/* Filters */}
-            <SearchFilters 
-              filters={filters} 
-              onFiltersChange={onFiltersChange}
-              isMobile={!isDesktop}
-            />
-            
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1">
-              {/* Left: Provider Grid */}
-              <div className="space-y-4 overflow-y-auto pr-2">
+          <>
+            {/* Left Panel: Filters + Results */}
+            <div className="w-[55%] xl:w-[50%] flex flex-col h-full overflow-hidden">
+              {/* Filters Section */}
+              <div className="shrink-0 px-6 pt-5 pb-4 bg-white border-b border-neutral-100">
+                <SearchFilters
+                  filters={filters}
+                  onFiltersChange={onFiltersChange}
+                  isMobile={!isDesktop}
+                  resultsCount={
+                    filters.category === 'pets' ? individualPets.length :
+                    filters.category === 'adoption' ? petAds.length :
+                    results.length
+                  }
+                />
+              </div>
+
+              {/* Scrollable Results */}
+              <div className="flex-1 overflow-y-auto px-6 py-5 scroll-smooth" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d4d4d4 transparent' }}>
                 {loading ? (
                   <div className="space-y-4">
                     {[...Array(6)].map((_, i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
+                        <div className="bg-neutral-200/60 rounded-2xl h-56 w-full"></div>
                       </div>
                     ))}
                   </div>
                 ) : filters.category === 'pets' ? (
                   <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      {individualPets.length} Gyvūnai pardavimui
-                    </h2>
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-semibold text-neutral-900 tracking-tight">
+                        {individualPets.length} Gyvūnai pardavimui
+                      </h2>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {individualPets.map((pet) => (
-                        <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
+                        <div key={pet.id} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.04)] p-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-300">
                           <div className="flex gap-4">
                             {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
-                              <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              <div className="w-24 h-24 bg-neutral-100 rounded-xl overflow-hidden flex-shrink-0">
                                 <img
                                   src={pet.gallery[0]}
                                   alt={pet.title}
@@ -124,11 +131,11 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
                             )}
                             <div className="flex-1">
                               <h3 className="font-semibold text-lg">{pet.title}</h3>
-                              <p className="text-gray-600 text-sm">
-                                {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
+                              <p className="text-neutral-500 text-sm">
+                                {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} &bull; {pet.age} sav.
                               </p>
-                              <p className="text-lg font-bold text-green-600">{pet.price}€</p>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-lg font-bold text-emerald-600">{pet.price}&euro;</p>
+                              <p className="text-sm text-neutral-400">
                                 Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
                               </p>
                             </div>
@@ -146,8 +153,10 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
                   />
                 )}
               </div>
+            </div>
 
-              {/* Right: Map */}
+            {/* Right: Map */}
+            <div className="flex-1 h-full relative">
               <MapboxMap
                 results={results}
                 onMarkerClick={onMarkerClick}
@@ -155,82 +164,90 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
                 onSearchClick={handleSearchClick}
                 onFiltersClick={handleFiltersClick}
                 showControls={false}
-                className="sticky top-24 h-[calc(100vh-8rem)] rounded-lg"
+                className="w-full h-full"
               />
             </div>
-            </div>
-          ) : viewMode === 'grid' ? (
-            /* Grid Only View */
-            <div className="space-y-6">
-              {/* Filters */}
-              <SearchFilters 
-                filters={filters} 
-                onFiltersChange={onFiltersChange}
-                isMobile={!isDesktop}
-              />
+          </>
+        ) : viewMode === 'grid' ? (
+          /* Grid Only View */
+          <div className="w-full overflow-y-auto px-6 py-5">
+            <div className="max-w-7xl mx-auto space-y-6">
+              <div className="bg-white rounded-2xl p-5 border border-neutral-100">
+                <SearchFilters
+                  filters={filters}
+                  onFiltersChange={onFiltersChange}
+                  isMobile={!isDesktop}
+                  resultsCount={
+                    filters.category === 'pets' ? individualPets.length :
+                    filters.category === 'adoption' ? petAds.length :
+                    results.length
+                  }
+                />
+              </div>
               <div className="space-y-4">
-              {loading ? (
-                <div className="provider-grid">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="bg-gray-200 rounded-lg h-64 w-full"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : filters.category === 'pets' ? (
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {individualPets.length} Gyvūnai pardavimui
-                  </h2>
+                {loading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {individualPets.map((pet) => (
-                      <div key={pet.id} className="bg-white rounded-lg shadow-md p-4">
-                        <div className="flex gap-4">
-                          {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
-                            <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                              <img
-                                src={pet.gallery[0]}
-                                alt={pet.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">{pet.title}</h3>
-                            <p className="text-gray-600 text-sm">
-                              {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} • {pet.age} sav.
-                            </p>
-                            <p className="text-lg font-bold text-green-600">{pet.price}€</p>
-                            <p className="text-sm text-gray-500">
-                              Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
-                            </p>
-                          </div>
-                        </div>
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="bg-neutral-200/60 rounded-2xl h-64 w-full"></div>
                       </div>
                     ))}
                   </div>
-                </div>
-              ) : (
-                <ListingsGrid
-                  title={`${results.length} ${t('search.providersFound')}`}
-                  providers={results.map(result => result.provider)}
-                  showViewAll={false}
-                />
-              )}
+                ) : filters.category === 'pets' ? (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-neutral-900">
+                      {individualPets.length} Gyvūnai pardavimui
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {individualPets.map((pet) => (
+                        <div key={pet.id} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.04)] p-4">
+                          <div className="flex gap-4">
+                            {pet.gallery && pet.gallery.length > 0 && pet.gallery[0] && pet.gallery[0].trim() !== '' && (
+                              <div className="w-24 h-24 bg-neutral-100 rounded-xl overflow-hidden flex-shrink-0">
+                                <img
+                                  src={pet.gallery[0]}
+                                  alt={pet.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-lg">{pet.title}</h3>
+                              <p className="text-neutral-500 text-sm">
+                                {pet.sexType === 'male' ? 'Patinas' : 'Patelė'} &bull; {pet.age} sav.
+                              </p>
+                              <p className="text-lg font-bold text-emerald-600">{pet.price}&euro;</p>
+                              <p className="text-sm text-neutral-400">
+                                Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <ListingsGrid
+                    title={`${results.length} ${t('search.providersFound')}`}
+                    providers={results.map(result => result.provider)}
+                    showViewAll={false}
+                  />
+                )}
               </div>
             </div>
-          ) : (
-            /* Map Only View */
-            <MapboxMap
-              results={results}
-              onMarkerClick={onMarkerClick}
-              selectedProviderId={selectedProviderId}
-              onSearchClick={handleSearchClick}
-              onFiltersClick={handleFiltersClick}
-              showControls={true}
-              className="h-[calc(100vh-8rem)] rounded-lg"
-            />
-          )}
+          </div>
+        ) : (
+          /* Map Only View */
+          <MapboxMap
+            results={results}
+            onMarkerClick={onMarkerClick}
+            selectedProviderId={selectedProviderId}
+            onSearchClick={handleSearchClick}
+            onFiltersClick={handleFiltersClick}
+            showControls={true}
+            className="w-full h-full"
+          />
+        )}
       </div>
 
       {/* Filter Modal */}
@@ -249,7 +266,6 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
         providerType={providerType}
         onProviderTypeChange={setProviderType}
         onApplyFilters={() => {
-          // Apply filters logic here
           console.log('Applying filters:', { rating, providerType })
         }}
         resultsCount={results.length}
@@ -257,4 +273,3 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
     </div>
   )
 }
-

@@ -113,7 +113,7 @@ export default function BusinessSettingsPage() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Kraunamos nuostatos...</p>
+            <p className="mt-4 text-muted-foreground">Kraunamos nuostatos...</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -127,11 +127,11 @@ export default function BusinessSettingsPage() {
         
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <h1 className="text-3xl font-bold text-foreground flex items-center">
                
                 Verslo nustatymai
               </h1>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-muted-foreground">
                 Konfigūruokite savo {businessType} verslo parametrus ir nuostatas
               </p>
             </div>

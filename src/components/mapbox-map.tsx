@@ -279,8 +279,8 @@ export const MapboxMap = ({
     return (
       <div className={`h-96 bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Unavailable</h3>
-          <p className="text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground mb-2">Map Unavailable</h3>
+          <p className="text-muted-foreground">
             Please add your Mapbox access token to environment variables
           </p>
         </div>
@@ -394,22 +394,22 @@ export const MapboxMap = ({
               <div className="p-3">
                 {/* Title and Rating */}
                 <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-900 text-sm leading-tight">
+                  <h4 className="font-semibold text-foreground text-sm leading-tight">
                     {selectedResult.provider.businessName}
                   </h4>
                   <div className="flex items-center ml-2">
                     <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                    <span className="text-xs font-medium text-gray-900 ml-1">
+                    <span className="text-xs font-medium text-foreground ml-1">
                       {selectedResult.provider.rating}
                     </span>
-                    <span className="text-xs text-gray-500 ml-1">
+                    <span className="text-xs text-muted-foreground ml-1">
                       ({selectedResult.provider.reviewCount})
                     </span>
                   </div>
                 </div>
 
                 {/* Location */}
-                <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
+                <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
                   <div className="flex items-center">
                     <MapPin className="h-3 w-3 mr-1" />
                     {selectedResult.provider.location.city}
@@ -418,9 +418,9 @@ export const MapboxMap = ({
 
                 {/* Price */}
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-foreground">
                     {formatPrice(selectedResult.provider.priceRange)}
-                    <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
+                    <span className="text-xs font-normal text-muted-foreground ml-1">{t('search.perService')}</span>
                   </div>
                 </div>
               </div>
@@ -457,25 +457,25 @@ export const MapboxMap = ({
                   onClick={handleClosePopup}
                   className="absolute top-1 right-1 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
                 >
-                  <X className="w-3 h-3 text-gray-700" />
+                  <X className="w-3 h-3 text-foreground" />
                 </button>
               </div>
 
               {/* Content Section */}
               <div className="flex-1 p-3 min-w-0">
                 <div className="flex items-start justify-between mb-1">
-                  <h4 className="font-semibold text-gray-900 text-sm leading-tight truncate">
+                  <h4 className="font-semibold text-foreground text-sm leading-tight truncate">
                     {selectedResult.provider.businessName}
                   </h4>
                   <button className="w-5 h-5 flex items-center justify-center ml-2 flex-shrink-0">
-                    <Heart className="w-3 h-3 text-gray-400" />
+                    <Heart className="w-3 h-3 text-muted-foreground" />
                   </button>
                 </div>
 
                 {/* Services - Moved to overlay */}
 
                 {/* Location and Experience */}
-                <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
+                <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
                   <div className="flex items-center">
                     <MapPin className="h-3 w-3 mr-1" />
                     {selectedResult.provider.location.city}
@@ -487,17 +487,17 @@ export const MapboxMap = ({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-foreground">
                     {formatPrice(selectedResult.provider.priceRange)}
-                    <span className="text-xs font-normal text-gray-600 ml-1">{t('search.perService')}</span>
+                    <span className="text-xs font-normal text-muted-foreground ml-1">{t('search.perService')}</span>
                   </div>
 
                   <div className="flex items-center">
                     <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                    <span className="text-xs font-medium text-gray-900 ml-1">
+                    <span className="text-xs font-medium text-foreground ml-1">
                       {selectedResult.provider.rating}
                     </span>
-                    <span className="text-xs text-gray-500 ml-1">
+                    <span className="text-xs text-muted-foreground ml-1">
                       ({selectedResult.provider.reviewCount})
                     </span>
                   </div>
@@ -510,7 +510,7 @@ export const MapboxMap = ({
 
       {/* Map attribution - Desktop only */}
       {isDesktop && (
-        <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
+        <div className="absolute bottom-2 right-2 text-xs text-muted-foreground bg-white/80 px-2 py-1 rounded">
           © Mapbox © OpenStreetMap
         </div>
       )}

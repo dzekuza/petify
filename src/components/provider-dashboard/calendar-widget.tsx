@@ -142,7 +142,7 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
       case 'confirmed': return 'bg-green-100 text-green-800'
       case 'completed': return 'bg-blue-100 text-blue-800'
       case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-gray-100 text-foreground'
     }
   }
 
@@ -206,7 +206,7 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
           <CardContent className="p-0">
             <div className="grid grid-cols-7 gap-1 mb-4">
               {daysOfWeek.map((day) => (
-                <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
                   {day}
                 </div>
               ))}
@@ -246,7 +246,7 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
                           </div>
                         ))}
                         {dayBookings.length > 2 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             +{dayBookings.length - 2} {t('providerDashboard.more')}
                           </div>
                         )}
@@ -281,31 +281,31 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
                       <Badge className={getStatusColor(booking.status)}>
                         {getStatusText(booking.status)}
                       </Badge>
-                      <span className="text-sm font-medium text-gray-600">€{booking.totalPrice}</span>
+                      <span className="text-sm font-medium text-muted-foreground">€{booking.totalPrice}</span>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
+                        <Clock className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{booking.timeSlot.start} - {booking.timeSlot.end}</span>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-500" />
+                        <User className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-medium">
                           {booking.customer?.fullName || t('providerDashboard.customer')}
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-500" />
+                        <Phone className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
                           {booking.customer?.phone || t('providerDashboard.noPhone')}
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-500" />
+                        <Mail className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{booking.customer?.email}</span>
                       </div>
                     </div>
@@ -313,7 +313,7 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
                     <div className="pt-2 border-t">
                       <p className="text-sm font-medium">{booking.service?.name}</p>
                       {booking.pet && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {t('providerDashboard.pet')}: {booking.pet.name} ({booking.pet.species})
                         </p>
                       )}
@@ -322,13 +322,13 @@ export function CalendarWidget({ className }: CalendarWidgetProps) {
                 ))
               ) : selectedDate ? (
                 <div className="text-center py-8">
-                  <CalendarIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">{t('providerDashboard.noBookingsForDate')}</p>
+                  <CalendarIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">{t('providerDashboard.noBookingsForDate')}</p>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <CalendarIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">{t('providerDashboard.clickDateToView')}</p>
+                  <CalendarIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">{t('providerDashboard.clickDateToView')}</p>
                 </div>
               )}
             </div>

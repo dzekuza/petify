@@ -87,7 +87,7 @@ export function ProviderManagement({ providers, loading, onProviderUpdate }: Pro
                   </div>
                   <div>
                     <div className="font-medium">{provider.business_name}</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {provider.users?.full_name} • {provider.users?.email}
                     </div>
                     <div className="flex items-center space-x-2 mt-1">
@@ -101,7 +101,7 @@ export function ProviderManagement({ providers, loading, onProviderUpdate }: Pro
                         {provider.business_type}
                       </Badge>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-muted-foreground mt-1">
                       {provider.location?.city}, {provider.location?.state}
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export function ProviderManagement({ providers, loading, onProviderUpdate }: Pro
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Business Name</label>
-              <p className="text-sm text-gray-500">{editProviderModal.provider?.business_name}</p>
+              <p className="text-sm text-muted-foreground">{editProviderModal.provider?.business_name}</p>
             </div>
             <div>
               <label className="text-sm font-medium">Status</label>

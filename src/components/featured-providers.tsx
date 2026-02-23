@@ -51,21 +51,21 @@ export const FeaturedProviders = () => {
     <section className="py-16 bg-gray-50">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {t('landing.featuredProviders.title')}
           </h2>
-          <p className="mt-4 text-lg text-gray-600">
+          <p className="mt-4 text-lg text-muted-foreground">
             {t('landing.featuredProviders.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProviders.map((provider) => (
-            <Card key={provider.id} className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+            <Card key={provider.id} className="group transition-all duration-200 hover:-translate-y-1">
               <div className="relative">
                 <div className="aspect-video bg-gray-200 rounded-t-lg overflow-hidden">
                   <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    <span className="text-gray-500 text-sm">Provider Image</span>
+                    <span className="text-muted-foreground text-sm">Provider Image</span>
                   </div>
                 </div>
                 <div className="absolute top-4 right-4">
@@ -84,28 +84,28 @@ export const FeaturedProviders = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
                       {provider.businessName}
                     </h3>
                     <div className="flex items-center space-x-2 mt-1">
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm font-medium text-gray-900 ml-1">
+                        <span className="text-sm font-medium text-foreground ml-1">
                           {provider.rating}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         ({provider.reviewCount} {t('landing.featuredProviders.reviews')})
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {provider.description}
                 </p>
 
-                <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500">
+                <div className="flex items-center space-x-4 mb-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1" />
                     {provider.location}

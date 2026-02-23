@@ -212,8 +212,8 @@ export function IndividualPetsDialog({
         {/* Individual Pets */}
         <div className="space-y-4">
           {pets.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Heart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center py-8 text-muted-foreground">
+              <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground/60" />
               <p>Dar nėra atskirų gyvūnų</p>
               <p className="text-sm">Pridėkite pirmą gyvūną</p>
             </div>
@@ -223,7 +223,7 @@ export function IndividualPetsDialog({
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="font-medium">{pet.title || 'Nepavadinotas gyvūnas'}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {pet.sexType === 'male' ? 'Patinas' : 'Patelė'}
                       </p>
                     </div>
@@ -250,7 +250,7 @@ export function IndividualPetsDialog({
                   </div>
                   
                   <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <Euro className="h-4 w-4 mr-1" />
                         {pet.price}€
@@ -363,7 +363,7 @@ export function IndividualPetsDialog({
                                 <div key={imageIndex} className="relative group">
                                   {image instanceof File ? (
                                     <div className="w-full h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                                      <span className="text-xs text-gray-500">
+                                      <span className="text-xs text-muted-foreground">
                                         {image.name}
                                       </span>
                                     </div>

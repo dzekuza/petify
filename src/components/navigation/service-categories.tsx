@@ -54,7 +54,7 @@ export function ServiceCategories({ isMobile = false, className }: ServiceCatego
                 height={48}
               />
             </div>
-            <span className="text-sm font-medium text-center text-gray-900 group-hover:text-blue-600 transition-colors">
+            <span className="text-sm font-medium text-center text-foreground group-hover:text-blue-600 transition-colors">
               {item.name}
             </span>
           </Link>

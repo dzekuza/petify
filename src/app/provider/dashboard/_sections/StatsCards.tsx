@@ -19,8 +19,8 @@ export default function StatsCards({ bookings, provider }: Props) {
               <Calendar className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('bookings.today', "Today's Bookings")}</p>
-              <p className="text-2xl font-bold text-gray-900">{bookings.filter(b => new Date(b.date).toDateString() === new Date().toDateString()).length}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('bookings.today', "Today's Bookings")}</p>
+              <p className="text-2xl font-bold text-foreground">{bookings.filter(b => new Date(b.date).toDateString() === new Date().toDateString()).length}</p>
             </div>
           </div>
         </CardContent>
@@ -33,8 +33,8 @@ export default function StatsCards({ bookings, provider }: Props) {
               <Users className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('providerDashboard.totalCustomers', 'Iš viso klientų')}</p>
-              <p className="text-2xl font-bold text-gray-900">{new Set(bookings.map(b => b.customerId)).size}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('providerDashboard.totalCustomers', 'Iš viso klientų')}</p>
+              <p className="text-2xl font-bold text-foreground">{new Set(bookings.map(b => b.customerId)).size}</p>
             </div>
           </div>
         </CardContent>
@@ -47,8 +47,8 @@ export default function StatsCards({ bookings, provider }: Props) {
               <DollarSign className="h-6 w-6 text-yellow-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('providerDashboard.thisMonth', 'Šį mėnesį')}</p>
-              <p className="text-2xl font-bold text-gray-900">${bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0)}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('providerDashboard.thisMonth', 'Šį mėnesį')}</p>
+              <p className="text-2xl font-bold text-foreground">${bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0)}</p>
             </div>
           </div>
         </CardContent>
@@ -61,8 +61,8 @@ export default function StatsCards({ bookings, provider }: Props) {
               <Star className="h-6 w-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('providerDashboard.rating', 'Įvertinimas')}</p>
-              <p className="text-2xl font-bold text-gray-900">{provider?.rating || 'N/A'}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('providerDashboard.rating', 'Įvertinimas')}</p>
+              <p className="text-2xl font-bold text-foreground">{provider?.rating || 'N/A'}</p>
             </div>
           </div>
         </CardContent>

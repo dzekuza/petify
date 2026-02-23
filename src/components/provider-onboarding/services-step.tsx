@@ -171,7 +171,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
           <h1 className="text-3xl font-bold text-black">
             {data.providerType === 'adoption' ? 'Pasirinkite gyvūnų tipus' : 'Pasirinkite paslaugas'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {data.providerType === 'adoption'
               ? 'Pasirinkite gyvūnų tipus, kuriuos veisiate ir parduosite'
               : 'Pasirinkite paslaugas, kurias teikiate savo klientams'
@@ -188,7 +188,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                 <div
                   key={service.id}
                   data-slot="card"
-                  className={`bg-card text-card-foreground space-y-4 flex flex-col rounded-xl border shadow-sm duration-300 hover:shadow-lg cursor-pointer transition-all ${selectedServices.includes(service.id)
+                  className={`bg-card text-card-foreground space-y-4 flex flex-col rounded-xl border duration-300 cursor-pointer transition-all ${selectedServices.includes(service.id)
                     ? 'border-black bg-gray-50'
                     : 'border-gray-200 hover:border-black'
                     }`}
@@ -204,7 +204,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                       />
                       <div>
                         <h3 className="font-medium">{service.name}</h3>
-                        <p className="text-sm text-gray-600">{service.description}</p>
+                        <p className="text-sm text-muted-foreground">{service.description}</p>
                       </div>
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                 {selectedServices.map((serviceId) => {
                   const details = getServiceDetailsById(serviceId)
                   return (
-                    <div key={`details-${serviceId}`} data-slot="card" className="bg-card text-card-foreground space-y-4 flex flex-col rounded-xl shadow-sm transition-all duration-300 hover:shadow-lg border-0">
+                    <div key={`details-${serviceId}`} data-slot="card" className="bg-card text-card-foreground space-y-4 flex flex-col rounded-xl transition-all duration-300 border-0">
                       <div data-slot="card-header" className="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 p-0">
                         <div data-slot="card-title" className="leading-none font-semibold">{getServiceName(serviceId)}</div>
                       </div>
@@ -231,10 +231,10 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-6 p-0">
                             <div className="w-full space-y-2">
-                              <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-gray-700">Aprašymas</label>
+                              <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-foreground">Aprašymas</label>
                               <textarea
                                 data-slot="textarea"
-                                className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm w-full resize-none"
+                                className="border-neutral-200 placeholder:text-muted-foreground focus-visible:border-neutral-400 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 rounded-md border bg-transparent px-3 py-2 text-base transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm w-full resize-none"
                                 placeholder={data.providerType === 'adoption' ? 'Trumpai apibūdinkite gyvūnų tipą ir veisimo ypatumus' : 'Trumpai apibūdinkite paslaugą'}
                                 value={details?.description || ''}
                                 onChange={(e) => updateServiceDetails(serviceId, { description: e.target.value })}
@@ -242,12 +242,12 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                             </div>
 
                             <div className="w-full space-y-2">
-                              <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-gray-700">
+                              <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-foreground">
                                 {data.providerType === 'adoption' ? 'Kainų diapazonas (€)' : 'Kaina (€)'}
                               </label>
                               <input
                                 data-slot="input"
-                                className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-10 min-w-0 rounded-lg border-2 bg-white px-4 py-2 text-base shadow-sm transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:shadow-md hover:border-neutral-300 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full"
+                                className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-neutral-200 h-10 min-w-0 rounded-lg border-2 bg-white px-4 py-2 text-base transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-neutral-400 hover:border-neutral-300 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full"
                                 placeholder={data.providerType === 'adoption' ? 'pvz: 500-800' : 'Įveskite kainą'}
                                 type="text"
                                 value={details?.price || ''}
@@ -382,7 +382,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                                 </div>
 
                                 <div>
-                                  <Label className="text-sm font-medium text-gray-700">Paruošti išvežti</Label>
+                                  <Label className="text-sm font-medium text-foreground">Paruošti išvežti</Label>
                                   <Popover>
                                     <PopoverTrigger asChild>
                                       <Button
@@ -405,7 +405,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                                 </div>
 
                                 <div>
-                                  <Label className="text-sm font-medium text-gray-700 mb-3 block">Sveikatos dokumentai</Label>
+                                  <Label className="text-sm font-medium text-foreground mb-3 block">Sveikatos dokumentai</Label>
                                   <div className="space-y-3">
                                     <div className="flex items-center space-x-2">
                                       <Checkbox
@@ -473,7 +473,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                             )}
                             {data.addresses?.length > 0 && (
                               <div className="space-y-2">
-                                <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-gray-700">Vieta</label>
+                                <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-foreground">Vieta</label>
                                 <Select
                                   value={details?.locationId || ''}
                                   onValueChange={(v) => updateServiceDetails(serviceId, { locationId: v })}
@@ -490,7 +490,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                           </div>
 
                           <div className="p-0">
-                            <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-gray-700">Galerija</label>
+                            <label data-slot="label" className="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-medium text-foreground">Galerija</label>
                             <div className="flex flex-wrap gap-3 mt-2">
                               {(details?.gallery || []).map((file, idx) => (
                                 <div key={idx} className="relative">
@@ -541,7 +541,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
             <div className="flex space-x-2">
               <input
                 data-slot="input"
-                className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-10 w-full min-w-0 rounded-lg border-2 bg-white px-4 py-2 text-base shadow-sm transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:shadow-md hover:border-neutral-300 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1"
+                className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-neutral-200 h-10 w-full min-w-0 rounded-lg border-2 bg-white px-4 py-2 text-base transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-neutral-400 hover:border-neutral-300 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex-1"
                 value={newCustomService}
                 onChange={(e) => setNewCustomService(e.target.value)}
                 placeholder={data.providerType === 'adoption' ? 'Įveskite gyvūnų tipo pavadinimą' : 'Įveskite paslaugos pavadinimą'}
@@ -550,7 +550,7 @@ export default function ServicesStep({ data, onUpdate, onNext, onPrevious, isEdi
                 data-slot="button"
                 data-variant="default"
                 data-size="default"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md h-9 px-4 py-2 has-[>svg]:px-3"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-neutral-400 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
                 onClick={handleAddCustomService}
                 disabled={!newCustomService.trim()}
               >

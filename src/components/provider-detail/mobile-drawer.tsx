@@ -45,7 +45,7 @@ export function MobileDrawer({
           />
           
           <div className="border-t border-gray-200 pt-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.bookThisService')}</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('common.bookThisService')}</h2>
             <BookingWidget
               provider={provider}
               services={services}
@@ -61,10 +61,10 @@ export function MobileDrawer({
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
           <div className="flex items-center justify-between mx-auto">
             <div>
-              <div className="text-lg font-semibold text-gray-900">
+              <div className="text-lg font-semibold text-foreground">
                 €{provider.priceRange.min}-€{provider.priceRange.max}
               </div>
-              <div className="text-sm text-gray-600">{t('common.perService')}</div>
+              <div className="text-sm text-muted-foreground">{t('common.perService')}</div>
             </div>
             <Button 
               variant="gradient"

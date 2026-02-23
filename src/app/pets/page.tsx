@@ -311,8 +311,8 @@ export default function PetsPage() {
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Mano gyvūnai</h1>
-                <p className="text-gray-600">Valdykite savo gyvūnų profilius</p>
+                <h1 className="text-3xl font-bold text-foreground">Mano gyvūnai</h1>
+                <p className="text-muted-foreground">Valdykite savo gyvūnų profilius</p>
               </div>
               <div className="flex justify-start md:justify-end">
                 <Button onClick={handleAddPet}>
@@ -327,8 +327,8 @@ export default function PetsPage() {
               {loading ? (
                 <Card>
                   <CardContent className="text-center py-8">
-                    <Loader2 className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
-                    <p className="text-gray-600">Kraunami jūsų gyvūnai...</p>
+                    <Loader2 className="h-8 w-8 text-muted-foreground mx-auto mb-4 animate-spin" />
+                    <p className="text-muted-foreground">Kraunami jūsų gyvūnai...</p>
                   </CardContent>
                 </Card>
               ) : error ? (
@@ -341,9 +341,9 @@ export default function PetsPage() {
               ) : pets.length === 0 ? (
                 <Card>
                   <CardContent className="text-center py-8">
-                    <Dog className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Dar nėra gyvūnų</h3>
-                    <p className="text-gray-600 mb-4">Pridėkite savo pirmą gyvūną, kad pradėtumėte</p>
+                    <Dog className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-foreground mb-2">Dar nėra gyvūnų</h3>
+                    <p className="text-muted-foreground mb-4">Pridėkite savo pirmą gyvūną, kad pradėtumėte</p>
                     <Button onClick={handleAddPet}>
                       <Plus className="h-4 w-4 mr-2" />
                       Pridėti gyvūną
@@ -364,10 +364,10 @@ export default function PetsPage() {
 
                         <div className="flex-1">
                           <div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                            <h3 className="text-xl font-semibold text-foreground mb-1">
                               {pet.name}
                             </h3>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                            <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
                               <span className="capitalize">{pet.species}</span>
                               {pet.breed && <span>{getTranslatedBreedName(pet.breed)}</span>}
                               <span>{getAgeText(pet.age)}</span>
@@ -397,7 +397,7 @@ export default function PetsPage() {
 
                           {pet.specialNeeds && pet.specialNeeds.length > 0 && (
                             <div className="mt-3">
-                              <p className="text-sm font-medium text-gray-900 mb-1">Specialūs poreikiai:</p>
+                              <p className="text-sm font-medium text-foreground mb-1">Specialūs poreikiai:</p>
                               <div className="flex flex-wrap gap-1">
                                 {pet.specialNeeds.map((need, index) => (
                                   <Badge key={index} variant="secondary" className="text-xs">
@@ -410,8 +410,8 @@ export default function PetsPage() {
 
                           {pet.medicalNotes && (
                             <div className="mt-3">
-                              <p className="text-sm font-medium text-gray-900 mb-1">Medicinos pastabos:</p>
-                              <p className="text-sm text-gray-600">{pet.medicalNotes}</p>
+                              <p className="text-sm font-medium text-foreground mb-1">Medicinos pastabos:</p>
+                              <p className="text-sm text-muted-foreground">{pet.medicalNotes}</p>
                             </div>
                           )}
                         </div>

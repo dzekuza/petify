@@ -121,12 +121,12 @@ export const FilterModal = ({
           {/* Price Range */}
           <div>
             <h3 className="text-lg font-medium mb-2">Kainų diapazonas</h3>
-            <p className="text-sm text-gray-600 mb-4">Nakties kainos, įskaitant mokesčius</p>
+            <p className="text-sm text-muted-foreground mb-4">Nakties kainos, įskaitant mokesčius</p>
             
             {/* Price histogram */}
             <div className="h-16 bg-gradient-to-r from-pink-200 via-pink-300 to-pink-200 rounded-lg mb-4 relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-xs text-gray-600">Kainų pasiskirstymas</div>
+                <div className="text-xs text-muted-foreground">Kainų pasiskirstymas</div>
               </div>
               {/* Price distribution bars - more realistic distribution */}
               <div className="absolute bottom-0 left-0 right-0 h-full flex items-end justify-between px-2">
@@ -161,7 +161,7 @@ export const FilterModal = ({
                   minStepsBetweenThumbs={1}
                 />
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Minimali €{localPriceRange[0]}</span>
                 <span>Maksimali €{localPriceRange[1]}+</span>
               </div>

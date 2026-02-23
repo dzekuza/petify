@@ -106,7 +106,7 @@ export const ServiceCard = ({
   const coverImage = getCoverImage()
 
   return (
-    <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden", className)}>
+    <Card className={cn("group transition-all duration-200 hover:-translate-y-1 overflow-hidden", className)}>
       {/* Image Section */}
       <div className="relative">
         <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
@@ -143,7 +143,7 @@ export const ServiceCard = ({
             <Heart 
               className={cn(
                 "h-4 w-4",
-                isFavorite ? "text-red-500 fill-current" : "text-gray-400",
+                isFavorite ? "text-red-500 fill-current" : "text-muted-foreground",
                 isToggling && "animate-pulse"
               )} 
             />
@@ -156,27 +156,27 @@ export const ServiceCard = ({
         <div className="space-y-2">
           {/* Service Name */}
           <div>
-            <h3 className="font-semibold text-lg line-clamp-1 text-gray-900">
+            <h3 className="font-semibold text-lg line-clamp-1 text-foreground">
               {service.name}
             </h3>
-            <p className="text-sm text-gray-600 line-clamp-1">
+            <p className="text-sm text-muted-foreground line-clamp-1">
               {provider.businessName}
             </p>
           </div>
 
           {/* Service Description */}
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-muted-foreground line-clamp-2">
             {service.description}
           </p>
 
           {/* Location and Distance */}
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span className="line-clamp-1">
               {provider.location.city}
             </span>
             {distance && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 • {distance.toFixed(1)} km
               </span>
             )}
@@ -184,11 +184,11 @@ export const ServiceCard = ({
 
           {/* Price and Duration */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
               <Euro className="h-4 w-4" />
               <span>€{service.price}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
               <span>{service.duration} min</span>
             </div>
@@ -198,10 +198,10 @@ export const ServiceCard = ({
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm font-medium text-foreground">
                 {provider.rating || 0}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 ({provider.reviewCount || 0})
               </span>
             </div>

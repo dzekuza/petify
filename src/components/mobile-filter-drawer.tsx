@@ -141,7 +141,7 @@ export const MobileFilterDrawer = ({
           <div className="space-y-2">
             <Label>Vieta</Label>
             <div className="relative">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true">
                 <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
@@ -151,7 +151,7 @@ export const MobileFilterDrawer = ({
                 value={filters.location || ''}
                 onChange={(e) => handleFilterChange('location', e.target.value)}
               />
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true">
                 <path d="m21 21-4.34-4.34"></path>
                 <circle cx="11" cy="11" r="8"></circle>
               </svg>
@@ -196,7 +196,7 @@ export const MobileFilterDrawer = ({
                     <div className="flex items-center space-x-2">
                       <User className="h-4 w-4" />
                       <span>{pet.name}</span>
-                      <span className="text-xs text-gray-500 capitalize">({pet.species})</span>
+                      <span className="text-xs text-muted-foreground capitalize">({pet.species})</span>
                     </div>
                   </SelectItem>
                 ))}

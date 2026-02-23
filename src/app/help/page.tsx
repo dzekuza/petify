@@ -69,14 +69,14 @@ export default function HelpPage() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Help & Support</h1>
-              <p className="text-gray-600">Get help with your account and services</p>
+              <h1 className="text-3xl font-bold text-foreground">Help & Support</h1>
+              <p className="text-muted-foreground">Get help with your account and services</p>
             </div>
 
             {/* Search */}
             <div className="mb-8">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search for help topics..."
                   className="pl-10"
@@ -86,15 +86,15 @@ export default function HelpPage() {
 
             {/* Contact Methods */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Contact Us</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {contactMethods.map((method, index) => (
                   <Card key={index}>
                     <CardContent className="p-6 text-center">
                       <method.icon className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                      <h3 className="font-semibold text-gray-900 mb-1">{method.title}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{method.description}</p>
-                      <p className="text-sm font-medium text-gray-900 mb-3">{method.contact}</p>
+                      <h3 className="font-semibold text-foreground mb-1">{method.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
+                      <p className="text-sm font-medium text-foreground mb-3">{method.contact}</p>
                       <Button variant="outline" size="sm" className="w-full">
                         {method.action}
                       </Button>
@@ -106,13 +106,13 @@ export default function HelpPage() {
 
             {/* FAQ */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Frequently Asked Questions</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {faqs.map((faq, index) => (
                   <Card key={index}>
                     <CardContent className="p-6">
-                      <h3 className="font-semibold text-gray-900 mb-2">{faq.question}</h3>
-                      <p className="text-gray-600">{faq.answer}</p>
+                      <h3 className="font-semibold text-foreground mb-2">{faq.question}</h3>
+                      <p className="text-muted-foreground">{faq.answer}</p>
                     </CardContent>
                   </Card>
                 ))}

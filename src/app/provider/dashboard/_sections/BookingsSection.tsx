@@ -26,7 +26,7 @@ const getStatusIcon = (status: string) => {
     case 'cancelled':
       return <XCircle className="h-4 w-4 text-red-500" />
     default:
-      return <Clock className="h-4 w-4 text-gray-500" />
+      return <Clock className="h-4 w-4 text-muted-foreground" />
   }
 }
 
@@ -41,7 +41,7 @@ const getStatusColor = (status: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-800'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-foreground'
   }
 }
 
@@ -49,9 +49,9 @@ export default function BookingsSection({ bookings, services, onView, onAccept, 
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('providerDashboard.emptyBookingsTitle', 'No bookings yet')}</h3>
-        <p className="text-gray-600">{t('providerDashboard.emptyBookingsDesc', "When customers book your services, they'll appear here.")}</p>
+        <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">{t('providerDashboard.emptyBookingsTitle', 'No bookings yet')}</h3>
+        <p className="text-muted-foreground">{t('providerDashboard.emptyBookingsDesc', "When customers book your services, they'll appear here.")}</p>
       </div>
     )
   }
@@ -63,7 +63,7 @@ export default function BookingsSection({ bookings, services, onView, onAccept, 
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">
-                <h4 className="font-medium text-gray-900">
+                <h4 className="font-medium text-foreground">
                   {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
                 </h4>
                 <Badge className={getStatusColor(booking.status)}>
@@ -73,13 +73,13 @@ export default function BookingsSection({ bookings, services, onView, onAccept, 
                   </div>
                 </Badge>
               </div>
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <span>{new Date(booking.date).toLocaleDateString()}</span>
                 <span>{booking.timeSlot.start} - {booking.timeSlot.end}</span>
                 <span>${booking.totalPrice}</span>
               </div>
               {booking.notes && (
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   <strong>{t('providerDashboard.notes', 'Notes')}:</strong> {booking.notes}
                 </p>
               )}

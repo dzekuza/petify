@@ -43,7 +43,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <Label 
           htmlFor={inputId} 
           className={cn(
-            'text-sm font-medium text-gray-700',
+            'text-sm font-medium text-foreground',
             error && 'text-red-600',
             labelClassName
           )}
@@ -68,7 +68,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         )}
         
         {helperText && !error && (
-          <p className="text-sm text-gray-500">{helperText}</p>
+          <p className="text-sm text-muted-foreground">{helperText}</p>
         )}
       </div>
     )
@@ -96,7 +96,7 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
         <Label 
           htmlFor={textareaId} 
           className={cn(
-            'text-sm font-medium text-gray-700',
+            'text-sm font-medium text-foreground',
             error && 'text-red-600',
             labelClassName
           )}
@@ -121,7 +121,7 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
         )}
         
         {helperText && !error && (
-          <p className="text-sm text-gray-500">{helperText}</p>
+          <p className="text-sm text-muted-foreground">{helperText}</p>
         )}
       </div>
     )

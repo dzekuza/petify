@@ -63,12 +63,12 @@ function BreederRequestWidget({
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Žinutė</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Žinutė</label>
             <textarea
               value={requestMessage}
               onChange={(e) => setRequestMessage(e.target.value)}
               placeholder="Papasakokite veislininkui apie savo susidomėjimą jų gyvūnais..."
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-md focus-visible:border-neutral-400"
               rows={4}
             />
           </div>
@@ -94,15 +94,15 @@ function BreederRequestWidget({
   )
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-      <div className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6">
+      <div className="text-2xl font-bold text-foreground mb-2">
         Šiuo metu prieinama
       </div>
-      <div className="text-gray-600 mb-6">Pasirinkite gyvūną ir siųskite užklausą</div>
+      <div className="text-muted-foreground mb-6">Pasirinkite gyvūną ir siųskite užklausą</div>
       
       <div className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Pasirinkti gyvūnų tipą</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Pasirinkti gyvūnų tipą</label>
           {services.length > 0 ? (
             <div className="space-y-2">
               <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
@@ -115,15 +115,15 @@ function BreederRequestWidget({
                       value={service.id}
                       checked={selectedService === service.id}
                       onChange={(e) => setSelectedService(e.target.value)}
-                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+                      className="h-4 w-4 text-red-600 focus-visible:border-neutral-400 border-gray-300"
                     />
                     <label
                       htmlFor={`service-${service.id}`}
                       className="flex items-center space-x-2 cursor-pointer flex-1"
                     >
                       <PawPrint className="h-4 w-4" />
-                      <span className="text-sm text-gray-900">{service.name}</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-sm text-foreground">{service.name}</span>
+                      <span className="text-xs text-muted-foreground">
                         {service.breed && `(${service.breed})`}
                         {service.ageWeeks && ` - ${service.ageWeeks} sav.`}
                       </span>
@@ -134,7 +134,7 @@ function BreederRequestWidget({
             </div>
           ) : (
             <div className="border border-gray-300 rounded-md p-3 text-center">
-              <p className="text-sm text-gray-500 mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
+              <p className="text-sm text-muted-foreground mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
         </div>
@@ -396,7 +396,7 @@ export function BookingWidget({
     return (
       <div id="booking-widget" className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceDate')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.serviceDate')}</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -423,7 +423,7 @@ export function BookingWidget({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceTime')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.serviceTime')}</label>
           <Select value={selectedTime} onValueChange={setSelectedTime}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('provider.selectTime')} />
@@ -444,7 +444,7 @@ export function BookingWidget({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.selectPets')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.selectPets')}</label>
           {userPets.length > 0 ? (
             <div className="space-y-2">
               <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
@@ -460,8 +460,8 @@ export function BookingWidget({
                       className="flex items-center space-x-2 cursor-pointer flex-1"
                     >
                       {getPetIcon(pet.species)}
-                      <span className="text-sm text-gray-900">{pet.name}</span>
-                      <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                      <span className="text-sm text-foreground">{pet.name}</span>
+                      <span className="text-xs text-muted-foreground">({pet.species}, {pet.age}y)</span>
                     </label>
                   </div>
                 ))}
@@ -469,13 +469,13 @@ export function BookingWidget({
             </div>
           ) : (
             <div className="border border-gray-300 rounded-md p-3 text-center">
-                <p className="text-sm text-gray-500 mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
+                <p className="text-sm text-muted-foreground mb-2">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceType')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.serviceType')}</label>
           <Select value={selectedService} onValueChange={setSelectedService}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('provider.selectService')} />
@@ -495,15 +495,15 @@ export function BookingWidget({
 
   // Desktop layout
   return (
-    <div id="booking-widget" className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-      <div className="text-2xl font-bold text-gray-900 mb-2">
+    <div id="booking-widget" className="bg-white border border-gray-200 rounded-2xl p-6">
+      <div className="text-2xl font-bold text-foreground mb-2">
         €{provider.priceRange.min}-€{provider.priceRange.max}
       </div>
-      <div className="text-gray-600 mb-6">{t('provider.perService')}</div>
+      <div className="text-muted-foreground mb-6">{t('provider.perService')}</div>
       
       <div className="space-y-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.serviceDate')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.serviceDate')}</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -567,7 +567,7 @@ export function BookingWidget({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('provider.selectPets')}</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t('provider.selectPets')}</label>
           {userPets.length > 0 ? (
             <div className="space-y-2">
               <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
@@ -583,8 +583,8 @@ export function BookingWidget({
                       className="flex items-center space-x-2 cursor-pointer flex-1"
                     >
                       {getPetIcon(pet.species)}
-                      <span className="text-sm text-gray-900">{pet.name}</span>
-                      <span className="text-xs text-gray-500">({pet.species}, {pet.age}y)</span>
+                      <span className="text-sm text-foreground">{pet.name}</span>
+                      <span className="text-xs text-muted-foreground">({pet.species}, {pet.age}y)</span>
                     </label>
                   </div>
                 ))}
@@ -592,7 +592,7 @@ export function BookingWidget({
             </div>
           ) : (
             <div className="border border-gray-300 rounded-md p-3 text-center">
-                <p className="text-sm text-gray-500">Šiuo metu nėra prieinamų gyvūnų</p>
+                <p className="text-sm text-muted-foreground">Šiuo metu nėra prieinamų gyvūnų</p>
             </div>
           )}
         </div>

@@ -31,7 +31,7 @@ export function AdminStats({ stats, loading }: AdminStatsProps) {
   if (!stats) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No statistics available</p>
+        <p className="text-muted-foreground">No statistics available</p>
       </div>
     )
   }

@@ -77,7 +77,7 @@ export const MapControls = ({
                     setShowStyleMenu(false)
                   }}
                   className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
-                    currentStyle === style.key ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    currentStyle === style.key ? 'bg-blue-50 text-blue-600' : 'text-foreground'
                   }`}
                 >
                   <Icon className="h-4 w-4" />

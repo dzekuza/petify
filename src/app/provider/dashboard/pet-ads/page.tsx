@@ -195,8 +195,8 @@ export default function ProviderPetAdsPage() {
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gyvūnų valdymas</h1>
-            <p className="text-gray-600">Valdykite savo gyvūnų tipus ir atskirus gyvūnus</p>
+            <h1 className="text-3xl font-bold text-foreground">Gyvūnų valdymas</h1>
+            <p className="text-muted-foreground">Valdykite savo gyvūnų tipus ir atskirus gyvūnus</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={handleAddPetType} variant="outline">
@@ -213,14 +213,14 @@ export default function ProviderPetAdsPage() {
         {/* Types Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-gray-900">Types</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Types</h2>
           </div>
           
           {loading ? (
             <Card>
               <CardContent className="text-center py-8">
-                <Loader2 className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
-                <p className="text-gray-600">Kraunami gyvūnų tipai...</p>
+                <Loader2 className="h-8 w-8 text-muted-foreground mx-auto mb-4 animate-spin" />
+                <p className="text-muted-foreground">Kraunami gyvūnų tipai...</p>
               </CardContent>
             </Card>
           ) : error ? (
@@ -233,9 +233,9 @@ export default function ProviderPetAdsPage() {
           ) : petTypes.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8">
-                <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Dar nėra gyvūnų tipų</h3>
-                <p className="text-gray-600 mb-4">Sukurkite savo pirmą gyvūnų tipą</p>
+                <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Dar nėra gyvūnų tipų</h3>
+                <p className="text-muted-foreground mb-4">Sukurkite savo pirmą gyvūnų tipą</p>
                 <Button onClick={handleAddPetType}>
                   <Plus className="h-4 w-4 mr-2" />
                   Pridėti tipą
@@ -260,14 +260,14 @@ export default function ProviderPetAdsPage() {
         {/* Pets Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-gray-900">Pets</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Pets</h2>
           </div>
           
           {petsLoading ? (
             <Card>
               <CardContent className="text-center py-8">
-                <Loader2 className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
-                <p className="text-gray-600">Kraunami gyvūnai...</p>
+                <Loader2 className="h-8 w-8 text-muted-foreground mx-auto mb-4 animate-spin" />
+                <p className="text-muted-foreground">Kraunami gyvūnai...</p>
               </CardContent>
             </Card>
           ) : petsError ? (
@@ -280,9 +280,9 @@ export default function ProviderPetAdsPage() {
           ) : individualPets.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8">
-                <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Dar nėra gyvūnų</h3>
-                <p className="text-gray-600 mb-4">Pridėkite savo pirmą gyvūną</p>
+                <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Dar nėra gyvūnų</h3>
+                <p className="text-muted-foreground mb-4">Pridėkite savo pirmą gyvūną</p>
                 <Button onClick={handleAddIndividualPet}>
                   <Plus className="h-4 w-4 mr-2" />
                   Pridėti gyvūną

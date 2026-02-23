@@ -37,7 +37,7 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 {!stats || Object.keys(stats?.businessTypeStats || {}).length === 0 ? (
-                  <p className="text-gray-600 text-center py-4">No business type data available</p>
+                  <p className="text-muted-foreground text-center py-4">No business type data available</p>
                 ) : (
                   <div className="space-y-3">
                     {Object.entries(stats?.businessTypeStats || {}).map(([type, count]) => (
@@ -46,7 +46,7 @@ export default function AdminAnalyticsPage() {
                           <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                           <span className="text-sm font-medium capitalize">{type}</span>
                         </div>
-                        <span className="text-sm text-gray-600">{count}</span>
+                        <span className="text-sm text-muted-foreground">{count}</span>
                       </div>
                     ))}
                   </div>
@@ -61,7 +61,7 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 {!stats ? (
-                  <p className="text-gray-600 text-center py-4">No revenue data available</p>
+                  <p className="text-muted-foreground text-center py-4">No revenue data available</p>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">

@@ -50,7 +50,7 @@ export function PetTypeCard({
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium">{petType.title}</h3>
-          <p className="text-sm text-gray-600 line-clamp-2">{petType.description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{petType.description}</p>
         </div>
         <div className="flex items-center gap-2">
           <Switch
@@ -60,13 +60,13 @@ export function PetTypeCard({
           {petType.isActive ? (
             <Eye className="h-4 w-4 text-green-600" />
           ) : (
-            <EyeOff className="h-4 w-4 text-gray-400" />
+            <EyeOff className="h-4 w-4 text-muted-foreground" />
           )}
         </div>
       </div>
       
       <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-4 text-sm text-gray-500">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Heart className="h-4 w-4" />
             {getTotalPets(petType)} gyvūnai

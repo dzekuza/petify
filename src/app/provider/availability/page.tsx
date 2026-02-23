@@ -100,8 +100,8 @@ export default function ProviderAvailabilityPage() {
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Provider Not Found</h1>
-                <p className="text-gray-600 mb-4">You need to complete your provider profile first.</p>
+                <h1 className="text-2xl font-bold text-foreground mb-4">Provider Not Found</h1>
+                <p className="text-muted-foreground mb-4">You need to complete your provider profile first.</p>
                 <Button onClick={() => router.push('/provider/dashboard')}>
                   Go to Dashboard
                 </Button>
@@ -130,8 +130,8 @@ export default function ProviderAvailabilityPage() {
                   Back to Dashboard
                 </Button>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Availability Management</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-foreground">Availability Management</h1>
+              <p className="text-muted-foreground mt-2">
                 Manage your working hours and availability for {provider.businessName}
               </p>
             </div>

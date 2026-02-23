@@ -58,7 +58,7 @@ export default function BottomNavigation({
             variant="outline"
             onClick={onSave}
             disabled={isSaveDisabled}
-            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="border-gray-300 text-foreground hover:bg-gray-50"
           >
             Išsaugoti
           </Button>

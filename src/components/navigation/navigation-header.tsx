@@ -33,7 +33,7 @@ export function NavigationHeader({
   const { user } = useAuth()
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-xl shadow-sm">
+    <header className="fixed top-0 z-50 w-full backdrop-blur-xl">
       <div className="w-full flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center group">
@@ -62,7 +62,7 @@ export function NavigationHeader({
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
                 pathname.includes(`serviceType=${service.id}`)
                   ? "bg-red-50 text-red-600"
-                  : "text-gray-700 hover:bg-gray-100"
+                  : "text-foreground hover:bg-gray-100"
               )}
             >
               {service.label}
@@ -76,7 +76,7 @@ export function NavigationHeader({
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
                 pathname === '/favorites'
                   ? "bg-red-50 text-red-600"
-                  : "text-gray-700 hover:bg-gray-100"
+                  : "text-foreground hover:bg-gray-100"
               )}
             >
               <Heart className="h-4 w-4" />

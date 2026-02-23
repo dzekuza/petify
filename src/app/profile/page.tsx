@@ -234,8 +234,8 @@ export default function ProfilePage() {
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h1>
-              <p className="text-gray-600">{t('profile.subtitle')}</p>
+              <h1 className="text-3xl font-bold text-foreground">{t('profile.title')}</h1>
+              <p className="text-muted-foreground">{t('profile.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -267,10 +267,10 @@ export default function ProfilePage() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900">
+                        <h3 className="text-xl font-semibold text-foreground">
                           {user.user_metadata?.full_name || 'User'}
                         </h3>
-                        <p className="text-gray-600">{user.email}</p>
+                        <p className="text-muted-foreground">{user.email}</p>
                         <Badge variant="secondary" className="mt-2">
                           {user.user_metadata?.role || 'customer'}
                         </Badge>
@@ -279,26 +279,26 @@ export default function ProfilePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-center space-x-3">
-                        <Mail className="h-5 w-5 text-gray-400" />
+                        <Mail className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{t('profile.email')}</p>
-                          <p className="text-sm text-gray-600">{user.email}</p>
+                          <p className="text-sm font-medium text-foreground">{t('profile.email')}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Calendar className="h-5 w-5 text-gray-400" />
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{t('profile.memberSince')}</p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm font-medium text-foreground">{t('profile.memberSince')}</p>
+                          <p className="text-sm text-muted-foreground">
                             {new Date(user.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Shield className="h-5 w-5 text-gray-400" />
+                        <Shield className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{t('profile.accountType')}</p>
-                          <p className="text-sm text-gray-600 capitalize">
+                          <p className="text-sm font-medium text-foreground">{t('profile.accountType')}</p>
+                          <p className="text-sm text-muted-foreground capitalize">
                             {user.user_metadata?.role || 'customer'}
                           </p>
                         </div>
@@ -322,22 +322,22 @@ export default function ProfilePage() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">{t('profile.emailNotifications')}</p>
-                        <p className="text-sm text-gray-600">{t('profile.emailNotificationsDesc')}</p>
+                        <p className="font-medium text-foreground">{t('profile.emailNotifications')}</p>
+                        <p className="text-sm text-muted-foreground">{t('profile.emailNotificationsDesc')}</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={handleConfigureNotifications}>{t('profile.configure')}</Button>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">{t('profile.privacySettings')}</p>
-                        <p className="text-sm text-gray-600">{t('profile.privacySettingsDesc')}</p>
+                        <p className="font-medium text-foreground">{t('profile.privacySettings')}</p>
+                        <p className="text-sm text-muted-foreground">{t('profile.privacySettingsDesc')}</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={handleManagePrivacy}>{t('profile.manage')}</Button>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">{t('profile.changePassword')}</p>
-                        <p className="text-sm text-gray-600">{t('profile.changePasswordDesc')}</p>
+                        <p className="font-medium text-foreground">{t('profile.changePassword')}</p>
+                        <p className="text-sm text-muted-foreground">{t('profile.changePasswordDesc')}</p>
                       </div>
                       <Button variant="outline" size="sm" onClick={handleChangePassword}>{t('profile.change')}</Button>
                     </div>
@@ -378,13 +378,13 @@ export default function ProfilePage() {
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{t('profile.emailVerified')}</span>
+                        <span className="text-sm text-muted-foreground">{t('profile.emailVerified')}</span>
                         <Badge variant={user.email_confirmed_at ? "default" : "secondary"}>
                           {user.email_confirmed_at ? t('profile.verified') : t('profile.pending')}
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">{t('profile.accountStatus')}</span>
+                        <span className="text-sm text-muted-foreground">{t('profile.accountStatus')}</span>
                         <Badge variant="default">{t('profile.active')}</Badge>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export default function ProfilePage() {
             {/* Location and Contact Information */}
             <div className="mt-8">
               <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
                   <div className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4" />
                     <span>V. Mykolaičio-Putino G., Vilnius 03106, Lietuva</span>
@@ -530,7 +530,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{t('profile.bookingUpdates')}</p>
-                  <p className="text-sm text-gray-600">{t('profile.bookingUpdatesDesc')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.bookingUpdatesDesc')}</p>
                 </div>
                 <Checkbox
                   checked={notifications.bookingUpdates}
@@ -540,7 +540,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{t('profile.serviceUpdates')}</p>
-                  <p className="text-sm text-gray-600">{t('profile.serviceUpdatesDesc')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.serviceUpdatesDesc')}</p>
                 </div>
                 <Checkbox
                   checked={notifications.serviceUpdates}
@@ -550,7 +550,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{t('profile.marketing')}</p>
-                  <p className="text-sm text-gray-600">{t('profile.marketingDesc')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.marketingDesc')}</p>
                 </div>
                 <Checkbox
                   checked={notifications.marketing}
@@ -595,7 +595,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{t('profile.showEmail')}</p>
-                  <p className="text-sm text-gray-600">{t('profile.showEmailDesc')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.showEmailDesc')}</p>
                 </div>
                 <Checkbox
                   checked={privacy.showEmail}
@@ -605,7 +605,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{t('profile.showPhone')}</p>
-                  <p className="text-sm text-gray-600">{t('profile.showPhoneDesc')}</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.showPhoneDesc')}</p>
                 </div>
                 <Checkbox
                   checked={privacy.showPhone}

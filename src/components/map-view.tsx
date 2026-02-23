@@ -180,7 +180,7 @@ export const MapView = ({ filters }: MapViewProps) => {
   if (loading) {
     return (
       <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
-        <div className="text-gray-500">Loading map...</div>
+        <div className="text-muted-foreground">Loading map...</div>
       </div>
     )
   }
@@ -205,10 +205,10 @@ export const MapView = ({ filters }: MapViewProps) => {
         {results.map((result) => (
           <Card 
             key={result.provider.id} 
-            className={`hover:shadow-md transition-all cursor-pointer ${
-              selectedProviderId === result.provider.id 
-                ? 'ring-2 ring-blue-500 shadow-lg' 
-                : 'hover:shadow-md'
+            className={`transition-all cursor-pointer ${
+              selectedProviderId === result.provider.id
+                ? 'border-2 border-blue-500'
+                : ''
             }`}
             onClick={() => handleMarkerClick(result)}
           >
@@ -224,11 +224,11 @@ export const MapView = ({ filters }: MapViewProps) => {
                   <div className="flex items-center space-x-2 mt-1">
                     <div className="flex items-center">
                       <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                      <span className="text-xs font-medium text-gray-900 ml-1">
+                      <span className="text-xs font-medium text-foreground ml-1">
                         {result.provider.rating}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       ({result.provider.reviewCount})
                     </span>
                   </div>
@@ -237,7 +237,7 @@ export const MapView = ({ filters }: MapViewProps) => {
             </CardHeader>
             
             <CardContent className="pt-0 space-y-3">
-              <div className="flex items-center text-xs text-gray-500">
+              <div className="flex items-center text-xs text-muted-foreground">
                 <Clock className="h-3 w-3 mr-1" />
                 {result.distance} km away
               </div>

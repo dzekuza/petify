@@ -76,7 +76,7 @@ export function MobileMenu({
                 </Avatar>
                 <div>
                   <p className="font-medium">{user.user_metadata?.full_name || 'User'}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>
               </div>
 

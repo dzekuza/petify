@@ -54,12 +54,12 @@ export function DefenceOverlay() {
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-            <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-white/20 shadow-2xl">
+            <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-white/20">
                 <CardHeader className="text-center space-y-4 pt-10 pb-2">
                     <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-2">
                         <Lock className="h-8 w-8 text-red-600" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-gray-900">
+                    <CardTitle className="text-2xl font-bold text-foreground">
                         Protected Access
                     </CardTitle>
                     <CardDescription className="text-base">
@@ -78,8 +78,8 @@ export function DefenceOverlay() {
                                     setError(false)
                                 }}
                                 className={`text-center text-lg h-12 transition-all ${error
-                                        ? 'border-red-500 ring-red-500/20 focus-visible:ring-red-500'
-                                        : 'focus-visible:ring-red-500'
+                                        ? 'border-red-500 focus-visible:border-red-500'
+                                        : 'focus-visible:border-neutral-400'
                                     }`}
                                 autoFocus
                             />
@@ -91,11 +91,11 @@ export function DefenceOverlay() {
                         </div>
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-semibold bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                            className="w-full h-12 text-base font-semibold bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 transition-all duration-300 hover:-translate-y-0.5"
                         >
                             Enter Site
                         </Button>
-                        <p className="text-xs text-center text-gray-500 mt-4">
+                        <p className="text-xs text-center text-muted-foreground mt-4">
                             Protected by Petify Security
                         </p>
                     </form>

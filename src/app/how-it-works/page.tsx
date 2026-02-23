@@ -124,10 +124,10 @@ export default function HowItWorksPage() {
         <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
                 How Petify Works
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
+              <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
                 Getting started with Petify is simple. Follow these easy steps to find and book 
                 trusted pet care services for your furry friends.
               </p>
@@ -139,10 +139,10 @@ export default function HowItWorksPage() {
         <section className="py-16 bg-white">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Simple 4-Step Process
               </h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <p className="mt-4 text-lg text-muted-foreground">
                 From search to service completion, we make pet care booking effortless
               </p>
             </div>
@@ -151,7 +151,7 @@ export default function HowItWorksPage() {
               {steps.map((step, index) => {
                 return (
                   <div key={step.number} className="relative">
-                    <Card className="h-full hover:shadow-lg transition-shadow">
+                    <Card className="h-full transition-shadow">
                       <CardHeader className="text-center">
                         <div className="flex items-center justify-center mb-2">
                           <Badge variant="secondary" className="mr-2">
@@ -162,7 +162,7 @@ export default function HowItWorksPage() {
                         <CardDescription>{step.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <ul className="space-y-2 text-sm text-gray-600">
+                        <ul className="space-y-2 text-sm text-muted-foreground">
                           {step.details.map((detail, detailIndex) => (
                             <li key={detailIndex} className="flex items-start">
                               <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -188,10 +188,10 @@ export default function HowItWorksPage() {
         <section className="py-16 bg-gray-50">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Why Choose Petify?
               </h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <p className="mt-4 text-lg text-muted-foreground">
                 We're committed to providing the best pet care experience for you and your pets
               </p>
             </div>
@@ -199,12 +199,12 @@ export default function HowItWorksPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, index) => {
                 return (
-                  <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                  <Card key={index} className="text-center transition-shadow">
                     <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
                         {feature.title}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {feature.description}
                       </p>
                     </CardContent>
@@ -219,10 +219,10 @@ export default function HowItWorksPage() {
         <section className="py-16 bg-white">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <p className="mt-4 text-lg text-muted-foreground">
                 Get answers to common questions about using Petify
               </p>
             </div>
@@ -231,10 +231,10 @@ export default function HowItWorksPage() {
               {faqs.map((faq, index) => (
                 <Card key={index}>
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg font-semibold text-foreground mb-3">
                       {faq.question}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-muted-foreground">
                       {faq.answer}
                     </p>
                   </CardContent>

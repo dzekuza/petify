@@ -30,7 +30,7 @@ const getNotificationIcon = (type: Notification['type']) => {
     case 'review_received':
       return <Star className="h-4 w-4 text-yellow-500" />
     default:
-      return <Bell className="h-4 w-4 text-gray-500" />
+      return <Bell className="h-4 w-4 text-muted-foreground" />
   }
 }
 
@@ -82,7 +82,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
           <div className="flex items-center justify-between">
             <p className={cn(
               "text-sm font-medium",
-              !notification.read ? "text-gray-900" : "text-gray-700"
+              !notification.read ? "text-foreground" : "text-foreground"
             )}>
               {notification.title}
             </p>
@@ -90,10 +90,10 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
               <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
             )}
           </div>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {notification.message}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {formatDistanceToNow(new Date(notification.created_at), { 
               addSuffix: true, 
               locale: lt 
@@ -161,12 +161,12 @@ export const NotificationsDropdown = () => {
         
         <ScrollArea className="h-96">
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-muted-foreground">
               Kraunama...
             </div>
           ) : notifications.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+            <div className="p-8 text-center text-muted-foreground">
+              <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
               <p>Nėra pranešimų</p>
             </div>
           ) : (
@@ -187,7 +187,7 @@ export const NotificationsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full text-sm text-gray-600 hover:text-gray-900"
+              className="w-full text-sm text-muted-foreground hover:text-foreground"
               onClick={() => {
                 // Navigate to full notifications page
                 window.location.href = '/provider/notifications'

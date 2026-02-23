@@ -176,8 +176,8 @@ export default function BookingPage() {
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Provider not found</h1>
-                <p className="text-gray-600">The provider you're looking for doesn't exist.</p>
+                <h1 className="text-2xl font-bold text-foreground mb-4">Provider not found</h1>
+                <p className="text-muted-foreground">The provider you're looking for doesn't exist.</p>
               </div>
             </div>
           </div>
@@ -195,8 +195,8 @@ export default function BookingPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div>
-                  <h1 className="text-lg font-semibold text-gray-900">{provider.businessName}</h1>
-                  <p className="text-sm text-gray-600">Užsakymo formos užpildymas</p>
+                  <h1 className="text-lg font-semibold text-foreground">{provider.businessName}</h1>
+                  <p className="text-sm text-muted-foreground">Užsakymo formos užpildymas</p>
                 </div>
               </div>
               <Button

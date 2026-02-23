@@ -147,7 +147,7 @@ export const CategorySection = ({
     return (
       <div className={cn("w-full", className)}>
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         </div>
         <div className="flex gap-6">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -171,7 +171,7 @@ export const CategorySection = ({
         <div className="flex items-center space-x-6 flex-1">
           <Link 
             href={`/search?category=${category}`}
-            className="flex items-center space-x-2 text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors flex-1"
+            className="flex items-center space-x-2 text-2xl font-bold text-foreground hover:text-foreground transition-colors flex-1"
           >
             <span>{title}</span>
             <ChevronRightIcon className="h-5 w-5" />
@@ -184,17 +184,17 @@ export const CategorySection = ({
                 size="icon"
                 onClick={scrollLeft}
                 disabled={!canScrollLeft}
-                className="h-8 w-8 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                className="h-8 w-8 rounded-full transition-all duration-200"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="icon"
                 onClick={scrollRight}
                 disabled={!canScrollRight}
-                className="h-8 w-8 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                className="h-8 w-8 rounded-full transition-all duration-200"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>

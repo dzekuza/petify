@@ -14,7 +14,7 @@ export const HeroSection = () => {
 
       {/* Desktop Hero Section - Hidden on mobile */}
       <div className=" md:block">
-        <section className="relative bg-gradient-to-br from-red-50 via-white to-blue-50 pt-20 pb-12 overflow-hidden">
+        <section className="relative pt-32 pb-12 overflow-hidden">
           {/* Decorative background pattern */}
           <div className="absolute inset-0 hero-pattern opacity-50" />
 
@@ -30,11 +30,11 @@ export const HeroSection = () => {
                   <span className="gradient-text text-5xl sm:text-6xl lg:text-7xl block mb-2">
                     Raskite tobulą priežiūrą
                   </span>
-                  <span className="text-gray-900 text-4xl sm:text-5xl lg:text-6xl">
+                  <span className="text-foreground text-4xl sm:text-5xl lg:text-6xl">
                     savo augintiniui
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mt-6">
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mt-6">
                   Susisiekite su patikimais gyvūnų priežiūros paslaugų teikėjais jūsų regione
                 </p>
               </div>

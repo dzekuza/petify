@@ -137,7 +137,7 @@ export default function ProviderBookings() {
       case 'cancelled':
         return <XCircle className="h-4 w-4 text-red-500" />
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-500" />
+        return <AlertCircle className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -152,7 +152,7 @@ export default function ProviderBookings() {
       case 'cancelled':
         return 'bg-red-100 text-red-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-foreground'
     }
   }
 
@@ -194,10 +194,10 @@ export default function ProviderBookings() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 Manage Bookings
               </h1>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 View and manage all your service bookings
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function ProviderBookings() {
                     <div className="flex flex-col sm:flex-row gap-4 mb-4">
                       <div className="flex-1">
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                           <Input
                             type="text"
                             placeholder="Search by pet name or service..."
@@ -221,7 +221,7 @@ export default function ProviderBookings() {
                         <select
                           value={filterStatus}
                           onChange={(e) => setFilterStatus(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="px-3 py-2 border border-gray-300 rounded-md focus-visible:border-neutral-400"
                         >
                           <option value="all">All Status</option>
                           <option value="pending">Pending</option>
@@ -236,9 +236,9 @@ export default function ProviderBookings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredBookings.length === 0 ? (
                     <div className="col-span-full text-center py-12">
-                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                      <p className="text-gray-600">
+                      <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-foreground mb-2">No bookings found</h3>
+                      <p className="text-muted-foreground">
                         {searchTerm || filterStatus !== 'all' 
                           ? 'Try adjusting your search or filter criteria.'
                           : 'When customers book your services, they\'ll appear here.'
@@ -247,7 +247,7 @@ export default function ProviderBookings() {
                     </div>
                   ) : (
                     filteredBookings.map((booking) => (
-                      <Card key={booking.id} className="hover:shadow-lg transition-shadow">
+                      <Card key={booking.id} className="transition-shadow">
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
@@ -263,20 +263,20 @@ export default function ProviderBookings() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div>
-                            <h3 className="font-semibold text-gray-900 mb-1">
+                            <h3 className="font-semibold text-foreground mb-1">
                               {booking.pet?.name} - {services.find(s => s.id === booking.serviceId)?.name}
                             </h3>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}
                             </p>
                           </div>
 
                           <div className="space-y-2">
-                            <div className="flex items-center text-sm text-gray-600">
+                            <div className="flex items-center text-sm text-muted-foreground">
                               <Users className="h-4 w-4 mr-2" />
                               <span>{booking.pet ? '1 pet' : 'No pets'}</span>
                             </div>
-                            <div className="flex items-center text-sm text-gray-600">
+                            <div className="flex items-center text-sm text-muted-foreground">
                               <Clock className="h-4 w-4 mr-2" />
                               <span>{services.find(s => s.id === booking.serviceId)?.duration} min</span>
                             </div>
@@ -368,13 +368,13 @@ export default function ProviderBookings() {
                   <h3 className="font-semibold text-lg mb-3">Service Details</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Service</p>
+                      <p className="text-sm text-muted-foreground">Service</p>
                       <p className="font-medium">
                         {services.find(s => s.id === selectedBooking.serviceId)?.name || 'N/A'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Date & Time</p>
+                      <p className="text-sm text-muted-foreground">Date & Time</p>
                       <p className="font-medium">
                         {new Date(selectedBooking.date).toLocaleDateString()} at {selectedBooking.timeSlot.start} - {selectedBooking.timeSlot.end}
                       </p>
@@ -389,37 +389,37 @@ export default function ProviderBookings() {
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">Pet Name</p>
+                          <p className="text-sm text-muted-foreground">Pet Name</p>
                           <p className="font-medium">{selectedBooking.pet.name}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Species</p>
+                          <p className="text-sm text-muted-foreground">Species</p>
                           <p className="font-medium">{selectedBooking.pet.species}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Breed</p>
+                          <p className="text-sm text-muted-foreground">Breed</p>
                           <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Age</p>
+                          <p className="text-sm text-muted-foreground">Age</p>
                           <p className="font-medium">{selectedBooking.pet.age} months</p>
                         </div>
                       </div>
                       {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
                         <div className="mt-3">
-                          <p className="text-sm text-gray-600">Special Needs</p>
+                          <p className="text-sm text-muted-foreground">Special Needs</p>
                           <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
                         </div>
                       )}
                       {selectedBooking.pet.medicalNotes && (
                         <div className="mt-3">
-                          <p className="text-sm text-gray-600">Medical Notes</p>
+                          <p className="text-sm text-muted-foreground">Medical Notes</p>
                           <p className="font-medium">{selectedBooking.pet.medicalNotes}</p>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <p className="text-gray-500">No pet information available</p>
+                    <p className="text-muted-foreground">No pet information available</p>
                   )}
                 </div>
 
@@ -428,7 +428,7 @@ export default function ProviderBookings() {
                   <div className="border-t pt-4">
                     <h3 className="font-semibold text-lg mb-3">Special Instructions</h3>
                     <div className="bg-yellow-50 p-4 rounded-lg">
-                      <p className="text-gray-700">{selectedBooking.notes}</p>
+                      <p className="text-foreground">{selectedBooking.notes}</p>
                     </div>
                   </div>
                 )}
@@ -517,13 +517,13 @@ export default function ProviderBookings() {
                   <h3 className="font-semibold text-lg mb-3">Service Details</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Service</p>
+                      <p className="text-sm text-muted-foreground">Service</p>
                       <p className="font-medium">
                         {services.find(s => s.id === selectedBooking.serviceId)?.name || 'N/A'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Date & Time</p>
+                      <p className="text-sm text-muted-foreground">Date & Time</p>
                       <p className="font-medium">
                         {new Date(selectedBooking.date).toLocaleDateString()} at {selectedBooking.timeSlot.start} - {selectedBooking.timeSlot.end}
                       </p>
@@ -538,37 +538,37 @@ export default function ProviderBookings() {
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">Pet Name</p>
+                          <p className="text-sm text-muted-foreground">Pet Name</p>
                           <p className="font-medium">{selectedBooking.pet.name}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Species</p>
+                          <p className="text-sm text-muted-foreground">Species</p>
                           <p className="font-medium">{selectedBooking.pet.species}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Breed</p>
+                          <p className="text-sm text-muted-foreground">Breed</p>
                           <p className="font-medium">{selectedBooking.pet.breed || 'N/A'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Age</p>
+                          <p className="text-sm text-muted-foreground">Age</p>
                           <p className="font-medium">{selectedBooking.pet.age} months</p>
                         </div>
                       </div>
                       {selectedBooking.pet.specialNeeds && selectedBooking.pet.specialNeeds.length > 0 && (
                         <div className="mt-3">
-                          <p className="text-sm text-gray-600">Special Needs</p>
+                          <p className="text-sm text-muted-foreground">Special Needs</p>
                           <p className="font-medium">{selectedBooking.pet.specialNeeds.join(', ')}</p>
                         </div>
                       )}
                       {selectedBooking.pet.medicalNotes && (
                         <div className="mt-3">
-                          <p className="text-sm text-gray-600">Medical Notes</p>
+                          <p className="text-sm text-muted-foreground">Medical Notes</p>
                           <p className="font-medium">{selectedBooking.pet.medicalNotes}</p>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <p className="text-gray-500">No pet information available</p>
+                    <p className="text-muted-foreground">No pet information available</p>
                   )}
                 </div>
 
@@ -577,7 +577,7 @@ export default function ProviderBookings() {
                   <div className="border-t pt-4">
                     <h3 className="font-semibold text-lg mb-3">Special Instructions</h3>
                     <div className="bg-yellow-50 p-4 rounded-lg">
-                      <p className="text-gray-700">{selectedBooking.notes}</p>
+                      <p className="text-foreground">{selectedBooking.notes}</p>
                     </div>
                   </div>
                 )}

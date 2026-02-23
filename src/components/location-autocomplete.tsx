@@ -112,7 +112,7 @@ export const LocationAutocomplete = ({
     <div className={cn("relative", className)}>
       {label && <Label className="block mb-2">{label}</Label>}
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           ref={inputRef}
           value={value}
@@ -123,14 +123,14 @@ export const LocationAutocomplete = ({
           placeholder={placeholder}
           className={cn("pl-10 pr-10", className)}
         />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       </div>
 
       {/* Suggestions Dropdown */}
       {isOpen && filteredSuggestions.length > 0 && (
         <div
           ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md max-h-60 overflow-y-auto"
         >
           {filteredSuggestions.map((suggestion, index) => (
             <div
@@ -142,12 +142,12 @@ export const LocationAutocomplete = ({
               onClick={() => handleSuggestionClick(suggestion)}
             >
               <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">
+                  <div className="text-sm font-medium text-foreground truncate">
                     {suggestion.name}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">
+                  <div className="text-xs text-muted-foreground truncate">
                     {suggestion.city}
                   </div>
                 </div>
@@ -159,8 +159,8 @@ export const LocationAutocomplete = ({
 
       {/* No results message */}
       {isOpen && value.trim() && filteredSuggestions.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
-          <div className="px-4 py-3 text-sm text-gray-500 text-center">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md">
+          <div className="px-4 py-3 text-sm text-muted-foreground text-center">
             Nerasta vietų su "{value}"
           </div>
         </div>

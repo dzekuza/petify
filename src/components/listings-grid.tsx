@@ -5,7 +5,6 @@ import { Heart } from 'lucide-react'
 import { ServiceProvider } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
-import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useFavorites } from '@/contexts/favorites-context'
@@ -79,11 +78,11 @@ export const ListingsGrid = ({
       {/* Header - Only show if title is provided */}
       {title && (
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
           {showViewAll && (
             <Link
               href="/search"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Peržiūrėti visus →
             </Link>
@@ -103,10 +102,10 @@ export const ListingsGrid = ({
               className="group cursor-pointer"
             >
               <Link href={`/providers/${provider.id}`}>
-                <div className="bg-card text-card-foreground space-y-4 flex flex-col rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden py-0 pb-6">
+                <article className="relative flex flex-col rounded-[20px] bg-white overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] border border-neutral-200 hover:-translate-y-[3px]">
                   {/* Image Section */}
                   <div className="relative overflow-hidden">
-                    <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative">
+                    <div className="aspect-[4/3] bg-neutral-100 relative">
                       {provider.images[0] ? (
                         <>
                           <Image
@@ -114,23 +113,23 @@ export const ListingsGrid = ({
                             alt={provider.businessName}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                           />
-                          {/* Gradient overlay for better badge visibility */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
+                          {/* Soft vignette for depth */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
                         </>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-4xl">{getServiceCategoryIcon(provider.services[0])}</span>
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
+                          <span className="text-5xl drop-shadow-sm">{getServiceCategoryIcon(provider.services[0])}</span>
                         </div>
                       )}
                     </div>
 
                     {/* Guest Favorite Badge */}
-                    <div className="absolute top-4 left-4">
-                      <div className="badge-modern shadow-lg">
-                        <span className="text-yellow-500">⭐</span>
-                        <span className="text-gray-900">Svečių favoritas</span>
+                    <div className="absolute top-3.5 left-3.5">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase backdrop-blur-xl bg-white/95">
+                        <span className="text-amber-500 text-xs">★</span>
+                        <span className="text-neutral-800">Favoritas</span>
                       </div>
                     </div>
 
@@ -142,57 +141,57 @@ export const ListingsGrid = ({
                         handleToggleFavorite(provider.id)
                       }}
                       disabled={isToggling}
-                      className="absolute top-4 right-4 p-2.5 backdrop-blur-md bg-white/90 hover:bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 disabled:opacity-50"
+                      className="absolute top-3.5 right-3.5 p-2 backdrop-blur-xl bg-white/90 hover:bg-white rounded-full transition-all duration-300 hover:scale-110 active:scale-95 disabled:opacity-50"
                       aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
                     >
                       <Heart
                         className={cn(
-                          "h-4 w-4 transition-all",
-                          isFavorite ? "text-red-500 fill-current scale-110" : "text-gray-600",
+                          "h-[15px] w-[15px] transition-all duration-300",
+                          isFavorite ? "text-red-500 fill-red-500 scale-110" : "text-neutral-600",
                           isToggling && "animate-pulse"
                         )}
                       />
                     </button>
+
+                    {/* Bottom fade for seamless content blend */}
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent" />
                   </div>
 
-                  {/* Card Content - Enhanced design */}
-                  <div className="px-5 pt-4 pb-0 space-y-3">
-                    {/* Business Name */}
-                    <h3 className="font-bold text-lg text-gray-900 line-clamp-1 group-hover:text-red-600 transition-colors">
-                      {provider.businessName}
-                    </h3>
-
-                    {/* Service Type and Location */}
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                      <span className="text-sm">
-                        {provider.services[0] === 'grooming' ? 'Kirpykla' :
-                          provider.services[0] === 'veterinary' ? 'Veterinarija' :
-                            provider.services[0] === 'boarding' ? 'Prieglauda' :
-                              provider.services[0] === 'training' ? 'Dresūra' :
-                                provider.services[0] === 'adoption' ? 'Veislynai' :
-                                  provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
-                                    'Paslaugos'} • {provider.location.city}
-                      </span>
-                    </div>
-
-                    {/* Price and Rating - Enhanced visual separation */}
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <div className="flex flex-col">
-                        <span className="text-xs text-gray-500">Nuo</span>
-                        <span className="text-lg font-bold text-gray-900">€{provider.priceRange.min}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1 bg-yellow-50 px-2.5 py-1.5 rounded-lg">
-                        <span className="text-yellow-500 fill-current">★</span>
-                        <span className="font-semibold text-gray-900">{provider.rating}</span>
+                  {/* Card Content */}
+                  <div className="px-4 pt-3 pb-4 flex flex-col gap-2.5">
+                    {/* Top row: Name + Rating */}
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-bold text-[15px] leading-snug text-neutral-900 line-clamp-1 group-hover:text-red-600 transition-colors duration-300">
+                        {provider.businessName}
+                      </h3>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="text-neutral-900 text-[13px] font-semibold">{provider.rating}</span>
+                        <span className="text-amber-400 text-xs">★</span>
                         {provider.reviewCount > 0 && (
-                          <span className="text-xs text-gray-500">({provider.reviewCount})</span>
+                          <span className="text-[11px] text-neutral-400 font-medium">({provider.reviewCount})</span>
                         )}
                       </div>
                     </div>
+
+                    {/* Service Type and Location */}
+                    <p className="text-[13px] text-neutral-500 leading-tight">
+                      {provider.services[0] === 'grooming' ? 'Kirpykla' :
+                        provider.services[0] === 'veterinary' ? 'Veterinarija' :
+                          provider.services[0] === 'boarding' ? 'Prieglauda' :
+                            provider.services[0] === 'training' ? 'Dresūra' :
+                              provider.services[0] === 'adoption' ? 'Veislynai' :
+                                provider.services[0] === 'sitting' ? 'Prižiūrėjimas' :
+                                  'Paslaugos'}{' '}
+                      <span className="text-neutral-300 mx-0.5">·</span>{' '}
+                      {provider.location.city}
+                    </p>
+
+                    {/* Price */}
+                    <p className="text-[13px] text-neutral-500">
+                      nuo <span className="text-neutral-900 font-bold text-[15px]">€{provider.priceRange.min}</span>
+                    </p>
                   </div>
-                </div>
+                </article>
               </Link>
             </div>
           )

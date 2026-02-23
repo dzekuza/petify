@@ -164,13 +164,13 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       <div className="mb-6">
         <div className="mb-4">
           <div>
-            <p className="text-gray-600 mb-2">
+            <p className="text-muted-foreground mb-2">
               {t('provider.petServiceIn')} {provider.location.city}, {provider.location.state}
             </p>
-            <p className="text-gray-600 leading-relaxed mb-2">
+            <p className="text-muted-foreground leading-relaxed mb-2">
               {provider.description}
             </p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-sm">
               {services.length > 0 ? `${services.length} ${t('provider.servicesAvailable')}` : t('provider.servicesAvailable')} • {provider.experience} {t('provider.yearsExperience')}
             </p>
           </div>
@@ -180,7 +180,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
         <div className="flex items-center space-x-2 mb-4">
           <Star className="h-4 w-4 text-yellow-400 fill-current" />
           <span className="text-sm font-medium">{provider.rating}</span>
-          <span className="text-sm text-gray-500">({provider.reviewCount} {t('provider.reviews')})</span>
+          <span className="text-sm text-muted-foreground">({provider.reviewCount} {t('provider.reviews')})</span>
         </div>
       </div>
 
@@ -195,16 +195,16 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             />
           ) : (
             <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} bg-gray-300 rounded-full flex items-center justify-center`}>
-              <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600`}>
+              <span className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-muted-foreground`}>
                 {provider.businessName.charAt(0)}
               </span>
             </div>
           )}
           <div>
-            <h2 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-gray-900`}>
+            <h2 className={`${isMobile ? 'font-semibold' : 'text-lg font-semibold'} text-foreground`}>
               {provider.businessName}
             </h2>
-            <p className="text-sm text-gray-600">{getTimeSinceJoining(provider.createdAt)}</p>
+            <p className="text-sm text-muted-foreground">{getTimeSinceJoining(provider.createdAt)}</p>
           </div>
         </div>
       </div>
@@ -212,11 +212,11 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Contact Information */}
       {(provider.contactInfo?.phone || provider.contactInfo?.email || provider.contactInfo?.website) && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h3 className={`${titleClass} text-gray-900 mb-4`}>Kontaktinė informacija</h3>
+          <h3 className={`${titleClass} text-foreground mb-4`}>Kontaktinė informacija</h3>
           <div className="flex flex-wrap items-center gap-6">
             {provider.contactInfo?.phone && (
               <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-gray-600" />
+                <Phone className="h-4 w-4 text-muted-foreground" />
                 <a 
                   href={`tel:${provider.contactInfo.phone}`}
                   className="text-blue-600 hover:text-blue-800 text-sm"
@@ -227,7 +227,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             )}
             {provider.contactInfo?.email && (
               <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-gray-600" />
+                <Mail className="h-4 w-4 text-muted-foreground" />
                 <a 
                   href={`mailto:${provider.contactInfo.email}`}
                   className="text-blue-600 hover:text-blue-800 text-sm"
@@ -238,7 +238,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             )}
             {provider.contactInfo?.website && (
               <div className="flex items-center space-x-2">
-                <Globe className="h-4 w-4 text-gray-600" />
+                <Globe className="h-4 w-4 text-muted-foreground" />
                 <a 
                   href={provider.contactInfo.website.startsWith('http') ? provider.contactInfo.website : `https://${provider.contactInfo.website}`}
                   target="_blank"
@@ -256,11 +256,11 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Location */}
       {provider.location.address && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h3 className={`${titleClass} text-gray-900 mb-4`}>Vieta</h3>
+          <h3 className={`${titleClass} text-foreground mb-4`}>Vieta</h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
-              <MapPin className="h-4 w-4 text-gray-600 mt-0.5" />
-              <div className="text-sm text-gray-600">
+              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+              <div className="text-sm text-muted-foreground">
                 <div>{provider.location.address}, {provider.location.city}, {provider.location.state} {provider.location.zipCode}</div>
               </div>
             </div>
@@ -293,12 +293,12 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Pet Ad Information */}
       {petAd && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>Produktas</h2>
+          <h2 className={`${titleClass} text-foreground mb-4`}>Produktas</h2>
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{petAd.name}</h3>
-                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">{petAd.name}</h3>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
                   <span className="flex items-center">
                     <PawPrint className="h-4 w-4 mr-1" />
                     {petAd.species === 'dog' ? 'Šuo' : 
@@ -315,15 +315,15 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                   )}
                 </div>
                 {petAd.description && (
-                  <p className="text-gray-600 text-sm mb-3">{petAd.description}</p>
+                  <p className="text-muted-foreground text-sm mb-3">{petAd.description}</p>
                 )}
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900 flex items-center">
+                <div className="text-2xl font-bold text-foreground flex items-center">
                   <Euro className="h-5 w-5 mr-1" />
                   {petAd.price}
                 </div>
-                <div className="text-sm text-gray-600">Kaina</div>
+                <div className="text-sm text-muted-foreground">Kaina</div>
               </div>
             </div>
             
@@ -331,20 +331,20 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             <div className="grid grid-cols-2 gap-4 text-sm">
               {petAd.weight && (
                 <div>
-                  <span className="font-medium text-gray-900">Svoris:</span>
-                  <span className="text-gray-600 ml-2">{petAd.weight} kg</span>
+                  <span className="font-medium text-foreground">Svoris:</span>
+                  <span className="text-muted-foreground ml-2">{petAd.weight} kg</span>
                 </div>
               )}
               {petAd.color && (
                 <div>
-                  <span className="font-medium text-gray-900">Spalva:</span>
-                  <span className="text-gray-600 ml-2">{petAd.color}</span>
+                  <span className="font-medium text-foreground">Spalva:</span>
+                  <span className="text-muted-foreground ml-2">{petAd.color}</span>
                 </div>
               )}
               {petAd.vaccinationStatus && (
                 <div>
-                  <span className="font-medium text-gray-900">Vakcinacija:</span>
-                  <span className="text-gray-600 ml-2">
+                  <span className="font-medium text-foreground">Vakcinacija:</span>
+                  <span className="text-muted-foreground ml-2">
                     {petAd.vaccinationStatus === 'vaccinated' ? 'Vakcinuotas' : 
                      petAd.vaccinationStatus === 'not_vaccinated' ? 'Nevakcinuotas' : 'Nežinoma'}
                   </span>
@@ -352,8 +352,8 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
               )}
               {petAd.size && (
                 <div>
-                  <span className="font-medium text-gray-900">Dydis:</span>
-                  <span className="text-gray-600 ml-2">
+                  <span className="font-medium text-foreground">Dydis:</span>
+                  <span className="text-muted-foreground ml-2">
                     {petAd.size === 'small' ? 'Mažas' : 
                      petAd.size === 'medium' ? 'Vidutinis' : 'Didelis'}
                   </span>
@@ -364,7 +364,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             {/* Special Needs */}
             {petAd.specialNeeds && petAd.specialNeeds.length > 0 && (
               <div className="mt-4">
-                <span className="font-medium text-gray-900 text-sm">Specialūs poreikiai:</span>
+                <span className="font-medium text-foreground text-sm">Specialūs poreikiai:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {petAd.specialNeeds.map((need, index) => (
                     <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
@@ -378,16 +378,16 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
             {/* Medical Notes */}
             {petAd.medicalNotes && (
               <div className="mt-4">
-                <span className="font-medium text-gray-900 text-sm">Medicinos pastabos:</span>
-                <p className="text-gray-600 text-sm mt-1">{petAd.medicalNotes}</p>
+                <span className="font-medium text-foreground text-sm">Medicinos pastabos:</span>
+                <p className="text-muted-foreground text-sm mt-1">{petAd.medicalNotes}</p>
               </div>
             )}
 
             {/* Behavioral Notes */}
             {petAd.behavioralNotes && (
               <div className="mt-4">
-                <span className="font-medium text-gray-900 text-sm">Elgesio pastabos:</span>
-                <p className="text-gray-600 text-sm mt-1">{petAd.behavioralNotes}</p>
+                <span className="font-medium text-foreground text-sm">Elgesio pastabos:</span>
+                <p className="text-muted-foreground text-sm mt-1">{petAd.behavioralNotes}</p>
               </div>
             )}
           </div>
@@ -397,7 +397,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Services - Hide for breeders */}
       {services.length > 0 && provider.businessType !== 'adoption' && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>{t('provider.servicesAndPricing')}</h2>
+          <h2 className={`${titleClass} text-foreground mb-4`}>{t('provider.servicesAndPricing')}</h2>
           <div className="space-y-4">
             {services.slice(0, isMobile ? 3 : services.length).map((service) => (
               <div key={service.id} className={`border border-gray-200 rounded-lg ${isMobile ? 'p-4' : 'p-6 rounded-xl'}`}>
@@ -420,13 +420,13 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                         service.category === 'adoption' ? 'Veislynai' :
                         service.category === 'sitting' ? 'Prižiūrėjimas' : 'Paslaugos')
                       return (
-                        <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-800">
+                        <Badge variant="secondary" className="text-xs bg-gray-100 text-foreground">
                           {label}
                         </Badge>
                       )
                     })()}
                   </div>
-                  <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-gray-900 ${isMobile ? '' : 'mb-2'}`}>
+                  <h4 className={`${isMobile ? 'font-medium' : 'text-lg font-medium'} text-foreground ${isMobile ? '' : 'mb-2'}`}>
                     {service.name}
                   </h4>
                   {/* Service Images Gallery */}
@@ -463,16 +463,16 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                         ))}
                         {service.images.length > 4 && (
                           <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">+{service.images.length - 4}</span>
+                            <span className="text-xs text-muted-foreground">+{service.images.length - 4}</span>
                           </div>
                         )}
                       </div>
                     </div>
                   )}
-                  <p className={`text-sm text-gray-600 ${isMobile ? 'mt-1' : 'mb-3'}`}>
+                  <p className={`text-sm text-muted-foreground ${isMobile ? 'mt-1' : 'mb-3'}`}>
                     {service.description}
                   </p>
-                  <div className={`flex items-center space-x-4 text-sm text-gray-500 ${isMobile ? 'mt-2' : ''}`}>
+                  <div className={`flex items-center space-x-4 text-sm text-muted-foreground ${isMobile ? 'mt-2' : ''}`}>
                     <span className="flex items-center">
                       <Clock className="h-4 w-4 mr-1" />
                       {service.duration} {t('provider.minutes')}
@@ -484,7 +484,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-gray-900`}>
+                  <div className={`${isMobile ? 'text-lg' : 'text-2xl'} font-semibold text-foreground`}>
                     €{service.price}
                   </div>
                   {!isScrapedProvider && provider.businessType !== 'adoption' && (
@@ -501,7 +501,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                     </Button>
                   )}
                   {provider.businessType === 'adoption' && (
-                    <div className="text-sm text-gray-600 font-medium">
+                    <div className="text-sm text-muted-foreground font-medium">
                       Šiuo metu prieinama
                     </div>
                   )}
@@ -509,7 +509,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
               </div>
             ))}
             {isMobile && services.length > 3 && (
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-sm text-muted-foreground text-center">
                 +{services.length - 3} {t('provider.moreServices')}
               </p>
             )}
@@ -536,7 +536,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
               {/* Individual Pets Section */}
               {individualPets.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Atskiri gyvūnai</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-3">Atskiri gyvūnai</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {individualPets.map((pet) => (
                       <Card key={pet.id} className="hover:shadow-md transition-shadow">
@@ -575,12 +575,12 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                         </CardHeader>
                         <CardContent className="pt-0">
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Euro className="h-4 w-4" />
                               <span className="font-semibold text-lg">{pet.price}€</span>
                             </div>
                             
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Clock className="h-4 w-4" />
                               <span>Paruoštas: {new Date(pet.readyToLeave).toLocaleDateString('lt-LT')}</span>
                             </div>
@@ -626,8 +626,8 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
               {/* Empty State */}
               {petTypes.length === 0 && individualPets.length === 0 && (
                 <div className="text-center py-8">
-                  <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Šiuo metu nėra gyvūnų pardavimui.</p>
+                  <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Šiuo metu nėra gyvūnų pardavimui.</p>
                 </div>
               )}
             </div>
@@ -639,7 +639,7 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
       {/* Reviews */}
       {reviews.length > 0 && (
         <div className="border-t border-gray-200 pt-6 mb-6">
-          <h2 className={`${titleClass} text-gray-900 mb-4`}>{t('provider.reviews')} ({provider.reviewCount})</h2>
+          <h2 className={`${titleClass} text-foreground mb-4`}>{t('provider.reviews')} ({provider.reviewCount})</h2>
           <div className="space-y-4">
             {reviews.slice(0, isMobile ? 2 : 3).map((review) => (
               <div key={review.id} className={`border-b border-gray-100 pb-4 last:border-b-0 ${isMobile ? '' : 'pb-6'}`}>
@@ -649,16 +649,16 @@ export function ProviderInfo({ provider, services, reviews, petAd, isMobile = fa
                       <Star
                         key={i}
                         className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} ${
-                          i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          i < review.rating ? 'text-yellow-400 fill-current' : 'text-muted-foreground/60'
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-muted-foreground">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm">{review.comment}</p>
+                <p className="text-muted-foreground text-sm">{review.comment}</p>
               </div>
             ))}
           </div>

@@ -2,13 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
-import { Star, MapPin, Clock, Heart, Users, Award, Phone, MessageCircle } from 'lucide-react'
 import Image from 'next/image'
-import { ServiceProvider } from '@/types'
+import { PawPrint, Heart, Star, MapPin, BadgeCheck } from 'lucide-react'
+import { ServiceProvider, Service } from '@/types'
 import { cn } from '@/lib/utils'
 import { t } from '@/lib/translations'
 import { useFavorites } from '@/contexts/favorites-context'
@@ -16,29 +12,316 @@ import { useAuth } from '@/contexts/auth-context'
 
 interface ProviderCardProps {
   provider: ServiceProvider
+  variant?: 'grid' | 'horizontal'
+  services?: Service[]
   distance?: number
-  showActions?: boolean
   className?: string
-  services?: any[] // Service data with images
 }
 
-export const ProviderCard = ({ 
-  provider, 
-  distance, 
-  showActions = true,
+const SERVICE_LABELS: Record<string, string> = {
+  grooming: 'Kirpykla',
+  veterinary: 'Veterinarija',
+  boarding: 'Prieglauda',
+  training: 'Dresūra',
+  adoption: 'Veislynai',
+  sitting: 'Prižiūrėjimas',
+  pets: 'Gyvūnai',
+}
+
+function getServiceLabel(serviceType: string): string {
+  return SERVICE_LABELS[serviceType] ?? 'Paslaugos'
+}
+
+function getStartingPrice(provider: ServiceProvider, services?: Service[]): number | null {
+  if (services && services.length > 0) {
+    const prices = services.map((s) => s.price).filter((p) => typeof p === 'number' && p > 0)
+    if (prices.length > 0) return Math.min(...prices)
+  }
+  if (provider.priceRange?.min > 0) return provider.priceRange.min
+  return null
+}
+
+function getCoverImage(provider: ServiceProvider, services?: Service[]): string | null {
+  if (services && services.length > 0 && services[0].images && services[0].images.length > 0) {
+    return services[0].images[0]
+  }
+  return provider.images && provider.images.length > 0 ? provider.images[0] : null
+}
+
+function ImagePlaceholder() {
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-light to-muted">
+      <PawPrint className="h-12 w-12 text-muted-foreground/50" />
+    </div>
+  )
+}
+
+interface FavoriteButtonProps {
+  isFavorite: boolean
+  isToggling: boolean
+  onToggle: (e: React.MouseEvent) => void
+}
+
+function FavoriteButton({ isFavorite, isToggling, onToggle }: FavoriteButtonProps) {
+  return (
+    <button
+      onClick={onToggle}
+      disabled={isToggling}
+      className="absolute top-3 right-3 p-2 backdrop-blur-xl bg-white/90 hover:bg-white rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.10)] transition-all duration-300 hover:scale-110 active:scale-95 disabled:opacity-50 z-10"
+      aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
+    >
+      <Heart
+        className={cn(
+          'h-[15px] w-[15px] transition-all duration-300',
+          isFavorite ? 'text-red-500 fill-red-500 scale-110' : 'text-neutral-600',
+          isToggling && 'animate-pulse'
+        )}
+      />
+    </button>
+  )
+}
+
+interface GridCardProps {
+  provider: ServiceProvider
+  services?: Service[]
+  coverImage: string | null
+  startingPrice: number | null
+  isFavorite: boolean
+  isToggling: boolean
+  onToggleFavorite: (e: React.MouseEvent) => void
+  className?: string
+}
+
+function GridCard({
+  provider,
+  coverImage,
+  startingPrice,
+  isFavorite,
+  isToggling,
+  onToggleFavorite,
   className,
-  services
+}: GridCardProps) {
+  const [imageError, setImageError] = useState(false)
+  const serviceTags = provider.services.slice(0, 3)
+  const extraCount = provider.services.length - serviceTags.length
+
+  return (
+    <div className={cn('group cursor-pointer', className)}>
+      <Link href={`/providers/${provider.id}`}>
+        <article className="relative flex flex-col rounded-[20px] bg-card border border-border overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)] hover:-translate-y-[3px]">
+          <div className="relative overflow-hidden">
+            <div className="aspect-[3/2] relative bg-muted">
+              {!imageError && coverImage ? (
+                <>
+                  <Image
+                    src={coverImage}
+                    alt={provider.businessName}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                    onError={() => setImageError(true)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                </>
+              ) : (
+                <ImagePlaceholder />
+              )}
+            </div>
+
+            {provider.certifications && provider.certifications.length > 0 && (
+              <div className="absolute top-3 left-3 z-10">
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-xl bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)] text-emerald-700">
+                  <BadgeCheck className="h-3 w-3" />
+                  <span>Verified</span>
+                </div>
+              </div>
+            )}
+
+            <FavoriteButton
+              isFavorite={isFavorite}
+              isToggling={isToggling}
+              onToggle={onToggleFavorite}
+            />
+
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent" />
+          </div>
+
+          <div className="px-4 pt-3 pb-4 flex flex-col gap-2">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-[15px] leading-snug text-foreground line-clamp-1 group-hover:text-brand transition-colors duration-300">
+                {provider.businessName}
+              </h3>
+              <div className="flex items-center gap-1 shrink-0">
+                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                <span className="text-foreground text-[13px] font-semibold">{provider.rating}</span>
+                {provider.reviewCount > 0 && (
+                  <span className="text-[11px] text-muted-foreground">({provider.reviewCount})</span>
+                )}
+              </div>
+            </div>
+
+            <p className="text-[13px] text-muted-foreground leading-tight">
+              {getServiceLabel(provider.services[0])}
+              <span className="text-muted-foreground/40 mx-1">·</span>
+              <span className="inline-flex items-center gap-0.5">
+                <MapPin className="h-3 w-3 inline-block" />
+                {provider.location.city}
+              </span>
+            </p>
+
+            {serviceTags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {serviceTags.map((service) => (
+                  <span
+                    key={service}
+                    className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs"
+                  >
+                    {getServiceLabel(service)}
+                  </span>
+                ))}
+                {extraCount > 0 && (
+                  <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs">
+                    +{extraCount}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {startingPrice !== null && (
+              <p className="text-[13px] text-muted-foreground">
+                nuo{' '}
+                <span className="text-foreground font-bold text-[15px]">€{startingPrice}</span>
+              </p>
+            )}
+          </div>
+        </article>
+      </Link>
+    </div>
+  )
+}
+
+interface HorizontalCardProps {
+  provider: ServiceProvider
+  services?: Service[]
+  coverImage: string | null
+  startingPrice: number | null
+  isFavorite: boolean
+  isToggling: boolean
+  onToggleFavorite: (e: React.MouseEvent) => void
+  className?: string
+}
+
+function HorizontalCard({
+  provider,
+  coverImage,
+  startingPrice,
+  isFavorite,
+  isToggling,
+  onToggleFavorite,
+  className,
+}: HorizontalCardProps) {
+  const [imageError, setImageError] = useState(false)
+  const serviceTags = provider.services.slice(0, 2)
+
+  return (
+    <div className={cn('group cursor-pointer', className)}>
+      <Link href={`/providers/${provider.id}`}>
+        <article className="relative flex flex-row rounded-xl bg-card border border-border overflow-hidden transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-[2px]">
+          <div className="relative w-[120px] shrink-0 bg-muted self-stretch">
+            {!imageError && coverImage ? (
+              <Image
+                src={coverImage}
+                alt={provider.businessName}
+                fill
+                sizes="120px"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <ImagePlaceholder />
+            )}
+            <FavoriteButton
+              isFavorite={isFavorite}
+              isToggling={isToggling}
+              onToggle={onToggleFavorite}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5 px-3 py-3 flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-[14px] leading-snug text-foreground line-clamp-1 group-hover:text-brand transition-colors duration-300">
+                {provider.businessName}
+              </h3>
+              <div className="flex items-center gap-1 shrink-0">
+                <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
+                <span className="text-foreground text-[12px] font-semibold">{provider.rating}</span>
+                {provider.reviewCount > 0 && (
+                  <span className="text-[11px] text-muted-foreground">({provider.reviewCount})</span>
+                )}
+              </div>
+            </div>
+
+            <p className="text-[12px] text-muted-foreground leading-tight flex items-center gap-0.5">
+              <MapPin className="h-3 w-3 shrink-0" />
+              {provider.location.city}
+              {provider.location.state ? `, ${provider.location.state}` : ''}
+            </p>
+
+            {serviceTags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {serviceTags.map((service) => (
+                  <span
+                    key={service}
+                    className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs"
+                  >
+                    {getServiceLabel(service)}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-auto pt-0.5">
+              {provider.certifications && provider.certifications.length > 0 ? (
+                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium">
+                  <BadgeCheck className="h-3 w-3" />
+                  Verified
+                </span>
+              ) : (
+                <span />
+              )}
+              {startingPrice !== null && (
+                <p className="text-[12px] text-muted-foreground">
+                  nuo <span className="text-foreground font-bold">€{startingPrice}</span>
+                </p>
+              )}
+            </div>
+          </div>
+        </article>
+      </Link>
+    </div>
+  )
+}
+
+export const ProviderCard = ({
+  provider,
+  variant = 'grid',
+  services,
+  distance: _distance,
+  className,
 }: ProviderCardProps) => {
   const { user } = useAuth()
   const { isFavorited, toggleFavorite } = useFavorites()
-  const [imageError, setImageError] = useState(false)
   const [isToggling, setIsToggling] = useState(false)
 
   const isFavorite = isFavorited(provider.id)
+  const coverImage = getCoverImage(provider, services)
+  const startingPrice = getStartingPrice(provider, services)
 
-  const handleToggleFavorite = async () => {
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
     if (!user) {
-      // Redirect to login or show login modal
       window.location.href = '/auth/signin'
       return
     }
@@ -53,261 +336,20 @@ export const ProviderCard = ({
     }
   }
 
-  const handleImageError = () => {
-    setImageError(true)
+  const sharedProps = {
+    provider,
+    services,
+    coverImage,
+    startingPrice,
+    isFavorite,
+    isToggling,
+    onToggleFavorite: handleToggleFavorite,
+    className,
   }
 
-  const getServiceCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'grooming':
-        return '✂️'
-      case 'veterinary':
-        return '🏥'
-      case 'boarding':
-        return '🏠'
-      case 'training':
-        return '🎓'
-      case 'adoption':
-        return '🏠'
-      case 'sitting':
-        return '💝'
-      default:
-        return '🐾'
-    }
+  if (variant === 'horizontal') {
+    return <HorizontalCard {...sharedProps} />
   }
 
-  const getServiceTypeDisplayName = (serviceType: string) => {
-    switch (serviceType) {
-      case 'grooming':
-        return 'Kirpykla'
-      case 'veterinary':
-        return 'Veterinarija'
-      case 'boarding':
-        return 'Prieglauda'
-      case 'training':
-        return 'Dresūra'
-      case 'adoption':
-        return 'Veislynai'
-      case 'sitting':
-        return 'Prižiūrėjimas'
-      default:
-        return 'Paslaugos'
-    }
-  }
-
-  const getAvailabilityStatus = () => {
-    const now = new Date()
-    const currentDay = now.toLocaleDateString('en-GB', { weekday: 'long' }).toLowerCase() as keyof typeof provider.availability
-    const todaySlots = provider.availability[currentDay] || []
-    
-    // Check if provider has any availability set up
-    const hasAnyAvailability = Object.values(provider.availability).some(daySlots => 
-      Array.isArray(daySlots) && daySlots.length > 0
-    )
-    
-    if (!hasAnyAvailability) {
-      return { status: 'unavailable', text: t('search.notSet') }
-    }
-    
-    if (todaySlots.length === 0) {
-      return { status: 'closed', text: t('search.closed') }
-    }
-    
-    const currentTime = now.toTimeString().slice(0, 5)
-    const isAvailable = todaySlots.some(slot => 
-      slot.available && currentTime >= slot.start && currentTime <= slot.end
-    )
-    
-    return isAvailable 
-      ? { status: 'open', text: t('search.open') }
-      : { status: 'closed', text: t('search.closed') }
-  }
-
-  const availability = getAvailabilityStatus()
-
-  // Get the cover image - prioritize first service's first image, fallback to provider image
-  const getCoverImage = () => {
-    // Try to get first service's first image
-    if (services && services.length > 0 && services[0].images && services[0].images.length > 0) {
-      return services[0].images[0]
-    }
-    // Fallback to provider's first image
-    return provider.images && provider.images.length > 0 ? provider.images[0] : null
-  }
-
-  const coverImage = getCoverImage()
-
-  return (
-    <Card className={cn("group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden", className)}>
-      {/* Image Section */}
-      <div className="relative">
-        <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
-          {!imageError && coverImage ? (
-            <Image
-              src={coverImage}
-              alt={provider.businessName}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-200"
-              onError={handleImageError}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-4xl">{getServiceCategoryIcon(provider.services[0])}</span>
-            </div>
-          )}
-        </div>
-        
-        {/* Service Category Badge */}
-        <div className="absolute top-2 left-2 flex flex-col space-y-1">
-          <Badge variant="secondary" className="border-transparent bg-white/90 text-orange-700 text-xs">
-            {getServiceTypeDisplayName(provider.businessType || provider.services[0])}
-          </Badge>
-        </div>
-
-        {/* Overlay Badges */}
-        <div className="absolute top-3 right-3 flex flex-col space-y-2">
-          <Badge variant="secondary" className={`bg-white/90 ${
-            availability.status === 'open' ? 'text-green-700' : 
-            availability.status === 'unavailable' ? 'text-orange-700' : 
-            'text-gray-900'
-          }`}>
-            {availability.status === 'open' ? t('search.open') : 
-             availability.status === 'unavailable' ? t('search.notSet') : 
-             t('search.closed')}
-          </Badge>
-          {provider.certifications && provider.certifications.length > 0 && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              <Award className="h-3 w-3 mr-1" />
-              {t('search.certified')}
-            </Badge>
-          )}
-        </div>
-
-        {/* Favorite Button */}
-        <button
-          onClick={handleToggleFavorite}
-          disabled={isToggling}
-          className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors disabled:opacity-50"
-          aria-label={isFavorite ? t('search.removeFromFavorites') : t('search.addToFavorites')}
-        >
-          <Heart 
-            className={cn(
-              "h-4 w-4",
-              isFavorite ? "text-red-500 fill-current" : "text-gray-400",
-              isToggling && "animate-pulse"
-            )} 
-          />
-        </button>
-      </div>
-
-      {/* Card Header */}
-      <CardHeader className="pb-4">
-        <div className="flex items-start space-x-3">
-          <Avatar className="h-12 w-12">
-            <AvatarImage src="/placeholder-avatar.jpg" alt={provider.businessName} />
-            <AvatarFallback>
-              {provider.businessName.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
-              <Link href={`/providers/${provider.id}`}>
-                {provider.businessName}
-              </Link>
-            </CardTitle>
-            <div className="flex items-center space-x-2 mt-1">
-              <div className="flex items-center">
-                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                <span className="text-sm font-medium text-gray-900 ml-1">
-                  {provider.rating}
-                </span>
-              </div>
-              <span className="text-sm text-gray-500">
-                ({provider.reviewCount} {t('search.reviews')})
-              </span>
-            </div>
-          </div>
-        </div>
-      </CardHeader>
-
-      {/* Card Content */}
-      <CardContent className="space-y-4">
-        {/* Description */}
-        <CardDescription className="line-clamp-2">
-          {provider.description}
-        </CardDescription>
-
-        {/* Location and Distance */}
-        <div className="flex items-center space-x-4 text-sm text-gray-500">
-          <div className="flex items-center">
-            <MapPin className="h-4 w-4 mr-1" />
-            {provider.location.city}, {provider.location.state}
-          </div>
-          {distance && (
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1" />
-              {distance} km {t('search.away')}
-            </div>
-          )}
-        </div>
-
-        {/* Experience and Availability */}
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center text-gray-600">
-            <Users className="h-4 w-4 mr-1" />
-            {provider.experience} {t('search.yearsExperience')}
-          </div>
-          <div className={cn(
-            "flex items-center text-sm",
-            availability.status === 'open' ? "text-green-600" : "text-gray-500"
-          )}>
-            <div className={cn(
-              "w-2 h-2 rounded-full mr-2",
-              availability.status === 'open' ? "bg-green-500" : "bg-gray-400"
-            )} />
-            {availability.text}
-          </div>
-        </div>
-
-        {/* Price Range */}
-        <div className="text-sm text-gray-600">
-          <span className="font-medium text-lg text-gray-900">
-            €{provider.priceRange.min}-€{provider.priceRange.max}
-          </span>
-          <span className="ml-1">{t('search.perService')}</span>
-        </div>
-      </CardContent>
-
-      {/* Card Footer */}
-      <CardFooter className="flex-col space-y-3 pt-0">
-        {/* Actions */}
-        {showActions && (
-          <div className="flex space-x-2 w-full">
-            <Button variant="outline" size="sm" className="flex-1" asChild>
-              <Link href={`/providers/${provider.id}`}>
-                {t('search.viewProfile')}
-              </Link>
-            </Button>
-            <Button size="sm" className="flex-1" asChild>
-              <Link href={`/providers/${provider.id}/book`}>
-                {t('search.bookNow')}
-              </Link>
-            </Button>
-          </div>
-        )}
-
-        {/* Quick Contact */}
-        <div className="flex space-x-2 w-full pt-2 border-t border-gray-100">
-          <Button variant="ghost" size="sm" className="flex-1">
-            <Phone className="h-4 w-4 mr-2" />
-            {t('search.call')}
-          </Button>
-          <Button variant="ghost" size="sm" className="flex-1">
-            <MessageCircle className="h-4 w-4 mr-2" />
-            {t('search.message')}
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  )
+  return <GridCard {...sharedProps} />
 }

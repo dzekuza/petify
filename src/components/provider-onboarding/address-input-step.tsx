@@ -184,8 +184,8 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">{address.address}</p>
-                            <p className="text-sm text-gray-600">{address.city}, {address.zipCode}</p>
+                            <p className="font-medium text-foreground">{address.address}</p>
+                            <p className="text-sm text-muted-foreground">{address.city}, {address.zipCode}</p>
                           </div>
                           <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
                             Redaguoti
@@ -267,7 +267,7 @@ export default function AddressInputStep({ data, onUpdate, onNext, onPrevious, i
                   </Marker>
                 </Map>
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex items-center justify-center h-full text-muted-foreground">
                   <div className="text-center">
                     <p className="text-lg font-medium">Žemėlapis</p>
                     <p className="text-sm">Įveskite adresą, kad pamatytumėte vietą žemėlapyje</p>

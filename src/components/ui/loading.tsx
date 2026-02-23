@@ -32,7 +32,7 @@ export const Loading = ({
           priority
         />
         {showText && (
-          <p className="text-gray-600">{text}</p>
+          <p className="text-muted-foreground">{text}</p>
         )}
       </div>
     </div>

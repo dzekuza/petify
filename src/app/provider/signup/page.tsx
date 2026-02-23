@@ -160,7 +160,7 @@ export default function ProviderSignupPage() {
 
             <div>
               <Label>Services You Offer *</Label>
-              <p className="text-sm text-gray-600 mb-3">Select all services you provide</p>
+              <p className="text-sm text-muted-foreground mb-3">Select all services you provide</p>
               <div className="grid grid-cols-2 gap-3">
                 {serviceCategories.map((category) => (
                   <div
@@ -300,7 +300,7 @@ export default function ProviderSignupPage() {
           <div className="space-y-6">
             <div>
               <Label>Availability</Label>
-              <p className="text-sm text-gray-600 mb-3">Select the days you&apos;re available</p>
+              <p className="text-sm text-muted-foreground mb-3">Select the days you&apos;re available</p>
               <div className="space-y-3">
                 {Object.entries(formData.availability).map(([day, available]) => (
                   <div key={day} className="flex items-center space-x-3">
@@ -321,7 +321,7 @@ export default function ProviderSignupPage() {
 
             <div>
               <Label>Certifications (Optional)</Label>
-              <p className="text-sm text-gray-600 mb-3">Add any relevant certifications</p>
+              <p className="text-sm text-muted-foreground mb-3">Add any relevant certifications</p>
               <div className="space-y-2">
                 <Input placeholder="Certification name" />
                 <Button variant="outline" size="sm">Add Certification</Button>
@@ -349,10 +349,10 @@ export default function ProviderSignupPage() {
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               Become a Petify Provider
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
               Join our network of trusted pet care professionals and grow your business
             </p>
           </div>
@@ -378,7 +378,7 @@ export default function ProviderSignupPage() {
                         <div
                           key={stepNumber}
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                            step >= stepNumber ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                            step >= stepNumber ? 'bg-blue-600 text-white' : 'bg-gray-200 text-muted-foreground'
                           }`}
                         >
                           {stepNumber}
@@ -428,8 +428,8 @@ export default function ProviderSignupPage() {
                           <Icon className="h-4 w-4 text-blue-600" />
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 text-sm">{benefit.title}</h4>
-                          <p className="text-xs text-gray-600">{benefit.description}</p>
+                          <h4 className="font-medium text-foreground text-sm">{benefit.title}</h4>
+                          <p className="text-xs text-muted-foreground">{benefit.description}</p>
                         </div>
                       </div>
                     )
@@ -442,7 +442,7 @@ export default function ProviderSignupPage() {
                   <CardTitle>Requirements</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm text-gray-600">
+                  <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center">
                       <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
                       Valid business information

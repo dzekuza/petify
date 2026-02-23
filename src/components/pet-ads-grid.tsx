@@ -43,9 +43,9 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
   if (petAds.length === 0) {
     return (
       <div className="text-center py-12">
-        <PawPrint className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No pets available</h3>
-        <p className="text-gray-600">No pets are currently available for sale.</p>
+        <PawPrint className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">No pets available</h3>
+        <p className="text-muted-foreground">No pets are currently available for sale.</p>
       </div>
     )
   }
@@ -54,7 +54,7 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
     <div className="space-y-6">
       {title && (
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{title}</h2>
           {showViewAll && (
             <Button variant="outline" size="sm">
               View All
@@ -66,7 +66,7 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
       <div className={`grid gap-6 ${gridCols}`}>
         {petAds.map((petAd) => (
           <div key={petAd.id} className="group cursor-pointer" onClick={() => handlePetAdClick(petAd)}>
-            <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
+            <Card className="transition-all duration-200 hover:-translate-y-1 overflow-hidden py-0 pb-6">
               {/* Image Section */}
               <div className="relative overflow-hidden">
                 <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative">
@@ -79,7 +79,7 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <PawPrint className="h-16 w-16 text-gray-400" />
+                      <PawPrint className="h-16 w-16 text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -99,12 +99,12 @@ export const PetAdsGrid = ({ petAds, title, showViewAll = true, gridCols = "grid
                   {petAd.breed && ` • ${petAd.breed}`}
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-foreground">
                     <Euro className="h-3 w-3 inline mr-1" />
                     {petAd.price}
                   </div>
                   <div className="flex items-center">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-foreground">
                       {getGenderLabel(petAd.gender)}
                     </span>
                   </div>

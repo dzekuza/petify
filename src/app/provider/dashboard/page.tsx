@@ -76,7 +76,7 @@ export default function ProviderDashboard() {
       case 'confirmed': return 'bg-blue-100 text-blue-800'
       case 'completed': return 'bg-green-100 text-green-800'
       case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-gray-100 text-foreground'
     }
   }
 
@@ -91,7 +91,7 @@ export default function ProviderDashboard() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">{t('providerDashboard.loadingDashboard')}</p>
+            <p className="mt-4 text-muted-foreground">{t('providerDashboard.loadingDashboard')}</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -104,7 +104,7 @@ export default function ProviderDashboard() {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="text-red-600 text-xl mb-4">⚠️</div>
-            <p className="text-gray-600">{error}</p>
+            <p className="text-muted-foreground">{error}</p>
             <Button 
               onClick={() => window.location.reload()} 
               className="mt-4"
@@ -124,8 +124,8 @@ export default function ProviderDashboard() {
           
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">{t('providerDashboard.title')}</h1>
-            <p className="mt-2 text-gray-600">
+            <h1 className="text-3xl font-bold text-foreground">{t('providerDashboard.title')}</h1>
+            <p className="mt-2 text-muted-foreground">
               {t('providerDashboard.welcomeBack')}, {user?.user_metadata?.full_name || 'Provider'}!
             </p>
           </div>
@@ -203,16 +203,16 @@ export default function ProviderDashboard() {
                           <div className="flex-1">
                             <div className="flex items-center space-x-3">
                               <div>
-                                <p className="font-medium text-gray-900">{booking.customerName}</p>
-                                <p className="text-sm text-gray-500">{booking.service}</p>
+                                <p className="font-medium text-foreground">{booking.customerName}</p>
+                                <p className="text-sm text-muted-foreground">{booking.service}</p>
                               </div>
                             </div>
-                            <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                            <div className="mt-2 flex items-center space-x-4 text-sm text-muted-foreground">
                               <span className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
                                 {new Date(booking.date).toLocaleDateString('lt-LT')}
                               </span>
-                              <span className="font-medium text-gray-900">€{booking.amount.toFixed(2)}</span>
+                              <span className="font-medium text-foreground">€{booking.amount.toFixed(2)}</span>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -227,8 +227,8 @@ export default function ProviderDashboard() {
                       ))
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-gray-500">{t('providerDashboard.emptyBookingsTitle')}</p>
-                        <p className="text-sm text-gray-400 mt-1">{t('providerDashboard.emptyBookingsDesc')}</p>
+                        <p className="text-muted-foreground">{t('providerDashboard.emptyBookingsTitle')}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{t('providerDashboard.emptyBookingsDesc')}</p>
                       </div>
                     )}
                   </div>

@@ -69,7 +69,7 @@ export function MobileLayout({
 
       {/* Content Section with top padding to account for fixed gallery */}
       <div className="pt-[30vh] sm:pt-[60vh]">
-        <div className="bg-white rounded-t-3xl shadow-lg relative z-[50]">
+        <div className="bg-white rounded-t-3xl relative z-[50]">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
@@ -77,8 +77,8 @@ export function MobileLayout({
 
           {/* Header */}
           <div className="px-6 pb-4 border-b border-gray-100">
-            <h1 className="text-xl font-bold text-gray-900">{provider.businessName}</h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <h1 className="text-xl font-bold text-foreground">{provider.businessName}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               {provider.location.city}, {provider.location.state}
             </p>
           </div>
@@ -102,10 +102,10 @@ export function MobileLayout({
                 // Breeder interface
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <div className="text-lg font-semibold text-gray-900">
+                    <div className="text-lg font-semibold text-foreground">
                       Šiuo metu prieinama
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       Pasirinkite gyvūną ir siųskite užklausą
                     </div>
                   </div>
@@ -122,10 +122,10 @@ export function MobileLayout({
                 // Regular service provider interface
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <div className="text-lg font-semibold text-gray-900">
+                    <div className="text-lg font-semibold text-foreground">
                       {petAd ? `€${petAd.price}` : `€${provider.priceRange.min}-€${provider.priceRange.max}`}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       {petAd ? 'Kaina' : t('common.perService')}
                     </div>
                   </div>

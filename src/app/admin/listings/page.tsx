@@ -69,7 +69,7 @@ export default function AdminListingsPage() {
               <CardContent>
                 <div className="space-y-4">
                   {services.length === 0 ? (
-                    <p className="text-gray-600 text-center py-8">No service listings found</p>
+                    <p className="text-muted-foreground text-center py-8">No service listings found</p>
                   ) : (
                     services.map((service) => (
                       <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -77,8 +77,8 @@ export default function AdminListingsPage() {
                           <div className="flex items-center gap-3">
                             <div>
                               <h3 className="font-medium">{service.name}</h3>
-                              <p className="text-sm text-gray-600">{service.providers.business_name} • {service.providers.business_type}</p>
-                              <p className="text-sm text-gray-500">{service.category} • €{service.price} • {service.duration_minutes}min</p>
+                              <p className="text-sm text-muted-foreground">{service.providers.business_name} • {service.providers.business_type}</p>
+                              <p className="text-sm text-muted-foreground">{service.category} • €{service.price} • {service.duration_minutes}min</p>
                             </div>
                             <div className="flex gap-2">
                               <Badge variant={service.is_active ? 'default' : 'secondary'}>{service.is_active ? 'Active' : 'Inactive'}</Badge>
@@ -89,14 +89,14 @@ export default function AdminListingsPage() {
                             </div>
                           </div>
                           <div className="mt-2">
-                            <p className="text-sm text-gray-600">{service.description}</p>
+                            <p className="text-sm text-muted-foreground">{service.description}</p>
                             {service.requirements?.length > 0 && (
-                              <p className="text-xs text-gray-500 mt-1">Requirements: {service.requirements.join(', ')}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Requirements: {service.requirements.join(', ')}</p>
                             )}
                             {service.includes?.length > 0 && (
-                              <p className="text-xs text-gray-500">Includes: {service.includes.join(', ')}</p>
+                              <p className="text-xs text-muted-foreground">Includes: {service.includes.join(', ')}</p>
                             )}
-                            <p className="text-xs text-gray-500 mt-1">Max pets: {service.max_pets} • Created: {new Date(service.created_at).toLocaleDateString()}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Max pets: {service.max_pets} • Created: {new Date(service.created_at).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="flex gap-2">

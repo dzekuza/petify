@@ -23,10 +23,9 @@ export function ServiceCard({
     <Card
       className={cn(
         "cursor-pointer transition-all",
-        isSelected 
-          ? "border-black bg-gray-50 shadow-md" 
-          : "border-gray-200 hover:border-gray-300 hover:shadow-sm",
-        onClick && "hover:shadow-md"
+        isSelected
+          ? "border-black bg-gray-50"
+          : "border-gray-200 hover:border-gray-300"
       )}
       onClick={onClick}
     >
@@ -41,7 +40,7 @@ export function ServiceCard({
       </CardHeader>
 
       <CardContent className="space-y-2">
-        <div className="flex items-center space-x-6 text-sm text-gray-500">
+        <div className="flex items-center space-x-6 text-sm text-muted-foreground">
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1" />
             {service.duration} min
@@ -64,7 +63,7 @@ export function ServiceCard({
       </CardContent>
 
       <CardFooter className="pt-0">
-        <div className="text-2xl font-bold text-gray-900 w-full text-right">
+        <div className="text-2xl font-bold text-foreground w-full text-right">
           €{service.price}
         </div>
       </CardFooter>

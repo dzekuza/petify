@@ -61,7 +61,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
               Peržiūrėti informaciją
             </h1>
               
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Peržiūrėkite savo informaciją prieš baigiant registraciją
               </p>
 
@@ -71,20 +71,20 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                 <div className="space-y-3">
                   <div>
                     <span className="font-medium">Pavadinimas:</span>
-                    <p className="text-gray-600">{data.businessName}</p>
+                    <p className="text-muted-foreground">{data.businessName}</p>
                   </div>
                   <div>
                     <span className="font-medium">Aprašymas:</span>
-                    <p className="text-gray-600">{data.businessDescription}</p>
+                    <p className="text-muted-foreground">{data.businessDescription}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-600">{data.phone}</span>
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">{data.phone}</span>
                   </div>
                   {data.website && (
                     <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-gray-500" />
-                      <span className="text-gray-600">{data.website}</span>
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{data.website}</span>
                     </div>
                   )}
                 </div>
@@ -94,11 +94,11 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
               <div className="w-full bg-white p-6 rounded-lg border">
                 <h2 className="text-xl font-semibold mb-4">Vieta</h2>
                 <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
+                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-gray-600">{formatAddress()}</p>
+                    <p className="text-muted-foreground">{formatAddress()}</p>
                     {data.addresses && data.addresses.length > 0 && (
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         {data.addresses.length} papildoma adresas
                       </p>
                     )}
@@ -138,13 +138,13 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                               <div className="flex items-center gap-2">
                                 <h3 className="font-medium truncate">{details.name}</h3>
                                 {details.price && (
-                                  <span className="text-sm text-gray-700 inline-flex items-center gap-1">
+                                  <span className="text-sm text-foreground inline-flex items-center gap-1">
                                     <Euro className="h-3 w-3" />{details.price}
                                   </span>
                                 )}
                               </div>
                               {details.description && (
-                                <p className="text-sm text-gray-600 line-clamp-2 mt-1">{details.description}</p>
+                                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{details.description}</p>
                               )}
                             </div>
                           </div>
@@ -176,20 +176,20 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           {service.breed && (
                             <div>
-                              <span className="font-medium text-sm text-gray-700">Veislė:</span>
-                              <p className="text-gray-600 capitalize">{service.breed.replace('-', ' ')}</p>
+                              <span className="font-medium text-sm text-foreground">Veislė:</span>
+                              <p className="text-muted-foreground capitalize">{service.breed.replace('-', ' ')}</p>
                             </div>
                           )}
                           {service.generation && (
                             <div>
-                              <span className="font-medium text-sm text-gray-700">Kartos tipas:</span>
-                              <p className="text-gray-600">{service.generation}</p>
+                              <span className="font-medium text-sm text-foreground">Kartos tipas:</span>
+                              <p className="text-muted-foreground">{service.generation}</p>
                             </div>
                           )}
                           {service.price && (
                             <div>
-                              <span className="font-medium text-sm text-gray-700">Kainų diapazonas:</span>
-                              <p className="text-gray-600">€{service.price}</p>
+                              <span className="font-medium text-sm text-foreground">Kainų diapazonas:</span>
+                              <p className="text-muted-foreground">€{service.price}</p>
                             </div>
                           )}
                         </div>
@@ -197,8 +197,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         {/* Litter Information */}
                         {(service.maleCount || service.femaleCount) && (
                           <div className="mb-4">
-                            <span className="font-medium text-sm text-gray-700">Šuniukų skaičius:</span>
-                            <p className="text-gray-600">
+                            <span className="font-medium text-sm text-foreground">Šuniukų skaičius:</span>
+                            <p className="text-muted-foreground">
                               {service.maleCount && `${service.maleCount} patinų`}
                               {service.maleCount && service.femaleCount && ' / '}
                               {service.femaleCount && `${service.femaleCount} patelių`}
@@ -209,8 +209,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         {/* Age Information */}
                         {(service.ageWeeks || service.ageDays) && (
                           <div className="mb-4">
-                            <span className="font-medium text-sm text-gray-700">Amžius:</span>
-                            <p className="text-gray-600">
+                            <span className="font-medium text-sm text-foreground">Amžius:</span>
+                            <p className="text-muted-foreground">
                               {service.ageWeeks && `${service.ageWeeks} savaitės`}
                               {service.ageWeeks && service.ageDays && ', '}
                               {service.ageDays && `${service.ageDays} dienos`}
@@ -221,15 +221,15 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         {/* Ready to Leave */}
                         {service.readyToLeave && (
                           <div className="mb-4">
-                            <span className="font-medium text-sm text-gray-700">Paruošti išvežti:</span>
-                            <p className="text-gray-600">{new Date(service.readyToLeave).toLocaleDateString('lt-LT')}</p>
+                            <span className="font-medium text-sm text-foreground">Paruošti išvežti:</span>
+                            <p className="text-muted-foreground">{new Date(service.readyToLeave).toLocaleDateString('lt-LT')}</p>
                           </div>
                         )}
 
                         {/* Health Documents */}
                         {(service.microchipped || service.vaccinated || service.wormed || service.healthChecked || service.parentsTested || service.kcRegistered) && (
                           <div className="mb-4">
-                            <span className="font-medium text-sm text-gray-700">Sveikatos dokumentai:</span>
+                            <span className="font-medium text-sm text-foreground">Sveikatos dokumentai:</span>
                             <div className="flex flex-wrap gap-2 mt-2">
                               {service.microchipped && <Badge variant="outline" className="text-xs">Mikročipas</Badge>}
                               {service.vaccinated && <Badge variant="outline" className="text-xs">Skiepai</Badge>}
@@ -244,8 +244,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                         {/* Description */}
                         {service.description && (
                           <div>
-                            <span className="font-medium text-sm text-gray-700">Aprašymas:</span>
-                            <p className="text-gray-600 text-sm mt-1">{service.description}</p>
+                            <span className="font-medium text-sm text-foreground">Aprašymas:</span>
+                            <p className="text-muted-foreground text-sm mt-1">{service.description}</p>
                           </div>
                         )}
                       </div>
@@ -259,8 +259,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                     {data.detailedServices.map((service, index) => (
                       <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0">
                         <h3 className="font-medium">{service.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{service.description}</p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground mb-2">{service.description}</p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {service.duration} min
@@ -285,7 +285,7 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                   <div className="space-y-3">
                     <div>
                       <span className="font-medium">Patirtis:</span>
-                      <p className="text-gray-600">{data.experience}</p>
+                      <p className="text-muted-foreground">{data.experience}</p>
                     </div>
                     {data.certifications && data.certifications.length > 0 && (
                       <div>
@@ -308,8 +308,8 @@ export default function ReviewStep({ data, onUpdate, onNext, onPrevious, isEditM
                 <div className="w-full bg-white p-6 rounded-lg border">
                   <h2 className="text-xl font-semibold mb-4">Darbo laikas</h2>
                   <div className="flex items-start gap-2">
-                    <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
-                    <ul className="text-gray-600 space-y-1">
+                    <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
+                    <ul className="text-muted-foreground space-y-1">
                       {formatWorkingHours().map((line, idx) => (
                         <li key={idx}>{line}</li>
                       ))}

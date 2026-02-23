@@ -94,7 +94,7 @@ export default function AdminUsersPage() {
                         <div className="flex items-center gap-3">
                           <div>
                             <h3 className="font-medium">{user.full_name || 'No name'}</h3>
-                            <p className="text-sm text-gray-600">{user.email}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
                           </div>
                           <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'provider' ? 'default' : 'secondary'}>
                             {user.role}
@@ -103,7 +103,7 @@ export default function AdminUsersPage() {
                             <Badge variant="outline">{user.providers.business_name}</Badge>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Joined: {new Date(user.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Joined: {new Date(user.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline">

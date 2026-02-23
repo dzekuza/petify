@@ -28,24 +28,24 @@ const footerLinks = {
 
 export const Footer = () => {
   return (
-    <footer className="bg-white text-gray-900 z-90">
+    <footer className="bg-white text-foreground z-90">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               {t('landing.featuredProviders.subtitle')}
             </p>
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
                 <span>info@petify.lt</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
                 <span>+37067312315</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>Vilnius, Lietuva</span>
               </div>
@@ -60,7 +60,7 @@ export const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -77,7 +77,7 @@ export const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -94,7 +94,7 @@ export const Footer = () => {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -107,23 +107,23 @@ export const Footer = () => {
         {/* Bottom */}
         <div className="mt-8 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 text-sm">© 2024 Petify. Visos teisės saugomos.</p>
+            <p className="text-muted-foreground text-sm">© 2024 Petify. Visos teisės saugomos.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link
                 href="/terms"
-                className="text-gray-500 hover:text-gray-900 text-sm transition-colors"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
               >
                 Sąlygos
               </Link>
               <Link
                 href="/privacy"
-                className="text-gray-500 hover:text-gray-900 text-sm transition-colors"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
               >
                 Privatumas
               </Link>
               <Link
                 href="/cookies"
-                className="text-gray-500 hover:text-gray-900 text-sm transition-colors"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
               >
                 Slapukai
               </Link>

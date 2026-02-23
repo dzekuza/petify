@@ -13,7 +13,7 @@ interface LayoutProps {
 export const Layout = ({ children, hideServiceCategories = false, onFiltersClick, hideFooter = false }: LayoutProps) => {
   return (
     <div className="flex flex-col">
-      <Suspense fallback={<div className="px-4 py-2 text-sm text-gray-500">Loading...</div>}>
+      <Suspense fallback={<div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>}>
         <Navigation hideServiceCategories={hideServiceCategories} onFiltersClick={onFiltersClick} />
       </Suspense>
       {/* Add padding for fixed header and bottom nav */}

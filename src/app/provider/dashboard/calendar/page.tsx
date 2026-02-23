@@ -121,7 +121,7 @@ export default function ProviderSchedulePage() {
       case 'confirmed': return 'bg-green-100 text-green-800'
       case 'completed': return 'bg-blue-100 text-blue-800'
       case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-gray-100 text-foreground'
     }
   }
 
@@ -154,8 +154,8 @@ export default function ProviderSchedulePage() {
           <h1 className="text-2xl font-bold">{t('providerDashboard.schedule')}</h1>
           <div className="flex justify-start md:justify-end">
             <div className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5 text-gray-500" />
-              <span className="text-sm text-gray-600">
+              <CalendarIcon className="h-5 w-5 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
                 {monthNames[currentMonth]} {currentYear}
               </span>
             </div>
@@ -196,7 +196,7 @@ export default function ProviderSchedulePage() {
                   ) : (
                     <div className="grid grid-cols-7 gap-1 mb-4">
                       {daysOfWeek.map((day) => (
-                        <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                        <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
                           {day}
                         </div>
                       ))}
@@ -236,7 +236,7 @@ export default function ProviderSchedulePage() {
                                   </div>
                                 ))}
                                 {dayBookings.length > 2 && (
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-muted-foreground">
                                     +{dayBookings.length - 2} {t('providerDashboard.more')}
                                   </div>
                                 )}
@@ -280,8 +280,8 @@ export default function ProviderSchedulePage() {
                   {selectedDate ? (
                     <div className="space-y-4">
                       {selectedDateBookings.length === 0 ? (
-                        <div className="text-center py-6 text-gray-500">
-                          <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                        <div className="text-center py-6 text-muted-foreground">
+                          <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground/60" />
                           <p>{t('providerDashboard.noAppointmentsScheduled')}</p>
                         </div>
                       ) : (
@@ -291,33 +291,33 @@ export default function ProviderSchedulePage() {
                               <Badge className={getStatusColor(booking.status)}>
                                 {t(`providerDashboard.status.${booking.status}`)}
                               </Badge>
-                              <span className="text-sm font-medium text-gray-600">
+                              <span className="text-sm font-medium text-muted-foreground">
                                 €{booking.totalPrice}
                               </span>
                             </div>
                             
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-gray-500" />
+                                <Clock className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">{booking.timeSlot.start} - {booking.timeSlot.end}</span>
                               </div>
                               
                               <div className="flex items-center gap-2">
-                                <User className="h-4 w-4 text-gray-500" />
+                                <User className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm font-medium">
                                   {booking.customer?.fullName || t('providerDashboard.customer')}
                                 </span>
                               </div>
                               
                               <div className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 text-gray-500" />
+                                <Phone className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">
                                   {booking.customer?.phone || t('providerDashboard.noPhone')}
                                 </span>
                               </div>
                               
                               <div className="flex items-center gap-2">
-                                <Mail className="h-4 w-4 text-gray-500" />
+                                <Mail className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-sm">
                                   {booking.customer?.email || t('providerDashboard.noEmail')}
                                 </span>
@@ -327,7 +327,7 @@ export default function ProviderSchedulePage() {
                             <div className="pt-2 border-t">
                               <p className="text-sm font-medium">{booking.service?.name}</p>
                               {booking.pet && (
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-muted-foreground">
                                   {t('providerDashboard.pet')}: {booking.pet.name} ({booking.pet.species})
                                 </p>
                               )}
@@ -337,8 +337,8 @@ export default function ProviderSchedulePage() {
                       )}
                     </div>
                   ) : (
-                    <div className="text-center py-6 text-gray-500">
-                      <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <div className="text-center py-6 text-muted-foreground">
+                      <CalendarIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground/60" />
                       <p>{t('providerDashboard.clickDateToView')}</p>
                     </div>
                   )}

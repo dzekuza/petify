@@ -118,11 +118,11 @@ export const HeroFilters = () => {
     }, [])
 
     return (
-        <div className="glass md:rounded-full rounded-2xl shadow-2xl border border-white/20 md:p-2 p-6 w-full max-w-4xl backdrop-blur-xl">
+        <div className="glass md:rounded-full rounded-2xl border border-white/20 md:p-2 p-6 w-full max-w-4xl backdrop-blur-xl">
             <div className="flex flex-col md:flex-row items-center w-full md:space-y-0 space-y-4">
                 {/* Location */}
                 <div className="flex-1 px-2 py-1 hover:bg-gray-50 md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
-                    <Label htmlFor="address-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-gray-900 block cursor-pointer">
+                    <Label htmlFor="address-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         {t('landing.hero.search.where')}
                     </Label>
                     <div className="relative">
@@ -136,7 +136,7 @@ export const HeroFilters = () => {
                             onFocus={handleLocationFocus}
                             onBlur={handleLocationBlur}
                             onKeyDown={handleKeyPress}
-                            className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md py-1 transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm px-0"
+                            className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-neutral-200 h-9 w-full min-w-0 rounded-md py-1 transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-neutral-400 aria-invalid:border-destructive border-0 bg-transparent focus-visible:ring-0 text-sm px-0"
                             aria-describedby="location-suggestions"
                         />
 
@@ -144,7 +144,7 @@ export const HeroFilters = () => {
                         {showLocationSuggestions && (
                             <div
                                 id="location-suggestions"
-                                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-48 overflow-y-auto"
+                                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg z-50 mt-1 max-h-48 overflow-y-auto"
                                 role="listbox"
                                 aria-label="City suggestions"
                             >
@@ -168,14 +168,14 @@ export const HeroFilters = () => {
 
                 {/* Service Category */}
                 <div className="flex-1 px-2 py-1 hover:bg-gray-50 md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
-                    <Label htmlFor="category-select" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-gray-900 block cursor-pointer">
+                    <Label htmlFor="category-select" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         Paslaugos
                     </Label>
                     <div className="relative">
                         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                             <SelectTrigger
                                 id="category-select"
-                                className="flex items-center justify-between gap-2 rounded-md border-input outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 border-0 bg-transparent shadow-none focus-visible:ring-0 text-sm px-0 h-auto py-0 w-full"
+                                className="flex items-center justify-between gap-2 rounded-md border-neutral-200 outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 border-0 bg-transparent focus-visible:ring-0 text-sm px-0 h-auto py-0 w-full"
                             >
                                 <SelectValue placeholder="Pasirinkite paslaugą" />
                             </SelectTrigger>
@@ -192,14 +192,14 @@ export const HeroFilters = () => {
 
                 {/* Date */}
                 <div className="flex-1 px-2 py-1 hover:bg-gray-50 md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
-                    <Label htmlFor="date-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-gray-900 block cursor-pointer">
+                    <Label htmlFor="date-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         {t('landing.hero.search.date')}
                     </Label>
                     <div className="relative">
                         <Button
                             id="date-input"
                             variant="ghost"
-                            className="inline-flex items-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 has-[>svg]:px-3 w-full text-sm text-left text-gray-500 hover:text-gray-700 bg-transparent border-0 h-auto p-0 justify-start font-normal"
+                            className="inline-flex items-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-neutral-400 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 has-[>svg]:px-3 w-full text-sm text-left text-muted-foreground hover:text-foreground bg-transparent border-0 h-auto p-0 justify-start font-normal"
                             onClick={handleDateFocus}
                             onBlur={handleDateBlur}
                             aria-describedby="date-suggestions"
@@ -212,7 +212,7 @@ export const HeroFilters = () => {
                         {showDateSuggestions && (
                             <div
                                 id="date-suggestions"
-                                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1"
+                                className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg z-50 mt-1"
                                 role="listbox"
                                 aria-label="Date suggestions"
                             >
@@ -259,7 +259,7 @@ export const HeroFilters = () => {
                 {/* Search Button */}
                 <div className="w-full md:w-auto">
                     <button
-                        className="flex items-center justify-center w-full md:w-12 h-12 md:rounded-full rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                        className="flex items-center justify-center w-full md:w-12 h-12 md:rounded-full rounded-xl bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white transition-all duration-300 focus:outline-none focus-visible:border-neutral-400 hover:-translate-y-0.5"
                         onClick={handleSearch}
                         onKeyDown={handleKeyPress}
                         aria-label="Search for services"

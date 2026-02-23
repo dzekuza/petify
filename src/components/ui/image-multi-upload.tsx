@@ -158,7 +158,7 @@ export function ImageMultiUpload ({
         role='button'
         tabIndex={0}
         aria-label='Įkelti nuotraukas'
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]
+        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer outline-none focus-visible:border-neutral-400
           ${isDragOver ? 'border-black bg-gray-50' : 'border-gray-300 hover:border-black'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${error ? 'border-red-300 bg-red-50' : ''}`}
@@ -178,12 +178,12 @@ export function ImageMultiUpload ({
           disabled={disabled || remaining <= 0}
           onChange={handleInputChange}
         />
-        <div className='text-gray-600 mb-2'>
-          <Upload className='mx-auto h-12 w-12 text-gray-400' />
+        <div className='text-muted-foreground mb-2'>
+          <Upload className='mx-auto h-12 w-12 text-muted-foreground' />
         </div>
-        <p className='text-sm text-gray-700'>{placeholder}</p>
-        <p className='text-xs text-gray-500 mt-1'>{description}</p>
-        <p className='text-xs text-gray-500 mt-1'>{totalCount}/{maxFiles}</p>
+        <p className='text-sm text-foreground'>{placeholder}</p>
+        <p className='text-xs text-muted-foreground mt-1'>{description}</p>
+        <p className='text-xs text-muted-foreground mt-1'>{totalCount}/{maxFiles}</p>
       </div>
 
       {error && (

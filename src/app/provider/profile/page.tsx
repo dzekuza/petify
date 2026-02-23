@@ -182,8 +182,8 @@ export default function ProviderProfilePage() {
             {/* Header */}
             <div className="mb-8 flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">My Businesses</h1>
-                <p className="text-gray-600">Manage your business profiles and information</p>
+                <h1 className="text-3xl font-bold text-foreground mb-2">My Businesses</h1>
+                <p className="text-muted-foreground">Manage your business profiles and information</p>
               </div>
               <Button onClick={handleAddNewBusiness} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
@@ -194,9 +194,9 @@ export default function ProviderProfilePage() {
             {/* Business Grid */}
             {providers.length === 0 ? (
               <div className="text-center py-12">
-                <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Businesses Found</h3>
-                <p className="text-gray-600 mb-4">You haven't created any business profiles yet.</p>
+                <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No Businesses Found</h3>
+                <p className="text-muted-foreground mb-4">You haven't created any business profiles yet.</p>
                 <Button onClick={handleAddNewBusiness} className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   Create Your First Business
@@ -205,7 +205,7 @@ export default function ProviderProfilePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {providers.map((provider) => (
-                  <Card key={provider.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card key={provider.id} className="overflow-hidden transition-shadow">
                     {/* Cover Image Section */}
                     <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 -mt-6">
                       {provider.images && provider.images.length > 0 ? (
@@ -261,8 +261,8 @@ export default function ProviderProfilePage() {
                             <MapPin className="h-4 w-4 text-blue-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Location</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs font-medium text-foreground">Location</p>
+                            <p className="text-xs text-muted-foreground">
                               {provider.location.city && provider.location.state 
                                 ? `${provider.location.city}, ${provider.location.state}`
                                 : 'Not specified'
@@ -276,8 +276,8 @@ export default function ProviderProfilePage() {
                             <Clock className="h-4 w-4 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Experience</p>
-                            <p className="text-xs text-gray-600">{provider.experience || 0} years</p>
+                            <p className="text-xs font-medium text-foreground">Experience</p>
+                            <p className="text-xs text-muted-foreground">{provider.experience || 0} years</p>
                           </div>
                         </div>
 
@@ -286,8 +286,8 @@ export default function ProviderProfilePage() {
                             <Star className="h-4 w-4 text-yellow-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Rating</p>
-                            <p className="text-xs text-gray-600">{provider.rating || 0} stars</p>
+                            <p className="text-xs font-medium text-foreground">Rating</p>
+                            <p className="text-xs text-muted-foreground">{provider.rating || 0} stars</p>
                           </div>
                         </div>
 
@@ -296,8 +296,8 @@ export default function ProviderProfilePage() {
                             <DollarSign className="h-4 w-4 text-purple-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Price Range</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs font-medium text-foreground">Price Range</p>
+                            <p className="text-xs text-muted-foreground">
                               €{provider.priceRange.min || 0} - €{provider.priceRange.max || 0}
                             </p>
                           </div>
@@ -308,8 +308,8 @@ export default function ProviderProfilePage() {
                             <Phone className="h-4 w-4 text-red-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Contact</p>
-                            <p className="text-xs text-gray-600">{provider.contactInfo?.phone || 'Not provided'}</p>
+                            <p className="text-xs font-medium text-foreground">Contact</p>
+                            <p className="text-xs text-muted-foreground">{provider.contactInfo?.phone || 'Not provided'}</p>
                           </div>
                         </div>
 
@@ -318,15 +318,15 @@ export default function ProviderProfilePage() {
                             <Users className="h-4 w-4 text-indigo-600" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">Reviews</p>
-                            <p className="text-xs text-gray-600">{provider.reviewCount || 0} reviews</p>
+                            <p className="text-xs font-medium text-foreground">Reviews</p>
+                            <p className="text-xs text-muted-foreground">{provider.reviewCount || 0} reviews</p>
                           </div>
                         </div>
                       </div>
 
                       {provider.certifications && provider.certifications.length > 0 && (
                         <div className="mt-4">
-                          <h4 className="text-xs font-medium text-gray-900 mb-2">Certifications</h4>
+                          <h4 className="text-xs font-medium text-foreground mb-2">Certifications</h4>
                           <div className="flex flex-wrap gap-1">
                             {provider.certifications.slice(0, 3).map((cert, index) => (
                               <Badge key={index} variant="secondary" className="text-xs">

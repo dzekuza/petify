@@ -84,7 +84,7 @@ function BookingSuccessContent() {
     <Layout>
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
-          <Card className="border-green-200 shadow-lg">
+          <Card className="border-green-200">
             <CardHeader className="text-center pb-6">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-check-big h-10 w-10 text-green-600" aria-hidden="true">
@@ -92,10 +92,10 @@ function BookingSuccessContent() {
                   <path d="m9 11 3 3L22 4"></path>
                 </svg>
               </div>
-              <CardTitle className="text-3xl font-bold text-gray-900">
+              <CardTitle className="text-3xl font-bold text-foreground">
                 Rezervacija patvirtinta!
               </CardTitle>
-              <p className="text-gray-600 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Jūsų mokėjimas buvo sėkmingas ir rezervacija patvirtinta
               </p>
             </CardHeader>
@@ -103,34 +103,34 @@ function BookingSuccessContent() {
             <CardContent className="space-y-6">
               {bookingDetails && (
                 <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-                  <h3 className="font-semibold text-lg text-gray-900">Rezervacijos detalės</h3>
+                  <h3 className="font-semibold text-lg text-foreground">Rezervacijos detalės</h3>
 
                   <div className="space-y-3">
                     <div className="flex items-center text-sm">
-                      <Calendar className="h-4 w-4 text-gray-400 mr-3" />
-                      <span className="text-gray-600">Data:</span>
-                      <span className="ml-auto font-medium text-gray-900">
+                      <Calendar className="h-4 w-4 text-muted-foreground mr-3" />
+                      <span className="text-muted-foreground">Data:</span>
+                      <span className="ml-auto font-medium text-foreground">
                         {bookingDetails.booking_date}
                       </span>
                     </div>
 
                     <div className="flex items-center text-sm">
-                      <Clock className="h-4 w-4 text-gray-400 mr-3" />
-                      <span className="text-gray-600">Laikas:</span>
-                      <span className="ml-auto font-medium text-gray-900">
+                      <Clock className="h-4 w-4 text-muted-foreground mr-3" />
+                      <span className="text-muted-foreground">Laikas:</span>
+                      <span className="ml-auto font-medium text-foreground">
                         {bookingDetails.start_time} - {bookingDetails.end_time}
                       </span>
                     </div>
 
                     <div className="flex items-center text-sm">
-                      <span className="text-gray-600">Būsena:</span>
+                      <span className="text-muted-foreground">Būsena:</span>
                       <span className="ml-auto font-medium text-green-600">
                         Patvirtinta
                       </span>
                     </div>
 
                     <div className="flex items-center text-sm">
-                      <span className="text-gray-600">Mokėjimas:</span>
+                      <span className="text-muted-foreground">Mokėjimas:</span>
                       <span className="ml-auto font-medium text-green-600">
                         Apmokėta
                       </span>
@@ -179,7 +179,7 @@ export default function BookingSuccessPage() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Kraunamos rezervacijos detalės...</p>
+            <p className="text-muted-foreground">Kraunamos rezervacijos detalės...</p>
           </div>
         </div>
       </Layout>

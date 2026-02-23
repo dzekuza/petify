@@ -329,9 +329,9 @@ export default function ProviderServicesPage() {
           <div className="min-h-screen bg-gray-50 py-8">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center py-12">
-                <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Profile Found</h3>
-                <p className="text-gray-600 mb-4">You need to complete your provider profile first.</p>
+                <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No Profile Found</h3>
+                <p className="text-muted-foreground mb-4">You need to complete your provider profile first.</p>
                 <Button onClick={() => router.push('/provider/dashboard')}>
                   Go to Dashboard
                 </Button>
@@ -352,8 +352,8 @@ export default function ProviderServicesPage() {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">My Services</h1>
-                  <p className="text-gray-600">Create and manage your service offerings</p>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">My Services</h1>
+                  <p className="text-muted-foreground">Create and manage your service offerings</p>
                 </div>
                 <Button onClick={() => setShowAddServiceModal(true)}>
                   <Plus className="h-4 w-4 mr-2" />
@@ -399,7 +399,7 @@ export default function ProviderServicesPage() {
 
                       {service.includes && service.includes.length > 0 && (
                         <div>
-                          <p className="text-sm font-medium text-gray-700 mb-2">Includes:</p>
+                          <p className="text-sm font-medium text-foreground mb-2">Includes:</p>
                           <div className="flex flex-wrap gap-1">
                             {service.includes.slice(0, 3).map((item, index) => (
                               <Badge key={index} variant="outline" className="text-xs">
@@ -440,9 +440,9 @@ export default function ProviderServicesPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <PawPrint className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Services Yet</h3>
-                <p className="text-gray-600 mb-6">Create your first service to start accepting bookings</p>
+                <PawPrint className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No Services Yet</h3>
+                <p className="text-muted-foreground mb-6">Create your first service to start accepting bookings</p>
                 <Button onClick={() => setShowAddServiceModal(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Service
@@ -484,7 +484,7 @@ export default function ProviderServicesPage() {
                         disabled
                         className="mt-1 bg-gray-100"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Category is set based on your provider profile</p>
+                      <p className="text-xs text-muted-foreground mt-1">Category is set based on your provider profile</p>
                     </div>
                   </div>
 
@@ -549,7 +549,7 @@ export default function ProviderServicesPage() {
 
                   <div>
                     <Label>Service Includes (Optional)</Label>
-                    <p className="text-sm text-gray-600 mb-3">What's included in this service?</p>
+                    <p className="text-sm text-muted-foreground mb-3">What's included in this service?</p>
                     <div className="space-y-2">
                       <Input 
                         placeholder="e.g., Bath, Nail trimming, Ear cleaning"
@@ -588,7 +588,7 @@ export default function ProviderServicesPage() {
 
                   <div>
                     <Label>Requirements (Optional)</Label>
-                    <p className="text-sm text-gray-600 mb-3">Any special requirements for this service?</p>
+                    <p className="text-sm text-muted-foreground mb-3">Any special requirements for this service?</p>
                     <div className="space-y-2">
                       <Input 
                         placeholder="e.g., Up-to-date vaccinations, Pet must be friendly"
@@ -686,7 +686,7 @@ export default function ProviderServicesPage() {
                         disabled
                         className="mt-1 bg-gray-100"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Category is set based on your provider profile</p>
+                      <p className="text-xs text-muted-foreground mt-1">Category is set based on your provider profile</p>
                     </div>
                   </div>
 
@@ -751,7 +751,7 @@ export default function ProviderServicesPage() {
 
                   <div>
                     <Label>Service Includes (Optional)</Label>
-                    <p className="text-sm text-gray-600 mb-3">What's included in this service?</p>
+                    <p className="text-sm text-muted-foreground mb-3">What's included in this service?</p>
                     <div className="space-y-2">
                       <Input 
                         placeholder="e.g., Bath, Nail trimming, Ear cleaning"
@@ -790,7 +790,7 @@ export default function ProviderServicesPage() {
 
                   <div>
                     <Label>Requirements (Optional)</Label>
-                    <p className="text-sm text-gray-600 mb-3">Any special requirements for this service?</p>
+                    <p className="text-sm text-muted-foreground mb-3">Any special requirements for this service?</p>
                     <div className="space-y-2">
                       <Input 
                         placeholder="e.g., Up-to-date vaccinations, Pet must be friendly"

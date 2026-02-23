@@ -41,7 +41,7 @@ const getNotificationIcon = (type: Notification['type']) => {
     case 'review_received':
       return <Star className="h-5 w-5 text-yellow-500" />
     default:
-      return <Bell className="h-5 w-5 text-gray-500" />
+      return <Bell className="h-5 w-5 text-muted-foreground" />
   }
 }
 
@@ -112,7 +112,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
           <div className="flex items-center justify-between">
             <p className={cn(
               "text-sm font-medium",
-              !notification.read ? "text-gray-900" : "text-gray-700"
+              !notification.read ? "text-foreground" : "text-foreground"
             )}>
               {notification.title}
             </p>
@@ -122,7 +122,7 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
                   Naujas
                 </Badge>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(notification.created_at), { 
                   addSuffix: true, 
                   locale: lt 
@@ -130,11 +130,11 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
               </p>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {notification.message}
           </p>
           {notification.data && Object.keys(notification.data).length > 0 && (
-            <div className="mt-2 text-xs text-gray-500">
+            <div className="mt-2 text-xs text-muted-foreground">
               {(() => {
                 const data = notification.data as NotificationData
                 return (
@@ -214,8 +214,8 @@ export default function ProviderNotificationsPage() {
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Pranešimai</h1>
-                  <p className="text-gray-600">
+                  <h1 className="text-3xl font-bold text-foreground">Pranešimai</h1>
+                  <p className="text-muted-foreground">
                     {unreadCount > 0 
                       ? `Turite ${unreadCount} neskaitytų pranešimų`
                       : 'Nėra neskaitytų pranešimų'
@@ -275,12 +275,12 @@ export default function ProviderNotificationsPage() {
                   </CardHeader>
                   <CardContent>
                     {isLoading ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         Kraunama...
                       </div>
                     ) : filteredNotifications.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
-                        <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground/60" />
                         <p>Nėra pranešimų</p>
                       </div>
                     ) : (

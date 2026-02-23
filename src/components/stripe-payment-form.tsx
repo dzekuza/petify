@@ -131,7 +131,7 @@ export const StripePaymentForm = ({
       {bookingDetails && (
         <div className="bg-gray-50 p-4 rounded-lg space-y-2">
           <h4 className="font-medium text-sm">{t('payment.bookingSummary')}</h4>
-          <div className="text-sm text-gray-600 space-y-1">
+          <div className="text-sm text-muted-foreground space-y-1">
             <div>{t('payment.service')}: {bookingDetails.serviceName}</div>
             <div>{t('payment.provider')}: {bookingDetails.providerName}</div>
             <div>{t('payment.date')}: {bookingDetails.date}</div>
@@ -186,7 +186,7 @@ export const StripePaymentForm = ({
       </form>
 
       {/* Security Badge */}
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Shield className="h-4 w-4" />
           <span>{t('payment.securedByStripe')}</span>
         </div>

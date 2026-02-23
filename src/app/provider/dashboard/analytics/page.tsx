@@ -99,7 +99,7 @@ export default function ProviderAnalyticsPage() {
             </CardHeader>
             <CardContent className="pt-0">
               <MiniLineChart values={revenueTrend} color="#16a34a" />
-              <div className="text-xs text-gray-500 mt-2">Bendra: €{revenueTrend.reduce((a, b) => a + b, 0).toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground mt-2">Bendra: €{revenueTrend.reduce((a, b) => a + b, 0).toFixed(2)}</div>
             </CardContent>
           </Card>
 
@@ -114,7 +114,7 @@ export default function ProviderAnalyticsPage() {
                   <div key={s.name} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <div className="font-medium">{s.name}</div>
-                      <div className="text-xs text-gray-500">{s.bookings} rezerv.</div>
+                      <div className="text-xs text-muted-foreground">{s.bookings} rezerv.</div>
                     </div>
                     <div className="text-sm font-semibold">€{s.revenue.toFixed(2)}</div>
                   </div>

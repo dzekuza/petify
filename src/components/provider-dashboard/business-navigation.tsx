@@ -128,7 +128,7 @@ export function BusinessNavigation({ businessType }: BusinessNavigationProps) {
               {businessType} Provider
             </Badge>
             {providerData?.business_name && (
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {providerData.business_name}
               </span>
             )}
@@ -146,7 +146,7 @@ export function BusinessNavigation({ businessType }: BusinessNavigationProps) {
                   variant={isActive ? "default" : "ghost"}
                   size="sm"
                   asChild
-                  className={isActive ? "bg-blue-600 text-white" : "text-gray-600 hover:text-gray-900"}
+                  className={isActive ? "bg-blue-600 text-white" : "text-muted-foreground hover:text-foreground"}
                 >
                   <Link href={item.href} className="flex items-center space-x-2">
                     <Icon className="h-4 w-4" />

@@ -16,7 +16,7 @@ export default function ExitButton({ onExit, isEditMode }: ExitButtonProps) {
       variant="outline"
       size="sm"
       onClick={onExit}
-      className="fixed top-4 right-4 z-50 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 shadow-md"
+      className="fixed top-4 right-4 z-50 bg-white border-gray-300 text-foreground hover:bg-gray-50 shadow-md"
     >
       <X className="w-4 h-4 mr-2" />
       Išeiti

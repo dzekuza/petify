@@ -33,7 +33,7 @@ const getStatusColor = (status: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-800'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-foreground'
   }
 }
 
@@ -77,11 +77,11 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
               <h3 className="font-semibold text-lg mb-3">Service Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Service</p>
+                  <p className="text-sm text-muted-foreground">Service</p>
                   <p className="font-medium">{services.find(s => s.id === booking.serviceId)?.name || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Date & Time</p>
+                  <p className="text-sm text-muted-foreground">Date & Time</p>
                   <p className="font-medium">{new Date(booking.date).toLocaleDateString()} at {booking.timeSlot.start} - {booking.timeSlot.end}</p>
                 </div>
               </div>
@@ -93,31 +93,31 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Pet Name</p>
+                      <p className="text-sm text-muted-foreground">Pet Name</p>
                       <p className="font-medium">{booking.pet.name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Species</p>
+                      <p className="text-sm text-muted-foreground">Species</p>
                       <p className="font-medium">{booking.pet.species}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Breed</p>
+                      <p className="text-sm text-muted-foreground">Breed</p>
                       <p className="font-medium">{booking.pet.breed || 'N/A'}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Age</p>
+                      <p className="text-sm text-muted-foreground">Age</p>
                       <p className="font-medium">{booking.pet.age} months</p>
                     </div>
                   </div>
                   {booking.pet.specialNeeds && booking.pet.specialNeeds.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm text-gray-600">Special Needs</p>
+                      <p className="text-sm text-muted-foreground">Special Needs</p>
                       <p className="font-medium">{booking.pet.specialNeeds.join(', ')}</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-gray-500">No pet information available</p>
+                <p className="text-muted-foreground">No pet information available</p>
               )}
             </div>
 
@@ -126,15 +126,15 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600">Customer ID</p>
+                    <p className="text-sm text-muted-foreground">Customer ID</p>
                     <p className="font-medium">{booking.customerId}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Total Price</p>
+                    <p className="text-sm text-muted-foreground">Total Price</p>
                     <p className="font-medium">${booking.totalPrice}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Booking Date</p>
+                    <p className="text-sm text-muted-foreground">Booking Date</p>
                     <p className="font-medium">{new Date(booking.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
@@ -145,7 +145,7 @@ export default function BookingDetailsDialog({ open, booking, services, onClose,
               <div className="border-t pt-4">
                 <h3 className="font-semibold text-lg mb-3">Special Instructions</h3>
                 <div className="bg-yellow-50 p-4 rounded-lg">
-                  <p className="text-gray-700">{booking.notes}</p>
+                  <p className="text-foreground">{booking.notes}</p>
                 </div>
               </div>
             )}

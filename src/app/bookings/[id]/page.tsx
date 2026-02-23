@@ -195,7 +195,7 @@ export default function BookingDetailPage() {
       case 'completed':
         return 'bg-blue-100 text-blue-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-foreground'
     }
   }
 
@@ -238,8 +238,8 @@ export default function BookingDetailPage() {
           <div className="min-h-screen bg-white">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('bookings.confirmation.bookingNotFound')}</h1>
-                <p className="text-gray-600 mb-6">{error || t('bookings.confirmation.bookingNotFoundDesc')}</p>
+                <h1 className="text-2xl font-bold text-foreground mb-4">{t('bookings.confirmation.bookingNotFound')}</h1>
+                <p className="text-muted-foreground mb-6">{error || t('bookings.confirmation.bookingNotFoundDesc')}</p>
                 <Button onClick={() => router.push('/bookings')}>
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   {t('bookings.confirmation.backToBookings')}
@@ -275,8 +275,8 @@ export default function BookingDetailPage() {
                       {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                     </Badge>
                   </div>
-                  <h1 className="text-3xl font-bold text-gray-900">{t('bookings.confirmation.title')}</h1>
-                  <p className="text-gray-600">{t('bookings.confirmation.subtitle')}</p>
+                  <h1 className="text-3xl font-bold text-foreground">{t('bookings.confirmation.title')}</h1>
+                  <p className="text-muted-foreground">{t('bookings.confirmation.subtitle')}</p>
                 </div>
               </div>
             </div>
@@ -298,30 +298,30 @@ export default function BookingDetailPage() {
                   <CardContent className="space-y-4 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <Calendar className="h-5 w-5 text-gray-500" />
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.provider')}</p>
+                          <p className="text-sm text-muted-foreground">{t('bookings.confirmation.provider')}</p>
                           <p className="font-medium">{provider?.businessName || t('bookings.confirmation.myBusiness')}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <Clock className="h-5 w-5 text-gray-500" />
+                        <Clock className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.dateAndTime')}</p>
+                          <p className="text-sm text-muted-foreground">{t('bookings.confirmation.dateAndTime')}</p>
                           <p className="font-medium">{format(new Date(booking.date), 'MMMM d, yyyy', { locale: lt })} {booking.timeSlot.start}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <Users className="h-5 w-5 text-gray-500" />
+                        <Users className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.pets')}</p>
+                          <p className="text-sm text-muted-foreground">{t('bookings.confirmation.pets')}</p>
                           <p className="font-medium">1 {t('bookings.confirmation.pet')}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <CreditCard className="h-5 w-5 text-gray-500" />
+                        <CreditCard className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-gray-600">{t('bookings.confirmation.servicePrice')}</p>
+                          <p className="text-sm text-muted-foreground">{t('bookings.confirmation.servicePrice')}</p>
                           <p className="font-medium">€{service?.price || 0} × 1</p>
                         </div>
                       </div>
@@ -329,8 +329,8 @@ export default function BookingDetailPage() {
 
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-semibold text-gray-900">{t('bookings.confirmation.total')}</span>
-                        <span className="text-xl font-bold text-gray-900">€{booking.totalPrice}</span>
+                        <span className="text-lg font-semibold text-foreground">{t('bookings.confirmation.total')}</span>
+                        <span className="text-xl font-bold text-foreground">€{booking.totalPrice}</span>
                       </div>
                     </div>
 
@@ -343,7 +343,7 @@ export default function BookingDetailPage() {
                           </div>
                           <div>
                             <p className="font-medium">{pet.name}</p>
-                            <p className="text-sm text-gray-600">{pet.species} • {pet.breed}</p>
+                            <p className="text-sm text-muted-foreground">{pet.species} • {pet.breed}</p>
                           </div>
                         </div>
                       </div>
@@ -352,7 +352,7 @@ export default function BookingDetailPage() {
                     {booking.notes && (
                       <div className="border-t pt-4">
                         <h4 className="font-medium mb-2">{t('bookings.confirmation.specialInstructions')}</h4>
-                        <p className="text-gray-600">{booking.notes}</p>
+                        <p className="text-muted-foreground">{booking.notes}</p>
                       </div>
                     )}
 
@@ -448,7 +448,7 @@ END:VCALENDAR`
                           </div>
                         </div>
                         {provider.location && (
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span>{provider.location.address}, {provider.location.city}</span>
                           </div>

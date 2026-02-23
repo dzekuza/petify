@@ -105,7 +105,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
     >
       <ExitButton onExit={onExitEdit || (() => {})} isEditMode={isEditMode} />
       <h1 className="text-3xl font-bold text-black text-center mb-2">Darbo valandos</h1>
-      <p className="text-base text-gray-600 text-center mb-8 max-w-md mx-auto">Nurodykite, kada esate prieinamas klientams kiekvieną savaitės dieną</p>
+      <p className="text-base text-muted-foreground text-center mb-8 max-w-md mx-auto">Nurodykite, kada esate prieinamas klientams kiekvieną savaitės dieną</p>
       <div className="w-full space-y-4">
                 {dayNames.map(({ key, label }) => {
                   const dayKey = key as keyof WorkingHours
@@ -120,7 +120,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                             checked={dayData.enabled}
                             onCheckedChange={(checked) => handleDayToggle(dayKey, checked as boolean)}
                           />
-                          <Label htmlFor={dayKey} className="text-base font-medium text-gray-900">
+                          <Label htmlFor={dayKey} className="text-base font-medium text-foreground">
                             {label}
                           </Label>
                         </div>
@@ -141,7 +141,7 @@ export default function WorkingHoursStep({ data, onUpdate, onNext, onPrevious, i
                               aria-label={`${label} pradžia (24h)`}
                               title="Naudokite 24 val. formatą HH:MM"
                             />
-                            <span className="text-sm text-gray-600">-</span>
+                            <span className="text-sm text-muted-foreground">-</span>
                             <Input
                               id={`${dayKey}-end`}
                               type="time"

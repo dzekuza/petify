@@ -75,7 +75,7 @@ const getBusinessTypeInfo = (businessType: string) => {
         icon: Users,
         title: 'Service Dashboard',
         description: 'Manage your pet services',
-        color: 'text-gray-600',
+        color: 'text-muted-foreground',
         bgColor: 'bg-gray-50',
         borderColor: 'border-gray-200'
       }
@@ -120,15 +120,15 @@ export function GroomingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Scheduled</span>
+              <span className="text-sm text-muted-foreground">Scheduled</span>
               <Badge variant="outline">3</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Completed</span>
+              <span className="text-sm text-muted-foreground">Completed</span>
               <Badge variant="outline" className="text-green-600">2</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Pending</span>
+              <span className="text-sm text-muted-foreground">Pending</span>
               <Badge variant="outline" className="text-yellow-600">1</Badge>
             </div>
           </div>
@@ -151,15 +151,15 @@ export function GroomingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Basic Grooming</span>
+              <span className="text-sm text-muted-foreground">Basic Grooming</span>
               <Badge variant="secondary">€25</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Full Service</span>
+              <span className="text-sm text-muted-foreground">Full Service</span>
               <Badge variant="secondary">€45</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Premium Package</span>
+              <span className="text-sm text-muted-foreground">Premium Package</span>
               <Badge variant="secondary">€65</Badge>
             </div>
           </div>
@@ -188,15 +188,15 @@ export function VeterinaryWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Appointments</span>
+              <span className="text-sm text-muted-foreground">Appointments</span>
               <Badge variant="outline">5</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Emergency Cases</span>
+              <span className="text-sm text-muted-foreground">Emergency Cases</span>
               <Badge variant="outline" className="text-red-600">1</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Follow-ups</span>
+              <span className="text-sm text-muted-foreground">Follow-ups</span>
               <Badge variant="outline" className="text-blue-600">2</Badge>
             </div>
           </div>
@@ -219,15 +219,15 @@ export function VeterinaryWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Active Patients</span>
+              <span className="text-sm text-muted-foreground">Active Patients</span>
               <Badge variant="secondary">24</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Vaccinations Due</span>
+              <span className="text-sm text-muted-foreground">Vaccinations Due</span>
               <Badge variant="outline" className="text-yellow-600">3</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Prescriptions</span>
+              <span className="text-sm text-muted-foreground">Prescriptions</span>
               <Badge variant="outline" className="text-blue-600">7</Badge>
             </div>
           </div>
@@ -256,15 +256,15 @@ export function TrainingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Today's Sessions</span>
+              <span className="text-sm text-muted-foreground">Today's Sessions</span>
               <Badge variant="outline">4</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Group Classes</span>
+              <span className="text-sm text-muted-foreground">Group Classes</span>
               <Badge variant="outline" className="text-blue-600">2</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Private Sessions</span>
+              <span className="text-sm text-muted-foreground">Private Sessions</span>
               <Badge variant="outline" className="text-green-600">2</Badge>
             </div>
           </div>
@@ -287,15 +287,15 @@ export function TrainingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Basic Obedience</span>
+              <span className="text-sm text-muted-foreground">Basic Obedience</span>
               <Badge variant="secondary">€80</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Behavior Modification</span>
+              <span className="text-sm text-muted-foreground">Behavior Modification</span>
               <Badge variant="secondary">€120</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Advanced Training</span>
+              <span className="text-sm text-muted-foreground">Advanced Training</span>
               <Badge variant="secondary">€150</Badge>
             </div>
           </div>
@@ -324,15 +324,15 @@ export function AdoptionWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Active Listings</span>
+              <span className="text-sm text-muted-foreground">Active Listings</span>
               <Badge variant="outline">8</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Pending Approval</span>
+              <span className="text-sm text-muted-foreground">Pending Approval</span>
               <Badge variant="outline" className="text-yellow-600">2</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Recently Adopted</span>
+              <span className="text-sm text-muted-foreground">Recently Adopted</span>
               <Badge variant="outline" className="text-green-600">3</Badge>
             </div>
           </div>
@@ -355,15 +355,15 @@ export function AdoptionWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">New Applications</span>
+              <span className="text-sm text-muted-foreground">New Applications</span>
               <Badge variant="outline" className="text-blue-600">5</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Under Review</span>
+              <span className="text-sm text-muted-foreground">Under Review</span>
               <Badge variant="outline" className="text-yellow-600">3</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Approved</span>
+              <span className="text-sm text-muted-foreground">Approved</span>
               <Badge variant="outline" className="text-green-600">2</Badge>
             </div>
           </div>
@@ -392,15 +392,15 @@ export function BoardingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Check-ins Today</span>
+              <span className="text-sm text-muted-foreground">Check-ins Today</span>
               <Badge variant="outline">3</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Check-outs Today</span>
+              <span className="text-sm text-muted-foreground">Check-outs Today</span>
               <Badge variant="outline" className="text-green-600">2</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Current Guests</span>
+              <span className="text-sm text-muted-foreground">Current Guests</span>
               <Badge variant="outline" className="text-blue-600">6</Badge>
             </div>
           </div>
@@ -423,15 +423,15 @@ export function BoardingWidget({ stats, providerData }: BusinessWidgetProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Standard Boarding</span>
+              <span className="text-sm text-muted-foreground">Standard Boarding</span>
               <Badge variant="secondary">€35/night</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Premium Suite</span>
+              <span className="text-sm text-muted-foreground">Premium Suite</span>
               <Badge variant="secondary">€55/night</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Day Care</span>
+              <span className="text-sm text-muted-foreground">Day Care</span>
               <Badge variant="secondary">€25/day</Badge>
             </div>
           </div>

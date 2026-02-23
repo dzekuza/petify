@@ -192,7 +192,7 @@ export function AddIndividualPetDialog({
                 </SelectContent>
               </Select>
               {selectedPetType && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Pasirinktas tipas: {selectedPetType.title} - {selectedPetType.description}
                 </p>
               )}
@@ -333,7 +333,7 @@ export function AddIndividualPetDialog({
                           }}
                         />
                         <div className="w-full h-full items-center justify-center hidden">
-                          <span className="text-xs text-gray-500">Image {imageIndex + 1}</span>
+                          <span className="text-xs text-muted-foreground">Image {imageIndex + 1}</span>
                         </div>
                       </div>
                       <Button

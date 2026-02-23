@@ -132,7 +132,7 @@ export default function RuixenCard04({
                                     "flex items-center gap-3 w-full p-3 mb-3 rounded-lg transition-colors",
                                     isSelected
                                         ? "bg-black dark:bg-white text-white dark:text-black"
-                                        : "hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-300"
+                                        : "hover:bg-gray-200 dark:hover:bg-gray-800 text-foreground dark:text-muted-foreground/60"
                                 )}
                             >
                                 <div className="relative">
@@ -163,7 +163,7 @@ export default function RuixenCard04({
                 {/* Messages */}
                 <section className="flex-1 p-4 overflow-y-auto bg-white dark:bg-black">
                     {filteredMessages.length === 0 ? (
-                        <p className="text-center text-gray-500 dark:text-gray-400">
+                        <p className="text-center text-muted-foreground dark:text-muted-foreground">
                             No messages to display.
                         </p>
                     ) : (
@@ -184,15 +184,15 @@ export default function RuixenCard04({
                                         <p className="font-semibold text-black dark:text-white">
                                             {message.sender.name}
                                         </p>
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        <span className="text-xs text-muted-foreground dark:text-muted-foreground">
                                             {message.timestamp}
                                         </span>
                                     </div>
                                 </div>
-                                <p className="text-gray-800 dark:text-gray-200 text-lg mb-1">
+                                <p className="text-foreground dark:text-muted-foreground/40 text-lg mb-1">
                                     {message.content}
                                 </p>
-                                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                                <div className="flex items-center justify-between text-sm text-muted-foreground dark:text-muted-foreground">
                                     <div className="flex items-center gap-1">
                                         {message.status === "read" && (
                                             <CheckCheck className="w-5 h-5 text-green-500" />
@@ -211,7 +211,7 @@ export default function RuixenCard04({
                                                     "px-2 py-1 rounded-md text-sm transition-colors",
                                                     reaction.reacted
                                                         ? "bg-gray-300 dark:bg-gray-700 text-black dark:text-white"
-                                                        : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
+                                                        : "bg-gray-100 dark:bg-gray-800 text-foreground dark:text-muted-foreground",
                                                     "hover:bg-gray-200 dark:hover:bg-gray-600"
                                                 )}
                                             >
@@ -232,7 +232,7 @@ export default function RuixenCard04({
                     aria-label="Add emoji"
                     className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 >
-                    <SmilePlus className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                    <SmilePlus className="w-6 h-6 text-muted-foreground dark:text-muted-foreground/60" />
                 </button>
                 <input
                     type="text"

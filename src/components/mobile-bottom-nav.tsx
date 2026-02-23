@@ -41,7 +41,7 @@ export function MobileBottomNav() {
                 href={item.href}
                 className={cn(
                   'flex flex-col items-center justify-center gap-1 py-2.5 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black transition-colors',
-                  isActive ? 'text-black' : 'text-gray-600 hover:text-black'
+                  isActive ? 'text-black' : 'text-muted-foreground hover:text-black'
                 )}
                 aria-label={item.name}
               >

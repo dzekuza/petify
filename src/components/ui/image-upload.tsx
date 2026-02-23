@@ -143,13 +143,13 @@ export function ImageUpload({
           </div>
         ) : (
           <div>
-            <div className="text-gray-600 mb-2">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <div className="text-muted-foreground mb-2">
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {placeholder}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {description}
             </p>
           </div>

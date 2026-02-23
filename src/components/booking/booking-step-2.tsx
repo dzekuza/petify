@@ -108,17 +108,17 @@ export function BookingStep2({
       case 'rabbit':
         return <PawPrint className="h-4 w-4 text-pink-600" />
       default:
-        return <PawPrint className="h-4 w-4 text-gray-600" />
+        return <PawPrint className="h-4 w-4 text-muted-foreground" />
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
           Pasirinkite augintinį
         </h2>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Pasirinkite augintinį, kuriam užsakysite paslaugą
         </p>
       </div>
@@ -153,8 +153,8 @@ export function BookingStep2({
                   {getPetIcon(pet.species)}
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900">{pet.name}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-medium text-foreground">{pet.name}</div>
+                  <div className="text-sm text-muted-foreground">
                     {pet.species} • {pet.age} metai
                     {pet.breed && ` • ${pet.breed}`}
                   </div>
@@ -173,8 +173,8 @@ export function BookingStep2({
           })
         ) : (
           <div className="text-center py-8">
-            <PawPrint className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">Neturite pridėtų augintinių</p>
+            <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">Neturite pridėtų augintinių</p>
             <Button onClick={() => setAddPetDrawerOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Pridėti augintinį
@@ -256,7 +256,7 @@ export function BookingStep2({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Veislė (neprivaloma)
               </label>
               <BreedSelector

@@ -135,7 +135,7 @@ export function ChatPage({
             <div className="h-full w-full flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading conversations...</p>
+                    <p className="mt-4 text-muted-foreground">Loading conversations...</p>
                 </div>
             </div>
         );
@@ -145,8 +145,8 @@ export function ChatPage({
         return (
             <div className="h-full w-full flex items-center justify-center">
                 <div className="text-center">
-                    <p className="text-gray-600">No conversations yet</p>
-                    <p className="text-sm text-gray-400 mt-1">Start a conversation with a provider</p>
+                    <p className="text-muted-foreground">No conversations yet</p>
+                    <p className="text-sm text-muted-foreground mt-1">Start a conversation with a provider</p>
                 </div>
             </div>
         );

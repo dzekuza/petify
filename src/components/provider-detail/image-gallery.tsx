@@ -107,22 +107,22 @@ export function ImageGallery({
           <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
             <button
               onClick={onBack}
-              className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+              className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 text-foreground" />
             </button>
             <div className="flex space-x-2">
               <button
                 onClick={onToggleFavorite}
-                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
               >
-                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
+                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-foreground'}`} />
               </button>
               <button 
                 onClick={onShare}
-                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
               >
-                <Share2 className="w-5 h-5 text-gray-700" />
+                <Share2 className="w-5 h-5 text-foreground" />
               </button>
             </div>
           </div>
@@ -171,22 +171,22 @@ export function ImageGallery({
           <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
             <button
               onClick={onBack}
-              className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+              className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 text-foreground" />
             </button>
             <div className="flex space-x-2">
               <button
                 onClick={onToggleFavorite}
-                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
               >
-                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-700'}`} />
+                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-foreground'}`} />
               </button>
               <button 
                 onClick={onShare}
-                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors"
+                className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
               >
-                <Share2 className="w-5 h-5 text-gray-700" />
+                <Share2 className="w-5 h-5 text-foreground" />
               </button>
             </div>
           </div>
@@ -204,16 +204,16 @@ export function ImageGallery({
               <button
                 onClick={handlePreviousImage}
                 disabled={isTransitioning}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-700" />
+                <ChevronLeft className="w-5 h-5 text-foreground" />
               </button>
               <button
                 onClick={handleNextImage}
                 disabled={isTransitioning}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="w-5 h-5 text-gray-700" />
+                <ChevronRight className="w-5 h-5 text-foreground" />
               </button>
             </>
           )}
@@ -273,8 +273,8 @@ export function ImageGallery({
       {validImages.length > 5 && (
         <div className="relative overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-600">+{validImages.length - 5}</div>
-            <div className="text-sm text-gray-500">More images</div>
+            <div className="text-2xl font-semibold text-muted-foreground">+{validImages.length - 5}</div>
+            <div className="text-sm text-muted-foreground">More images</div>
           </div>
         </div>
       )}

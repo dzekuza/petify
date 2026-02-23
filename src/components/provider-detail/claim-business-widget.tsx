@@ -67,7 +67,7 @@ export function ClaimBusinessWidget({
 
   return (
     <div className="sticky top-8 space-y-4">
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="p-3 bg-blue-50 rounded-full">
@@ -76,10 +76,10 @@ export function ClaimBusinessWidget({
           </div>
           
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2">
               Ar tai jūsų verslas?
             </h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
+            <p className="text-muted-foreground text-sm leading-relaxed">
               Jei esate šio verslo savininkas, galite jį prisijungti prie mūsų platformos. 
               Pateikite prašymą ir mes susisieksime su jumis.
             </p>
@@ -101,10 +101,10 @@ export function ClaimBusinessWidget({
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-4">
                   <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       <strong>Verslas:</strong> {provider.businessName}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       <strong>Adresas:</strong> {provider.location.address}, {provider.location.city}
                     </p>
                   </div>
@@ -169,7 +169,7 @@ export function ClaimBusinessWidget({
             </DialogContent>
           </Dialog>
 
-          <div className="text-xs text-gray-500 pt-2">
+          <div className="text-xs text-muted-foreground pt-2">
             Prašymas bus išsiųstas į info@petify.lt
           </div>
         </div>

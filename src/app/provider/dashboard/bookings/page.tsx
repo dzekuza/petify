@@ -67,19 +67,19 @@ export default function ProviderBookingsPage() {
           </CardHeader>
           <CardContent className="p-0">
             {loading ? (
-              <div className="text-sm text-gray-600">Įkeliama...</div>
+              <div className="text-sm text-muted-foreground">Įkeliama...</div>
             ) : error ? (
               <div className="text-sm text-red-600">{error}</div>
             ) : bookings.length === 0 ? (
-              <div className="text-center py-10 text-gray-600">Dar nėra rezervacijų</div>
+              <div className="text-center py-10 text-muted-foreground">Dar nėra rezervacijų</div>
             ) : (
               <div className="space-y-3">
                 {bookings.map(b => (
                   <div key={b.id} className="flex items-center justify-between p-4 border rounded-lg bg-white">
                     <div>
                       <div className="font-medium">{b.customerName}</div>
-                      <div className="text-sm text-gray-600">{b.service}</div>
-                      <div className="mt-1 text-sm text-gray-500 flex items-center">
+                      <div className="text-sm text-muted-foreground">{b.service}</div>
+                      <div className="mt-1 text-sm text-muted-foreground flex items-center">
                         <Clock className="h-4 w-4 mr-1" /> {new Date(b.date).toLocaleString('lt-LT')}
                       </div>
                     </div>
