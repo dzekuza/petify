@@ -247,7 +247,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
                 <X className="h-3 w-3 cursor-pointer" onClick={() => handleFilterChange('location', '')} />
               </Badge>
             )}
-            {filters.rating && filters.rating > 0 && (
+            {filters.rating != null && filters.rating > 0 && (
               <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
                 <span>Įvertinimas: {filters.rating}+ žvaigždutės</span>
                 <X className="h-3 w-3 cursor-pointer" onClick={() => handleFilterChange('rating', 0)} />
@@ -472,7 +472,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
               <X className="h-3 w-3 cursor-pointer text-neutral-400 hover:text-neutral-700" onClick={() => handleFilterChange('location', '')} />
             </Badge>
           )}
-          {filters.rating && filters.rating > 0 && (
+          {filters.rating != null && filters.rating > 0 && (
             <Badge variant="secondary" className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium bg-neutral-100 hover:bg-neutral-200 transition-colors [&>svg]:pointer-events-auto">
               <span>{filters.rating}+ žvaigždutės</span>
               <X className="h-3 w-3 cursor-pointer text-neutral-400 hover:text-neutral-700" onClick={() => handleFilterChange('rating', 0)} />
