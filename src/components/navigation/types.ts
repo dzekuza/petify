@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react'
+
 export interface NavigationProps {
   hideServiceCategories?: boolean
   onFiltersClick?: () => void
@@ -11,7 +13,7 @@ export interface ServiceCategory {
 export interface NavigationItem {
   name: string
   href: string
-  icon: string
+  icon: LucideIcon
   shortName: string
 }
 

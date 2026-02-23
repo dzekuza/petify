@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Heart } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -53,32 +52,33 @@ export function NavigationHeader({
       <div className="w-full flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center group shrink-0">
-          <Image
+          <img
             src="/PetiFy.svg"
             alt="Petify"
-            width={32}
-            height={32}
             className="h-8 w-auto transition-transform group-hover:scale-105"
           />
         </Link>
 
         {/* Category Pills — inline, centered */}
         <div className="hidden md:flex items-center gap-1 overflow-x-auto scrollbar-hide mx-4">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
-                isActive(item)
-                  ? "bg-brand-light text-brand"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Image src={item.icon} alt={item.shortName} width={18} height={18} />
-              {item.shortName}
-            </Link>
-          ))}
+          {navigationItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
+                  isActive(item)
+                    ? "bg-brand-light text-brand"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <Icon className="h-4 w-4" aria-hidden="true" />
+                {item.shortName}
+              </Link>
+            )
+          })}
         </div>
 
         {/* User Actions */}
