@@ -13,13 +13,21 @@ export default function Navigation({ hideServiceCategories = false, onFiltersCli
   const pathname = usePathname()
   const { isMobile } = useDeviceDetection()
   const { user, signOut } = useAuth()
-  
+
   const [isMounted, setIsMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [provider, setProvider] = useState<any>(null)
-  
+  const [scrolled, setScrolled] = useState(false)
+
   useEffect(() => {
     setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10)
+    handleScroll() // Initialize from current scroll position (prevents hydration flash)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
   
   // Ensure consistent rendering between server and client
@@ -48,6 +56,7 @@ export default function Navigation({ hideServiceCategories = false, onFiltersCli
   return (
     <>
       <NavigationHeader
+        scrolled={scrolled}
         isMobile={isMobile}
         mobileMenuOpen={mobileMenuOpen}
         onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
