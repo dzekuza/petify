@@ -50,6 +50,8 @@ Recent decisions affecting current work:
 - [01-02 Token]: Warm gray system confirmed correct — muted hue 106, border hue 48; no changes needed
 - [01-02 Token]: Neutral scale kept intact — used by 6+ UI components; replacement is Phase 3 scope
 - [01-02 Token]: TailwindCSS v4 @utility directive used for page-container/section-container — preferred over @layer utilities
+- [01-01 Cleanup]: FloatingChatButton replaced with ChatButton in fixed-position wrapper — ChatButton is the canonical floating chat entry point
+- [01-01 Cleanup]: GLBL-01 audit passed — uppercase class only on badge/label elements, never on h1-h6 headings
 
 ### Pending Todos
 
@@ -63,5 +65,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 01-02-PLAN.md — design token foundation (brand tokens + spacing utilities)
+Stopped at: Completed 01-01-PLAN.md — dead component cleanup, chat consolidation, type safety
 Resume file: .planning/phases/01-foundation/01-03-PLAN.md

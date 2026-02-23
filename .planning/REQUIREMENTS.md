@@ -9,11 +9,11 @@ Requirements for the modernization release. Each maps to roadmap phases.
 
 ### Component Cleanup
 
-- [ ] **CLEAN-01**: Dead components (13+ confirmed unused) are deleted from the codebase
-- [ ] **CLEAN-02**: Chat components consolidated from 8 down to 2 (ChatButton + ChatDialog)
+- [x] **CLEAN-01**: Dead components (13+ confirmed unused) are deleted from the codebase
+- [x] **CLEAN-02**: Chat components consolidated from 8 down to 2 (ChatButton + ChatDialog)
 - [ ] **CLEAN-03**: `listings-grid.tsx` inline card unified with `provider-card.tsx` into one canonical ProviderCard
 - [ ] **CLEAN-04**: Raw Tailwind gray classes (`text-gray-*`, `bg-gray-*`, `border-gray-*`) replaced with semantic design tokens (`text-muted-foreground`, `bg-muted`, `border-border`)
-- [ ] **CLEAN-05**: `booking/types.ts` `any` types replaced with proper TypeScript interfaces from `src/types/index.ts`
+- [x] **CLEAN-05**: `booking/types.ts` `any` types replaced with proper TypeScript interfaces from `src/types/index.ts`
 
 ### Navigation
 
@@ -60,7 +60,7 @@ Requirements for the modernization release. Each maps to roadmap phases.
 
 ### Global Polish
 
-- [ ] **GLBL-01**: All heading typography follows clean hierarchy — no all-caps on headings (reserved for badges/labels only)
+- [x] **GLBL-01**: All heading typography follows clean hierarchy — no all-caps on headings (reserved for badges/labels only)
 - [ ] **GLBL-02**: CTA buttons use specific action verbs ("Book [Name]", "Check Availability") not generic ("Submit", "Go")
 - [ ] **GLBL-03**: Form validation shows inline field-level errors with red border + helper text
 - [x] **GLBL-04**: Consistent spacing system applied across all modernized pages
@@ -96,12 +96,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLEAN-01 | Phase 1 | Pending |
-| CLEAN-02 | Phase 1 | Pending |
+| CLEAN-01 | Phase 1 | Complete |
+| CLEAN-02 | Phase 1 | Complete |
 | CLEAN-03 | Phase 1 | Pending |
 | CLEAN-04 | Phase 1 | Pending |
-| CLEAN-05 | Phase 1 | Pending |
-| GLBL-01 | Phase 1 | Pending |
+| CLEAN-05 | Phase 1 | Complete |
+| GLBL-01 | Phase 1 | Complete |
 | GLBL-04 | Phase 1 | Complete |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
