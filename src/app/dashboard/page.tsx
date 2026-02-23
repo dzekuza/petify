@@ -1,55 +1,66 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+'use client'
 
-export default function Page() {
+import { Layout } from '@/components/layout'
+import { ProtectedRoute } from '@/components/protected-route'
+import { Card, CardContent } from '@/components/ui/card'
+import Link from 'next/link'
+import { Calendar, PawPrint, MessageCircle, Heart } from 'lucide-react'
+
+const navCards = [
+  {
+    href: '/bookings',
+    icon: Calendar,
+    title: 'Mano rezervacijos',
+    description: 'Peržiūrėkite ir valdykite savo rezervacijas',
+  },
+  {
+    href: '/pets',
+    icon: PawPrint,
+    title: 'Mano augintiniai',
+    description: 'Tvarkykite savo augintinių profilius',
+  },
+  {
+    href: '/chat',
+    icon: MessageCircle,
+    title: 'Pranešimai',
+    description: 'Susisiekite su paslaugų teikėjais',
+  },
+  {
+    href: '/favorites',
+    icon: Heart,
+    title: 'Mėgstami',
+    description: 'Jūsų išsaugoti paslaugų teikėjai',
+  },
+]
+
+export default function DashboardPage() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+    <Layout hideFooter={true}>
+      <ProtectedRoute>
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <h1 className="text-2xl font-bold text-foreground mb-6">Mano paskyra</h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {navCards.map(({ href, icon: Icon, title, description }) => (
+                <Link key={href} href={href}>
+                  <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="flex items-start gap-4 p-6">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-background border border-border flex items-center justify-center">
+                        <Icon className="h-6 w-6 text-foreground" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-foreground mb-1">{title}</h2>
+                        <p className="text-sm text-muted-foreground">{description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </ProtectedRoute>
+    </Layout>
   )
 }
