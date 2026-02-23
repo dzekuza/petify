@@ -426,6 +426,7 @@ export default function ProviderDetailPage() {
             <div className="col-span-2 space-y-8">
               <ImageGallery
                 provider={provider}
+                services={services}
                 isFavorite={isFavorite}
                 onToggleFavorite={handleToggleFavorite}
                 onShare={handleShare}

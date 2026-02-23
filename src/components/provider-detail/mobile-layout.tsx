@@ -59,6 +59,7 @@ export function MobileLayout({
       <div className="fixed top-0 left-0 right-0 z-30 h-[40vh] sm:h-[60vh] overflow-hidden">
         <ImageGallery
           provider={provider}
+          services={services}
           isFavorite={isFavorite}
           onToggleFavorite={onToggleFavorite}
           onShare={onShare}

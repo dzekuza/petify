@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, ArrowLeft, Heart, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ServiceProvider } from '@/types'
+import type { ServiceProvider, Service } from '@/types'
 
 interface ImageGalleryProps {
   provider: ServiceProvider
+  services?: Service[]
   isFavorite: boolean
   onToggleFavorite: () => void
   onShare: () => void
@@ -17,6 +18,7 @@ interface ImageGalleryProps {
 
 export function ImageGallery({ 
   provider, 
+  services,
   isFavorite, 
   onToggleFavorite, 
   onShare, 
@@ -26,14 +28,30 @@ export function ImageGallery({
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  // Filter out empty or invalid image URLs
-  const validImages = provider?.images?.filter(image => 
-    image && 
-    typeof image === 'string' && 
-    image.trim() !== '' && 
-    image !== 'null' && 
-    image !== 'undefined'
-  ) || []
+  // Collect images from provider and services, filter out invalid/duplicate URLs
+  const rawImages: string[] = [
+    ...(provider?.images || []),
+    ...(services?.flatMap(service => service.images || []) || []),
+  ]
+
+  const seen = new Set<string>()
+  const validImages =
+    rawImages.filter((image) => {
+      if (
+        !image ||
+        typeof image !== 'string' ||
+        image.trim() === '' ||
+        image === 'null' ||
+        image === 'undefined'
+      ) {
+        return false
+      }
+      if (seen.has(image)) {
+        return false
+      }
+      seen.add(image)
+      return true
+    }) || []
 
   const handlePreviousImage = () => {
     if (validImages.length > 0 && !isTransitioning) {

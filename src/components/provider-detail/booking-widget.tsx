@@ -477,12 +477,19 @@ export function BookingWidget({
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">{t('provider.serviceType')}</label>
           <Select value={selectedService} onValueChange={setSelectedService}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('provider.selectService')} />
+            <SelectTrigger className="w-full h-auto min-h-[44px] items-center">
+              <SelectValue
+                placeholder={t('provider.selectService')}
+                className="flex-1 text-left truncate"
+              />
             </SelectTrigger>
             <SelectContent>
               {services.map((service) => (
-                <SelectItem key={service.id} value={service.id}>
+                <SelectItem
+                  key={service.id}
+                  value={service.id}
+                  className="text-left"
+                >
                   {service.name} - €{service.price}
                 </SelectItem>
               ))}
@@ -607,12 +614,19 @@ export function BookingWidget({
             onValueChange={setSelectedService}
             required
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('provider.selectService')} />
+            <SelectTrigger className="w-full h-auto min-h-[44px] items-center">
+              <SelectValue
+                placeholder={t('provider.selectService')}
+                className="flex-1 text-left truncate"
+              />
             </SelectTrigger>
             <SelectContent>
               {services.map((service) => (
-                <SelectItem key={service.id} value={service.id}>
+                <SelectItem
+                  key={service.id}
+                  value={service.id}
+                  className="text-left"
+                >
                   {service.name} - €{service.price}
                 </SelectItem>
               ))}
