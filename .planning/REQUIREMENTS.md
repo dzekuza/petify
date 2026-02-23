@@ -19,7 +19,7 @@ Requirements for the modernization release. Each maps to roadmap phases.
 
 - [x] **NAV-01**: Header is sticky with backdrop blur effect on scroll
 - [x] **NAV-02**: Navigation typography is clean with proper hierarchy
-- [ ] **NAV-03**: Category pill navigation row in header (Airbnb-style horizontal scroll with icons)
+- [x] **NAV-03**: Category pill navigation row in header (Airbnb-style horizontal scroll with icons)
 
 ### Landing Page
 
@@ -105,7 +105,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GLBL-04 | Phase 1 | Complete |
 | NAV-01 | Phase 2 | Complete |
 | NAV-02 | Phase 2 | Complete |
-| NAV-03 | Phase 2 | Pending |
+| NAV-03 | Phase 2 | Complete |
 | LAND-01 | Phase 3 | Pending |
 | LAND-02 | Phase 3 | Pending |
 | LAND-03 | Phase 3 | Pending |
