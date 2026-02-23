@@ -306,7 +306,7 @@ export const ProviderCard = ({
   provider,
   variant = 'grid',
   services,
-  distance: _distance,
+  // distance is accepted for API compatibility — passed to HorizontalCard in Phase 4
   className,
 }: ProviderCardProps) => {
   const { user } = useAuth()
