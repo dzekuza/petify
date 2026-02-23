@@ -47,11 +47,11 @@ Plans:
   1. The header stays visible and shows a backdrop blur effect as the user scrolls down any page with scrollable content
   2. Navigation links use clean, properly weighted typography with clear visual hierarchy and no inconsistencies between items
   3. A horizontally scrollable row of service category pills with icons is visible in the header and navigates to filtered search results when clicked
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Implement sticky header with backdrop-blur, border-b, and bg-background/80 styling
-- [ ] 02-02: Source category pills from service-categories.tsx and render as a scrollable pill row in the navigation header
+- [ ] 02-01-PLAN.md — Scroll-aware sticky header with conditional backdrop blur, clean typography with brand tokens
+- [ ] 02-02-PLAN.md — Category pill row with all 5 service categories, horizontal scroll, layout height update
 
 ### Phase 3: Landing Page
 **Goal**: The landing page makes a strong first impression that builds trust and drives users toward search
