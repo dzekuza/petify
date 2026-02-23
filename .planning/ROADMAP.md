@@ -132,7 +132,7 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 3 and 4 could run in para
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Planned | - |
+| 1. Foundation | 1/4 | In Progress|  |
 | 2. Navigation | 0/2 | Not started | - |
 | 3. Landing Page | 0/2 | Not started | - |
 | 4. Provider Cards | 0/3 | Not started | - |

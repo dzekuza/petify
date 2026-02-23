@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-02-23 — Roadmap created, all 37 v1 requirements mapped across 6 phases
+Plan: 2 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-23 — Plans 01-01 (research) and 01-02 (design tokens) complete
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 8% (2 plans of ~24 total)
 
 ## Performance Metrics
 
@@ -46,6 +46,10 @@ Recent decisions affecting current work:
 - [Roadmap]: GLBL-02 (action verb CTAs) and GLBL-03 (inline form validation) assigned to Phase 6 — provider detail has the primary forms and CTAs; these are audited and enforced there
 - [Roadmap]: Phase 4 (Provider Cards) depends on Phase 1, not Phase 3 — cards must be unified before search and landing page are considered complete
 - [Research]: Phase 5 (Search/Browse) flagged for phase research — Mapbox GL dynamic marker updates and custom popup styling have known implementation-specific gotchas
+- [01-02 Token]: Teal/green accent hue 174 oklch at chroma 0.14 chosen — calming and nature-aligned, not neon
+- [01-02 Token]: Warm gray system confirmed correct — muted hue 106, border hue 48; no changes needed
+- [01-02 Token]: Neutral scale kept intact — used by 6+ UI components; replacement is Phase 3 scope
+- [01-02 Token]: TailwindCSS v4 @utility directive used for page-container/section-container — preferred over @layer utilities
 
 ### Pending Todos
 
@@ -59,5 +63,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Phase 1 context gathered — warm grays, teal accent, image-dominant ProviderCard with two variants decided
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Stopped at: Completed 01-02-PLAN.md — design token foundation (brand tokens + spacing utilities)
+Resume file: .planning/phases/01-foundation/01-03-PLAN.md

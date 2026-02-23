@@ -63,7 +63,7 @@ Requirements for the modernization release. Each maps to roadmap phases.
 - [ ] **GLBL-01**: All heading typography follows clean hierarchy — no all-caps on headings (reserved for badges/labels only)
 - [ ] **GLBL-02**: CTA buttons use specific action verbs ("Book [Name]", "Check Availability") not generic ("Submit", "Go")
 - [ ] **GLBL-03**: Form validation shows inline field-level errors with red border + helper text
-- [ ] **GLBL-04**: Consistent spacing system applied across all modernized pages
+- [x] **GLBL-04**: Consistent spacing system applied across all modernized pages
 
 ## v2 Requirements
 
@@ -102,7 +102,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLEAN-04 | Phase 1 | Pending |
 | CLEAN-05 | Phase 1 | Pending |
 | GLBL-01 | Phase 1 | Pending |
-| GLBL-04 | Phase 1 | Pending |
+| GLBL-04 | Phase 1 | Complete |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
 | NAV-03 | Phase 2 | Pending |
