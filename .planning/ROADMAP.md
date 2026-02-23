@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Requirements**: CLEAN-01, CLEAN-02, CLEAN-03, CLEAN-04, CLEAN-05, GLBL-01, GLBL-04
 **Success Criteria** (what must be TRUE):
   1. No unused component files exist in src/components/ — confirmed dead components are deleted with no remaining import errors
-  2. Chat UI renders correctly using only two components: ChatButton and ChatDialog — no other chat component files remain
+  2. Chat UI renders correctly using only two public entry points: ChatButton and ChatDialog — internal implementation files (ruixen-mono-chat.tsx) and distinct page layouts (chat-page.tsx) may remain but no other public chat components exist
   3. A single canonical ProviderCard component exists; listings-grid.tsx no longer contains an inline card implementation
   4. No raw text-gray-*, bg-gray-*, or border-gray-* Tailwind classes appear anywhere in the codebase — semantic design tokens are used throughout
   5. booking/types.ts contains zero TypeScript `any` types — all interfaces reference named types from src/types/index.ts
