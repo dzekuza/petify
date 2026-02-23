@@ -113,19 +113,12 @@ export default function BookingsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gradient-to-br from-muted to-white pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-red-500 to-pink-500 flex items-center justify-center">
-                  <Calendar className="h-7 w-7 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold text-foreground">{t('bookings.title')}</h1>
-                  <p className="text-muted-foreground mt-1">{t('bookings.subtitle')}</p>
-                </div>
-              </div>
+              <h1 className="text-3xl font-bold text-foreground">{t('bookings.title')}</h1>
+              <p className="text-muted-foreground">{t('bookings.subtitle')}</p>
             </div>
 
             {/* Filters */}
