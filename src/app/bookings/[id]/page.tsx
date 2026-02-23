@@ -203,7 +203,7 @@ export default function BookingDetailPage() {
     return (
       <Layout>
         <ProtectedRoute>
-          <div className="min-h-screen bg-white">
+          <div className="min-h-screen bg-muted">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex flex-col items-center justify-center py-12">
                 <div className="animate-pulse">
@@ -235,7 +235,7 @@ export default function BookingDetailPage() {
     return (
       <Layout>
         <ProtectedRoute>
-          <div className="min-h-screen bg-white">
+          <div className="min-h-screen bg-muted">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center">
                 <h1 className="text-2xl font-bold text-foreground mb-4">{t('bookings.confirmation.bookingNotFound')}</h1>
@@ -255,7 +255,7 @@ export default function BookingDetailPage() {
   return (
     <Layout>
       <ProtectedRoute>
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-muted">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
