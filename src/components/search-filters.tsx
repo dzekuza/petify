@@ -11,13 +11,13 @@ import { Filter, X, User, ChevronDown, ChevronUp, SlidersHorizontal, MapPin, Sci
 import { useAuth } from '@/contexts/auth-context'
 import { petsApi } from '@/lib/pets'
 
-// Grooming-specific service types (since only groomers can use the app currently)
-const groomingServiceTypes: { value: string; label: string }[] = [
-  { value: 'basic-bath', label: 'Paprastas maudymas' },
-  { value: 'full-grooming', label: 'Pilnas kirpimas ir priežiūra' },
-  { value: 'nail-trimming', label: 'Nagų kirpimas' },
-  { value: 'ear-cleaning', label: 'Ausų valymas' },
-  { value: 'teeth-cleaning', label: 'Dantų valymas' },
+// Main service categories matching navigation items
+const serviceCategories: { value: string; label: string }[] = [
+  { value: 'grooming', label: 'Kirpyklos' },
+  { value: 'training', label: 'Dresūra' },
+  { value: 'boarding', label: 'Poravimas' },
+  { value: 'veterinary', label: 'Veterinarijos' },
+  { value: 'adoption', label: 'Veislynai' },
 ]
 
 interface SearchFiltersProps {
@@ -124,7 +124,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
                       </SelectTrigger>
                       <SelectContent className="z-[200]">
                         <SelectItem value="all">Visos paslaugos</SelectItem>
-                        {groomingServiceTypes.map((serviceType) => (
+                        {serviceCategories.map((serviceType) => (
                           <SelectItem key={serviceType.value} value={serviceType.value}>
                             {serviceType.label}
                           </SelectItem>
@@ -237,7 +237,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
           <div className="flex flex-wrap gap-2">
             {filters.category && (
               <Badge variant="secondary" className="flex items-center space-x-1 [&>svg]:pointer-events-auto">
-                <span>Paslauga: {groomingServiceTypes.find(c => c.value === filters.category)?.label}</span>
+                <span>Paslauga: {serviceCategories.find(c => c.value === filters.category)?.label}</span>
                 <X className="h-3 w-3 cursor-pointer" onClick={() => handleFilterChange('category', 'all')} />
               </Badge>
             )}
@@ -281,7 +281,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
           </SelectTrigger>
           <SelectContent className="z-[200]">
             <SelectItem value="all">Visos paslaugos</SelectItem>
-            {groomingServiceTypes.map((serviceType) => (
+            {serviceCategories.map((serviceType) => (
               <SelectItem key={serviceType.value} value={serviceType.value}>
                 {serviceType.label}
               </SelectItem>
@@ -462,7 +462,7 @@ export const SearchFilters = ({ filters, onFiltersChange, isMobile = false, resu
         <div className="flex flex-wrap gap-1.5 pt-1">
           {filters.category && (
             <Badge variant="secondary" className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium bg-neutral-100 hover:bg-neutral-200 transition-colors [&>svg]:pointer-events-auto">
-              <span>{groomingServiceTypes.find(c => c.value === filters.category)?.label}</span>
+              <span>{serviceCategories.find(c => c.value === filters.category)?.label}</span>
               <X className="h-3 w-3 cursor-pointer text-neutral-400 hover:text-neutral-700" onClick={() => handleFilterChange('category', 'all')} />
             </Badge>
           )}

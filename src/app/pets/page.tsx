@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,7 +18,7 @@ import { uploadPetProfilePicture, uploadPetGalleryImage, validateFile, getPublic
 import { getBreedsBySpecies } from '@/lib/breeds'
 import { translations } from '@/lib/translations'
 import { supabase } from '@/lib/supabase'
-import { Dog, Plus, Edit, Trash2, Loader2, X, Camera, Image as ImageIcon } from 'lucide-react'
+import { Dog, Plus, Edit, Trash2, Loader2, X, Camera, Image as ImageIcon, PawPrint, Heart } from 'lucide-react'
 import Image from 'next/image'
 
 export default function PetsPage() {
@@ -62,7 +61,7 @@ export default function PetsPage() {
     if (user) {
       fetchPets()
     }
-  }, [user, fetchPets]) // Include fetchPets but it's memoized with useCallback
+  }, [user, fetchPets])
 
   if (!user) return null
 
@@ -101,7 +100,7 @@ export default function PetsPage() {
       name: petForm.name,
       species: petForm.species,
       breed: petForm.breed || undefined,
-      age: parseFloat(petForm.age), // Now in years
+      age: parseFloat(petForm.age),
       weight: petForm.weight ? parseFloat(petForm.weight) : undefined,
       specialNeeds: petForm.specialNeeds ? petForm.specialNeeds.split(',').map(s => s.trim()) : [],
       medicalNotes: petForm.medicalNotes || undefined,
@@ -127,8 +126,6 @@ export default function PetsPage() {
     } catch (err: any) {
       console.error('Error saving pet:', err)
 
-      // Self-healing: If foreign key constraint fails, it means the public.users record is missing.
-      // Try to create it and retry.
       if (err.message && err.message.includes('foreign key constraint')) {
         try {
           console.log('Attempting to fix missing user record...')
@@ -142,7 +139,6 @@ export default function PetsPage() {
 
           if (!userError) {
             console.log('User record fixed, retrying pet creation...')
-            // Retry operation
             if (editingPet) {
               const updatedPet = await petsApi.updatePet({
                 id: editingPet.id,
@@ -157,7 +153,7 @@ export default function PetsPage() {
               setPets(prev => [...prev, newPet])
               setAddPetOpen(false)
             }
-            return // Success on retry
+            return
           } else {
             console.error('Failed to fix user record:', userError)
           }
@@ -192,6 +188,14 @@ export default function PetsPage() {
     }
   }
 
+  const speciesColors: Record<string, { bg: string; border: string }> = {
+    dog: { bg: 'bg-amber-50', border: 'border-amber-200' },
+    cat: { bg: 'bg-purple-50', border: 'border-purple-200' },
+    bird: { bg: 'bg-sky-50', border: 'border-sky-200' },
+    rabbit: { bg: 'bg-pink-50', border: 'border-pink-200' },
+    other: { bg: 'bg-gray-50', border: 'border-gray-200' },
+  }
+
   const getTranslatedBreedName = (breedName: string) => {
     const breedsMap = (translations as unknown as { provider?: { breeds?: Record<string, string> } }).provider?.breeds || {}
     return breedsMap[breedName] || breedName
@@ -205,16 +209,16 @@ export default function PetsPage() {
     setPetForm(prev => ({
       ...prev,
       species,
-      breed: '' // Reset breed when species changes
+      breed: ''
     }))
   }
 
   const getAgeText = (ageInYears: number) => {
     if (ageInYears < 1) {
       const months = Math.round(ageInYears * 12)
-      return `${months} month${months !== 1 ? 's' : ''} old`
+      return `${months} mėn.`
     } else {
-      return `${ageInYears} year${ageInYears !== 1 ? 's' : ''} old`
+      return `${ageInYears} m.`
     }
   }
 
@@ -227,8 +231,6 @@ export default function PetsPage() {
 
     setUploadingImages(true)
     try {
-      // For new pets, we'll upload after creating the pet
-      // For existing pets, upload immediately
       if (editingPet) {
         const result = await uploadPetProfilePicture(file, editingPet.id)
         if (result.error) {
@@ -237,7 +239,6 @@ export default function PetsPage() {
         const publicUrl = getPublicUrl('pet-images', result.data!.path)
         setPetForm(prev => ({ ...prev, profilePicture: publicUrl }))
       } else {
-        // Store file for later upload
         const reader = new FileReader()
         reader.onload = (e) => {
           setPetForm(prev => ({ ...prev, profilePicture: e.target?.result as string }))
@@ -272,7 +273,6 @@ export default function PetsPage() {
           const publicUrl = getPublicUrl('pet-images', result.data!.path)
           newImages.push(publicUrl)
         } else {
-          // Read files as data URLs and wait for all to finish
           const readAsDataUrl = (f: File) => new Promise<string>((resolve, reject) => {
             const reader = new FileReader()
             reader.onload = (e) => resolve(e.target?.result as string)
@@ -306,16 +306,25 @@ export default function PetsPage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-rose-50/30 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-10 -right-24 w-72 h-72 rounded-full bg-amber-100/30 blur-3xl" />
+            <div className="absolute bottom-32 -left-16 w-64 h-64 rounded-full bg-rose-100/20 blur-3xl" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-8 pb-24 md:pb-8">
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between animate-in fade-in slide-in-from-top-2 duration-400">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Mano gyvūnai</h1>
-                <p className="text-muted-foreground">Valdykite savo gyvūnų profilius</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Mano gyvūnai</h1>
+                <p className="text-muted-foreground text-sm mt-1">Valdykite savo gyvūnų profilius</p>
               </div>
-              <div className="flex justify-start md:justify-end">
-                <Button onClick={handleAddPet}>
+              <div>
+                <Button
+                  onClick={handleAddPet}
+                  className="rounded-xl bg-foreground hover:bg-foreground/90 text-background shadow-sm h-10 px-5"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Pridėti gyvūną
                 </Button>
@@ -323,104 +332,121 @@ export default function PetsPage() {
             </div>
 
             {/* Pets List */}
-            <div className="space-y-4">
-              {loading ? (
-                <Card>
-                  <CardContent className="text-center py-8">
-                    <Loader2 className="h-8 w-8 text-muted-foreground mx-auto mb-4 animate-spin" />
-                    <p className="text-muted-foreground">Kraunami jūsų gyvūnai...</p>
-                  </CardContent>
-                </Card>
-              ) : error ? (
-                <Card>
-                  <CardContent className="text-center py-8">
-                    <p className="text-red-600 mb-4">{error}</p>
-                    <Button onClick={fetchPets}>Bandyti dar kartą</Button>
-                  </CardContent>
-                </Card>
-              ) : pets.length === 0 ? (
-                <Card>
-                  <CardContent className="text-center py-8">
-                    <Dog className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-foreground mb-2">Dar nėra gyvūnų</h3>
-                    <p className="text-muted-foreground mb-4">Pridėkite savo pirmą gyvūną, kad pradėtumėte</p>
-                    <Button onClick={handleAddPet}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Pridėti gyvūną
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                pets.map((pet) => (
-                  <Card key={pet.id}>
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage src={pet.profilePicture || pet.galleryImages[0]} alt={pet.name} />
-                          <AvatarFallback className="text-lg">
-                            {getSpeciesIcon(pet.species)}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1">
-                          <div>
-                            <h3 className="text-xl font-semibold text-foreground mb-1">
-                              {pet.name}
-                            </h3>
-                            <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
-                              <span className="capitalize">{pet.species}</span>
-                              {pet.breed && <span>{getTranslatedBreedName(pet.breed)}</span>}
-                              <span>{getAgeText(pet.age)}</span>
-                              {pet.weight && <span>{pet.weight} kg</span>}
-                            </div>
-
-                            <div className="flex space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEditPet(pet)}
-                              >
-                                <Edit className="h-4 w-4 mr-1" />
-                                Redaguoti
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700"
-                                onClick={() => handleDeletePet(pet.id)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Ištrinti
-                              </Button>
-                            </div>
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-300">
+                <div className="w-10 h-10 rounded-full border-[3px] border-amber-200 border-t-amber-500 animate-spin" />
+                <p className="text-sm text-muted-foreground mt-4">Kraunami jūsų gyvūnai...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16 rounded-2xl bg-white/60 backdrop-blur-sm border border-border/40 animate-in fade-in duration-300">
+                <p className="text-red-600 mb-4 text-sm">{error}</p>
+                <Button onClick={fetchPets} variant="outline" className="rounded-xl">Bandyti dar kartą</Button>
+              </div>
+            ) : pets.length === 0 ? (
+              <div className="text-center py-16 rounded-2xl bg-white/60 backdrop-blur-sm border border-border/40 animate-in fade-in duration-300">
+                <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+                  <PawPrint className="h-8 w-8 text-amber-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Dar nėra gyvūnų</h3>
+                <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">Pridėkite savo pirmą gyvūną, kad pradėtumėte</p>
+                <Button
+                  onClick={handleAddPet}
+                  className="rounded-xl bg-foreground hover:bg-foreground/90 text-background"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Pridėti gyvūną
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-400">
+                {pets.map((pet) => {
+                  const sc = speciesColors[pet.species] || speciesColors.other
+                  return (
+                    <div
+                      key={pet.id}
+                      className="rounded-2xl bg-white/80 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                    >
+                      <div className="p-5 sm:p-6">
+                        <div className="flex items-start gap-4">
+                          {/* Avatar */}
+                          <div className="relative shrink-0">
+                            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 ring-border/20 ring-offset-2">
+                              <AvatarImage src={pet.profilePicture || pet.galleryImages[0]} alt={pet.name} />
+                              <AvatarFallback className={`text-2xl ${sc.bg}`}>
+                                {getSpeciesIcon(pet.species)}
+                              </AvatarFallback>
+                            </Avatar>
                           </div>
 
-                          {pet.specialNeeds && pet.specialNeeds.length > 0 && (
-                            <div className="mt-3">
-                              <p className="text-sm font-medium text-foreground mb-1">Specialūs poreikiai:</p>
-                              <div className="flex flex-wrap gap-1">
-                                {pet.specialNeeds.map((need, index) => (
-                                  <Badge key={index} variant="secondary" className="text-xs">
-                                    {need}
-                                  </Badge>
-                                ))}
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                                  {pet.name}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-0.5">
+                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${sc.bg} ${sc.border}`}>
+                                    {getSpeciesIcon(pet.species)} {pet.species === 'dog' ? 'Šuo' : pet.species === 'cat' ? 'Katė' : pet.species === 'bird' ? 'Paukštis' : pet.species === 'rabbit' ? 'Triušis' : 'Kita'}
+                                  </span>
+                                  {pet.breed && <span>{getTranslatedBreedName(pet.breed)}</span>}
+                                  <span>{getAgeText(pet.age)}</span>
+                                  {pet.weight && <span>{pet.weight} kg</span>}
+                                </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex items-center gap-1 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 rounded-lg hover:bg-muted/60"
+                                  onClick={() => handleEditPet(pet)}
+                                >
+                                  <Edit className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-600"
+                                  onClick={() => handleDeletePet(pet.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
-                          )}
 
-                          {pet.medicalNotes && (
-                            <div className="mt-3">
-                              <p className="text-sm font-medium text-foreground mb-1">Medicinos pastabos:</p>
-                              <p className="text-sm text-muted-foreground">{pet.medicalNotes}</p>
-                            </div>
-                          )}
+                            {/* Special needs */}
+                            {pet.specialNeeds && pet.specialNeeds.length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-1.5">
+                                {pet.specialNeeds.map((need, index) => (
+                                  <span
+                                    key={index}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 border border-orange-200 text-orange-700 text-xs font-medium"
+                                  >
+                                    <Heart className="h-3 w-3" />
+                                    {need}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Medical notes */}
+                            {pet.medicalNotes && (
+                              <div className="mt-3 py-2 px-3 rounded-xl bg-muted/40">
+                                <p className="text-xs text-muted-foreground">
+                                  <span className="font-medium text-foreground">Medicinos pastabos:</span> {pet.medicalNotes}
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
 

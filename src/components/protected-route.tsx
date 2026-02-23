@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
-import { Loading } from '@/components/ui/loading'
+import { providerApi } from '@/lib/providers'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -11,27 +11,54 @@ interface ProtectedRouteProps {
   fallback?: React.ReactNode
 }
 
-export const ProtectedRoute = ({ 
-  children, 
-  requiredRole, 
-  fallback 
+export const ProtectedRoute = ({
+  children,
+  requiredRole,
+  fallback
 }: ProtectedRouteProps) => {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [providerCheck, setProviderCheck] = useState<'idle' | 'checking' | 'is_provider' | 'not_provider'>('idle')
 
-  // Stable memoized checks to avoid changing hook order
-  const roleMismatch = useMemo(() => {
-    if (!requiredRole) return false
-    if (!user) return false
-    // Check user role from metadata
-    const userRole = user.user_metadata?.role
-    // Admin can access all roles
+  const userRole = user?.user_metadata?.role
+
+  // When requiredRole is 'provider' but metadata says otherwise, check the providers table
+  useEffect(() => {
+    if (!user || loading) return
+    if (requiredRole !== 'provider') return
+    if (userRole === 'provider' || userRole === 'admin') return
+
+    // Metadata role doesn't match — check database for provider profile
+    setProviderCheck('checking')
+    providerApi.hasProviderProfile(user.id)
+      .then((hasProfile) => {
+        setProviderCheck(hasProfile ? 'is_provider' : 'not_provider')
+      })
+      .catch(() => {
+        setProviderCheck('not_provider')
+      })
+  }, [user, loading, requiredRole, userRole])
+
+  // Determine if there's a role mismatch
+  const roleMismatch = (() => {
+    if (!requiredRole || !user) return false
     if (userRole === 'admin') return false
-    return userRole !== requiredRole
-  }, [requiredRole, user])
+    if (userRole === requiredRole) return false
+    // For provider role, wait for DB check
+    if (requiredRole === 'provider') {
+      if (providerCheck === 'is_provider') return false
+      if (providerCheck === 'not_provider') return true
+      // Still checking or idle — don't mismatch yet
+      return false
+    }
+    return true
+  })()
+
+  // Whether we're still resolving access
+  const resolving = loading || (requiredRole === 'provider' && userRole !== 'provider' && userRole !== 'admin' && (providerCheck === 'idle' || providerCheck === 'checking'))
 
   useEffect(() => {
-    if (loading) return
+    if (resolving) return
 
     if (!user) {
       router.replace('/auth/signin')
@@ -42,13 +69,13 @@ export const ProtectedRoute = ({
       const target = requiredRole === 'provider' ? '/provider/onboarding' : '/'
       router.replace(target)
     }
-  }, [loading, user, roleMismatch, requiredRole, router])
+  }, [resolving, user, roleMismatch, requiredRole, router])
 
-  if (loading) {
+  if (resolving) {
     return null
   }
 
-  // During redirects, render nothing to prevent UI flicker and hook churn
+  // During redirects, render nothing to prevent UI flicker
   if (!user || roleMismatch) {
     return fallback ? <>{fallback}</> : null
   }
