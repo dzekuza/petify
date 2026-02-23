@@ -12,7 +12,7 @@ Requirements for the modernization release. Each maps to roadmap phases.
 - [x] **CLEAN-01**: Dead components (13+ confirmed unused) are deleted from the codebase
 - [x] **CLEAN-02**: Chat components consolidated from 8 down to 2 (ChatButton + ChatDialog)
 - [x] **CLEAN-03**: `listings-grid.tsx` inline card unified with `provider-card.tsx` into one canonical ProviderCard
-- [ ] **CLEAN-04**: Raw Tailwind gray classes (`text-gray-*`, `bg-gray-*`, `border-gray-*`) replaced with semantic design tokens (`text-muted-foreground`, `bg-muted`, `border-border`)
+- [x] **CLEAN-04**: Raw Tailwind gray classes (`text-gray-*`, `bg-gray-*`, `border-gray-*`) replaced with semantic design tokens (`text-muted-foreground`, `bg-muted`, `border-border`)
 - [x] **CLEAN-05**: `booking/types.ts` `any` types replaced with proper TypeScript interfaces from `src/types/index.ts`
 
 ### Navigation
@@ -99,7 +99,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLEAN-01 | Phase 1 | Complete |
 | CLEAN-02 | Phase 1 | Complete |
 | CLEAN-03 | Phase 1 | Complete |
-| CLEAN-04 | Phase 1 | Pending |
+| CLEAN-04 | Phase 1 | Complete |
 | CLEAN-05 | Phase 1 | Complete |
 | GLBL-01 | Phase 1 | Complete |
 | GLBL-04 | Phase 1 | Complete |
