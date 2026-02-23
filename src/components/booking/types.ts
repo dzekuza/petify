@@ -1,3 +1,5 @@
+import { ServiceProvider, Service, Pet } from '@/types'
+
 export interface BookingFormData {
   name: string
   species: 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
@@ -11,15 +13,15 @@ export interface BookingFormData {
 }
 
 export interface BookingStepProps {
-  provider: any
-  services: any[]
-  pets: any[]
-  selectedService: any
+  provider: ServiceProvider
+  services: Service[]
+  pets: Pet[]
+  selectedService: Service | null
   selectedPets: string[]
   selectedDate: Date | undefined
   selectedTimeSlot: string
   availabilityData: Record<string, unknown> | null
-  onServiceSelect: (service: any) => void
+  onServiceSelect: (service: Service) => void
   onPetSelect: (petId: string) => void
   onDateSelect: (date: Date | undefined) => void
   onTimeSelect: (time: string) => void
@@ -30,16 +32,16 @@ export interface BookingStepProps {
 }
 
 export interface BookingContextType {
-  provider: any
-  services: any[]
-  pets: any[]
-  selectedService: any
+  provider: ServiceProvider
+  services: Service[]
+  pets: Pet[]
+  selectedService: Service | null
   selectedPets: string[]
   selectedDate: Date | undefined
   selectedTimeSlot: string
   currentStep: number
   loading: boolean
-  onServiceSelect: (service: any) => void
+  onServiceSelect: (service: Service) => void
   onPetSelect: (petId: string) => void
   onDateSelect: (date: Date | undefined) => void
   onTimeSelect: (time: string) => void
