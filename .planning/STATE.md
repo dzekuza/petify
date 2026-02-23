@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 1 of 6 (Foundation)
-Plan: 2 of 4 in current phase
+Plan: 4 of 4 in current phase (Phase 1 complete)
 Status: In progress
-Last activity: 2026-02-23 — Plans 01-01 (research) and 01-02 (design tokens) complete
+Last activity: 2026-02-23 — Plans 01-03 (semantic token migration) and 01-04 (ProviderCard unification) complete
 
-Progress: [██░░░░░░░░] 8% (2 plans of ~24 total)
+Progress: [████░░░░░░] 17% (4 plans of ~24 total)
 
 ## Performance Metrics
 
@@ -34,6 +34,7 @@ Progress: [██░░░░░░░░] 8% (2 plans of ~24 total)
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-foundation P04 | 12 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -52,6 +53,8 @@ Recent decisions affecting current work:
 - [01-02 Token]: TailwindCSS v4 @utility directive used for page-container/section-container — preferred over @layer utilities
 - [01-01 Cleanup]: FloatingChatButton replaced with ChatButton in fixed-position wrapper — ChatButton is the canonical floating chat entry point
 - [01-01 Cleanup]: GLBL-01 audit passed — uppercase class only on badge/label elements, never on h1-h6 headings
+- [Phase 01-04]: ProviderCard sub-components are private functions not exported — Phase 4 extends via variant prop
+- [Phase 01-04]: listings-grid.tsx drops own auth/favorites state — ProviderCard manages favorites toggle internally
 
 ### Pending Todos
 
@@ -65,5 +68,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 01-01-PLAN.md — dead component cleanup, chat consolidation, type safety
-Resume file: .planning/phases/01-foundation/01-03-PLAN.md
+Stopped at: Completed 01-04-PLAN.md — ProviderCard unification with grid/horizontal variants
+Resume file: .planning/phases/02-landing-page/02-01-PLAN.md (or next available phase)
