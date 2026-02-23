@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation)
-Plan: 4 of 4 in current phase (Phase 1 complete)
+Phase: 2 of 6 (Navigation)
+Plan: 1 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-23 — Plans 01-03 (semantic token migration) and 01-04 (ProviderCard unification) complete
+Last activity: 2026-02-23 — Plan 02-01 (scroll-aware header, nav cleanup) complete
 
-Progress: [████░░░░░░] 17% (4 plans of ~24 total)
+Progress: [████░░░░░░] 21% (5 plans of ~24 total)
 
 ## Performance Metrics
 
@@ -36,6 +36,7 @@ Progress: [████░░░░░░] 17% (4 plans of ~24 total)
 *Updated after each plan completion*
 | Phase 01-foundation P04 | 12 | 2 tasks | 2 files |
 | Phase 01-foundation P03 | 7 | 3 tasks | 87 files |
+| Phase 02-navigation PP01 | 3 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,10 @@ Recent decisions affecting current work:
 - [Phase 01-03]: bg-gray-200 defaults to bg-muted (subtle container); hover states use bg-secondary for stronger feedback
 - [Phase 01-03]: border-gray-100 → border-border/50 using opacity modifier to preserve very-subtle divider intent
 - [Phase 01-03]: All dark: prefixed gray variants in ruixen-mono-chat replaced with semantic tokens to maintain dark mode fidelity
+- [Phase 02-01]: scrolled state kept in Navigation parent and passed via prop — single source of truth, avoids duplicate scroll listeners
+- [Phase 02-01]: Favorites link moved to user actions area alongside UserMenu — more logical placement next to account actions
+- [Phase 02-01]: Passive scroll listener pattern established: { passive: true } keeps scroll on compositor thread with zero jank
+- [Phase 02-01]: Scroll state initialization on mount (call handleScroll() inside useEffect) prevents hydration flash on browser scroll restoration
 
 ### Pending Todos
 
@@ -72,5 +77,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 01-04-PLAN.md — ProviderCard unification with grid/horizontal variants
-Resume file: .planning/phases/02-landing-page/02-01-PLAN.md (or next available phase)
+Stopped at: Completed 02-01-PLAN.md — Scroll-aware header with transparent-at-top / frosted-glass-on-scroll pattern
+Resume file: .planning/phases/02-navigation/02-02-PLAN.md (or next available plan)
