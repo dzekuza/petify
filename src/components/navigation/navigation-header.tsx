@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Heart } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { UserMenu } from './user-menu'
+import { navigationItems } from './constants'
+import type { NavigationItem } from './types'
 
 interface NavigationHeaderProps {
   scrolled: boolean
@@ -29,6 +31,15 @@ export function NavigationHeader({
   onSignOut
 }: NavigationHeaderProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const isActive = (item: NavigationItem) => {
+    const [itemPath, itemQuery] = item.href.split('?')
+    if (pathname !== itemPath) return false
+    if (!itemQuery) return true
+    const params = new URLSearchParams(itemQuery)
+    return [...params.entries()].every(([k, v]) => searchParams.get(k) === v)
+  }
 
   return (
     <header
@@ -79,6 +90,27 @@ export function NavigationHeader({
             provider={provider}
             onSignOut={onSignOut}
           />
+        </div>
+      </div>
+
+      {/* Category Pill Row — NAV-03 */}
+      <div className="w-full overflow-x-auto scrollbar-hide border-t border-border/30">
+        <div className="flex items-center gap-2 px-4 py-2 min-w-max md:min-w-0 md:justify-center">
+          {navigationItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
+                isActive(item)
+                  ? "bg-brand-light text-brand"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Image src={item.icon} alt={item.shortName} width={18} height={18} />
+              {item.shortName}
+            </Link>
+          ))}
         </div>
       </div>
     </header>
