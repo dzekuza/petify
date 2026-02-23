@@ -118,10 +118,10 @@ export const HeroFilters = () => {
     }, [])
 
     return (
-        <div className="glass md:rounded-full rounded-2xl border border-white/20 md:p-2 p-6 w-full max-w-4xl backdrop-blur-xl">
+        <div className="glass md:rounded-full rounded-2xl border border-gray-200 md:p-3 p-6 w-full max-w-4xl backdrop-blur-xl">
             <div className="flex flex-col md:flex-row items-center w-full md:space-y-0 space-y-4">
                 {/* Location */}
-                <div className="flex-1 px-2 py-1 hover:bg-muted md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
+                <div className="flex-1 px-4 py-2 hover:bg-muted md:rounded-l-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
                     <Label htmlFor="address-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         {t('landing.hero.search.where')}
                     </Label>
@@ -167,7 +167,7 @@ export const HeroFilters = () => {
                 </div>
 
                 {/* Service Category */}
-                <div className="flex-1 px-2 py-1 hover:bg-muted md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
+                <div className="flex-1 px-4 py-2 hover:bg-muted md:rounded-none rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
                     <Label htmlFor="category-select" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         Paslaugos
                     </Label>
@@ -191,7 +191,7 @@ export const HeroFilters = () => {
                 </div>
 
                 {/* Date */}
-                <div className="flex-1 px-2 py-1 hover:bg-muted md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
+                <div className="flex-1 px-4 py-2 hover:bg-muted md:rounded-r-full rounded-lg transition-colors duration-200 w-full md:w-auto relative group">
                     <Label htmlFor="date-input" className="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm font-semibold text-foreground block cursor-pointer">
                         {t('landing.hero.search.date')}
                     </Label>
