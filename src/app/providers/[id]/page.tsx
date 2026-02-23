@@ -15,7 +15,7 @@ import { BookingWidget } from '@/components/provider-detail/booking-widget'
 import { MobileLayout } from '@/components/provider-detail/mobile-layout'
 import { DesktopHeader } from '@/components/provider-detail/desktop-header'
 import { ReviewDialog } from '@/components/review-dialog'
-import { FloatingChatButton } from '@/components/ui/floating-chat-button'
+import { ChatButton } from '@/components/ui/chat-button'
 import Navigation from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { toast } from 'sonner'
@@ -478,11 +478,13 @@ export default function ProviderDetailPage() {
 
       {/* Floating Chat Button */}
       {provider && (
-        <FloatingChatButton
-          providerName={provider.businessName}
-          providerId={provider.id}
-          providerLogo={provider.images?.[0]}
-        />
+        <div className="fixed bottom-24 lg:bottom-6 right-6 z-50">
+          <ChatButton
+            chatName={provider.businessName}
+            providerId={provider.id}
+            variant="default"
+          />
+        </div>
       )}
 
       {/* Footer - Hidden on mobile */}
