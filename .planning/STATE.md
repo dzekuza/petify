@@ -35,6 +35,7 @@ Progress: [████░░░░░░] 17% (4 plans of ~24 total)
 
 *Updated after each plan completion*
 | Phase 01-foundation P04 | 12 | 2 tasks | 2 files |
+| Phase 01-foundation P03 | 7 | 3 tasks | 87 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,9 @@ Recent decisions affecting current work:
 - [01-01 Cleanup]: GLBL-01 audit passed — uppercase class only on badge/label elements, never on h1-h6 headings
 - [Phase 01-04]: ProviderCard sub-components are private functions not exported — Phase 4 extends via variant prop
 - [Phase 01-04]: listings-grid.tsx drops own auth/favorites state — ProviderCard manages favorites toggle internally
+- [Phase 01-03]: bg-gray-200 defaults to bg-muted (subtle container); hover states use bg-secondary for stronger feedback
+- [Phase 01-03]: border-gray-100 → border-border/50 using opacity modifier to preserve very-subtle divider intent
+- [Phase 01-03]: All dark: prefixed gray variants in ruixen-mono-chat replaced with semantic tokens to maintain dark mode fidelity
 
 ### Pending Todos
 
