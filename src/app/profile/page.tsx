@@ -230,7 +230,7 @@ export default function ProfilePage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted py-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">

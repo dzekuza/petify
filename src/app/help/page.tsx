@@ -65,7 +65,7 @@ export default function HelpPage() {
   return (
     <Layout>
       <ProtectedRoute>
-        <div className="min-h-screen bg-muted">
+        <div className="min-h-screen bg-muted py-8">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">

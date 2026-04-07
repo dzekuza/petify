@@ -239,7 +239,7 @@ function BookingSuccessContent() {
           <div className="absolute -bottom-10 -left-20 w-96 h-96 rounded-full bg-amber-100/30 blur-3xl" />
         </div>
 
-        <div className="relative z-10 max-w-lg mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <div className="relative z-10 max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
           <motion.div
             variants={containerVariants}
             initial="hidden"
