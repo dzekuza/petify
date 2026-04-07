@@ -65,8 +65,8 @@ export default function HelpPage() {
   return (
     <Layout>
       <ProtectedRoute>
-        <div className="min-h-screen bg-muted py-8">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-muted">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-8 pb-24 md:pb-8">
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-foreground">Help & Support</h1>
