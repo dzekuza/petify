@@ -120,10 +120,9 @@ export default function ProviderDashboard() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-        <>
-          
+        <div className="p-6 overflow-y-auto h-full flex flex-col gap-6">
           {/* Header */}
-          <div className="mb-8">
+          <div>
             <h1 className="text-3xl font-bold text-foreground">{t('providerDashboard.title')}</h1>
             <p className="mt-2 text-muted-foreground">
               {t('providerDashboard.welcomeBack')}, {user?.user_metadata?.full_name || 'Provider'}!
@@ -247,7 +246,7 @@ export default function ProviderDashboard() {
             <div className="mt-6">
               <CalendarWidget />
             </div>
-        </>
+        </div>
       </ProtectedRoute>
   )
 }

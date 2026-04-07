@@ -47,8 +47,8 @@ export default function ProviderAnalyticsPage() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-      <>
-        <h1 className="text-2xl font-bold mb-6">Analitika</h1>
+      <div className="p-6 overflow-y-auto h-full flex flex-col gap-6">
+        <h1 className="text-2xl font-bold">Analitika</h1>
 
         {/* KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
@@ -123,7 +123,7 @@ export default function ProviderAnalyticsPage() {
             </CardContent>
           </Card>
         </div>
-      </>
+      </div>
     </ProtectedRoute>
   )
 }

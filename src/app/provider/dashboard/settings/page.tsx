@@ -122,9 +122,8 @@ export default function BusinessSettingsPage() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-      <>
+      <div className="p-6 overflow-y-auto h-full flex flex-col gap-6">
         {/* Header */}
-        
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground flex items-center">
@@ -163,7 +162,7 @@ export default function BusinessSettingsPage() {
             onUpdate={handleUpdate}
           />
         )}
-      </>
+      </div>
     </ProtectedRoute>
   )
 }

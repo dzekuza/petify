@@ -229,9 +229,8 @@ export default function ProviderProfilePage() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-      <>
+      <div className="flex flex-col gap-6 p-6 overflow-y-auto h-full">
           {/* Header */}
-         
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Profilis</h1>
@@ -246,14 +245,14 @@ export default function ProviderProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Profile Info */}
             <div className="lg:col-span-2 space-y-6">
-              <Card className=" shadow-none">
-                <CardHeader className="p-0">
+              <Card className="shadow-none">
+                <CardHeader>
                   <CardTitle>Verslo informacija</CardTitle>
                   <CardDescription>
                     Jūsų verslo pagrindinė informacija
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 p-0">
+                <CardContent className="space-y-6">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={profile.avatarUrl} alt={profile.businessName} />
@@ -323,14 +322,14 @@ export default function ProviderProfilePage() {
               </Card>
 
               {/* Business Stats */}
-              <Card className=" shadow-none">
-                <CardHeader className="p-0">
+              <Card className="shadow-none">
+                <CardHeader>
                   <CardTitle>Verslo statistika</CardTitle>
                   <CardDescription>
                     Jūsų verslo veiklos rodikliai
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center space-x-3">
                       <Star className="h-5 w-5 text-yellow-400" />
@@ -354,11 +353,11 @@ export default function ProviderProfilePage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Profile Status */}
-              <Card className=" shadow-none">
-                <CardHeader className="p-0">
+              <Card className="shadow-none">
+                <CardHeader>
                   <CardTitle>Profilio būsena</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Profilio užbaigimas</span>
@@ -377,11 +376,11 @@ export default function ProviderProfilePage() {
               </Card>
 
               {/* Quick Actions */}
-              <Card className=" shadow-none">
-                <CardHeader className="p-0">
+              <Card className="shadow-none">
+                <CardHeader>
                   <CardTitle>Greiti veiksmai</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 p-0">
+                <CardContent className="space-y-2">
                   <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/provider/dashboard/services')}>
                     Mano paslaugos
                   </Button>
@@ -585,7 +584,7 @@ export default function ProviderProfilePage() {
               </DialogContent>
             </Dialog>
           )}
-        </>
+      </div>
     </ProtectedRoute>
   )
 }

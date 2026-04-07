@@ -149,7 +149,7 @@ export default function ProviderSchedulePage() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-      <>
+      <div className="p-6 overflow-y-auto h-full flex flex-col gap-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-bold">{t('providerDashboard.schedule')}</h1>
           <div className="flex justify-start md:justify-end">
@@ -346,7 +346,7 @@ export default function ProviderSchedulePage() {
               </Card>
             </div>
         </div>
-      </>
+      </div>
     </ProtectedRoute>
   )
 }

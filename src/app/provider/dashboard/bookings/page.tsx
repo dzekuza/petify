@@ -58,8 +58,8 @@ export default function ProviderBookingsPage() {
 
   return (
     <ProtectedRoute requiredRole="provider">
-      <>
-        <h1 className="text-2xl font-bold mb-6">Rezervacijos</h1>
+      <div className="p-6 overflow-y-auto h-full flex flex-col gap-6">
+        <h1 className="text-2xl font-bold">Rezervacijos</h1>
         <Card className="bg-transparent border-0 shadow-none">
           <CardHeader className="p-0">
             <CardTitle>Naujausios rezervacijos</CardTitle>
@@ -93,7 +93,7 @@ export default function ProviderBookingsPage() {
             )}
           </CardContent>
         </Card>
-      </>
+            </div>
     </ProtectedRoute>
   )
 }
