@@ -181,3 +181,23 @@ NEXT_PUBLIC_MAPBOX_STYLE_URL
 - Code comments: Lithuanian translations alongside English type names
 - Input sanitization: use `src/lib/sanitization.ts` for user inputs
 - Supabase queries: always use `createSupabaseAdmin()` in API routes, never the client-side `supabase` instance
+
+## Skills
+
+- `seo-audit` — Lithuanian pet services SEO
+- `schema-markup` — LocalBusiness, Service, PetStore JSON-LD for service providers
+- `page-cro` — marketplace conversion (browse → book funnel)
+- `supabase-postgres-best-practices` — PostGIS + Supabase optimization for geo-search queries
+- `stripe-best-practices` — Stripe payments and webhooks
+- `context7` — fetch current Playwright, Mapbox GL docs before using their APIs
+
+## Agent Workflow Requirements
+
+After completing any task:
+- Run `/claude-md-management:revise-claude-md` with auto-apply to update this file with learnings
+
+After encountering and solving a bug or problem:
+- Add a **Gotchas** entry documenting:
+  - What went wrong
+  - Root cause
+  - How to avoid/fix it next time
