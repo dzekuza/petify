@@ -1,6 +1,0 @@
-b5eace54adcf923b54000d1a1c624a960e1d0bc2		branch 'main' of https://github.com/dzekuza/petify
-f6a895b2bf0205a58114f16fdaee7ddec7cafde3	not-for-merge	branch 'claude/review-app-audit-ZCrFT' of https://github.com/dzekuza/petify
-48cdb626efef4de1fbfa3ecdf5999ca9fa145587	not-for-merge	branch 'claude/standardize-page-layout-Gi8kj' of https://github.com/dzekuza/petify
-3a34ac33faf513a2584bbd81093221b55ab6de49	not-for-merge	branch 'cursor/implement-page-access-code-lock-ed6c' of https://github.com/dzekuza/petify
-02f6fb11cdafd1bc997b26d62be1a93718684ef6	not-for-merge	branch 'feat/vercel-fix-suspense' of https://github.com/dzekuza/petify
-2f2dc1913dbee60cf0317d4c28beb3f439aa2a28	not-for-merge	branch 'vercel/react-flight-rce-vulnerability-frb3wy' of https://github.com/dzekuza/petify
