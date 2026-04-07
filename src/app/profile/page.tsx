@@ -74,14 +74,6 @@ export default function ProfilePage() {
 
   if (!user) return null
 
-  // Debug: Log user data to see what we have
-  console.log('Current user data:', {
-    id: user.id,
-    email: user.email,
-    user_metadata: user.user_metadata,
-    avatar_url: user.user_metadata?.avatar_url
-  })
-
   // Handler functions
   const handleEditProfile = () => {
     setEditProfileOpen(true)
@@ -117,9 +109,8 @@ export default function ProfilePage() {
         throw new Error(errorData.error || `HTTP ${response.status}: Failed to update profile`)
       }
       
-      const result = await response.json()
-      console.log('Profile updated successfully:', result)
-      
+      await response.json()
+
       // Refresh user data to show updated profile
       const { data: { user: updatedUser } } = await supabase.auth.getUser()
       if (updatedUser) {
@@ -156,7 +147,6 @@ export default function ProfilePage() {
     if (!response.ok) {
       throw new Error('Failed to update notifications')
     }
-    console.log('Saving notifications:', notifications)
     setNotificationsOpen(false)
   }
 
@@ -177,7 +167,6 @@ export default function ProfilePage() {
     if (!response.ok) {
       throw new Error('Failed to update privacy settings')
     }
-    console.log('Saving privacy:', privacy)
     setPrivacyOpen(false)
   }
 
@@ -230,8 +219,8 @@ export default function ProfilePage() {
   return (
     <Layout hideFooter={true}>
       <ProtectedRoute>
-        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-8 pb-24 md:pb-8">
+        <div className="min-h-[calc(100vh-4rem)] md:min-h-screen bg-muted pt-8">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-foreground">{t('profile.title')}</h1>
@@ -255,12 +244,9 @@ export default function ProfilePage() {
                           src={user.user_metadata?.avatar_url} 
                           alt={user.user_metadata?.full_name || 'User'} 
                           onError={(e) => {
-                            console.log('Avatar image failed to load:', user.user_metadata?.avatar_url)
                             e.currentTarget.style.display = 'none'
                           }}
-                          onLoad={() => {
-                            console.log('Avatar image loaded successfully:', user.user_metadata?.avatar_url)
-                          }}
+                          onLoad={() => undefined}
                         />
                         <AvatarFallback className="text-lg">
                           {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || <User className="h-8 w-8" />}

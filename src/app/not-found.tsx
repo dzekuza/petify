@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen flex items-center justify-center p-6">
       <div className="text-center max-w-md">
         <h1 className="text-3xl font-bold mb-2">Page not found</h1>
         <p className="text-muted-foreground mb-6">The page you are looking for does not exist.</p>

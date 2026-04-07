@@ -23,14 +23,6 @@ export const createPaymentIntent = async (
   data: PaymentIntentData
 ): Promise<CreatePaymentIntentResponse> => {
   try {
-    console.log('Creating payment intent with data:', {
-      amount: data.amount,
-      currency: data.currency,
-      formattedAmount: formatAmountForStripe(data.amount, data.currency),
-      bookingId: data.bookingId,
-      customerEmail: data.customerEmail
-    })
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: formatAmountForStripe(data.amount, data.currency),
       currency: data.currency,
@@ -43,8 +35,6 @@ export const createPaymentIntent = async (
       },
       receipt_email: data.customerEmail,
     })
-
-    console.log('Stripe payment intent created:', paymentIntent.id)
 
     return {
       clientSecret: paymentIntent.client_secret!,
@@ -152,12 +142,6 @@ export const handlePaymentSucceeded = async (paymentIntent: { id: string; status
       throw new Error('No booking ID found in payment intent metadata')
     }
 
-    console.log(`Payment succeeded for booking ${bookingId}:`, {
-      paymentIntentId: paymentIntent.id,
-      amount: (paymentIntent as any).amount,
-      currency: (paymentIntent as any).currency,
-    })
-
     // Update booking status to paid and get booking details
     const supabaseAdmin = createSupabaseAdmin()
     const { data: booking, error: bookingError } = await supabaseAdmin
@@ -207,7 +191,6 @@ export const handlePaymentSucceeded = async (paymentIntent: { id: string; status
           petName: booking.pet.name
         })
 
-        console.log(`Payment confirmation email sent to ${booking.customer.email}`)
       } catch (emailError) {
         console.error('Failed to send payment confirmation email:', emailError)
         // Don't fail the webhook if email fails
@@ -231,11 +214,7 @@ export const handlePaymentFailed = async (paymentIntent: { id: string; status: s
       throw new Error('No booking ID found in payment intent metadata')
     }
 
-    // Here you would typically update your database to mark the booking as failed
-    console.log(`Payment failed for booking ${bookingId}:`, {
-      paymentIntentId: paymentIntent.id,
-      lastPaymentError: (paymentIntent as any).last_payment_error,
-    })
+    // Update database to mark the booking as failed
 
     return { success: true, bookingId }
   } catch (error) {

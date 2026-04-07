@@ -122,7 +122,7 @@ export default function HowItWorksPage() {
       <div className="min-h-screen bg-muted">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-          <div className="page-container">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
                 How Petify Works
@@ -137,7 +137,7 @@ export default function HowItWorksPage() {
 
         {/* Steps Section */}
         <section className="py-16 bg-white">
-          <div className="page-container">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Simple 4-Step Process
@@ -186,7 +186,7 @@ export default function HowItWorksPage() {
 
         {/* Features Section */}
         <section className="py-16 bg-muted">
-          <div className="page-container">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Why Choose Petify?
@@ -246,7 +246,7 @@ export default function HowItWorksPage() {
 
         {/* CTA Section */}
         <section className="py-16 bg-blue-600">
-          <div className="page-container">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Ready to Get Started?

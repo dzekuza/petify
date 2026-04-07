@@ -53,7 +53,6 @@ function CheckoutContent() {
         
         // Load service data
         const serviceData = await serviceApi.getServiceById(serviceId)
-        console.log('Service data:', serviceData)
         if (!serviceData) {
           toast.error('Service not found')
           router.push('/search')

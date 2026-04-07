@@ -385,9 +385,7 @@ export function BookingWidget({
   }
 
   // If it's a breeder (adoption business type), show different interface
-  console.log('Provider business type:', provider.businessType)
   if (provider.businessType === 'adoption') {
-    console.log('Rendering BreederRequestWidget for adoption provider')
     return <BreederRequestWidget provider={provider} services={services} userPets={userPets} onPetsUpdate={onPetsUpdate} isMobile={isMobile} />
   }
 

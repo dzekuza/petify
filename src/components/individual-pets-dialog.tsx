@@ -189,8 +189,8 @@ export function IndividualPetsDialog({
               variant="outline"
               size="sm"
               onClick={() => {
-                // TODO: Add logic to edit pet type
-                console.log('Edit pet type:', petTypeId)
+                // TODO(individual-pets): Implement pet type editing — 2026-03-21
+                void petTypeId
               }}
             >
               <Edit className="h-4 w-4 mr-2" />

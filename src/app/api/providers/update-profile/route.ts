@@ -3,31 +3,23 @@ import { createSupabaseAdmin } from '@/lib/supabase'
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log('Profile update API called')
-    
     // Get the authorization header
     const authHeader = request.headers.get('authorization')
-    console.log('Auth header present:', !!authHeader)
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('No valid auth header')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const token = authHeader.split(' ')[1]
-    console.log('Token length:', token.length)
-    
+
     // Create admin client to verify the JWT token
     const supabaseAdmin = createSupabaseAdmin()
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
-    
+
     if (authError || !user) {
       console.error('Auth error:', authError)
-      console.error('User:', user)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    
-    console.log('User authenticated:', user.id)
 
     const formData = await request.formData()
     const businessName = formData.get('businessName') as string

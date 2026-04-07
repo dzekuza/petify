@@ -415,7 +415,6 @@ export const providerApi = {
   // Get provider by ID
   async getProviderById(providerId: string) {
     try {
-      console.log('Fetching provider with ID:', providerId)
       const { data: provider, error } = await supabase
         .from('providers')
         .select('*')
@@ -424,11 +423,8 @@ export const providerApi = {
 
       if (error) {
         console.error('Error fetching provider:', error)
-        console.error('Provider ID that failed:', providerId)
         throw error
       }
-
-      console.log('Provider data fetched:', provider)
       
       if (!provider) {
         console.error('Provider not found for ID:', providerId)

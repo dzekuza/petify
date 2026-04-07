@@ -90,8 +90,6 @@ export async function GET(request: NextRequest) {
 
     const { data: bookings, error } = await query
 
-    console.log('Supabase query result:', { bookings, error, customerId })
-
     if (error) {
       console.error('Error fetching bookings:', error)
       return NextResponse.json(
@@ -194,7 +192,6 @@ export async function GET(request: NextRequest) {
       }
     }) || []
 
-    console.log('Transformed bookings:', transformedBookings)
     return NextResponse.json({ bookings: transformedBookings })
 
   } catch (error) {

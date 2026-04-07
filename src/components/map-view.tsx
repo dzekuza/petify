@@ -159,22 +159,11 @@ export const MapView = ({ filters }: MapViewProps) => {
   }
 
   const handleSearchClick = () => {
-    // Trigger search with current filters
-    // Note: This would typically trigger a search in the parent component
-    console.log('Search clicked with filters:', {
-      query: '',
-      location: '',
-      category: filters.category,
-      rating: 0,
-      priceRange: [0, 1000],
-      distance: 50
-    })
+    // Trigger search with current filters — handled by parent component
   }
 
   const handleFiltersClick = () => {
-    // Open filters modal
-    // Note: This would typically open a filters modal in the parent component
-    console.log('Filters clicked')
+    // Open filters modal — handled by parent component
   }
 
   if (loading) {

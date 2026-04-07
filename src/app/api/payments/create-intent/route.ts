@@ -5,8 +5,6 @@ import { STRIPE_CONFIG } from '@/lib/stripe'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log('Payment intent request body:', body)
-    
     const { 
       amount, 
       currency = STRIPE_CONFIG.currency, 
@@ -32,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     // Calculate total with service fee
     const totalAmount = calculateBookingTotal(amount, serviceFee)
-    console.log('Calculated total amount:', totalAmount)
 
     // Create payment intent
     const paymentIntent = await createPaymentIntent({
@@ -45,8 +42,6 @@ export async function POST(request: NextRequest) {
         originalAmount: amount.toString(),
       },
     })
-
-    console.log('Payment intent created successfully:', paymentIntent.paymentIntentId)
 
     return NextResponse.json({
       clientSecret: paymentIntent.clientSecret,

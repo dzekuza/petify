@@ -66,13 +66,13 @@ export default function BusinessSettingsPage() {
 
       // Handle media uploads if they exist
       if (newSettings.logo) {
-        // TODO: Upload logo to storage and get URL
+        // TODO(settings): upload logo to Supabase Storage bucket and save URL — 2026-03-23
         // For now, we'll just update the avatar_url field
         updateData.avatar_url = newSettings.logo_url
       }
 
       if (newSettings.cover_image) {
-        // TODO: Upload cover image to storage and get URL
+        // TODO(settings): upload cover image to Supabase Storage bucket and save URL — 2026-03-23
         // For now, we'll update the images array
         const existingImages = providerData.images || []
         const newImages = [newSettings.cover_image_url, ...existingImages.slice(1)]
@@ -80,7 +80,7 @@ export default function BusinessSettingsPage() {
       }
 
       if (newSettings.gallery_images && newSettings.gallery_images.length > 0) {
-        // TODO: Upload gallery images to storage and get URLs
+        // TODO(settings): upload gallery images to Supabase Storage bucket and save URLs — 2026-03-23
         // For now, we'll update the images array
         const existingImages = providerData.images || []
         const newImages = [existingImages[0], ...newSettings.gallery_image_urls]

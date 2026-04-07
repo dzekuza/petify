@@ -38,15 +38,15 @@ export async function POST(request: NextRequest) {
         break
 
       case 'payment_intent.canceled':
-        console.log('Payment canceled:', event.data.object.id)
+        // Payment canceled — no action required
         break
 
       case 'payment_intent.requires_action':
-        console.log('Payment requires action:', event.data.object.id)
+        // Payment requires additional customer action — handled client-side
         break
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        // Unhandled event type — ignored intentionally
     }
 
     return NextResponse.json({ received: true })

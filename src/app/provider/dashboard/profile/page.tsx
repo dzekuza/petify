@@ -129,9 +129,6 @@ export default function ProviderProfilePage() {
         throw new Error('No active session')
       }
 
-      console.log('Session token:', session.access_token ? 'Present' : 'Missing')
-      console.log('User ID:', session.user?.id)
-
       // Update profile via API
       const response = await fetch('/api/providers/update-profile', {
         method: 'PUT',
@@ -140,9 +137,6 @@ export default function ProviderProfilePage() {
         },
         body: formData,
       })
-      
-      console.log('Response status:', response.status)
-      console.log('Response ok:', response.ok)
       
       if (!response.ok) {
         const errorData = await response.json()

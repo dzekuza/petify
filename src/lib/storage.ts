@@ -37,15 +37,6 @@ export const uploadFile = async (
     // Create the full path
     const filePath = folder ? `${folder}/${finalFileName}` : finalFileName
     
-    console.log('Uploading file:', {
-      bucket,
-      filePath,
-      fileName: finalFileName,
-      fileSize: file.size,
-      fileType: file.type,
-      userId: session.user.id
-    })
-    
     // Upload the file
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -64,7 +55,6 @@ export const uploadFile = async (
       return { data: null, error: new Error(`Upload failed: ${error.message}`) }
     }
     
-    console.log('Upload successful:', data)
     return { data, error: null }
   } catch (error) {
     console.error('Upload error:', error)

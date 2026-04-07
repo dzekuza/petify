@@ -116,8 +116,6 @@ export default function NewProviderOnboardingPage() {
 
   const handleOnboardingComplete = async () => {
     try {
-      console.log('Onboarding completed successfully!', onboardingData)
-      
       // Save the onboarding data to create a provider profile
       const providerData = {
         userId: user?.id || '',
@@ -156,8 +154,7 @@ export default function NewProviderOnboardingPage() {
         experienceYears: parseInt(onboardingData.experience?.split('-')[0] || '0')
       }
       
-      const newProvider = await providerApi.createProvider(providerData)
-      console.log('Provider profile created:', newProvider)
+      await providerApi.createProvider(providerData)
       router.push('/provider/dashboard')
       
     } catch (error) {

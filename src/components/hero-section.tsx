@@ -22,7 +22,7 @@ export const HeroSection = () => {
           <div className="absolute top-20 right-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
           <div className="absolute bottom-20 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{animationDelay: '2s'}} />
 
-          <div className="relative page-container">
+          <div className="relative mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-8 items-center justify-center">
               {/* Main Heading */}
               <div className="text-center animate-fade-in-up">

@@ -128,7 +128,6 @@ export default function PetsPage() {
 
       if (err.message && err.message.includes('foreign key constraint')) {
         try {
-          console.log('Attempting to fix missing user record...')
           const { error: userError } = await supabase.from('users').upsert({
             id: user.id,
             email: user.email,
@@ -138,7 +137,6 @@ export default function PetsPage() {
           })
 
           if (!userError) {
-            console.log('User record fixed, retrying pet creation...')
             if (editingPet) {
               const updatedPet = await petsApi.updatePet({
                 id: editingPet.id,

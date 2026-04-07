@@ -294,8 +294,7 @@ export default function ProviderServicesPage() {
     try {
       setFormError(null)
       setIsSubmitting(true)
-      // TODO: Implement pet type creation
-      console.log('Creating pet type:', { petTypeTitle, petTypeDescription, petTypeBreedType })
+      // TODO(services): implement pet type creation via Supabase (see individual-pets-dialog) — 2026-03-20
       setIsAddPetTypeOpen(false)
       setPetTypeTitle('')
       setPetTypeDescription('')
@@ -316,15 +315,7 @@ export default function ProviderServicesPage() {
     try {
       setFormError(null)
       setIsSubmitting(true)
-      // TODO: Implement individual pet creation
-      console.log('Creating individual pet:', { 
-        individualPetTitle, 
-        individualPetPrice, 
-        individualPetSexType, 
-        individualPetAge, 
-        individualPetReadyToLeave,
-        individualPetFeatures 
-      })
+      // TODO(services): implement individual pet creation via Supabase (see individual-pets-dialog) — 2026-03-20
       setIsAddIndividualPetOpen(false)
       setIndividualPetTitle('')
       setIndividualPetPrice(0)
