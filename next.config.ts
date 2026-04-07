@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // jspdf uses fflate which does dynamic require('worker_threads') — skip bundling
+  serverExternalPackages: ['jspdf', 'fflate'],
+
   env: {
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
   },
