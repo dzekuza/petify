@@ -49,7 +49,7 @@ export function NavigationHeader({
           : "bg-transparent"
       )}
     >
-      <div className="w-full flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
+      <div className="page-container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center group shrink-0">
           <img

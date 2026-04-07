@@ -48,7 +48,7 @@ export const SearchLayout = ({ results, petAds = [], individualPets = [], filter
   if (error) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="page-container py-6">
           <div className="text-center py-12">
             <div className="text-red-500 text-lg mb-4">{t('search.errorLoadingProviders')}</div>
             <p className="text-muted-foreground mb-6">{error}</p>

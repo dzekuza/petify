@@ -352,7 +352,7 @@ export default function ProviderDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-muted py-8">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="page-container">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
             <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
@@ -380,7 +380,7 @@ export default function ProviderDetailPage() {
   if (!provider) {
     return (
       <div className="min-h-screen bg-muted py-8">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="page-container">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">{t('provider.notFound')}</h1>
             <p className="text-muted-foreground">{t('provider.notFoundDescription')}</p>
@@ -412,7 +412,7 @@ export default function ProviderDetailPage() {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="page-container py-24">
           <DesktopHeader
             onBack={() => router.back()}
             onShare={handleShare}
